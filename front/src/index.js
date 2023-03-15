@@ -14,6 +14,8 @@ import WaitingPage from './pages/WaitingPage';
 import ProfilePage from './pages/ProfilePage';
 import SignPage from './pages/SignPage';
 import GamePage from './pages/GamePage';
+import TutorialPage from './pages/TutorialPage';
+import LoginPage from './pages/LoginPage';
 
 const router = createBrowserRouter([
   {
@@ -22,10 +24,14 @@ const router = createBrowserRouter([
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <HomePage /> },
+      // 게임
       { path: '/waiting', element: <WaitingPage /> },
-      { path: '/profile', element: <ProfilePage /> },
-      { path: '/sign', element: <SignPage /> },
+      { path: '/tutorial', element: <TutorialPage /> },
       { path: '/game', element: <GamePage /> },
+      // 회원
+      { path: '/signup', element: <SignPage /> },
+      { path: '/login', element: <LoginPage /> },
+      { path: '/profile', element: <ProfilePage /> },
     ],
   },
 ]);
