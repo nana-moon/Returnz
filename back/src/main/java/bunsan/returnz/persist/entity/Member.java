@@ -14,6 +14,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -63,10 +66,20 @@ public class Member implements UserDetails {
 	/**
 	 * 수정 필요
 	 */
-	@Convert(converter =  ProfileIconConverter.class)
-	private List<ProfileIcon> permittedProfileList = new ArrayList<ProfileIcon>(){{
-		add(ProfileIcon.ONE);
-	}};
+	@Builder.Default
+	@ManyToMany
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "member_id"),
+		inverseJoinColumns = @JoinColumn(name = "friend_id"))
+	private List<Member> friends = new ArrayList<>();
+
+	// @ManyToMany
+	// @Builder.Default
+	// @Convert(converter =  ProfileIconConverter.class)
+	// private List<ProfileIcon> permittedProfileList = new ArrayList<ProfileIcon>(){{
+	// 	add(ProfileIcon.ONE);
+	// }};
+	@Builder.Default
 	@Convert(converter =  ProfileIconConverter.class)
 	private ProfileIcon profileIcon = ProfileIcon.ONE;
 

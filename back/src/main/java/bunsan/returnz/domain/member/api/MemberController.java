@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.member.dto.LoginRequest;
 import bunsan.returnz.domain.member.dto.SignupRequest;
 import bunsan.returnz.domain.member.service.MemberService;
+import bunsan.returnz.global.auth.dto.TokenInfo;
 import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,12 @@ public class MemberController {
 	public ResponseEntity signup(@Valid @RequestBody SignupRequest signupRequest) {
 		Member member = memberService.signup(signupRequest);
 		return ResponseEntity.created(URI.create("/members/" + member.getId())).build();
+	}
+	//--------------------------------------로그인-------------------------------------------
+	@PostMapping("/login")
+	public ResponseEntity<TokenInfo> login(@RequestBody LoginRequest loginRequest) {
+		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
+		return ResponseEntity.ok().body(tokenInfo);
 	}
 
 

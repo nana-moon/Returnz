@@ -1,6 +1,7 @@
 package bunsan.returnz.global.auth.config;
 
 
+import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	// private final JwtTokenProvider jwtTokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
 	@Autowired
 	DataSource dataSource;
 	@Bean
@@ -44,7 +45,7 @@ public class SecurityConfig {
 			//
 			.authorizeRequests()
 			//
-			.antMatchers("/api/members/signup").permitAll()
+			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/boards/gif/{boardId}").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/boards/{boardId}").authenticated()
@@ -65,7 +66,7 @@ public class SecurityConfig {
 			/**
 			 *
 			 */
-			// .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용 하라는 뜻 입니다.
+			.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용 하라는 뜻 입니다.
 			.csrf() // 추가
 			.ignoringAntMatchers("/h2-console/**").disable()
 			.build(); // 추가
