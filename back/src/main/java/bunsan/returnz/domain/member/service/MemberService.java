@@ -35,7 +35,7 @@ public class MemberService {
 		if (!checkUniqueNickname(signupRequest.getNickname())) {
 			throw new ConflictException("이미 존재하는 닉네임입니다.");
 		}
-		confirmPassword(signupRequest.getPassword(),signupRequest.getPasswordConfirmation());
+		confirmPassword(signupRequest.getPassword(), signupRequest.getPasswordConfirmation());
 
 		// 비밀번호 인코딩
 		String rawPassword = signupRequest.getPassword();
@@ -44,9 +44,11 @@ public class MemberService {
 		return memberRepository.save(signupRequest.toEntity());
 
 	}
+
 	public Boolean checkUniqueUsername(String username) {
 		return !memberRepository.existsMemberByUsername(username);
 	}
+
 	public Boolean checkUniqueNickname(String nickname) {
 		return !memberRepository.existsMemberByNickname(nickname);
 	}
@@ -66,7 +68,8 @@ public class MemberService {
 		// 1. Login ID/PW 를 기반으로 Authentication 객체 생성
 		// 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
 		log.info("11");
-		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
+			password);
 
 		log.info("22");
 		// 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분

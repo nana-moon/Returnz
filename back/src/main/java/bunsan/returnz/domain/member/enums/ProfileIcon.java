@@ -16,10 +16,12 @@ public enum ProfileIcon {
 	TEN("J"),
 	ELEVEN("K"),
 	TWELVE("L");
-	private String code;
-	private ProfileIcon(String code) {
+	private final String code;
+
+	ProfileIcon(String code) {
 		this.code = code;
 	}
+
 	public String getCode() {
 		return this.code;
 	}

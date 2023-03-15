@@ -1,14 +1,11 @@
 package bunsan.returnz.global.auth.service;
 
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
 
-import bunsan.returnz.global.advice.exception.NotFoundException;
-import bunsan.returnz.global.auth.dto.TokenInfo;
-import bunsan.returnz.persist.entity.Member;
-import bunsan.returnz.persist.repository.MemberRepository;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +14,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import java.security.Key;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import bunsan.returnz.global.advice.exception.NotFoundException;
+import bunsan.returnz.global.auth.dto.TokenInfo;
+import bunsan.returnz.persist.entity.Member;
+import bunsan.returnz.persist.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -28,6 +36,7 @@ public class JwtTokenProvider {
 
 	private final Key key;
 	private final MemberRepository memberRepository;
+
 	public JwtTokenProvider(@Value("${jwt.token.secret}") String secretKey, MemberRepository memberRepository) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -47,7 +56,7 @@ public class JwtTokenProvider {
 			.orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
 
 		// Access token 생성
-		Date accessTokenExpiresIn = new Date(now + 86400000*3); // 유효기간 1일*3
+		Date accessTokenExpiresIn = new Date(now + 86400000 * 3); // 유효기간 1일*3
 		String accessToken = Jwts.builder()
 			.setSubject(authentication.getName())
 			.claim("auth", authorities)
@@ -97,14 +106,15 @@ public class JwtTokenProvider {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
-		}catch(ExpiredJwtException e) {   // Token이 만료된 경우 Exception이 발생한다.
+		} catch (ExpiredJwtException e) {   // Token이 만료된 경우 Exception이 발생한다.
 			log.error("Token Expired");
 
-		}catch(JwtException e) {        // Token이 변조된 경우 Exception이 발생한다.
+		} catch (JwtException e) {        // Token이 변조된 경우 Exception이 발생한다.
 			log.error("Token Error");
 		}
 		return false;
 	}
+
 	public Member getMember(String token) {
 		Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
 		String username = String.valueOf(claims.getBody().get("username"));
@@ -112,7 +122,7 @@ public class JwtTokenProvider {
 			.orElseThrow(() -> new NotFoundException("로그인된 사용자를 찾을 수 없습니다."));
 	}
 
-	public String getUserNameWithToken (String token){
+	public String getUserNameWithToken(String token) {
 		Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
 		String username = String.valueOf(claims.getBody().get("username"));
 
@@ -127,9 +137,8 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public String getToken (String token){
-		return  token == null ? null : token.substring(7);
+	public String getToken(String token) {
+		return token == null ? null : token.substring(7);
 	}
-
 
 }

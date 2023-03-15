@@ -80,7 +80,7 @@ public class Member implements UserDetails {
 	// 	add(ProfileIcon.ONE);
 	// }};
 	@Builder.Default
-	@Convert(converter =  ProfileIconConverter.class)
+	@Convert(converter = ProfileIconConverter.class)
 	private ProfileIcon profileIcon = ProfileIcon.ONE;
 
 	// roles
@@ -109,6 +109,7 @@ public class Member implements UserDetails {
 			.map(SimpleGrantedAuthority::new)
 			.collect(Collectors.toList());
 	}
+
 	@Override
 	public boolean isAccountNonExpired() {
 		return this.accountNonExpired;

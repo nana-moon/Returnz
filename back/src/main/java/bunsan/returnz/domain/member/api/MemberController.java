@@ -33,12 +33,12 @@ public class MemberController {
 		Member member = memberService.signup(signupRequest);
 		return ResponseEntity.created(URI.create("/members/" + member.getId())).build();
 	}
+
 	//--------------------------------------로그인-------------------------------------------
 	@PostMapping("/login")
 	public ResponseEntity<TokenInfo> login(@RequestBody LoginRequest loginRequest) {
 		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
 		return ResponseEntity.ok().body(tokenInfo);
 	}
-
 
 }

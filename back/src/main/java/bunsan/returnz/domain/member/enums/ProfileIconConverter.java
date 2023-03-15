@@ -6,7 +6,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class ProfileIconConverter  implements AttributeConverter<ProfileIcon,String> {
+public class ProfileIconConverter implements AttributeConverter<ProfileIcon, String> {
 	@Override
 	public String convertToDatabaseColumn(ProfileIcon type) {
 		if (type == null) {
