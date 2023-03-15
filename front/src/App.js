@@ -3,7 +3,6 @@ import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
 import Header from './components/common/Header';
 import SideBar from './components/common/SideBar';
 
@@ -14,8 +13,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
-      {pageList.some((page) => page === path) && <SideBar />}
-      <Outlet />
+      <section className="flex justify-between w-[100%]">
+        <div className="flex justify-center w-[100%]">
+          <Outlet />
+        </div>
+        {pageList.some((page) => page === path) && <SideBar />}
+      </section>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );
