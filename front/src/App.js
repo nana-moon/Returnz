@@ -14,8 +14,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
-      {pageList.some((page) => page === path) && <SideBar />}
-      <Outlet />
+      <div className="flex pt-14 bg-base h-screen">
+        <Outlet />
+        <div className="w-1/5">{pageList.some((page) => page === path) && <SideBar />}</div>
+      </div>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );
