@@ -8,6 +8,7 @@ module.exports = withMT({
     extend: {
       colors: {
         primary: '#1CD6C9',
+        dprimary: '#00BFB2',
         base: '#F8FAFC',
         negative: '#D4D4D4',
         gain: '#FF5454',

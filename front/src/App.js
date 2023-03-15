@@ -13,8 +13,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
-      <div className="flex justify-between w-[100%] pt-14 bg-base h-screen">
-        <div className="flex justify-center w-[100%]">
+      <div className="flex justify-between w-[100%] pt-14 h-screen bg-base">
+        <div className="flex justify-center w-[80%]">
           <Outlet />
         </div>
         <div className="w-1/5">{pageList.some((page) => page === path) && <SideBar />}</div>

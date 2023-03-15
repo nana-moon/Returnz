@@ -9,19 +9,19 @@ import TodayWord from '../components/main/TodayWord';
 export default function HomePage() {
   return (
     <MainDiv>
-      <div className="col-span-3">
+      <FlexedContainer>
         <TopButtons />
-      </div>
-      <div className="col-span-3 bg-blue-200">
+      </FlexedContainer>
+      <FlexedContainer>
         <TodayPrice />
-      </div>
-      <div className="row-span-2 bg-red-200">
+      </FlexedContainer>
+      <div className="row-span-4 bg-red-200">
         <TodayTopUser />
       </div>
-      <div className="col-span-2 bg-red-100">
+      <div className="row-span-2 col-span-2 bg-red-100">
         <TodayNews />
       </div>
-      <div className="col-span-2 bg-red-100">
+      <div className="row-span-2 col-span-2 bg-yellow-100">
         <TodayWord />
       </div>
     </MainDiv>
@@ -29,5 +29,9 @@ export default function HomePage() {
 }
 
 const MainDiv = styled.div`
-  ${tw`grid grid-cols-3 grid-rows-4 gap-6 bg-base py-6`}
+  ${tw`grid grid-cols-3 grid-rows-6 bg-base py-6 w-[75%] font-spoq`}
+`;
+
+const FlexedContainer = styled.div`
+  ${tw`col-span-3`}
 `;
