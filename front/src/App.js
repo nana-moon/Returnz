@@ -3,7 +3,6 @@ import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
 import Header from './components/common/Header';
 import SideBar from './components/common/SideBar';
 
@@ -14,10 +13,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
-      <div className="flex pt-14 bg-base h-screen">
-        <Outlet />
-        <div className="w-1/5">{pageList.some((page) => page === path) && <SideBar />}</div>
-      </div>
+      <section className="flex justify-between w-[100%]">
+        <div className="flex justify-center w-[100%]">
+          <Outlet />
+        </div>
+        {pageList.some((page) => page === path) && <SideBar />}
+      </section>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );

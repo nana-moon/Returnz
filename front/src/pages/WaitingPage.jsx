@@ -1,16 +1,19 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+// import { useQuery } from 'react-query';
 import Chatting from '../components/chatting/Chatting';
 import GameSetting from '../components/waiting/GameSetting';
 import UserWaiting from '../components/waiting/UserWaiting';
 
 export default function WaitingPage() {
-  // 게임 유저 데이터 Get 함수
-
-  // 게임 세팅 데이터 Post 함수
-
-  // test data
-
+  // 내(방장)가 들어올 때
+  // 내(초대)가 들어올 때
+  // 초대된 사람 들어올 때
+  //
+  // 게임 설정하기
+  //
+  // 준비하기
+  // 나가기
   return (
     <WaitingContainer>
       <UserSection>
@@ -19,7 +22,7 @@ export default function WaitingPage() {
         <UserWaiting />
         <UserWaiting />
       </UserSection>
-      <SetSection>
+      <SettingSection>
         <GameSetting />
         <ChatBox>
           <Chatting />
@@ -28,26 +31,26 @@ export default function WaitingPage() {
             <Button type="submit">나가기</Button>
           </BtnBox>
         </ChatBox>
-      </SetSection>
+      </SettingSection>
     </WaitingContainer>
   );
 }
 
 const WaitingContainer = styled.div`
-  ${tw``}
+  ${tw`w-[75%]`}
 `;
 const UserSection = styled.section`
-  ${tw`flex`}
+  ${tw`flex gap-5 mt-24`}
 `;
-const SetSection = styled.section`
-  ${tw`flex`}
+const SettingSection = styled.section`
+  ${tw`flex gap-5 mt-5 min-h-[250px]`}
 `;
 const ChatBox = styled.section`
-  ${tw`w-[50%]`}
+  ${tw`w-[50%] `}
 `;
 const BtnBox = styled.div`
-  ${tw`flex`}
+  ${tw`flex gap-5 mt-5`}
 `;
 const Button = styled.button`
-  ${tw`border-2 border-black w-[100%]`}
+  ${tw`w-[50%] min-h-[50px] border-2 border-black`}
 `;
