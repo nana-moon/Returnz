@@ -2,9 +2,13 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 
 export default function HomePage() {
-  return <MainDiv>main</MainDiv>;
+  return (
+    <MainDiv>
+      <div className="m-3 text-xl text-gray-900 font-semibold">REACT TAILWIND</div>
+    </MainDiv>
+  );
 }
 
 const MainDiv = styled.div`
-  ${tw`border-2 text-primary font-ibm font-bold`}
+  ${tw`flex gap-6`}
 `;

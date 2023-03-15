@@ -1,9 +1,11 @@
 import './index.css';
 import React from 'react';
+import { ThemeProvider } from '@material-tailwind/react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
+
 import reportWebVitals from './reportWebVitals';
 import App from './App';
 import NotFoundPage from './pages/NotFoundPage';
@@ -19,7 +21,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFoundPage />,
     children: [
-      { path: '/home', element: <HomePage /> },
+      { path: '/', element: <HomePage /> },
       { path: '/waiting', element: <WaitingPage /> },
       { path: '/profile', element: <ProfilePage /> },
       { path: '/sign', element: <SignPage /> },
@@ -32,9 +34,11 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
-  <Provider store={store}>
-    <RouterProvider router={router} />
-  </Provider>,
+  <ThemeProvider>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </ThemeProvider>,
 );
 
 // If you want to start measuring performance in your app, pass a function
