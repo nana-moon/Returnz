@@ -1,8 +1,8 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 
-export default function Main() {
-  return <MainDiv>Returnz</MainDiv>;
+export default function HomePage() {
+  return <MainDiv>main</MainDiv>;
 }
 
 const MainDiv = styled.div`
