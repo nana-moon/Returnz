@@ -6,5 +6,5 @@ export default function UserWaiting() {
 }
 
 const UserContainer = styled.div`
-  ${tw`border-2 border-black`}
+  ${tw`border-2 border-black w-[100%]`}
 `;

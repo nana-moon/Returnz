@@ -9,7 +9,7 @@ import SideBar from './components/common/SideBar';
 function App() {
   const queryClient = new QueryClient();
   const path = window.location.pathname;
-  const pageList = ['/home', '/waiting', '/profile'];
+  const pageList = ['/', '/waiting', '/profile'];
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
