@@ -1,6 +1,7 @@
 package bunsan.returnz.global.advice.enums;
 
 import lombok.Getter;
+// 확인
 
 @Getter
 public class ErrorResponse {

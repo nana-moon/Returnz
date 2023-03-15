@@ -1,12 +1,10 @@
 package bunsan.returnz.global.auth.config;
 
+import javax.sql.DataSource;
 
-import bunsan.returnz.global.auth.service.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,7 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.sql.DataSource;
+import bunsan.returnz.global.auth.service.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 
 @EnableWebSecurity
 @Configuration
@@ -26,6 +25,7 @@ public class SecurityConfig {
 	private final JwtTokenProvider jwtTokenProvider;
 	@Autowired
 	DataSource dataSource;
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -66,16 +66,16 @@ public class SecurityConfig {
 			/**
 			 *
 			 */
-			.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class) //UserNamePasswordAuthenticationFilter적용하기 전에 JWTTokenFilter를 적용 하라는 뜻 입니다.
+			.addFilterBefore(new JwtFilter(jwtTokenProvider),
+				UsernamePasswordAuthenticationFilter.class)
 			.csrf() // 추가
 			.ignoringAntMatchers("/h2-console/**").disable()
 			.build(); // 추가
 	}
 
 	// Security 무시하기
-	public void configure(WebSecurity web)throws Exception {
+	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/h2-console/**");
 	}
-
 
 }

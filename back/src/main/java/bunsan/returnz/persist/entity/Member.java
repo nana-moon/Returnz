@@ -86,9 +86,11 @@ public class Member implements UserDetails {
 	// roles
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Builder.Default
-	private List<String> roles = new ArrayList<String>() {{
-		add("USER");
-	}};
+	private List<String> roles = new ArrayList<String>() {
+		{
+			add("USER");
+		}
+	};
 
 	// 계정 공개 여부
 	@Builder.Default

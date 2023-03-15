@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { HiMenuAlt3 } from 'react-icons/hi';
+import { Card, CardHeader, Input, IconButton, Typography, Avatar } from '@material-tailwind/react';
 import { MdOutlineDashboard } from 'react-icons/md';
 import { RiSettings4Line } from 'react-icons/ri';
 import { TbReportAnalytics } from 'react-icons/tb';
-import { AiOutlineUser, AiOutlineHeart } from 'react-icons/ai';
+import { AiOutlineSearch, AiOutlineUser, AiOutlineHeart } from 'react-icons/ai';
 import { FiMessageSquare, FiFolder, FiShoppingCart } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
@@ -21,43 +21,76 @@ export default function SideBar() {
     { name: 'Setting', link: '/', icon: RiSettings4Line },
   ];
   const [open, setOpen] = useState(true);
+  const [email, setEmail] = React.useState('');
+  const onChange = ({ target }: any) => setEmail(target.value);
   return (
-    <div>
-      <SideBarContainer>이거슨 사이드바입니다</SideBarContainer>
+    <SideBarContainer>
+      <MyProfileCard>
+        <Card color="transparent" shadow={false} className="w-full">
+          <CardHeader
+            color="transparent"
+            floated={false}
+            shadow={false}
+            className="mx-2 flex items-center gap-4 pt-0 pb-4"
+          >
+            <Avatar
+              size="lg"
+              variant="circular"
+              src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+            />
+            <div className="flex w-full flex-col gap-0.5">
+              <div className="flex items-center justify-between">
+                <Typography variant="h5" color="blue-gray">
+                  내 유저네임
+                </Typography>
+              </div>
+              <Typography color="blue-gray">프로필 바꾸기</Typography>
+            </div>
+          </CardHeader>
+        </Card>
+      </MyProfileCard>
       <section className="flex gap-6">
-        {/* <div className="m-3 text-xl text-gray-900 font-semibold">REACT TAILWIND</div> */}
-        <div className={`bg-gray-500 min-h-screen ${open ? 'w-72' : 'w-16'} duration-500 text-black px-4`}>
-          <div className="py-3 flex justify-end">
-            <HiMenuAlt3 size={26} className="cursor-pointer" onClick={() => setOpen(!open)} />
-          </div>
-          <div className="mt-4 flex flex-col gap-4 relative">
-            {menus?.map((menu) => (
-              <Link
-                to={menu?.link}
-                className={` ${
-                  menu?.margin && 'mt-5'
-                } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md`}
+        <div className="mt-4 flex flex-col gap-4 relative">
+          {menus?.map((menu) => (
+            <Link
+              to={menu?.link}
+              className={` ${
+                menu?.margin && 'mt-5'
+              } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md`}
+            >
+              <div>{React.createElement(menu?.icon, { size: '20' })}</div>
+              <h2 className={`whitespace-pre duration-500 ${!open && 'opacity-0 translate-x-28 overflow-hidden'}`}>
+                {menu?.name}
+              </h2>
+              <h2
+                className={`${
+                  open && 'hidden'
+                } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-14 group-hover:duration-300 group-hover:w-fit  `}
               >
-                <div>{React.createElement(menu?.icon, { size: '20' })}</div>
-                <h2 className={`whitespace-pre duration-500 ${!open && 'opacity-0 translate-x-28 overflow-hidden'}`}>
-                  {menu?.name}
-                </h2>
-                <h2
-                  className={`${
-                    open && 'hidden'
-                  } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-14 group-hover:duration-300 group-hover:w-fit  `}
-                >
-                  {menu?.name}
-                </h2>
-              </Link>
-            ))}
-          </div>
+                {menu?.name}
+              </h2>
+            </Link>
+          ))}
         </div>
       </section>
-    </div>
+      <FriendSearchContainer>
+        <Input type="text" label="닉네임을 검색하세요" value={email} onChange={onChange} className="bg-input" />
+        <IconButton color={email ? 'blue' : 'blue-gray'} disabled={!email} className="rounded">
+          <AiOutlineSearch />
+        </IconButton>
+      </FriendSearchContainer>
+    </SideBarContainer>
   );
 }
 
 const SideBarContainer = styled.div`
-  ${tw`bg-gray-400`}
+  ${tw`bg-white border-l-2 border-negative`}
+`;
+
+const MyProfileCard = styled.div`
+  ${tw`border-b-2 border-negative`}
+`;
+
+const FriendSearchContainer = styled.div`
+  ${tw`flex border-t-2 border-negative px-2 pt-2 gap-2`}
 `;
