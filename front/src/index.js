@@ -1,25 +1,31 @@
 import './index.css';
 import React from 'react';
+import { ThemeProvider } from '@material-tailwind/react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
+
 import reportWebVitals from './reportWebVitals';
 import App from './App';
-import Main from './pages/Main';
-import NotFound from './pages/NotFound';
-import Waiting from './pages/Waiting';
-import Game from './pages/Game';
+import NotFoundPage from './pages/NotFoundPage';
+import HomePage from './pages/HomePage';
+import WaitingPage from './pages/WaitingPage';
+import ProfilePage from './pages/ProfilePage';
+import SignPage from './pages/SignPage';
+import GamePage from './pages/GamePage';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <NotFound />,
+    errorElement: <NotFoundPage />,
     children: [
-      { index: true, element: <Main /> },
-      { path: '/waiting', element: <Waiting /> },
-      { path: '/game', element: <Game /> },
+      { path: '/', element: <HomePage /> },
+      { path: '/waiting', element: <WaitingPage /> },
+      { path: '/profile', element: <ProfilePage /> },
+      { path: '/sign', element: <SignPage /> },
+      { path: '/game', element: <GamePage /> },
     ],
   },
 ]);
@@ -28,11 +34,11 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
+  <ThemeProvider>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>,
+  </ThemeProvider>,
 );
 
 // If you want to start measuring performance in your app, pass a function
