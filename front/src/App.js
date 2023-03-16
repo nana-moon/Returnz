@@ -13,12 +13,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       {pageList.some((page) => page === path) && <Header />}
-      <section className="flex justify-between w-[100%]">
-        <div className="flex justify-center w-[100%]">
+      <div className="flex justify-between w-[100%] pt-14 h-screen bg-base">
+        <div className="flex justify-center w-[80%]">
           <Outlet />
         </div>
-        {pageList.some((page) => page === path) && <SideBar />}
-      </section>
+        <div className="w-1/5">{pageList.some((page) => page === path) && <SideBar />}</div>
+      </div>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );
