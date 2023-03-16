@@ -20,6 +20,7 @@ export default function SideBar() {
     { name: 'Saved', link: '/', icon: AiOutlineHeart, margin: true },
     { name: 'Setting', link: '/', icon: RiSettings4Line },
   ];
+  // eslint-disable-next-line no-unused-vars
   const [open, setOpen] = useState(true);
   const [email, setEmail] = React.useState('');
   const onChange = ({ target }: any) => setEmail(target.value);

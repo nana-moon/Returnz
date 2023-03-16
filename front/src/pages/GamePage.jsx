@@ -1,26 +1,43 @@
 import React from 'react';
-import Chart from 'react-apexcharts';
+import tw, { styled } from 'twin.macro';
+import Header from '../components/common/Header';
+import Rate from '../components/game/Rate';
+import Stocks from '../components/game/StockList';
+import HoldingList from '../components/game/HoldingList';
+import Turn from '../components/game/Turn';
+import Graph from '../components/game/Graph';
+import StockInfo from '../components/game/StockInfo';
 
 export default function GamePage() {
-  const data = {
-    options: {
-      chart: {
-        id: 'basic-bar',
-      },
-      xaxis: {
-        categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
-      },
-    },
-    series: [
-      {
-        name: 'series-1',
-        data: [30, 40, 45, 50, 49, 60, 70, 91],
-      },
-    ],
-  };
   return (
-    <div>
-      <Chart options={data.options} series={data.series} type="bar" width="500" />
-    </div>
+    <>
+      <Header />
+      <GameContainer>
+        <LeftSection>
+          <Rate />
+          <Stocks />
+          <HoldingList />
+        </LeftSection>
+        <MiddleSection>
+          <Turn />
+          <Graph />
+          <StockInfo />
+        </MiddleSection>
+        <RightSection>친구와 채팅</RightSection>
+      </GameContainer>
+    </>
   );
 }
+
+const GameContainer = styled.div`
+  ${tw`grid grid-cols-12 gap-5 my-5 ml-5 w-[100%] font-spoq`}
+`;
+const LeftSection = styled.div`
+  ${tw`col-span-3 grid gap-5`};
+`;
+const MiddleSection = styled.div`
+  ${tw`col-span-6 grid gap-5`}
+`;
+const RightSection = styled.div`
+  ${tw`col-span-3 border-2 bg-white rounded-xl`}
+`;
