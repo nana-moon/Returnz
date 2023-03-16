@@ -13,39 +13,37 @@ export default function UserSetting({ getIsUser, getUserSetting }) {
   };
   return (
     <UserSettingContainer>
-      <form onChange={handleUserSetting}>
-        <BackBtn onClick={handleIsUser}>테마보기</BackBtn>
-        <TurnDateSection>
-          <TurnDateTitle>턴 시작일</TurnDateTitle>
-          <TurnDateInput type="date" min="2001-01-01" max="2022-12-31" />
-        </TurnDateSection>
-        <TurnPeriodSection>
-          <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
-          <TurnPeriodForm>
-            <input type="radio" id="periodChoice1" name="period" value="day" />
-            <label htmlFor="periodChoice1">1일</label>
+      <BackBtn onClick={handleIsUser}>테마보기</BackBtn>
+      <TurnDateSection>
+        <TurnDateTitle>턴 시작일</TurnDateTitle>
+        <TurnDateInput type="date" min="2001-01-01" max="2022-12-31" />
+      </TurnDateSection>
+      <TurnPeriodSection>
+        <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
+        <TurnPeriodForm>
+          <input type="radio" id="periodChoice1" name="period" value="day" />
+          <label htmlFor="periodChoice1">1일</label>
 
-            <input type="radio" id="periodChoice2" name="period" value="week" />
-            <label htmlFor="periodChoice2">1주</label>
+          <input type="radio" id="periodChoice2" name="period" value="week" />
+          <label htmlFor="periodChoice2">1주</label>
 
-            <input type="radio" id="periodChoice3" name="period" value="month" />
-            <label htmlFor="periodChoice3">한 달</label>
-          </TurnPeriodForm>
-        </TurnPeriodSection>
-        <TurnCountSection>
-          <TurnCountTitle>턴 수</TurnCountTitle>
-          <TurnCountForm>
-            <input type="radio" id="contactChoice1" name="count" value="10" />
-            <label htmlFor="contactChoice1">10턴</label>
+          <input type="radio" id="periodChoice3" name="period" value="month" />
+          <label htmlFor="periodChoice3">한 달</label>
+        </TurnPeriodForm>
+      </TurnPeriodSection>
+      <TurnCountSection>
+        <TurnCountTitle>턴 수</TurnCountTitle>
+        <TurnCountForm>
+          <input type="radio" id="contactChoice1" name="count" value="10" />
+          <label htmlFor="contactChoice1">10턴</label>
 
-            <input type="radio" id="contactChoice2" name="count" value="30" />
-            <label htmlFor="contactChoice2">30턴</label>
+          <input type="radio" id="contactChoice2" name="count" value="30" />
+          <label htmlFor="contactChoice2">30턴</label>
 
-            <input type="radio" id="contactChoice3" name="count" value="50" />
-            <label htmlFor="contactChoice3">50턴</label>
-          </TurnCountForm>
-        </TurnCountSection>
-      </form>
+          <input type="radio" id="contactChoice3" name="count" value="50" />
+          <label htmlFor="contactChoice3">50턴</label>
+        </TurnCountForm>
+      </TurnCountSection>
     </UserSettingContainer>
   );
 }

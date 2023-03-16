@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:3000/api',
+      target: 'http://apis.data.go.kr/1160100/service/GetMarketIndexInfoService',
       pathRewrite: {
         '^/api': '',
       },

@@ -4,14 +4,17 @@ import { Link } from 'react-router-dom';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
+import WaitingListItem from '../components/waiting/WaitingListItem';
 
 export default function WaitingPage() {
+  const [isHost, setIsHost] = useState(false);
   const [theme, setTheme] = useState(false);
   const [userSetting, setUserSetting] = useState(false);
-  const [isUser, setIsUser] = useState(false);
-  const [isCreator, setIsCreator] = useState(false);
-  const getIsUser = () => {
-    setIsUser(!isUser);
+  const [isUserSetting, setIsUserSetting] = useState(false);
+  const [isReady, setIsReady] = useState(true);
+  // 테마 설정 관련
+  const getIsUserSetting = () => {
+    setIsUserSetting(!isUserSetting);
   };
   const getTheme = (data) => {
     setTheme(data);
@@ -19,8 +22,9 @@ export default function WaitingPage() {
   const getUserSetting = (data) => {
     setUserSetting(data);
   };
+
+  // 게임 준비 및 시작 관련
   const handleStart = (e) => {
-    console.log(theme, userSetting);
     if (!theme && !userSetting) {
       e.preventDefault();
     }
@@ -28,22 +32,27 @@ export default function WaitingPage() {
   const handleReady = () => {};
   return (
     <WaitingContainer>
-      <WaitingList />
+      <WaitingListSection>
+        <WaitingListItem isReady={isReady} />
+        <WaitingListItem />
+        <WaitingListItem />
+        <WaitingListItem />
+      </WaitingListSection>
       <SettingSection>
-        {!isUser && <ThemeSetting getIsUser={getIsUser} getTheme={getTheme} />}
-        {isUser && <UserSetting getIsUser={getIsUser} getUserSetting={getUserSetting} />}
-        <ChatBox>
+        {!isUserSetting && <ThemeSetting getIsUser={getIsUserSetting} getTheme={getTheme} />}
+        {isUserSetting && <UserSetting getIsUser={getIsUserSetting} getUserSetting={getUserSetting} />}
+        <ChatSection>
           <Chatting />
           <BtnBox>
-            {isCreator && <Button onClick={handleReady}>준비하기</Button>}
-            {!isCreator && (
+            {!isHost && <Button onClick={handleReady}>준비하기</Button>}
+            {isHost && (
               <Button to="/game" onClick={handleStart}>
                 시작하기
               </Button>
             )}
             <Button to="/">나가기</Button>
           </BtnBox>
-        </ChatBox>
+        </ChatSection>
       </SettingSection>
     </WaitingContainer>
   );
@@ -52,11 +61,13 @@ export default function WaitingPage() {
 const WaitingContainer = styled.div`
   ${tw`w-[75%]`}
 `;
-
+const WaitingListSection = styled.section`
+  ${tw`flex gap-5 mt-10 min-h-[250px]`}
+`;
 const SettingSection = styled.section`
   ${tw`flex gap-5 mt-10 min-h-[250px]`}
 `;
-const ChatBox = styled.section`
+const ChatSection = styled.section`
   ${tw`w-[50%] `}
 `;
 const BtnBox = styled.div`
