@@ -11,17 +11,17 @@ function App() {
   const path = window.location.pathname;
   const pageList = ['/', '/waiting', '/profile'];
   const thisPage = (page) => page === path;
-  const showHeader = pageList.some(thisPage) ? <Header /> : null;
-  const showSideBar = pageList.some(thisPage) ? <SideBar /> : null;
+  const handleHeader = pageList.some(thisPage) ? <Header /> : null;
+  const handleSideBar = pageList.some(thisPage) ? <SideBar /> : null;
 
   return (
     <QueryClientProvider client={queryClient}>
-      {showHeader}
-      <div className="flex pt-14 justify-between h-screen bg-gray-300">
-        <div className="flex justify-center w-[75%]">
+      {handleHeader}
+      <div className="flex pt-14 justify-between w-[100%] h-screen bg-base">
+        <div className="flex justify-center w-[100%]">
           <Outlet />
         </div>
-        {showSideBar}
+        {handleSideBar}
       </div>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
