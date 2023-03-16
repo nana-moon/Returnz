@@ -8,30 +8,38 @@ import TodayWord from '../components/main/TodayWord';
 
 export default function HomePage() {
   return (
-    <MainDiv>
-      <FlexedContainer>
+    <MainContainer>
+      <FlexedSection>
         <TopButtons />
-      </FlexedContainer>
-      <FlexedContainer>
+      </FlexedSection>
+      <FlexedSection>
         <TodayPrice />
-      </FlexedContainer>
-      <div className="row-span-4 bg-red-200">
+      </FlexedSection>
+      <TopUsersSection>
         <TodayTopUser />
-      </div>
-      <div className="row-span-2 col-span-2 bg-red-100">
+      </TopUsersSection>
+      <InfoSection>
         <TodayNews />
-      </div>
-      <div className="row-span-2 col-span-2 bg-yellow-100">
+      </InfoSection>
+      <InfoSection>
         <TodayWord />
-      </div>
-    </MainDiv>
+      </InfoSection>
+    </MainContainer>
   );
 }
 
-const MainDiv = styled.div`
+const MainContainer = styled.div`
   ${tw`grid grid-cols-3 grid-rows-6 bg-base py-6 w-[75%] font-spoq`}
 `;
 
-const FlexedContainer = styled.div`
+const FlexedSection = styled.div`
   ${tw`col-span-3`}
+`;
+
+const TopUsersSection = styled.div`
+  ${tw`row-span-4`}
+`;
+
+const InfoSection = styled.div`
+  ${tw`row-span-2 col-span-2 bg-red-200`}
 `;

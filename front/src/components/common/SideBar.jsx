@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { Card, CardHeader, Input, Typography, Avatar } from '@material-tailwind/react';
+import {
+  Card,
+  CardHeader,
+  Input,
+  Avatar,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Button,
+} from '@material-tailwind/react';
 import { MdOutlineDashboard } from 'react-icons/md';
 import { RiSettings4Line } from 'react-icons/ri';
 import { TbReportAnalytics } from 'react-icons/tb';
@@ -34,14 +43,19 @@ export default function SideBar() {
             className="mx-2 flex items-center gap-4 pt-0 pb-4"
           >
             <Avatar size="lg" variant="circular" src="../../profile_pics/green.jpg" />
-            <div className="flex w-full flex-col gap-0.5">
-              <div className="flex items-center justify-between">
-                <Typography variant="h5" color="blue-gray">
-                  내 유저네임
-                </Typography>
-              </div>
-              <Typography color="blue-gray">프로필 바꾸기</Typography>
-            </div>
+            <MyInfoBox>
+              <UsernameContent>내 유저네임</UsernameContent>
+              <Popover placement="left">
+                <PopoverHandler>
+                  <Button variant="gradient" color="cyan" size="sm">
+                    프로필 변경하기
+                  </Button>
+                </PopoverHandler>
+                <PopoverContent>
+                  <span>변경할수있는 프로필들이 정렬되어서 나와요</span>
+                </PopoverContent>
+              </Popover>
+            </MyInfoBox>
           </CardHeader>
         </Card>
       </MyProfileCard>
@@ -87,7 +101,7 @@ export default function SideBar() {
 }
 
 const SideBarContainer = styled.div`
-  ${tw`bg-white border-l-2 border-negative`}
+  ${tw`bg-white border-l-2 border-negative w-1/5`}
 `;
 
 const MyProfileCard = styled.div`
@@ -100,4 +114,12 @@ const FriendSearchContainer = styled.div`
 
 const SearchButton = styled.button`
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
+`;
+
+const MyInfoBox = styled.div`
+  ${tw`text-lg font-bold font-spoq`}
+`;
+
+const UsernameContent = styled.div`
+  ${tw`text-lg py-1`}
 `;
