@@ -1,34 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
-// import { useQuery } from 'react-query';
+import { Link } from 'react-router-dom';
 import Chatting from '../components/chatting/Chatting';
-import GameSetting from '../components/waiting/GameSetting';
-import UserWaiting from '../components/waiting/UserWaiting';
+import ThemeSetting from '../components/waiting/ThemeSetting';
+import UserSetting from '../components/waiting/UserSetting';
 
 export default function WaitingPage() {
-  // 내(방장)가 들어올 때
-  // 내(초대)가 들어올 때
-  // 초대된 사람 들어올 때
-  //
-  // 게임 설정하기
-  //
-  // 준비하기
-  // 나가기
+  const [theme, setTheme] = useState(false);
+  const [userSetting, setUserSetting] = useState(false);
+  const [isUser, setIsUser] = useState(false);
+  const [isCreator, setIsCreator] = useState(false);
+  const getIsUser = () => {
+    setIsUser(!isUser);
+  };
+  const getTheme = (data) => {
+    setTheme(data);
+  };
+  const getUserSetting = (data) => {
+    setUserSetting(data);
+  };
+  const handleStart = (e) => {
+    console.log(theme, userSetting);
+    if (!theme && !userSetting) {
+      e.preventDefault();
+    }
+  };
+  const handleReady = () => {};
   return (
     <WaitingContainer>
-      <UserSection>
-        <UserWaiting />
-        <UserWaiting />
-        <UserWaiting />
-        <UserWaiting />
-      </UserSection>
+      <WaitingList />
       <SettingSection>
-        <GameSetting />
+        {!isUser && <ThemeSetting getIsUser={getIsUser} getTheme={getTheme} />}
+        {isUser && <UserSetting getIsUser={getIsUser} getUserSetting={getUserSetting} />}
         <ChatBox>
           <Chatting />
           <BtnBox>
-            <Button type="submit">준비하기</Button>
-            <Button type="submit">나가기</Button>
+            {isCreator && <Button onClick={handleReady}>준비하기</Button>}
+            {!isCreator && (
+              <Button to="/game" onClick={handleStart}>
+                시작하기
+              </Button>
+            )}
+            <Button to="/">나가기</Button>
           </BtnBox>
         </ChatBox>
       </SettingSection>
@@ -39,11 +52,9 @@ export default function WaitingPage() {
 const WaitingContainer = styled.div`
   ${tw`w-[75%]`}
 `;
-const UserSection = styled.section`
-  ${tw`flex gap-5 mt-24`}
-`;
+
 const SettingSection = styled.section`
-  ${tw`flex gap-5 mt-5 min-h-[250px]`}
+  ${tw`flex gap-5 mt-10 min-h-[250px]`}
 `;
 const ChatBox = styled.section`
   ${tw`w-[50%] `}
@@ -51,6 +62,6 @@ const ChatBox = styled.section`
 const BtnBox = styled.div`
   ${tw`flex gap-5 mt-5`}
 `;
-const Button = styled.button`
-  ${tw`w-[50%] min-h-[50px] border-2 border-black`}
+const Button = styled(Link)`
+  ${tw`w-[50%] min-h-[50px] border-2 border-black flex justify-center items-center`}
 `;
