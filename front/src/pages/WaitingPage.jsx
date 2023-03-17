@@ -7,7 +7,7 @@ import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
 
 export default function WaitingPage() {
-  const [isHost, setIsHost] = useState(false);
+  const [isHost, setIsHost] = useState(true);
   const [theme, setTheme] = useState(false);
   const [userSetting, setUserSetting] = useState(false);
   const [isUserSetting, setIsUserSetting] = useState(false);

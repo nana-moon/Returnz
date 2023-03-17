@@ -103,7 +103,7 @@ export default function Graph() {
       },
     ],
     chart: {
-      height: 350,
+      height: 100,
       type: 'line',
     },
     title: {

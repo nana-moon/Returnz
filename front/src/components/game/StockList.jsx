@@ -16,7 +16,7 @@ export default function StockList() {
 }
 
 const StockListContanier = styled.div`
-  ${tw`border row-span-6 relative bg-white rounded-xl`}
+  ${tw`border row-span-5 relative bg-white rounded-xl`}
 `;
 const StockListSection = styled.div`
   ${tw`text-xl ml-2 mt-2`}
