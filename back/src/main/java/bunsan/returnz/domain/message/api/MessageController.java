@@ -9,7 +9,7 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
-import bunsan.returnz.domain.message.dto.Message;
+import bunsan.returnz.domain.message.dto.FriendRequestDto;
 import bunsan.returnz.domain.message.dto.ResponseMessaage;
 import bunsan.returnz.domain.message.sevice.NotificationService;
 
@@ -18,21 +18,21 @@ public class MessageController {
 	@Autowired
 	private NotificationService notificationService;
 	@MessageMapping("/message")
-	@SendTo("/topic/messages")
-	public ResponseMessaage getMessage(final Message message) throws InterruptedException {
+	@SendTo("/topic/messages") // 이 topic을 구독한 유저에게 전달
+	public ResponseMessaage getMessage(final FriendRequestDto friendRequest) throws InterruptedException {
 		Thread.sleep(1000);
 		notificationService.sendGlobalNotification();
-		return new ResponseMessaage(HtmlUtils.htmlEscape(message.getMessageContent()));
+		return new ResponseMessaage(HtmlUtils.htmlEscape(friendRequest.getRequestUsername()));
 	}
 
 	@MessageMapping("/private-message")
 	@SendToUser("/topic/private-messages")
-	public ResponseMessaage getPrivateMessage(final Message message,
+	public ResponseMessaage getPrivateMessage(final FriendRequestDto friendRequest,
 		final Principal principal) throws InterruptedException {
 		Thread.sleep(1000);
 		notificationService.sendPrivateNotification(principal.getName());
 		return new ResponseMessaage(HtmlUtils.htmlEscape(
-			"Sending private message" + principal.getName() + ":" + message.getMessageContent()));
+			"Sending private friendRequest" + principal.getName() + ":" + friendRequest.getRequestUsername()));
 	}
 
 }

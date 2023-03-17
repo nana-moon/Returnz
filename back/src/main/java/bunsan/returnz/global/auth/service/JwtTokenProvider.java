@@ -125,7 +125,6 @@ public class JwtTokenProvider {
 	public String getUserNameWithToken(String token) {
 		Jws<Claims> claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
 		String username = String.valueOf(claims.getBody().get("username"));
-
 		return username;
 	}
 

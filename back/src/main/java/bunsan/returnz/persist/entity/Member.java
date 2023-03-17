@@ -137,4 +137,18 @@ public class Member implements UserDetails {
 		return this.enabled;
 	}
 
+	public boolean isFriend(Member targetMember) {
+		List<Member> myFriends = this.getFriends();
+		if (myFriends.contains(targetMember)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public void addFriend(Member member) {
+		List<Member> myFriends = this.getFriends();
+		if (!myFriends.contains(member)) {
+			myFriends.add(member);
+		}
+	}
 }
