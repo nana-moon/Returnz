@@ -16,6 +16,8 @@ import GamePage from './pages/GamePage';
 import TutorialPage from './pages/TutorialPage';
 import LoginPage from './pages/LoginPage';
 import UsePage from './pages/UsePage';
+import ResultPage from './pages/ResultPage';
+import LoadPage from './pages/LoadPage';
 
 const router = createBrowserRouter([
   {
@@ -30,12 +32,14 @@ const router = createBrowserRouter([
           { path: '/', element: <HomePage /> },
           { path: '/waiting', element: <WaitingPage /> },
           { path: '/profile', element: <ProfilePage /> },
+          { path: '/result', element: <ResultPage /> },
         ],
       },
       { path: '/tutorial', element: <TutorialPage /> },
       { path: '/game', element: <GamePage /> },
       { path: '/signup', element: <SignPage /> },
       { path: '/login', element: <LoginPage /> },
+      { path: '/loading', element: <LoadPage /> },
     ],
   },
 ]);

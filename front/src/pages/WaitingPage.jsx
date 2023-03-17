@@ -46,7 +46,7 @@ export default function WaitingPage() {
           <BtnBox>
             {!isHost && <Button onClick={handleReady}>준비하기</Button>}
             {isHost && (
-              <Button to="/game" onClick={handleStart}>
+              <Button to="/loading" onClick={handleStart}>
                 시작하기
               </Button>
             )}
@@ -74,5 +74,5 @@ const BtnBox = styled.div`
   ${tw`flex gap-5 mt-5`}
 `;
 const Button = styled(Link)`
-  ${tw`w-[50%] min-h-[50px] border-2 border-black flex justify-center items-center`}
+  ${tw`w-[50%] min-h-[50px] border-2 border-black flex justify-center items-center bg-white`}
 `;

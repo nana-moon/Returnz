@@ -9,7 +9,9 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="bg-base">
+        <Outlet />
+      </div>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   );

@@ -1,12 +1,12 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
-import Header from '../components/common/Header';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
 import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
+import Header from '../components/common/Header';
 
 export default function GamePage() {
   return (
@@ -30,7 +30,7 @@ export default function GamePage() {
 }
 
 const GameContainer = styled.div`
-  ${tw`grid grid-cols-12 gap-5 my-5 ml-5 w-[100%] font-spoq`}
+  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq`}
 `;
 const LeftSection = styled.div`
   ${tw`col-span-3 grid gap-5`};

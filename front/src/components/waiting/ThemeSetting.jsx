@@ -28,5 +28,5 @@ const ThemeContainer = styled.div`
 `;
 
 const ThemeBox = styled.button`
-  ${tw`border-2 border-black w-[50%] flex justify-center items-center`}
+  ${tw`border-2 border-black w-[50%] flex justify-center items-center bg-white`}
 `;

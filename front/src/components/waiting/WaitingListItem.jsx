@@ -11,5 +11,5 @@ export default function WaitingListItem({ isReady }) {
 }
 
 const UserContainer = styled.div`
-  ${tw`border-2 border-black w-[100%] min-h-[200px]`}
+  ${tw`border-2 border-black w-[100%] min-h-[200px] bg-white`}
 `;
