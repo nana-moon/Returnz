@@ -10,14 +10,18 @@ function App() {
   const queryClient = new QueryClient();
   const path = window.location.pathname;
   const pageList = ['/', '/waiting', '/profile'];
+  const thisPage = (page) => page === path;
+  const handleHeader = pageList.some(thisPage) ? <Header /> : null;
+  const handleSideBar = pageList.some(thisPage) ? <SideBar /> : null;
+
   return (
     <QueryClientProvider client={queryClient}>
-      {pageList.some((page) => page === path) && <Header />}
-      <div className="flex justify-between w-[100%] pt-14 h-screen bg-base">
-        <div className="flex justify-center w-[80%]">
+      {handleHeader}
+      <div className="flex pt-14 justify-between w-[100%] h-screen bg-base">
+        <div className="flex justify-center w-[100%]">
           <Outlet />
         </div>
-        <div className="w-1/5">{pageList.some((page) => page === path) && <SideBar />}</div>
+        {handleSideBar}
       </div>
       <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>

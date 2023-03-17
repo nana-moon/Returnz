@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
+import axios from 'axios';
 
 export default function TodayPrice() {
+  const BASE_URL = 'https://apis.data.go.kr/1160100/service/GetMarketIndexInfoService';
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
@@ -14,6 +16,24 @@ export default function TodayPrice() {
         <StockTitle>NASDAQ</StockTitle>
         <StockPrice>322,243,291</StockPrice>
         <StockPrice>▼ -0.8111111%</StockPrice>
+      </TodayPriceItem>
+      <TodayPriceItem
+        onClick={() => {
+          axios
+            .get(BASE_URL, {
+              params: {
+                serviceKey: process.env.STOCK_API_KEY,
+              },
+            })
+            .then((결과) => {
+              console.log(결과.data);
+            })
+            .catch(() => {
+              console.log('실패함');
+            });
+        }}
+      >
+        버튼
       </TodayPriceItem>
     </TodayPriceContainer>
   );

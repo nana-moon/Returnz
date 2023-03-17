@@ -6,7 +6,7 @@ export default function TopButtons() {
   return (
     <ButtonsContainer>
       <StartGameButton to="/waiting">게임 개설하기</StartGameButton>
-      <StartTutorialButton t0="/tutorial">튜토리얼 보기</StartTutorialButton>
+      <StartTutorialButton to="/tutorial">튜토리얼 보기</StartTutorialButton>
     </ButtonsContainer>
   );
 }
