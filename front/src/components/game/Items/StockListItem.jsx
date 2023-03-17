@@ -9,15 +9,15 @@ export default function StockListItem() {
         <ItemTitleImgBox>
           <img src={imgpath} alt="dd" />
         </ItemTitleImgBox>
-        <p>삼성전자</p>
+        <p>카카오</p>
       </ItemTitleSection>
       <ItemPriceSection>
-        <p>115,000</p>
+        <p>78,472</p>
       </ItemPriceSection>
       <ItemInfoSection>
-        <p className="ml-4">전자</p>
-        <p className="ml-16">500▲</p>
-        <p className="ml-4">0.1▲</p>
+        <p className="ml-4">IT</p>
+        <p className="ml-16">0 -</p>
+        <p className="ml-4">0 -</p>
       </ItemInfoSection>
     </ItemContainer>
   );

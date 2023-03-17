@@ -12,5 +12,5 @@ export default function rate() {
 }
 
 const RateContanier = styled.div`
-  ${tw`border row-span-1 flex place-content-evenly bg-white rounded-xl`}
+  ${tw`border row-span-1 flex place-content-evenly bg-white rounded-xl mt-2`}
 `;
