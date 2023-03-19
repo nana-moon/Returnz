@@ -5,13 +5,37 @@ node {
     }
 
     stage('BackBuild') { 
+        // 폴더 디렉토리 이동
+        dir('back') {
+            //그래들 빌드 실행
+            withGradle {
+                sh './gradlew clean'
+                sh './gradlew bootJar'
+            }   
+        }
+
     }
 
 
     stage('Test') { 
-        // 
-        
     }
     stage('Deploy') { 
+        dir('back/build/lib') {
+            sshPublisher(publishers: [
+                sshPublisherDesc(
+                    configName: 'returnz', 
+                    transfers: [sshTransfer(cleanRemote: false, excludes: '',
+                    execCommand: 'nohup java -jar returnz-0.0.1-SNAPSHOT.jar.jar > returnzBack/my.log 2>&1 &',
+                    execTimeout: 120000, flatten: false,
+                    makeEmptyDirs: false, noDefaultExcludes: false,
+                    patternSeparator: '[, ]+',
+                    remoteDirectory: '/home/ubuntu/jenkins_build/retrunz/back',
+                    remoteDirectorySDF: false, removePrefix: '', 
+                    sourceFiles: '*.jar')],
+                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false
+                    )
+                ])
+        }
     }
+    
 }
