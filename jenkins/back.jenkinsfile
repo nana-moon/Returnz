@@ -21,21 +21,28 @@ node {
     stage('Test') { 
     }
     stage('Deploy') { 
-        dir('back/build/lib') {
-            sshPublisher(publishers: [
-                sshPublisherDesc(
-                    configName: 'returnz', 
-                    transfers: [sshTransfer(cleanRemote: false, excludes: '',
-                    execCommand: 'nohup java -jar returnz-0.0.1-SNAPSHOT.jar.jar > returnzBack/my.log 2>&1 &',
-                    execTimeout: 120000, flatten: false,
-                    makeEmptyDirs: false, noDefaultExcludes: false,
-                    patternSeparator: '[, ]+',
-                    remoteDirectory: '/home/ubuntu/jenkins_build/retrunz/back',
-                    remoteDirectorySDF: false, removePrefix: '', 
-                    sourceFiles: '*.jar')],
-                    usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false
-                    )
-                ])
+        dir('back/build/libs') {
+            sshPublisher(
+                publishers: [sshPublisherDesc(configName: 'returnz',
+                transfers: [sshTransfer(cleanRemote: false, excludes: '', 
+                execCommand: 
+                '''
+                kill -9 `cat log/save_pid.txt`
+                rm log/save_pid.txt
+                nohup java -jar returnz-0.0.1-SNAPSHOT.jar > log/my.log 2>&1 &
+                ''',
+                execTimeout: 120000, 
+                flatten: false, 
+                makeEmptyDirs: false, 
+                noDefaultExcludes: false, 
+                patternSeparator: '[, ]+', 
+                remoteDirectory: '/home/ubuntu/jenkins_build/retrunz/back', 
+                remoteDirectorySDF: false, 
+                removePrefix: '', 
+                sourceFiles: 'returnz-0.0.1-SNAPSHOT.jar')], 
+                usePromotionTimestamp: false, 
+                useWorkspaceInPromotion: false, verbose: false)]
+                )
         }
     }
     
