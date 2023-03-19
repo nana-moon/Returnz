@@ -4,7 +4,7 @@ node {
        checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'mandu', url: 'https://lab.ssafy.com/s08-bigdata-dist-sub2/S08P22C106.git']])
     }
 
-    stage('BackBuild') { 
+    stage('FrontBuild') { 
     }
 
 
