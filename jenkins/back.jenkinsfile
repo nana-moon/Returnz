@@ -36,7 +36,7 @@ node {
                 makeEmptyDirs: false, 
                 noDefaultExcludes: false, 
                 patternSeparator: '[, ]+', 
-                remoteDirectory: '/home/ubuntu/jenkins_build/retrunz/back', 
+                remoteDirectory: 'retrunz/back', 
                 remoteDirectorySDF: false, 
                 removePrefix: '', 
                 sourceFiles: 'returnz-0.0.1-SNAPSHOT.jar')], 
