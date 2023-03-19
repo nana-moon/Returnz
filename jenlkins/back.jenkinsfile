@@ -1,0 +1,17 @@
+node {  
+
+    stage('checkout'){
+       checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'mandu', url: 'https://lab.ssafy.com/s08-bigdata-dist-sub2/S08P22C106.git']])
+    }
+
+    stage('BackBuild') { 
+    }
+
+
+    stage('Test') { 
+        // 
+        
+    }
+    stage('Deploy') { 
+    }
+}
