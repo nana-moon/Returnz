@@ -30,6 +30,7 @@ node {
                             cleanRemote: false, 
                             excludes: '', 
                             execCommand: '''
+                                    cd /home/ubuntu/jenkins_build/retrunz/back
                                     kill -9 `cat log/save_pid.txt`
                                     rm log/save_pid.txt
                                     nohup java -jar returnz-0.0.1-SNAPSHOT.jar > log/my.log 2>&1 &
