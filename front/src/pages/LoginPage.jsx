@@ -1,23 +1,84 @@
-import React from 'react';
+import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import { keyframes } from 'styled-components';
+import Login from '../components/login/Login';
+import Signup from '../components/login/Signup';
+import Logo from '../components/common/logo.jpg';
 
 export default function LoginPage() {
+  const [mode, setMode] = useState(true);
+
+  const changeMode = () => {
+    setMode(!mode);
+  };
+
   return (
-    <>
-      <BackSection>Returnz</BackSection>
-      <FrontSection>Login</FrontSection>
-    </>
+    <LoginPageContanier>
+      <BackSection>
+        <LogoBox mode={mode}>
+          <ImgBox>
+            <img src={Logo} alt="Logo" />
+          </ImgBox>
+          <TextBox>Returnz</TextBox>
+        </LogoBox>
+      </BackSection>
+      <FrontSection mode={mode}>
+        {mode ? <Login changeMode={changeMode} /> : <Signup changeMode={changeMode} />}
+      </FrontSection>
+    </LoginPageContanier>
   );
 }
+const SignupMode = keyframes`
+  0% {
+    transform: translate(15%, -12%);
+  }
+  100% {
+    transform: translate(125%, -12%);
+  }
+`;
+
+const LoginMode = keyframes`
+  0% {
+    transform: translate(125%, -12%);
+  }
+  100% {
+    transform: translate(15%, -12%);
+  }
+`;
+
+const LoginPageContanier = styled.div`
+  margin-top: 10%;
+  ${tw`relative w-[50%] h-[50%]`}
+`;
 
 const BackSection = styled.div`
-  width: 1200px;
-  height: 600px;
-  ${tw`bg-white fixed mt-32 left-20 drop-shadow-2xl rounded-xl`}
+  min-width: 600px;
+  min-height: 400px;
+  ${tw`bg-white drop-shadow-2xl rounded-xl absolute w-[100%] h-[100%] flex`}
 `;
 
 const FrontSection = styled.div`
-  height: 700px;
-  width: 450px;
-  ${tw`bg-primary fixed mt-20 left-60 drop-shadow-xl rounded-xl`}
+  animation: ${(props) => (props.mode ? LoginMode : SignupMode)} 0.8s;
+  animation-fill-mode: both;
+  transform: translate(20%, -12%);
+  min-width: 250px;
+  min-height: 550px;
+  ${tw`bg-primary drop-shadow-xl rounded-xl absolute w-[40%] h-[130%]`}
+`;
+
+const LogoBox = styled.div`
+  animation: ${(props) => (props.mode ? SignupMode : LoginMode)} 0.8s;
+  animation-fill-mode: both;
+  width: 45%;
+  padding-right: 30px;
+  ${tw`flex my-auto`}
+`;
+
+const ImgBox = styled.div`
+  ${tw`w-20 my-auto`}
+`;
+
+const TextBox = styled.div`
+  font-size: 300%;
+  ${tw`font-bold font-ibm ml-2 my-auto`}
 `;

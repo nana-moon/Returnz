@@ -6,7 +6,7 @@ export default function Turn() {
   return (
     <TurnContanier>
       <CountSection>턴 1/12</CountSection>
-      <Progress label="남은시간" value={88} color="cyan" />
+      {/* <Progress label="남은시간" value={88} color="cyan" /> */}
     </TurnContanier>
   );
 }
@@ -16,5 +16,5 @@ const TurnContanier = styled.div`
 `;
 
 const CountSection = styled.div`
-  ${tw`text-center my-2`}
+  ${tw`text-center`}
 `;
