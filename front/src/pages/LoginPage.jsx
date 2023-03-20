@@ -30,19 +30,19 @@ export default function LoginPage() {
 }
 const SignupMode = keyframes`
   0% {
-    transform: translate(20%, -12%);
+    transform: translate(15%, -12%);
   }
   100% {
-    transform: translate(120%, -12%);
+    transform: translate(125%, -12%);
   }
 `;
 
 const LoginMode = keyframes`
   0% {
-    transform: translate(120%, -12%);
+    transform: translate(125%, -12%);
   }
   100% {
-    transform: translate(20%, -12%);
+    transform: translate(15%, -12%);
   }
 `;
 
@@ -53,6 +53,7 @@ const LoginPageContanier = styled.div`
 
 const BackSection = styled.div`
   min-width: 600px;
+  min-height: 400px;
   ${tw`bg-white drop-shadow-2xl rounded-xl absolute w-[100%] h-[100%] flex`}
 `;
 
@@ -60,16 +61,17 @@ const FrontSection = styled.div`
   animation: ${(props) => (props.mode ? LoginMode : SignupMode)} 0.8s;
   animation-fill-mode: both;
   transform: translate(20%, -12%);
+  min-width: 250px;
+  min-height: 550px;
   ${tw`bg-primary drop-shadow-xl rounded-xl absolute w-[40%] h-[130%]`}
 `;
 
 const LogoBox = styled.div`
   animation: ${(props) => (props.mode ? SignupMode : LoginMode)} 0.8s;
   animation-fill-mode: both;
-  transform: translate(20%);
-  margin-top: 60px;
   width: 45%;
-  ${tw`flex`}
+  padding-right: 30px;
+  ${tw`flex my-auto`}
 `;
 
 const ImgBox = styled.div`
