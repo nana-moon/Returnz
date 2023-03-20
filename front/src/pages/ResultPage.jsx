@@ -2,7 +2,7 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { Link } from 'react-router-dom';
 import RankResult from '../components/result/RankResult';
-import InfoResult from '../components/result/InfoResult';
+import ResultInfo from '../components/result/info/ResultInfo';
 import UnlockResult from '../components/result/UnlockResult';
 import Chatting from '../components/chatting/Chatting';
 
@@ -10,7 +10,7 @@ export default function ResultPage() {
   return (
     <ResultContainer>
       <RankResult />
-      <InfoResult />
+      <ResultInfo />
       <LeftBottomSection>
         <UnlockResult />
         <Button to="/">나가기</Button>
@@ -25,7 +25,7 @@ const ResultContainer = styled.div`
   margin-top: 40px;
   width: 75%;
   display: grid;
-  grid-template: 1fr 1fr / 1fr 2fr;
+  grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
 const LeftBottomSection = styled.div`

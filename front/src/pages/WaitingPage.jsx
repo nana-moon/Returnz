@@ -46,7 +46,7 @@ export default function WaitingPage() {
           <BtnBox>
             {!isHost && <Button onClick={handleReady}>준비하기</Button>}
             {isHost && (
-              <Button to="/loading" onClick={handleStart}>
+              <Button to="/game" onClick={handleStart}>
                 시작하기
               </Button>
             )}

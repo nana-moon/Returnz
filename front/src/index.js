@@ -17,7 +17,6 @@ import TutorialPage from './pages/TutorialPage';
 import LoginPage from './pages/LoginPage';
 import UsePage from './pages/UsePage';
 import ResultPage from './pages/ResultPage';
-import LoadPage from './pages/LoadPage';
 
 const router = createBrowserRouter([
   {
@@ -39,7 +38,6 @@ const router = createBrowserRouter([
       { path: '/game', element: <GamePage /> },
       { path: '/signup', element: <SignPage /> },
       { path: '/login', element: <LoginPage /> },
-      { path: '/loading', element: <LoadPage /> },
     ],
   },
 ]);
