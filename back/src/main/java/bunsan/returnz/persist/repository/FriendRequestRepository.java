@@ -11,5 +11,7 @@ import bunsan.returnz.persist.entity.Member;
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long>  {
 	boolean existsFriendRequestByRequestUsernameAndTargetUsername(String requestUsername, String targetUsername);
 	List<FriendRequest> findAllByTargetUsername(String targetUsername);
+	Optional<FriendRequest> findById(Long id);
 	void deleteById(Long id);
+	
 }

@@ -25,8 +25,6 @@ public class MessageService {
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
-
-
 	public void notifyFrontend(final FriendRequestDto request) {
 		// ResponseMessaage response = new ResponseMessaage(message);
 		notificationService.sendGlobalNotification();
@@ -45,10 +43,10 @@ public class MessageService {
 			throw new ConflictException("이미 요청을 보낸 유저입니다.");
 		}
 		// DB에 저장
-		friendRequestRepository.save(request.toEntity());
+		FriendRequest friendRequest = friendRequestRepository.save(request.toEntity());
 
 		// 이 topic을 구독한 유저에게 전달
-		simpMessagingTemplate.convertAndSendToUser(request.getTargetUsername(), "/topic/private-messages", request);
+		simpMessagingTemplate.convertAndSendToUser(request.getTargetUsername(), "/topic/private-messages", friendRequest);
 	}
 
 	public List<FriendRequest> getRequestList(String token) {
@@ -59,16 +57,24 @@ public class MessageService {
 		return requestList;
 	}
 
-	public void addFriend(FriendRequest request) {
+	public void addFriend(Long id, String token) {
+		// token에 저장된 Member > 요청한 사람
+		Member me = jwtTokenProvider.getMember(token);
+
+		FriendRequest request = friendRequestRepository.findById(id)
+			.orElseThrow(() -> new BadRequestException("해당 요청이 존재하지 않습니다."));
+
 		List<Member> result = checkValidRequest(request.getRequestUsername(), request.getTargetUsername());
 		Member requestMember = result.get(0);
 		Member targetMember = result.get(1);
+		if (!targetMember.equals(me)) {
+			throw new BadRequestException("요청 유저에 대한 친구 요청이 아닙니다.");
+		}
 		requestMember.addFriend(targetMember);
 		targetMember.addFriend(requestMember);
 		memberRepository.save(requestMember);
 		memberRepository.save(targetMember);
 		friendRequestRepository.deleteById(request.getId());
-		// friendRequestRepository.deleteFriendRequestByRequestUsernameAndTargetUsername(request.targetUsername, request.requestUsername);
 	}
 
 	private List<Member> checkValidRequest(String requestUsername, String targetUsername) {

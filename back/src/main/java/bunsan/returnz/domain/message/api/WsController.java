@@ -33,18 +33,19 @@ public class WsController {
 
 	}
 
-	@GetMapping("/api/friends")
+	@GetMapping("/api/requests")
 	public ResponseEntity<?> getRequestList(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		List<FriendRequest> requestList = messageService.getRequestList(token);
 		return ResponseEntity.ok().body(Map.of("friendRequestList", requestList));
 	}
 
+	//====================================친구 요청 수락=========================================
 	@PostMapping("/api/friends")
-	public ResponseEntity addFriend(@RequestBody FriendRequest request) {
-		messageService.addFriend(request);
+	public ResponseEntity addFriend(@RequestBody Map request, @RequestHeader(value = "Authorization") String bearerToken) {
+		String token = bearerToken.substring(7);
+		messageService.addFriend((Long)request.get("id"), token);
 		return new ResponseEntity<>(Map.of("result", "ok"), HttpStatus.CREATED);
 	}
-
 
 }
