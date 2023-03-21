@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.message.dto.ResponseMessaage;
 
+//---------------------------------------테스트용 서비스-----------------------------------------
 @Service
 public class NotificationService {
 	private final SimpMessagingTemplate simpMessagingTemplate;

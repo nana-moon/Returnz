@@ -17,6 +17,7 @@ import bunsan.returnz.persist.repository.FriendRequestRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
+//--------------------------------------서비스 분리 필요---------------------------------------
 @Service
 @RequiredArgsConstructor
 public class MessageService {

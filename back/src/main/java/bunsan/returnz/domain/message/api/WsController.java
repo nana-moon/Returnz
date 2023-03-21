@@ -19,6 +19,7 @@ import bunsan.returnz.domain.message.sevice.MessageService;
 import bunsan.returnz.persist.entity.FriendRequest;
 import lombok.RequiredArgsConstructor;
 
+//----------------------------------------컨트롤러 명 변경 필요------------------------------------------
 @RestController
 @RequiredArgsConstructor
 public class WsController {

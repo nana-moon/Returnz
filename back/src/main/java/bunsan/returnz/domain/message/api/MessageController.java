@@ -13,6 +13,7 @@ import bunsan.returnz.domain.message.dto.FriendRequestDto;
 import bunsan.returnz.domain.message.dto.ResponseMessaage;
 import bunsan.returnz.domain.message.sevice.NotificationService;
 
+//--------------------------------------테스트용 컨트롤러-------------------------------------------
 @Controller
 public class MessageController {
 	@Autowired

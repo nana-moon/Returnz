@@ -12,6 +12,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import com.sun.security.auth.UserPrincipal;
 
+//-------------------------------테스트용 핸들러-------------------------------
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
 	private final Logger Log = LoggerFactory.getLogger(UserHandshakeHandler.class);
 
