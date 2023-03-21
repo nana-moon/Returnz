@@ -9,10 +9,16 @@ import javax.persistence.Id;
 
 import bunsan.returnz.domain.game.enums.Decision;
 import bunsan.returnz.domain.game.enums.DecisionConverter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TurnResultInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

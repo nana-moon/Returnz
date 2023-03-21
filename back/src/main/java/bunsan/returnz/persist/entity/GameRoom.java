@@ -11,10 +11,16 @@ import javax.persistence.Id;
 
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.enums.TurnPerTimeConverter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameRoom {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
