@@ -6,5 +6,5 @@ export default function UnlockResult() {
 }
 
 const UnlockContainer = styled.div`
-  ${tw`border-2 border-black h-[80%] bg-white`}
+  ${tw`border bg-white rounded-xl h-[80%]`}
 `;

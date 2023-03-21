@@ -1,7 +1,7 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { Link } from 'react-router-dom';
-import RankResult from '../components/result/RankResult';
+import ResultRank from '../components/result/rank/ResultRank';
 import ResultInfo from '../components/result/info/ResultInfo';
 import UnlockResult from '../components/result/UnlockResult';
 import Chatting from '../components/chatting/Chatting';
@@ -9,7 +9,7 @@ import Chatting from '../components/chatting/Chatting';
 export default function ResultPage() {
   return (
     <ResultContainer>
-      <RankResult />
+      <ResultRank />
       <ResultInfo />
       <LeftBottomSection>
         <UnlockResult />
@@ -33,5 +33,5 @@ const LeftBottomSection = styled.div`
 `;
 
 const Button = styled(Link)`
-  ${tw`w-[100%] min-h-[50px] border-2 border-black flex justify-center items-center bg-white`}
+  ${tw`border bg-white rounded-xl w-[100%] min-h-[50px] flex justify-center items-center`}
 `;

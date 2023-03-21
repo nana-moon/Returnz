@@ -6,7 +6,7 @@ const BASE_URL = 'https://localhost:8080/api';
 axios.defaults.baseURL = BASE_URL;
 
 // 로그인 후 사용할 api
-const authApi = axios.axios.create({
+const authApi = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
