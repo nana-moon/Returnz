@@ -22,6 +22,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import bunsan.returnz.domain.member.enums.MemberState;
+import bunsan.returnz.domain.member.enums.MemberStateConverter;
 import bunsan.returnz.domain.member.enums.ProfileIcon;
 import bunsan.returnz.domain.member.enums.ProfileIconConverter;
 import lombok.AllArgsConstructor;
@@ -51,6 +53,9 @@ public class Member implements UserDetails {
 	private String nickname;
 	@Builder.Default
 	private LocalDateTime enrollDate = LocalDateTime.now();
+	@Builder.Default
+	@Convert(converter =  MemberStateConverter.class)
+	private MemberState state = MemberState.OFFLINE;
 
 	// 누적 게임 횟수
 	@Builder.Default
@@ -132,4 +137,27 @@ public class Member implements UserDetails {
 		return this.enabled;
 	}
 
+	public boolean isFriend(Member targetMember) {
+		List<Member> myFriends = this.getFriends();
+		if (myFriends.contains(targetMember)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void addFriend(Member member) {
+		List<Member> myFriends = this.getFriends();
+		if (!myFriends.contains(member)) {
+			myFriends.add(member);
+		}
+	}
+
+	public void changeState(MemberState online) {
+		this.state = online;
+	}
+
+	public void deleteFriend(Member friend) {
+		this.getFriends().remove(friend);
+	}
 }
