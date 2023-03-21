@@ -1,49 +1,58 @@
 import { React, useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Input, Button } from '@material-tailwind/react';
+import { userSignup } from '../../api/sign';
 
 export default function Signup({ changeMode }) {
   const [userSignupData, setUserSignupData] = useState({
-    email: false,
+    username: false,
     password: false,
     passwordConfirmation: false,
     nickname: false,
-  });
+  }); // api요청으로 가져갈 데이터
   const [userPassword, setuserPassword] = useState('');
-  const [EmailCheck, setEmailCheck] = useState(true);
+  // 각종 유효성 검사 후 상태 확인
+  const [emailCheck, setemailCheck] = useState(true);
   const [nicknameCheck, setnicknameCheck] = useState(true);
-  const [PasswordCheck, setPasswordCheck] = useState(true);
+  const [passwordCheck, setpasswordCheck] = useState(true);
   const [confirmPassword, setconfirmPassword] = useState(true);
 
-  const handleSignupRequest = () => {
-    console.log(userSignupData, '이 데이터들 api 요청 보낼거임');
+  const handleSignupRequest = async () => {
+    const result = await userSignup(userSignupData);
+    if (result === true) {
+      changeMode();
+      alert('회원가입 성공');
+    } else {
+      alert(result);
+    }
   };
-
   const handleCheckEmail = (e) => {
     // eslint-disable-next-line no-useless-escape
     const regex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
     if (e.target.value === '' || regex.test(e.target.value)) {
-      // console.log('이메일 유효성검사 성공', e.target.value);
-      setEmailCheck(true);
+      console.log('이메일 유효성검사 성공', e.target.value);
+      setemailCheck(true);
       const copy = { ...userSignupData };
-      copy.email = e.target.value;
+      copy.username = e.target.value;
       setUserSignupData(copy);
     } else {
-      // console.log('이메일 유효성검사 실패', e.target.value);
-      setEmailCheck(false);
+      console.log('이메일 유효성검사 실패', e.target.value);
+      setemailCheck(false);
       const copy = { ...userSignupData };
-      copy.email = false;
+      copy.username = false;
       setUserSignupData(copy);
     }
   };
   const handleCheckNickname = (e) => {
     const regex = /^[ㄱ-ㅎ가-힣a-zA-Z0-9]{3,10}$/;
     if (e.target.value === '' || regex.test(e.target.value)) {
+      console.log('닉네임 유효성 검사 성공', e.target.value);
       setnicknameCheck(true);
       const copy = { ...userSignupData };
       copy.nickname = e.target.value;
       setUserSignupData(copy);
     } else {
+      console.log('닉네임 유효성 검사 실패', e.target.value);
       setnicknameCheck(false);
       const copy = { ...userSignupData };
       copy.nickname = false;
@@ -53,13 +62,15 @@ export default function Signup({ changeMode }) {
   const handleCheckPassword = (e) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
     if (e.target.value === '' || regex.test(e.target.value)) {
-      setPasswordCheck(true);
+      console.log('비밀번호 유효성 검사 성공', e.target.value);
+      setpasswordCheck(true);
       setuserPassword(e.target.value);
       const copy = { ...userSignupData };
       copy.password = e.target.value;
       setUserSignupData(copy);
     } else {
-      setPasswordCheck(false);
+      console.log('비밀번호 유효성 검사 실패', e.target.value);
+      setpasswordCheck(false);
       const copy = { ...userSignupData };
       copy.password = false;
       setUserSignupData(copy);
@@ -79,55 +90,72 @@ export default function Signup({ changeMode }) {
     }
   };
 
-  useEffect(() => {}, []);
   return (
     <Contanier>
       <MainSection>회원가입</MainSection>
-      <InputBox>
-        <Input color="blue-gray" size="lg" label="이메일" onBlur={handleCheckEmail} error={!EmailCheck} />
-        {EmailCheck ? <MarginBox /> : <ErrorMsg>이메일 형식이 올바르지 않습니다.</ErrorMsg>}
-        <Input color="blue-gray" size="lg" label="닉네임" onBlur={handleCheckNickname} error={!nicknameCheck} />
-        {nicknameCheck ? (
-          <MarginBox />
-        ) : (
-          <ErrorMsg>닉네임은 3자 이상 10자 이하여야 하며 특수문자를 사용할 수 없습니다</ErrorMsg>
-        )}
-        <Input
-          color="blue-gray"
-          type="password"
-          size="lg"
-          label="비밀번호"
-          onBlur={handleCheckPassword}
-          error={!PasswordCheck}
-        />
-        {PasswordCheck ? (
-          <MarginBox />
-        ) : (
-          <ErrorMsg>비밀번호는 영문, 숫자, 특수문자(@$!%*#?&) 포함, 6자 이상 20자 이하여야 합니다.</ErrorMsg>
-        )}
+      <form>
+        <InputBox>
+          <Input
+            autoComplete="username"
+            color="blue-gray"
+            size="lg"
+            label="이메일"
+            onBlur={handleCheckEmail}
+            error={!emailCheck}
+          />
+          {emailCheck ? <MarginBox /> : <ErrorMsg>이메일 형식이 올바르지 않습니다.</ErrorMsg>}
+          <Input
+            autoComplete="username"
+            color="blue-gray"
+            size="lg"
+            label="닉네임"
+            onBlur={handleCheckNickname}
+            error={!nicknameCheck}
+          />
+          {nicknameCheck ? (
+            <MarginBox />
+          ) : (
+            <ErrorMsg>닉네임은 3자 이상 10자 이하여야 하며 특수문자를 사용할 수 없습니다</ErrorMsg>
+          )}
+          <Input
+            autoComplete="current-password"
+            color="blue-gray"
+            type="password"
+            size="lg"
+            label="비밀번호"
+            onBlur={handleCheckPassword}
+            error={!passwordCheck}
+          />
+          {passwordCheck ? (
+            <MarginBox />
+          ) : (
+            <ErrorMsg>비밀번호는 영문, 숫자, 특수문자(@$!%*#?&) 포함, 6자 이상 20자 이하여야 합니다.</ErrorMsg>
+          )}
 
-        <Input
-          color="blue-gray"
-          type="password"
-          size="lg"
-          label="비밀번호 확인"
-          onChange={handleConfirmPassword}
-          error={!confirmPassword}
-        />
-        {confirmPassword ? <MarginBox /> : <ErrorMsg>비밀번호가 일치하지 않습니다.</ErrorMsg>}
-      </InputBox>
+          <Input
+            autoComplete="current-password"
+            color="blue-gray"
+            type="password"
+            size="lg"
+            label="비밀번호 확인"
+            onChange={handleConfirmPassword}
+            error={!confirmPassword}
+          />
+          {confirmPassword ? <MarginBox /> : <ErrorMsg>비밀번호가 일치하지 않습니다.</ErrorMsg>}
+        </InputBox>
+      </form>
       <ButtonBox>
         <SignupButton
           variant="gradient"
           color="white"
           disabled={
             !(
-              !!userSignupData.email &&
+              !!userSignupData.username &&
               !!userSignupData.password &&
               !!userSignupData.passwordConfirmation &&
               !!userSignupData.nickname
             )
-          }
+          } // request form의 값이 전부 값이 있다면 버튼 활성화
           onClick={handleSignupRequest}
         >
           회원가입

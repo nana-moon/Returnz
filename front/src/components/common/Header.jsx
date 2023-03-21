@@ -1,9 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 export default function Header() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // 로그아웃버튼 눌렀을 때 쿠키의 데이터 삭제후 로그인페이지
+    Cookies.remove('access_token');
+    Cookies.remove('refresh_token');
+    Cookies.remove('profileIcon');
+    Cookies.remove('id');
+    Cookies.remove('nickname');
+    Cookies.remove('email');
+    alert('로그아웃 성공');
+    navigate('/login');
+  };
   return (
     <div>
       <NavHeader>
@@ -11,7 +25,7 @@ export default function Header() {
           <img src="../../logo.png" alt="" className="h-10 mr-2" />
           Returnz
         </NavLink>
-        <LogoutLink>로그아웃</LogoutLink>
+        <LogoutLink onClick={handleLogout}>로그아웃</LogoutLink>
       </NavHeader>
     </div>
   );
