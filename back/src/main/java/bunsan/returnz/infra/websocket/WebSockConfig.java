@@ -28,9 +28,9 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/our-websocket")
 			.withSockJS();
 	}
+
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(stompHandler);
 	}
-
 }

@@ -12,15 +12,17 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
 import com.sun.security.auth.UserPrincipal;
 
+import lombok.extern.slf4j.Slf4j;
+
 //-------------------------------테스트용 핸들러-------------------------------
+@Slf4j
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
-	private final Logger Log = LoggerFactory.getLogger(UserHandshakeHandler.class);
 
 	@Override
 	protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
 		Map<String, Object> attributes) {
 		final String randomId = UUID.randomUUID().toString();
-		Log.info("User with ID '{}' opened the page", randomId);
+		log.info("User with ID '{}' opened the page", randomId);
 		return new UserPrincipal(randomId);
 	}
 }

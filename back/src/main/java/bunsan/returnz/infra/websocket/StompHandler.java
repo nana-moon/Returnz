@@ -25,7 +25,8 @@ public class StompHandler implements ChannelInterceptor {
 		// log.info("header:" + message.getHeaders());
 		// log.info("token:" + accessor.getNativeHeader("Authorization"));
 		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-			jwtTokenProvider.validateToken(Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7));
+			jwtTokenProvider.validateToken(Objects.requireNonNull(
+				accessor.getFirstNativeHeader("Authorization")).substring(7));
 		}
 		return message;
 	}

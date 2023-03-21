@@ -31,13 +31,16 @@ public class WsController {
 
 	}
 	//====================================친구 요청 송신=========================================
+
 	@PostMapping("/send-private-message")
-	public void sendPrivateMessage(@RequestBody FriendRequestDto request, @RequestHeader(value = "Authorization") String bearerToken) {
+	public void sendPrivateMessage(@RequestBody FriendRequestDto request,
+		@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		messageService.notifyUser(request, token);
 
 	}
 	//====================================친구 요청 불러오기=========================================
+
 	@GetMapping("/api/requests")
 	public ResponseEntity<Map> getRequestList(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
@@ -45,8 +48,10 @@ public class WsController {
 		return ResponseEntity.ok(Map.of("friendRequestList", requestList));
 	}
 	//====================================친구 요청 거절=========================================
+
 	@DeleteMapping("/api/requests/{id}")
-	public ResponseEntity deleteRequest(@RequestHeader(value = "Authorization") String bearerToken, @PathVariable Long id) {
+	public ResponseEntity deleteRequest(@RequestHeader(value = "Authorization") String bearerToken,
+		@PathVariable Long id) {
 		String token = bearerToken.substring(7);
 		messageService.deleteRequest(id, token);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -54,12 +59,14 @@ public class WsController {
 
 	//====================================친구 요청 수락=========================================
 	@PostMapping("/api/friends")
-	public ResponseEntity addFriend(@RequestBody Map<String, Long> request, @RequestHeader(value = "Authorization") String bearerToken) {
+	public ResponseEntity addFriend(@RequestBody Map<String, Long> request,
+		@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		messageService.addFriend(request.get("id"), token);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 	//=================================친구 리스트 불러오기======================================
+
 	@GetMapping("api/friends")
 	public ResponseEntity<Map> getFriends(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
@@ -67,12 +74,12 @@ public class WsController {
 		return ResponseEntity.ok(Map.of("friendList", friendList));
 	}
 	//==================================친구 삭제=====================================
+
 	@DeleteMapping("/api/friends/{id}")
-	public ResponseEntity deleteFriend(@RequestHeader(value = "Authorization") String bearerToken, @PathVariable Long id) {
+	public ResponseEntity deleteFriend(@RequestHeader(value = "Authorization") String bearerToken,
+		@PathVariable Long id) {
 		String token = bearerToken.substring(7);
 		messageService.deleteFriend(id, token);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
-
-
 }

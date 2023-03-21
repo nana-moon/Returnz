@@ -52,7 +52,8 @@ public class MessageService {
 		FriendRequest friendRequest = friendRequestRepository.save(request.toEntity());
 
 		// 이 topic을 구독한 유저에게 전달
-		simpMessagingTemplate.convertAndSendToUser(request.getTargetUsername(), "/topic/private-messages", friendRequest);
+		simpMessagingTemplate.convertAndSendToUser(request.getTargetUsername(),
+			"/topic/private-messages", friendRequest);
 	}
 
 	public List<FriendRequest> getRequestList(String token) {
@@ -97,11 +98,13 @@ public class MessageService {
 		// 둘이 친구인지 확인
 		if (requestMember.isFriend(targetMember)) {
 			throw new ConflictException("이미 친구인 유저와 친구를 할 수 없습니다.");
+		}
+		return new ArrayList<Member>() {
+			{
+				add(requestMember);
+				add(targetMember);
+			}
 		};
-		return new ArrayList<Member>(){{
-			add(requestMember);
-			add(targetMember);
-		}};
 	}
 
 	public void deleteRequest(Long id, String token) {

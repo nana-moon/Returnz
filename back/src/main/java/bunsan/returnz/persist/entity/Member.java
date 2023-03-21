@@ -145,6 +145,7 @@ public class Member implements UserDetails {
 			return false;
 		}
 	}
+
 	public void addFriend(Member member) {
 		List<Member> myFriends = this.getFriends();
 		if (!myFriends.contains(member)) {
