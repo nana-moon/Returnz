@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.message.dto.FriendInfo;
 import bunsan.returnz.domain.message.dto.FriendRequestDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
@@ -31,11 +32,15 @@ public class MessageService {
 		simpMessagingTemplate.convertAndSend("/topic/messages", request);
 	}
 
-	public void notifyUser(final FriendRequestDto request) {
+	public void notifyUser(final FriendRequestDto request, String token) {
 		// ResponseMessaage response = new ResponseMessaage(message);
 		// notificationService.sendPrivateNotification(request.getTargetUsername());
+		// token에 저장된 Member > 요청한 사람
+		Member me = jwtTokenProvider.getMember(token);
+		if (!me.getUsername().equals(request.getRequestUsername())) {
+			throw new BadRequestException("token 유저와 요청 유저가 일치하지 않습니다.");
+		}
 		checkValidRequest(request.getRequestUsername(), request.getTargetUsername());
-
 
 		// 친구 요청 존재 여부 확인
 		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(request.getRequestUsername(),
@@ -63,13 +68,14 @@ public class MessageService {
 
 		FriendRequest request = friendRequestRepository.findById(id)
 			.orElseThrow(() -> new BadRequestException("해당 요청이 존재하지 않습니다."));
-
-		List<Member> result = checkValidRequest(request.getRequestUsername(), request.getTargetUsername());
-		Member requestMember = result.get(0);
-		Member targetMember = result.get(1);
-		if (!targetMember.equals(me)) {
+		if (!request.getTargetUsername().equals(me.getUsername())) {
 			throw new BadRequestException("요청 유저에 대한 친구 요청이 아닙니다.");
 		}
+		Member targetMember = memberRepository.findByUsername(request.getTargetUsername())
+				.orElseThrow(() -> new BadRequestException("타겟 맴버가 삭제 되었습니다."));
+		Member requestMember = memberRepository.findByUsername(request.getRequestUsername())
+			.orElseThrow(() -> new BadRequestException("요청 맴버가 삭제 되었습니다."));
+
 		requestMember.addFriend(targetMember);
 		targetMember.addFriend(requestMember);
 		memberRepository.save(requestMember);
@@ -95,5 +101,48 @@ public class MessageService {
 			add(requestMember);
 			add(targetMember);
 		}};
+	}
+
+	public void deleteRequest(Long id, String token) {
+		// token에 저장된 Member > 요청한 사람
+		Member me = jwtTokenProvider.getMember(token);
+
+		FriendRequest request = friendRequestRepository.findById(id)
+			.orElseThrow(() -> new BadRequestException("해당 요청이 존재하지 않습니다."));
+		if (!request.getTargetUsername().equals(me.getUsername())) {
+			throw new BadRequestException("요청 유저에 대한 친구 요청이 아닙니다.");
+		}
+		friendRequestRepository.deleteById(request.getId());
+	}
+
+	public List<FriendInfo> getFriendList(String token) {
+		Member me = jwtTokenProvider.getMember(token);
+		List<Member> friends = me.getFriends();
+		List<FriendInfo> friendInfoList = new ArrayList<>();
+		for (Member friend : friends) {
+			friendInfoList.add(new FriendInfo(friend));
+		}
+		return friendInfoList;
+	}
+
+	public void deleteFriend(Long id, String token) {
+		Member me = jwtTokenProvider.getMember(token);
+		List<Member> friends = me.getFriends();
+		Boolean isPresent = false;
+		for (Member friend : friends) {
+			if (friend.getId().equals(id)) {
+				Member tagetFriend = memberRepository.findById(id)
+					.orElseThrow(()-> new BadRequestException("친구의 게정이 삭제되었습니다."));
+				me.deleteFriend(tagetFriend);
+				tagetFriend.deleteFriend(me);
+				memberRepository.save(me);
+				memberRepository.save(tagetFriend);
+				isPresent = true;
+				break;
+			}
+		}
+		if (!isPresent) {
+			throw new BadRequestException("해당 유저와 친구가 아닙니다.");
+		}
 	}
 }

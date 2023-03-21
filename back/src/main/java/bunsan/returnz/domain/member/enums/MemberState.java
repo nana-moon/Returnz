@@ -3,7 +3,7 @@ package bunsan.returnz.domain.member.enums;
 public enum MemberState {
 	OFFLINE("OFF"),
 	ONLINE("ON"),
-	GAME("GAME");
+	BUSY("BUSY");
 	private final String code;
 
 	MemberState(String code) {

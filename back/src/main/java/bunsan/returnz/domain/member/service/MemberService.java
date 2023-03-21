@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.member.dto.SignupRequest;
+import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
@@ -67,15 +68,16 @@ public class MemberService {
 		// exception 안 났으면 토큰 발행
 		// 1. Login ID/PW 를 기반으로 Authentication 객체 생성
 		// 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
-		log.info("11");
 		UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
 			password);
 
-		log.info("22");
 		// 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
 		// authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-		log.info("33");
+
+		// member state 변경
+		selectedMember.changeState(MemberState.ONLINE);
+		memberRepository.save(selectedMember);
 
 		// 3. 인증 정보를 기반으로 JWT 토큰 생성
 		return jwtTokenProvider.generateToken(authentication);

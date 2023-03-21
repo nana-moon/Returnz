@@ -151,4 +151,12 @@ public class Member implements UserDetails {
 			myFriends.add(member);
 		}
 	}
+
+	public void changeState(MemberState online) {
+		this.state = online;
+	}
+
+	public void deleteFriend(Member friend) {
+		this.getFriends().remove(friend);
+	}
 }

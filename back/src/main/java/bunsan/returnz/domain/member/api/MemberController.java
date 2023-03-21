@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+// @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/members")
 @Slf4j
 public class MemberController {
