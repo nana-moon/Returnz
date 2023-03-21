@@ -9,7 +9,7 @@ public class DecisionConverter
 
 	@Override
 	public String convertToDatabaseColumn(Decision attribute) {
-		if(attribute == null){
+		if (attribute == null) {
 			return null;
 		}
 		return attribute.getDecision();
@@ -18,7 +18,7 @@ public class DecisionConverter
 	@Override
 	public Decision convertToEntityAttribute(String decision) {
 		return Stream.of(Decision.values())
-			.filter(t-> t.getDecision().equals(decision))
+			.filter(t -> t.getDecision().equals(decision))
 			.findFirst()
 			.orElseThrow(IllegalArgumentException::new);
 	}

@@ -9,7 +9,7 @@ import javax.persistence.Converter;
 public class TurnPerTimeConverter implements AttributeConverter<TurnPerTime, String> {
 	@Override
 	public String convertToDatabaseColumn(TurnPerTime attribute) {
-		if(attribute == null){
+		if (attribute == null) {
 			return null;
 		}
 		return attribute.getTime();
@@ -18,7 +18,7 @@ public class TurnPerTimeConverter implements AttributeConverter<TurnPerTime, Str
 	@Override
 	public TurnPerTime convertToEntityAttribute(String time) {
 		return Stream.of(TurnPerTime.values())
-			.filter(t-> t.getTime().equals(time))
+			.filter(t -> t.getTime().equals(time))
 			.findFirst()
 			.orElseThrow(IllegalArgumentException::new);
 	}

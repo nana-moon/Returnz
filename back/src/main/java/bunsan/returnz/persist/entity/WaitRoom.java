@@ -13,7 +13,7 @@ import lombok.Getter;
 public class WaitRoom {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name="WAIT_ROOM_ID")
+	@Column(name = "WAIT_ROOM_ID")
 	Long id;
 	String waitingTip;
 
