@@ -11,9 +11,10 @@ import lombok.Getter;
 @Entity
 @Getter
 public class WaitRoom {
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name="WAIT_ROOM_ID")
 	Long id;
 	String waitingTip;
+
 }
