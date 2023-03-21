@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WaitMember {
+public class Waiter {
 	@GeneratedValue
 	@Id
 	@Column(name = "WAIT_MEMBER_ID")
@@ -26,7 +26,6 @@ public class WaitMember {
 	Long deposit;
 	Boolean isCaptain;
 	String userName;
-	Boolean readyState;
 	@ManyToOne
 	@JoinColumn(name = "WAIT_ROOM_ID")
 	WaitRoom waitRoom;

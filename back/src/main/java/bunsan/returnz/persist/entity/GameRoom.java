@@ -29,6 +29,8 @@ public class GameRoom {
 	Integer curTurn;
 	LocalDate curDate;
 	Integer totalTurn;
+	@Builder.Default
+	Integer roomMemberCount = 1;
 	@Convert(converter = TurnPerTimeConverter.class)
 	TurnPerTime turnPerTime;
 

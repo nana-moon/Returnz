@@ -21,6 +21,8 @@ public class WaitRoom {
 	@Id
 	@Column(name = "WAIT_ROOM_ID")
 	Long id;
-	String waitingTip;
+
+	@Builder.Default
+	Integer roomMemberCount = 1;
 
 }

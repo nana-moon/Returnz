@@ -24,10 +24,13 @@ public class Gamer {
 	@Column(name = "GAMER_ID")
 	Long id;
 
-	String userName;
+	String username;
 	Integer deposit;
 	Integer totalBuyAmount;
 	Integer totalEvaluationAmount;
+
+	@Builder.Default
+	Boolean readyState = false;
 
 	@ManyToOne
 	@JoinColumn(name = "GAME_ROOM_ID")
