@@ -1,28 +1,33 @@
 import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Input, Button } from '@material-tailwind/react';
+import { useNavigate } from 'react-router-dom';
+import { userLogin } from '../../api/sign';
 
 export default function Login({ changeMode }) {
-  const [EmailCheck, setEmailCheck] = useState(true);
+  const navigate = useNavigate();
+  const [emailCheck, setEmailCheck] = useState(true); // 이메일 형식이 잘못되면 에러 출력
   const [userLoginData, setUserLoginData] = useState({
-    email: false,
+    username: false,
     password: false,
-  });
+  }); // api요청으로 가져갈 데이터
 
   const handleCheckEmail = (e) => {
     // eslint-disable-next-line no-useless-escape
     const regex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+    // 이메일 정규표현식
     if (e.target.value === '' || regex.test(e.target.value)) {
+      // 입력란이 공백이거나 값이 입력되면 유효성검사 진행
       console.log('이메일 유효성검사 성공', e.target.value);
       setEmailCheck(true);
       const copy = { ...userLoginData };
-      copy.email = e.target.value;
+      copy.username = e.target.value;
       setUserLoginData(copy);
     } else {
       console.log('이메일 유효성검사 실패', e.target.value);
       setEmailCheck(false);
       const copy = { ...userLoginData };
-      copy.email = false;
+      copy.username = false;
       setUserLoginData(copy);
     }
   };
@@ -32,24 +37,52 @@ export default function Login({ changeMode }) {
     setUserLoginData(copy);
   };
 
-  const handleLoginRequest = () => {
-    console.log(userLoginData, '여기서 이 데이터 보낼거임');
+  // 버튼이 활성화 된 상태에서 엔터 키를 누르면 로그인 시도
+  const onKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      if (!!userLoginData.username && !!userLoginData.password) {
+        handleLoginRequest();
+      }
+    }
+  };
+
+  // 로그인 요청후 result가 true라면 메인페이지 이동, 실패 시 에러메세지 출력
+  const handleLoginRequest = async () => {
+    const result = await userLogin(userLoginData);
+    result === true ? navigate('/') : alert(result);
   };
   return (
     <Contanier>
       <MainSection>로그인</MainSection>
-      <InputBox>
-        <EmailInput color="blue-gray" size="lg" label="이메일" onBlur={handleCheckEmail} error={!EmailCheck} />
-        {EmailCheck ? <MarginBox /> : <ErrorMsg>이메일 형식이 올바르지 않습니다.</ErrorMsg>}
-        <Input type="password" size="lg" color="blue-gray" label="비밀번호" onChange={handleCheckPassword} />
-        <MarginBox />
-      </InputBox>
+      <form>
+        <InputBox>
+          <EmailInput
+            autoComplete="username"
+            color="blue-gray"
+            size="lg"
+            label="이메일"
+            onBlur={handleCheckEmail} // 포커스 해제됐을 때 유효성 검사 진행
+            error={!emailCheck} // 유효성 검사 실패했을 때 에러
+          />
+          {emailCheck ? <MarginBox /> : <ErrorMsg>이메일 형식이 올바르지 않습니다.</ErrorMsg>}
+          <Input
+            autoComplete="current-password"
+            type="password"
+            size="lg"
+            color="blue-gray"
+            label="비밀번호"
+            onChange={handleCheckPassword}
+            onKeyPress={onKeyPress}
+          />
+          <MarginBox />
+        </InputBox>
+      </form>
       <ButtonBox>
         <LoginButton
           variant="gradient"
           color="white"
           style={{ color: '#1CD6C9' }}
-          disabled={!(!!userLoginData.email && !!userLoginData.password)}
+          disabled={!(!!userLoginData.username && !!userLoginData.password)} // request form의 두개의 데이터가 둘다 false가 아니면(둘다 값이 있다면) 버튼 활성화
           onClick={handleLoginRequest}
         >
           로그인

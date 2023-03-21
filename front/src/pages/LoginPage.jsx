@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+/* eslint-disable import/order */
+import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { keyframes } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import Login from '../components/login/Login';
 import Signup from '../components/login/Signup';
 import Logo from '../components/common/logo.jpg';
+import Cookies from 'js-cookie';
 
 export default function LoginPage() {
-  const [mode, setMode] = useState(true);
+  const navigate = useNavigate();
+  // 로그인 페이지에 왔을 때 쿠키에있는 access_token을 통해 로그인 상태인지 확인 로그인 상태라면 이전페이지로 리다이렉트
+  useEffect(() => {
+    if (Cookies.get('access_token')) {
+      setTimeout(() => {
+        alert('이미 로그인 되어있습니다.');
+        navigate(-1);
+      }, 200);
+    } else {
+      console.log('비로그인 상태');
+    }
+  });
 
+  const [mode, setMode] = useState('login');
+
+  // 회원가입모드 로그인모드
   const changeMode = () => {
-    setMode(!mode);
+    if (mode === 'login') {
+      setMode('signup');
+    } else {
+      setMode('login');
+    }
   };
 
   return (
@@ -23,7 +44,7 @@ export default function LoginPage() {
         </LogoBox>
       </BackSection>
       <FrontSection mode={mode}>
-        {mode ? <Login changeMode={changeMode} /> : <Signup changeMode={changeMode} />}
+        {mode === 'login' ? <Login changeMode={changeMode} /> : <Signup changeMode={changeMode} />}
       </FrontSection>
     </LoginPageContanier>
   );
@@ -58,7 +79,7 @@ const BackSection = styled.div`
 `;
 
 const FrontSection = styled.div`
-  animation: ${(props) => (props.mode ? LoginMode : SignupMode)} 0.8s;
+  animation: ${(props) => (props.mode === 'login' ? LoginMode : SignupMode)} 0.8s;
   animation-fill-mode: both;
   transform: translate(20%, -12%);
   min-width: 250px;
@@ -67,7 +88,7 @@ const FrontSection = styled.div`
 `;
 
 const LogoBox = styled.div`
-  animation: ${(props) => (props.mode ? SignupMode : LoginMode)} 0.8s;
+  animation: ${(props) => (props.mode === 'login' ? SignupMode : LoginMode)} 0.8s;
   animation-fill-mode: both;
   width: 45%;
   padding-right: 30px;
