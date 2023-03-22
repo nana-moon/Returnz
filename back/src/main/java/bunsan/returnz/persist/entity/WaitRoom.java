@@ -26,7 +26,7 @@ public class WaitRoom {
 	private String roomId;
 
 	@Builder.Default
-	Integer memberCount = 1;
+	Integer memberCount = 0;
 
 	String captainName;
 

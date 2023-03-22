@@ -1,12 +1,11 @@
 package bunsan.returnz.persist.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import bunsan.returnz.domain.friend.dto.FriendRequestDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +21,15 @@ public class FriendRequest {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	public String requestUsername;
-	public String targetUsername;
+	private String requestUsername;
+	private String targetUsername;
+
+	public FriendRequestDto toDto(Member requester) {
+		return FriendRequestDto.builder()
+				.requestId(this.id)
+				.username(requester.getUsername())
+				.nickname(requester.getNickname())
+				.profileIcon(requester.getProfileIcon())
+				.build();
+	}
 }

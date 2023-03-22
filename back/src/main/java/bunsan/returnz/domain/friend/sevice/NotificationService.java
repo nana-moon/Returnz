@@ -1,10 +1,10 @@
-package bunsan.returnz.domain.message.sevice;
+package bunsan.returnz.domain.friend.sevice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.message.dto.ResponseMessaage;
+import bunsan.returnz.domain.friend.dto.ResponseMessaage;
 
 //---------------------------------------테스트용 서비스-----------------------------------------
 @Service

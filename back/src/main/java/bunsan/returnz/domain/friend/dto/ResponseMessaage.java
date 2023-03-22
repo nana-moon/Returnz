@@ -1,7 +1,6 @@
-package bunsan.returnz.domain.message.dto;
+package bunsan.returnz.domain.friend.dto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 
