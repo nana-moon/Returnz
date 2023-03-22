@@ -10,7 +10,6 @@ import NotFoundPage from './pages/NotFoundPage';
 import HomePage from './pages/HomePage';
 import WaitingPage from './pages/WaitingPage';
 import ProfilePage from './pages/ProfilePage';
-import SignPage from './pages/SignPage';
 import GamePage from './pages/GamePage';
 import TutorialPage from './pages/TutorialPage';
 import LoginPage from './pages/LoginPage';
@@ -35,7 +34,6 @@ const router = createBrowserRouter([
       },
       { path: '/tutorial', element: <TutorialPage /> },
       { path: '/game', element: <GamePage /> },
-      { path: '/signup', element: <SignPage /> },
       { path: '/login', element: <LoginPage /> },
     ],
   },
