@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class Company {
 
 	@Id
-	@Column(name = "SYMBOL_ID")
+	@Column(name = "COMPANY_ID")
 	private String id;
 
 	@Column(name = "COMPANY_NAME", unique = true)
