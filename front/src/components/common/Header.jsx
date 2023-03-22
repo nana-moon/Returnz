@@ -32,12 +32,12 @@ export default function Header() {
 }
 
 const NavHeader = styled.div`
-  position: fixed;
+  /* position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 56px;
-  ${tw`bg-primary flex justify-between py-2`}
+  height: 56px; */
+  ${tw`bg-primary flex justify-between py-2 w-[100%]`}
 `;
 
 const NavLink = styled(Link)`
