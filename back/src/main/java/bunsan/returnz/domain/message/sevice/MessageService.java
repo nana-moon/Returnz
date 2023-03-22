@@ -33,7 +33,7 @@ public class MessageService {
 		simpMessagingTemplate.convertAndSend("/topic/messages", request);
 	}
 
-	public void notifyUser(final FriendRequestDto request, String token) {
+	public void sendFriendRequest(final FriendRequestDto request, String token) {
 		// ResponseMessaage response = new ResponseMessaage(message);
 		// notificationService.sendPrivateNotification(request.getTargetUsername());
 		// token에 저장된 Member > 요청한 사람
@@ -51,9 +51,9 @@ public class MessageService {
 		// DB에 저장
 		FriendRequest friendRequest = friendRequestRepository.save(request.toEntity());
 
-		// 이 topic을 구독한 유저에게 전달
+		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
 		simpMessagingTemplate.convertAndSendToUser(request.getTargetUsername(),
-			"/topic/private-messages", friendRequest);
+			"/sub/friend-request", friendRequest);
 	}
 
 	public List<FriendRequest> getRequestList(String token) {
@@ -77,6 +77,10 @@ public class MessageService {
 				.orElseThrow(() -> new BadRequestException("타겟 맴버가 삭제 되었습니다."));
 		Member requestMember = memberRepository.findByUsername(request.getRequestUsername())
 			.orElseThrow(() -> new BadRequestException("요청 맴버가 삭제 되었습니다."));
+
+		if (requestMember.isFriend(targetMember)) {
+			throw new ConflictException("이미 친구인 유저와 친구를 할 수 없습니다.");
+		}
 
 		requestMember.addFriend(targetMember);
 		targetMember.addFriend(requestMember);

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,17 +29,15 @@ public class WsController {
 	@PostMapping("/send-message") // 임시 테스트
 	public void sendMessage(@RequestBody final FriendRequestDto request) {
 		messageService.notifyFrontend(request);
-
 	}
 	//====================================친구 요청 송신=========================================
 
-	@PostMapping("/send-private-message")
-	public void sendPrivateMessage(@RequestBody FriendRequestDto request,
-		@RequestHeader(value = "Authorization") String bearerToken) {
-		String token = bearerToken.substring(7);
-		messageService.notifyUser(request, token);
-
-	}
+	// @MessageMapping("/friend-request")
+	// public void sendFriendRequest(@RequestBody FriendRequestDto request,
+	// 	@RequestHeader(value = "Authorization") String bearerToken) {
+	// 	String token = bearerToken.substring(7);
+	// 	messageService.sendFriendRequest(request, token);
+	// }
 	//====================================친구 요청 불러오기=========================================
 
 	@GetMapping("/api/requests")

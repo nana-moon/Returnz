@@ -15,17 +15,16 @@ import lombok.RequiredArgsConstructor;
 public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	private final StompHandler stompHandler;
 
-
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/topic", "/direct");
-		registry.setApplicationDestinationPrefixes("/ws");
+		registry.enableSimpleBroker("/sub");
+		registry.setApplicationDestinationPrefixes("/pub");
 		// registry.setUserDestinationPrefix("/user");
 	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/our-websocket")
+		registry.addEndpoint("/ws")
 			.withSockJS();
 	}
 
