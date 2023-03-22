@@ -156,5 +156,6 @@ export default function Graph() {
 }
 
 const GraphContainer = styled.div`
-  ${tw`border row-span-6 bg-white rounded-xl`}
+  margin-top: 1.25rem;
+  ${tw`border bg-white rounded-xl h-[65%]`}
 `;
