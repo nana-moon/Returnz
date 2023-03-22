@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 public class Company {
 
 	@Id
-	@Column(name = "COMPANY_ID")
-	private String id;
+	@Column(name = "COMPANY_CODE")
+	private String code;
 
 	@Column(name = "COMPANY_NAME", unique = true)
 	private String companyName;

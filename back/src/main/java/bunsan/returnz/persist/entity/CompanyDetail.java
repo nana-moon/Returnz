@@ -22,12 +22,12 @@ import lombok.NoArgsConstructor;
 public class CompanyDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "COMPANNY_DETAIL_ID")
-	private String id;
+	@Column(name = "COMPANNY_DETAIL_CODE")
+	private String code;
 
 	@MapsId
 	@OneToOne
-	@JoinColumn(name = "SYMBOL_ID")
+	@JoinColumn(name = "COMPANY_CODE")
 	private Company company;
 	String country;
 
