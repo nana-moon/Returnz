@@ -1,38 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+// import SockJs from 'sockjs-client';
+// import StompJs from 'stompjs';
+// import { io } from 'socket.io-client';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import {
-  Card,
-  CardHeader,
-  Input,
-  Avatar,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button,
-} from '@material-tailwind/react';
-import { MdOutlineDashboard } from 'react-icons/md';
-import { RiSettings4Line } from 'react-icons/ri';
-import { TbReportAnalytics } from 'react-icons/tb';
-import { AiOutlineSearch, AiOutlineUser, AiOutlineHeart } from 'react-icons/ai';
-import { FiMessageSquare, FiFolder, FiShoppingCart } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Card, CardHeader, Input, Avatar } from '@material-tailwind/react';
+import { AiOutlineSearch } from 'react-icons/ai';
+import { friendRequest } from '../../apis/friend';
 
-export default function SideBar() {
-  const menus = [
-    { name: 'dashboard', link: '/', icon: MdOutlineDashboard },
-    { name: 'user', link: '/', icon: AiOutlineUser },
-    { name: 'messages', link: '/', icon: FiMessageSquare },
-    { name: 'analytics', link: '/', icon: TbReportAnalytics, margin: true },
-    { name: 'File Manager', link: '/', icon: FiFolder },
-    { name: 'Cart', link: '/', icon: FiShoppingCart },
-    { name: 'Saved', link: '/', icon: AiOutlineHeart, margin: true },
-    { name: 'Setting', link: '/', icon: RiSettings4Line },
-  ];
-  // eslint-disable-next-line no-unused-vars
-  const [open, setOpen] = useState(true);
-  const [email, setEmail] = React.useState('');
-  const onChange = ({ target }: any) => setEmail(target.value);
+export default function SideBar({ onModal }) {
+  // const socket = new io('http://서버주소');
+  // const stomp = StompJs.over(sock);
+  const [friendNickname, setfriendNickname] = useState('');
+  const onChange = (e) => setfriendNickname(e.target.value);
+  const openModal = () => {
+    onModal(true);
+  };
+  const handleFriendRequest = async () => {
+    const result = await friendRequest(friendNickname);
+    console.log(result);
+  };
+  // const stompConnect = () => {
+  //   try {
+  //     stomp.debug = null;
+  //     //웹소켓 연결시 stomp에서 자동으로 connect이 되었다는것을
+  //     //console에 보여주는데 그것을 감추기 위한 debug
+
+  //     stomp.connect(token, () => {
+  //       stomp.subscribe(
+  //         `서버주소`,
+  //         (data) => {
+  //           const newMessage = JSON.parse(data.body);
+  //           //데이터 파싱
+  //         },
+  //         token,
+  //       );
+  //     });
+  //   } catch (err) {}
+  // };
+  // message event listener
+  // useEffect(() => {
+  //   const messageHandler = (chat: IChat) =>
+  //     setChats((prevChats) => [...prevChats, chat]);
+
+  //   socket.on('message', messageHandler);
+
+  //   return () => {
+  //     socket.off('message', messageHandler);
+  //   };
+  // }, []);
   return (
     <SideBarContainer>
       <MyProfileCard>
@@ -46,54 +62,22 @@ export default function SideBar() {
             <Avatar size="lg" variant="circular" src="../../profile_pics/green.jpg" />
             <MyInfoBox>
               <UsernameContent>내 유저네임</UsernameContent>
-              <Popover placement="left">
-                <PopoverHandler>
-                  <Button variant="gradient" color="cyan" size="sm">
-                    프로필 변경하기
-                  </Button>
-                </PopoverHandler>
-                <PopoverContent>
-                  <span>변경할수있는 프로필들이 정렬되어서 나와요</span>
-                </PopoverContent>
-              </Popover>
+              <ProfileChangeButton onClick={openModal}>프로필 수정하러 가기</ProfileChangeButton>
+              {/* {modal === true ? <ProfileEditModal /> : null} */}
             </MyInfoBox>
           </CardHeader>
         </Card>
       </MyProfileCard>
-      <section className="flex gap-6">
-        <div className="mt-4 flex flex-col gap-4 relative">
-          {menus?.map((menu) => (
-            <Link
-              to={menu?.link}
-              className={` ${
-                menu?.margin && 'mt-5'
-              } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md`}
-            >
-              <div>{React.createElement(menu?.icon, { size: '20' })}</div>
-              <h2 className={`whitespace-pre duration-500 ${!open && 'opacity-0 translate-x-28 overflow-hidden'}`}>
-                {menu?.name}
-              </h2>
-              <h2
-                className={`${
-                  open && 'hidden'
-                } absolute left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-0 py-0 w-0 overflow-hidden group-hover:px-2 group-hover:py-1 group-hover:left-14 group-hover:duration-300 group-hover:w-fit  `}
-              >
-                {menu?.name}
-              </h2>
-            </Link>
-          ))}
-        </div>
-      </section>
       <FriendSearchContainer>
         <Input
           type="text"
           label="닉네임을 검색하세요"
           color="cyan"
-          value={email}
+          value={friendNickname}
           onChange={onChange}
           className="bg-input"
         />
-        <SearchButton>
+        <SearchButton onClick={handleFriendRequest}>
           <AiOutlineSearch />
         </SearchButton>
       </FriendSearchContainer>
@@ -118,9 +102,16 @@ const SearchButton = styled.button`
 `;
 
 const MyInfoBox = styled.div`
-  ${tw`text-lg font-bold font-spoq`}
+  ${tw`font-spoq`}
 `;
 
 const UsernameContent = styled.div`
-  ${tw`text-lg py-1`}
+  ${tw`text-lg py-1 font-bold`}
+`;
+
+const ProfileChangeButton = styled.button`
+  /* 
+  z-index: 0;
+  */
+  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;
