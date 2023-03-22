@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.wait.dto;
+package bunsan.returnz.domain.sideBar.dto;
 
 import java.util.Map;
 

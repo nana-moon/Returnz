@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.member.service;
 
+import bunsan.returnz.domain.friend.dto.FriendInfo;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,9 @@ import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +80,7 @@ public class MemberService {
 		Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 		// member state 변경
-		selectedMember.changeState(MemberState.ONLINE);
+		// selectedMember.changeState(MemberState.ONLINE);
 		memberRepository.save(selectedMember);
 
 		// 3. 인증 정보를 기반으로 JWT 토큰 생성
@@ -95,4 +99,11 @@ public class MemberService {
 			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
 		return member;
 	}
+
+    public List<FriendInfo> findByNickname(String nickname) {
+		List<Member> resultMembers = memberRepository.findByNicknameContaining(nickname);
+		List<FriendInfo> memberList = new ArrayList<>();
+		resultMembers.forEach(member -> memberList.add(new FriendInfo(member)));
+		return memberList;
+    }
 }

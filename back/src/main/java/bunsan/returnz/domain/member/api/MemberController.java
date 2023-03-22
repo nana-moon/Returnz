@@ -1,15 +1,14 @@
 package bunsan.returnz.domain.member.api;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
+import bunsan.returnz.domain.friend.dto.FriendInfo;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import bunsan.returnz.domain.member.dto.LoginRequest;
 import bunsan.returnz.domain.member.dto.SignupRequest;
@@ -39,6 +38,12 @@ public class MemberController {
 	public ResponseEntity<TokenInfo> login(@RequestBody LoginRequest loginRequest) {
 		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
 		return ResponseEntity.ok().body(tokenInfo);
+	}
+	//--------------------------------------로그인-------------------------------------------
+	@GetMapping("/{nickname}")
+	public ResponseEntity findByNickname(@PathVariable String nickname) {
+		List<FriendInfo> memberList = memberService.findByNickname(nickname);
+		return ResponseEntity.ok().body(Map.of("memberList", memberList));
 	}
 
 }
