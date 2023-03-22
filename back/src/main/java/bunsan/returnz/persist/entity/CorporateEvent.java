@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,21 +21,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoricalPrice {
+public class CorporateEvent {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "HISTORICAL_PRICE_ID")
+	@Column(name = "CORPORATE_EVENT_ID")
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "COMAPNY_CODE")
+	@JoinColumn(name = "COMPANY_CODE")
 	private Company company;
-	private Long high;
-	private Long volume;
-	private Long close;
-	private Long low;
-	private Long open;
-	private Long adjclose;
-	private Long dividends;
-	private LocalDateTime dateTime;
+
+	private LocalDateTime date;
+	private int significance;
+	private String headline;
+
+	@Size(max = 1000)
+	private String description;
+
+	private String parentTopics;
 }
