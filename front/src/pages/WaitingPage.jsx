@@ -74,5 +74,5 @@ const BtnBox = styled.div`
   ${tw`flex gap-5 mt-5`}
 `;
 const Button = styled(Link)`
-  ${tw`w-[50%] min-h-[50px] border-2 border-black flex justify-center items-center`}
+  ${tw`border bg-white rounded-xl w-[50%] min-h-[50px] flex justify-center items-center`}
 `;

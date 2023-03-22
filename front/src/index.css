@@ -1,9 +1,14 @@
+/* tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* react-tooltip */
+@import 'react-tooltip/dist/react-tooltip.css';
+
 /* 스포카 한 산스 글씨체 */
 @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css);
+
 /* 우리 로고 글씨체 */
 @font-face {
   font-family: "IBM-Plex-Mono";

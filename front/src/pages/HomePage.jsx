@@ -29,7 +29,7 @@ export default function HomePage() {
 }
 
 const MainContainer = styled.div`
-  ${tw`grid grid-cols-3 grid-rows-6 bg-base py-6 w-[75%] font-spoq`}
+  ${tw`grid grid-cols-3 grid-rows-6 py-6 w-[75%] font-spoq`}
 `;
 
 const FlexedSection = styled.div`

@@ -24,9 +24,9 @@ export default function ThemeSetting({ getIsUser, getTheme }) {
   );
 }
 const ThemeContainer = styled.div`
-  ${tw`border-2 border-black w-[50%] flex flex-wrap`}
+  ${tw`border bg-white rounded-xl w-[50%] flex flex-wrap`}
 `;
 
 const ThemeBox = styled.button`
-  ${tw`border-2 border-black w-[50%] flex justify-center items-center`}
+  ${tw`border bg-white rounded-xl  w-[50%] flex justify-center items-center`}
 `;
