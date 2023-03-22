@@ -1,5 +1,7 @@
 package bunsan.returnz.persist.entity;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,18 +20,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendedCompany {
-
+public class GradingHistory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "RECOMMENDED_COMPANY_ID")
+	@Column(name = "GRADING_HISTORY_ID")
 	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "COMAPNY_CODE")
 	private Company company;
 
-	private String simillarCompanyCode;
-	private double score;
-	private String parentTopics;
+	private LocalDateTime epochGradeDate;
+	private String firm;
+	private String toGrade;
+	private String fromGrade;
+	private String action;
 }
