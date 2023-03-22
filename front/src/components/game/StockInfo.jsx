@@ -6,5 +6,6 @@ export default function StockInfo() {
 }
 
 const StockInfoContanier = styled.div`
-  ${tw`border row-span-3 bg-white rounded-xl`}
+  margin-top: 1.25rem;
+  ${tw`border row-span-3 bg-white rounded-xl h-[23%]`}
 `;

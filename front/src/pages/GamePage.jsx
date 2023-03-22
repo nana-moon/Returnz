@@ -33,10 +33,11 @@ const GameContainer = styled.div`
   ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq`}
 `;
 const LeftSection = styled.div`
-  ${tw`col-span-3 grid gap-5`};
+  max-height: 88vh;
+  ${tw`col-span-3 gap-5 h-screen`};
 `;
 const MiddleSection = styled.div`
-  ${tw`col-span-6 grid gap-5`}
+  ${tw`col-span-6 gap-5`}
 `;
 const RightSection = styled.div`
   ${tw`col-span-3 border-2 bg-white rounded-xl`}
