@@ -17,12 +17,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class WaitRoom {
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "WAIT_ROOM_ID")
-	Long id;
+	private Long id;
+
+	@Column(name = "ROOM_ID")
+	private String roomId;
 
 	@Builder.Default
-	Integer roomMemberCount = 1;
+	Integer memberCount = 1;
+
+	String captainName;
 
 }

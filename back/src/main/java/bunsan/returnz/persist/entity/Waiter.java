@@ -20,12 +20,12 @@ import lombok.NoArgsConstructor;
 public class Waiter {
 	@GeneratedValue
 	@Id
-	@Column(name = "WAIT_MEMBER_ID")
+	@Column(name = "WAITER_ID")
 	Long id;
-	Long profit;
-	Long deposit;
 	Boolean isCaptain;
-	String userName;
+	String username;
+	String nickname;
+
 	@ManyToOne
 	@JoinColumn(name = "WAIT_ROOM_ID")
 	WaitRoom waitRoom;
