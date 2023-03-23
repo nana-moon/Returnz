@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import bunsan.returnz.domain.game.dto.GameRoomDto;
+import bunsan.returnz.domain.game.enums.Theme;
+import bunsan.returnz.domain.game.enums.ThemeConverter;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.enums.TurnPerTimeConverter;
 import lombok.AllArgsConstructor;
@@ -27,7 +29,7 @@ public class GameRoom {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "GAME_ROOM_ID")
 	private Long id;
-	@Column(unique = true)
+	@Column(unique = true) // 소켓에서 쓰일 아이디
 	private String roomId;
 	private Integer curTurn;
 	private LocalDateTime curDate;
@@ -36,6 +38,9 @@ public class GameRoom {
 	private Integer roomMemberCount = 1;
 	@Convert(converter = TurnPerTimeConverter.class)
 	private TurnPerTime turnPerTime;
+	// 게임 정보를 조회할때 테마가 있으면 기간이 정해져 있다.
+	@Convert(converter = ThemeConverter.class)
+	private Theme theme;
 
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()

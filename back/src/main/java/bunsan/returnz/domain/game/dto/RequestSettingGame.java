@@ -19,7 +19,6 @@ import reactor.util.annotation.Nullable;
 
 @Builder
 @Getter
-@ToString // TODO: 2023/03/23  나중에 지워야합니다.
 public class RequestSettingGame {
 	@NotNull
 	private Theme theme;

@@ -19,6 +19,7 @@ import bunsan.returnz.domain.game.service.GameHistoricalPriceDayService;
 import bunsan.returnz.domain.game.service.GameRoomService;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.enums.Theme;
+import bunsan.returnz.domain.game.service.GameStartService;
 import bunsan.returnz.domain.game.service.GameStockService;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
 
+	private final GameStartService gameStartService;
 	private final GameStockService gameStockService;
 	private final GameRoomService gameRoomService;
 	private final GameHistoricalPriceDayService gameHistoricalPriceDayService;
@@ -122,7 +124,6 @@ public class GameController {
 
 	@PostMapping("/init")
 	public ResponseEntity settingGame(@RequestBody RequestSettingGame requestSettingGame) {
-		// TODO: 2023-03-23 입력에 대한 검증..
 		if (!Theme.isValid(requestSettingGame.getTheme())) {
 			throw new BadRequestException("테마가 잘못됬습니다");
 		}
@@ -131,10 +132,9 @@ public class GameController {
 		if (!(requestSettingGame.getMemberIdList().size() > 0)) {
 			throw new BadRequestException("유저는 최소 한명 이상이여야합니다.");
 		}
-
-		Integer roomId = 1;
-		String socketId = "socketId23";
-
-		return ResponseEntity.ok().body(Map.of("socketId", socketId, "roomId", roomId));
+		Map<String, Object> stringObjectMap = gameStartService.settingGame(requestSettingGame);
+		// 태마 게임일경우
+		return ResponseEntity.ok().body(stringObjectMap);
 	}
+
 }

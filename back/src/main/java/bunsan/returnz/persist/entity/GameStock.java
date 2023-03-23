@@ -34,4 +34,5 @@ public class GameStock {
 			.gameRoomId(gameStock.gameRoom.getRoomId())
 			.build();
 	}
+
 }

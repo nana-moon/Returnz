@@ -35,13 +35,4 @@ public class GameStockService {
 		return gameStockDtos;
 	}
 
-
-
-	public String settingUserGame(RequestSettingGame requestSettingGame) {
-		return null;
-	}
-
-	public String settingThemeGame(RequestSettingGame requestSettingGame) {
-		return null;
-	}
 }
