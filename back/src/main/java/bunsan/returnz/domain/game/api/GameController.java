@@ -1,7 +1,11 @@
 package bunsan.returnz.domain.game.api;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.*;
+
 import java.util.List;
 
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,18 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameStockDto;
+import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.service.GameStockService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
-@AllArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
-
 	private final GameStockService gameStockService;
 
 	/**
@@ -51,6 +53,13 @@ public class GameController {
 		List<GameStockDto> gameStockDtoList = gameStockService.findAllBygameRoomId(roomId);
 
 		return null;
+	}
+	@PostMapping("/init")
+	public ResponseEntity<?> settingGame(@RequestBody RequestSettingGame requestSettingGame){
+
+		// return ResponseEntity<>("test", HttpStatus.OK);
+		return null;
+
 	}
 
 }
