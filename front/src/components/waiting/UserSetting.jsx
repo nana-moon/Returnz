@@ -2,21 +2,17 @@ import React, { useState } from 'react';
 
 import tw, { styled } from 'twin.macro';
 
-export default function UserSetting({ getIsUser, getUserSetting }) {
-  const init = { date: '', period: '', count: '' };
-  const [userSetting, setUserSetting] = useState(init);
-  const handleUserSetting = (e) => {
-    console.log(e.target.value);
-  };
+export default function UserSetting({ getIsUser }) {
   const handleIsUser = () => {
     getIsUser();
   };
+  const maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
   return (
     <UserSettingContainer>
       <BackBtn onClick={handleIsUser}>테마보기</BackBtn>
       <TurnDateSection>
         <TurnDateTitle>턴 시작일</TurnDateTitle>
-        <TurnDateInput type="date" min="2001-01-01" max="2022-12-31" />
+        <TurnDateInput type="date" min="2001-01-01" max={maxDate} />
       </TurnDateSection>
       <TurnPeriodSection>
         <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
@@ -48,43 +44,43 @@ export default function UserSetting({ getIsUser, getUserSetting }) {
   );
 }
 const UserSettingContainer = styled.div`
-  ${tw`border-2 border-black w-[50%]`}
+  ${tw`border bg-white rounded-xl w-[50%]`}
 `;
 const BackBtn = styled.button`
-  ${tw`border-2 border-black w-[100%] h-[25%]`}
+  ${tw`w-[100%] h-[25%] hover:bg-blue-gray-50`}
 `;
 const TurnDateSection = styled.div`
-  ${tw`flex border-2 border-black w-[100%] h-[25%]`}
+  ${tw`flex w-[100%] h-[25%]`}
 `;
 
 const TurnDateTitle = styled.h1`
-  ${tw`border-2 border-black w-[30%] flex justify-center items-center`}
+  ${tw`border w-[30%] flex justify-center items-center`}
 `;
 
 const TurnDateInput = styled.input`
-  ${tw`border-2 border-black w-[70%] flex items-center justify-evenly`}
+  ${tw`border w-[70%] text-center`}
 `;
 
 const TurnPeriodSection = styled.div`
-  ${tw`flex border-2 border-black w-[100%] h-[25%]`}
+  ${tw`flex w-[100%] h-[25%]`}
 `;
 
 const TurnPeriodTitle = styled.h1`
-  ${tw`border-2 border-black w-[30%] flex justify-center items-center`}
+  ${tw`border w-[30%] flex justify-center items-center`}
 `;
 
 const TurnPeriodForm = styled.form`
-  ${tw`border-2 border-black w-[70%] flex items-center justify-evenly`}
+  ${tw`border w-[70%] flex items-center justify-evenly`}
 `;
 
 const TurnCountSection = styled.div`
-  ${tw`flex border-2 border-black w-[100%] h-[25%]`}
+  ${tw`flex w-[100%] h-[25%]`}
 `;
 
 const TurnCountTitle = styled.h1`
-  ${tw`border-2 border-black w-[30%] flex justify-center items-center`}
+  ${tw`border w-[30%] flex justify-center items-center`}
 `;
 
 const TurnCountForm = styled.form`
-  ${tw`border-2 border-black w-[70%] flex items-center justify-evenly`}
+  ${tw`border w-[70%] flex items-center justify-evenly`}
 `;

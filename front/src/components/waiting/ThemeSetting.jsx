@@ -1,5 +1,6 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { MdOutlineCoronavirus } from 'react-icons/md';
 
 export default function ThemeSetting({ getIsUser, getTheme }) {
   const handleIsUser = () => {
@@ -11,8 +12,12 @@ export default function ThemeSetting({ getIsUser, getTheme }) {
   return (
     <ThemeContainer>
       <ThemeBox onClick={handleTheme} value="코로나">
-        코로나
+        최근 한 달
       </ThemeBox>
+      <ThemeBox onClick={handleTheme} value="코로나">
+        최근 1년
+      </ThemeBox>
+      <ThemeBox onClick={handleTheme} value="코로나" />
       <ThemeBox onClick={handleTheme} value="금융위기">
         금융위기
       </ThemeBox>
@@ -24,9 +29,9 @@ export default function ThemeSetting({ getIsUser, getTheme }) {
   );
 }
 const ThemeContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%] flex flex-wrap`}
+  ${tw`border bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-2 p-2`}
 `;
 
 const ThemeBox = styled.button`
-  ${tw`border bg-white rounded-xl  w-[50%] flex justify-center items-center`}
+  ${tw`border rounded-xl w-[100%] flex justify-center items-center hover:bg-blue-gray-50 focus:bg-blue-gray-50`}
 `;
