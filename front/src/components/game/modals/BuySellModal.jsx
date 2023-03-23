@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable radix */
+import React, { useEffect, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
@@ -8,76 +9,143 @@ import { receiveSetting } from '../../../store/BuySellModal/BuySell.reducer';
 
 export default function BuySellModal() {
   const dispatch = useDispatch();
+
+  const [orderCount, setOrderCount] = useState(0);
+  const [lastValidOrderCount, setLastValidOrderCount] = useState(orderCount);
+
   const modalStat = useSelector(modalState);
+  const buyData = useSelector(buyNeedData);
+  const sellData = useSelector(sellNeedData);
+  const modalData = modalStat.isType ? buyData : sellData;
+  const maxOrderCount = modalStat.isType
+    ? Math.floor(modalData.holdingCash / modalData.orderPrice)
+    : modalData.holdingcount;
+
+  useEffect(() => {
+    if (orderCount > maxOrderCount || orderCount < 0) {
+      setOrderCount(lastValidOrderCount);
+    } else {
+      setLastValidOrderCount(orderCount);
+    }
+  }, [orderCount, lastValidOrderCount, maxOrderCount]);
 
   const handleCloseModal = () => {
     const value = { isOpen: false, isType: '' };
     dispatch(receiveSetting(value));
   };
+
+  const handleUpCount = () => {
+    if (orderCount < Math.floor(modalData.holdingCash / modalData.orderPrice)) {
+      setOrderCount(orderCount + 1);
+    }
+  };
+
+  const handleDownCount = () => {
+    if (orderCount > 0) {
+      setOrderCount(orderCount - 1);
+    }
+  };
+
+  const handleChangeCount = (percent) => {
+    if (percent === 0) {
+      setOrderCount(0);
+    } else if (percent === 25) {
+      setOrderCount(parseInt(maxOrderCount / 4));
+    } else if (percent === 50) {
+      setOrderCount(parseInt(maxOrderCount / 2));
+    } else {
+      setOrderCount(maxOrderCount);
+    }
+  };
+
   return (
-    <ModalContainer>
+    <>
+      <ModalContainer> </ModalContainer>
       <ModalSection>
-        <ModalTitle mode={modalStat.isType}> {modalStat.isType ? '매수' : '매도'} </ModalTitle>
+        <ModalTitle mode={modalStat.isType ? 'gain' : 'lose'}> {modalStat.isType ? '매수' : '매도'} 주문 </ModalTitle>
 
         <StockSection>
           <NameBox>종목이름</NameBox>
-          <StockNameBox> 삼성전자 </StockNameBox>
+          <StockNameBox> {modalData.companyName} </StockNameBox>
         </StockSection>
 
         <StockSection>
           <CountBox>주문수량</CountBox>
           <StockCountFirstBox> 주문가능 </StockCountFirstBox>
-          <StockCountSecondBox> N </StockCountSecondBox>
+          <StockCountSecondBox>
+            {modalStat.isType ? Math.floor(modalData.holdingCash / modalData.orderPrice) : modalData.holdingcount}
+          </StockCountSecondBox>
           <StockCountThirdBox> 주 </StockCountThirdBox>
         </StockSection>
 
         <CountInputContainer>
           <CountInputBox>
-            <CountInput variant="static" defaultValue="0" />
+            <CountInput
+              variant="static"
+              value={orderCount}
+              onChange={(e) => {
+                const newOrderCount = parseInt(e.target.value);
+                if (!isNaN(newOrderCount)) {
+                  setOrderCount(newOrderCount);
+                } else {
+                  setOrderCount(0);
+                }
+              }}
+            />
           </CountInputBox>
           <ButtonContainer>
-            <UpButton>▲</UpButton>
-            <DownButton>▼</DownButton>
+            <UpButton onClick={() => handleUpCount()}>▲</UpButton>
+            <DownButton onClick={() => handleDownCount()}>▼</DownButton>
           </ButtonContainer>
         </CountInputContainer>
 
         <ButtonBox>
-          <RatioButton> 0% </RatioButton>
-          <RatioButton> 25% </RatioButton>
-          <RatioButton> 50% </RatioButton>
-          <RatioButton> 100% </RatioButton>
+          <RatioButton onClick={() => handleChangeCount(0)}> 0% </RatioButton>
+          <RatioButton onClick={() => handleChangeCount(25)}> 25% </RatioButton>
+          <RatioButton onClick={() => handleChangeCount(50)}> 50% </RatioButton>
+          <RatioButton onClick={() => handleChangeCount(100)}> 100% </RatioButton>
         </ButtonBox>
 
         <StockSection>
           <CountBox>주문단가</CountBox>
-          <StockCountSecond> 0 </StockCountSecond>
+          <StockCountSecond> {modalData.orderPrice.toLocaleString()} </StockCountSecond>
           <StockCountThirdBox> 원 </StockCountThirdBox>
         </StockSection>
 
         <StockSection>
           <CountBox>총주문금액</CountBox>
-          <StockCountSecond> 0 </StockCountSecond>
+          <StockCountSecond> {(modalData.orderPrice * orderCount).toLocaleString()} </StockCountSecond>
           <StockCountThirdBox> 원 </StockCountThirdBox>
         </StockSection>
 
-        <StockSection>
-          <CountBox>보유 예수금</CountBox>
-          <StockCountSecond> 0 </StockCountSecond>
-          <StockCountThirdBox> 원 </StockCountThirdBox>
-        </StockSection>
+        {modalStat.isType ? (
+          <StockSection>
+            <CountBox>보유 예수금</CountBox>
+            <StockCountSecond> {modalData.holdingCash.toLocaleString()} </StockCountSecond>
+            <StockCountThirdBox> 원 </StockCountThirdBox>
+          </StockSection>
+        ) : null}
 
         <SelectButtonSection>
-          <CloseButton onClick={() => handleCloseModal()}> 취소 </CloseButton>
-          <CorrectButton> 매매 </CorrectButton>
+          <CloseButton onClick={() => handleCloseModal()} mode={modalStat.isType ? 'gain' : 'lose'}>
+            취소
+          </CloseButton>
+          <CorrectButton mode={modalStat.isType ? 'gain' : 'lose'} disabled={orderCount === 0}>
+            {modalStat.isType ? '매수' : '매도'}
+          </CorrectButton>
         </SelectButtonSection>
       </ModalSection>
-    </ModalContainer>
+    </>
   );
 }
 
 // const tmp = styled.div`
 //   ${tw``}
 // `;
+const ModalContainer = styled.div`
+  opacity: 0.6;
+  ${tw`fixed inset-0 w-[100%] bg-black z-20`}
+`;
 const ModalSection = styled.div`
   left: 37.5%;
   top: 30%;
@@ -90,7 +158,8 @@ const ModalSection = styled.div`
 `;
 
 const ModalTitle = styled.div`
-  ${tw`w-full text-center`}
+  ${tw`w-full text-center text-3xl my-4`}
+  ${({ mode }) => (mode === 'gain' ? tw`text-gain` : tw`text-lose`)}
 `;
 
 const StockSection = styled.div`
@@ -113,14 +182,10 @@ const StockCountFirstBox = styled.div`
   ${tw`w-[40%] text-right pr-2`}
 `;
 const StockCountSecondBox = styled.div`
-  ${tw`w-[10%]`}
+  ${tw`w-[10%] text-right pr-2`}
 `;
 const StockCountThirdBox = styled.div`
   ${tw`w-[5%]`}
-`;
-
-const ModalContainer = styled.div`
-  ${tw`fixed inset-0 w-[100%] z-20`}
 `;
 
 const ButtonContainer = styled.div`
@@ -165,10 +230,12 @@ const SelectButtonSection = styled.div`
 `;
 
 const CloseButton = styled(Button)`
-  opacity: 0.7;
-  ${tw`w-[35%] h-8 px-0 py-0 bg-negative text-${true ? 'gain' : 'lose'} shadow-none hover:shadow-none`}
+  opacity: 0.5;
+  ${tw`w-[35%] h-8 px-0 py-0 bg-negative shadow-none hover:shadow-none`}
+  ${({ mode }) => (mode === 'gain' ? tw`text-gain` : tw`text-lose`)}
 `;
 
 const CorrectButton = styled(Button)`
-  ${tw`w-[35%] h-8 px-0 py-0 bg-${true ? 'gain' : 'lose'} text-white`}
+  ${tw`w-[35%] h-8 px-0 py-0 text-white`}
+  ${({ mode }) => (mode === 'gain' ? tw`bg-gain` : tw`bg-lose`)}
 `;
