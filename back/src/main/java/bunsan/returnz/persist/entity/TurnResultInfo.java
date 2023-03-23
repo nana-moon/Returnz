@@ -23,11 +23,11 @@ public class TurnResultInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "TURN_INFO_ID")
-	Long id;
-	Integer seq;
-	String symbolId;
-	Integer balance;
+	private Long id;
+	private Integer seq;
+	private String symbolId;
+	private Integer balance;
 	@Convert(converter = DecisionConverter.class)
-	Decision decision;
+	private Decision decision;
 
 }

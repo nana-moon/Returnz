@@ -21,14 +21,14 @@ public class Waiter {
 	@GeneratedValue
 	@Id
 	@Column(name = "WAIT_MEMBER_ID")
-	Long id;
-	Long profit;
-	Long deposit;
-	Boolean isCaptain;
-	String userName;
+	private Long id;
+	private Long profit;
+	private Long deposit;
+	private Boolean isCaptain;
+	private String userName;
 	@ManyToOne
 	@JoinColumn(name = "WAIT_ROOM_ID")
-	WaitRoom waitRoom;
+	private WaitRoom waitRoom;
 
 
 }

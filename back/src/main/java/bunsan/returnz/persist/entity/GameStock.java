@@ -19,9 +19,9 @@ import lombok.NoArgsConstructor;
 public class GameStock {
 	@Id
 	@Column(name = "SYMBOL_ID")
-	String symbolId;
-	String stockName;
+	private String symbolId;
+	private String stockName;
 	@ManyToOne
 	@JoinColumn(name = "GAME_ROOM_ID")
-	GameRoom gameRoom;
+	private GameRoom gameRoom;
 }
