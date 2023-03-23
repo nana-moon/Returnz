@@ -28,7 +28,7 @@ public class GradingHistory {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "COMAPNY_CODE")
+	@JoinColumn(name = "COMPANY_CODE")
 	private Company company;
 
 	private LocalDateTime epochGradeDate;

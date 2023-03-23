@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,17 +25,17 @@ public class Gamer {
 	@Column(name = "GAMER_ID")
 	Long id;
 
-	String username;
-	Integer deposit;
-	Integer totalBuyAmount;
-	Integer totalEvaluationAmount;
+	private String username;
+	private Integer deposit;
+	private Integer totalBuyAmount;
+	private Integer totalEvaluationAmount;
 
 	@Builder.Default
-	Boolean readyState = false;
+	private Boolean readyState = false;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAME_ROOM_ID")
-	GameRoom gameRoom;
+	private GameRoom gameRoom;
 
 
 
