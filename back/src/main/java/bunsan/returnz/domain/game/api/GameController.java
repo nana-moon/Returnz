@@ -127,7 +127,7 @@ public class GameController {
 			throw new BadRequestException("테마가 잘못됬습니다");
 		}
 		//테마 가 유저면 턴당 정보, 총턴수 , 턴시작 을 알려줘야합니다. 아니면 애러 발생
-		requestSettingGame.getTheme().validateRequestSettingGame(requestSettingGame);
+		requestSettingGame.validateRequestSettingGame();
 		if (!(requestSettingGame.getMemberIdList().size() > 0)) {
 			throw new BadRequestException("유저는 최소 한명 이상이여야합니다.");
 		}
