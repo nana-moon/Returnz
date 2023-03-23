@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.sideBar.dto;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
@@ -15,10 +16,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SideMessageDto {
+public class SideMessageDto implements Serializable {
 	public enum MessageType {
 		INVITE, CONNECTION, FRIEND;
 	}
-	private MessageType type;
+	private String type;
 	private Map<String, Object> messageBody;
 }

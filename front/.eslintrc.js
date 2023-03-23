@@ -4,7 +4,7 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'airbnb', 'prettier', 'react-app', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'airbnb', 'prettier', 'react-app', 'plugin:prettier/recommended', 'plugin:import/typescript'],
   parser: '@babel/eslint-parser',
   parserOptions: {
     requireConfigFile: false,
