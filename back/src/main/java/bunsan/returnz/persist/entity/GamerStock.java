@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GamerStock {
 	@Id
-	@Column(name = "SYMBOL_ID")
-	private String symbolId;
+	@Column(name = "COMPANY_CODE")
+	private String companyCode;
 	private Integer totalCount;
 	private Integer totalAmount;
 
