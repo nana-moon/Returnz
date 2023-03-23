@@ -1,10 +1,11 @@
 package bunsan.returnz.domain.game.enums;
 
 public enum TurnPerTime {
+	NO("NO"),
+	WEEK("WEEK"),
+	MONTH("MONTH"),
+	DAY("DAY");
 
-	Minute("MINUTE"),
-	Month("MONTH"),
-	Day("DAY");
 
 	private String time;
 	TurnPerTime(String time) {
