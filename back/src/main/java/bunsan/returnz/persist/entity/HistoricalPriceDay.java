@@ -1,4 +1,4 @@
-package bunsan.returnz.persist.entity;
+HistoricalPriceMinutepackage bunsan.returnz.persist.entity;
 
 import java.time.LocalDateTime;
 
@@ -20,21 +20,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoricalPrice {
+public class HistoricalPriceHour {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "HISTORICAL_PRICE_ID")
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "COMAPNY_CODE")
-	private Company company;
-	private Long high;
-	private Long volume;
-	private Long close;
-	private Long low;
-	private Long open;
-	private Long adjclose;
-	private Long dividends;
 	private LocalDateTime dateTime;
+	private double open;
+	private double high;
+	private double low;
+	private double close;
+	private double volume;
+	private double adjclose;
+	private double dividends;
+
+	@ManyToOne
+	@JoinColumn(name = "COMPANY_CODE")
+	private Company company;
 }
