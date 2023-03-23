@@ -20,9 +20,9 @@ public class WaitRoom {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name = "WAIT_ROOM_ID")
-	Long id;
+	private Long id;
 
 	@Builder.Default
-	Integer roomMemberCount = 1;
+	private Integer roomMemberCount = 1;
 
 }
