@@ -12,7 +12,7 @@ export const BuySellData = createSlice({
     ifsell: {
       companyName: '',
       orderPrice: '',
-      holdingcount: '',
+      holdingcount: 12,
     },
     ifopen: {
       isOpen: false,
@@ -24,7 +24,10 @@ export const BuySellData = createSlice({
       state.ifbuy.companyName = action.payload.companyName;
       state.ifbuy.orderPrice = action.payload.orderPrice;
     },
-    receiveSellData: (state, action) => {},
+    receiveSellData: (state, action) => {
+      state.ifsell.companyName = action.payload.companyName;
+      state.ifsell.orderPrice = action.payload.orderPrice;
+    },
     receiveSetting: (state, action) => {
       state.ifopen = action.payload;
     },

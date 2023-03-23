@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import imgpath from './bear.jpg';
-import { receiveBuyData } from '../../../store/BuySellModal/BuySell.reducer';
+import { receiveBuyData, receiveSellData } from '../../../store/BuySellModal/BuySell.reducer';
 
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
@@ -11,6 +11,8 @@ export default function StockListItem({ Stock, i }) {
       onClick={() => {
         const value = { companyName: Stock.name, orderPrice: Stock.price };
         dispatch(receiveBuyData(value));
+        // 보유수량 확인 가능하면 수정해야됨
+        dispatch(receiveSellData(value));
       }}
     >
       <ItemTitleSection>

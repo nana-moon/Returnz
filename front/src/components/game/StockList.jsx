@@ -4,12 +4,13 @@ import tw, { styled } from 'twin.macro';
 import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
 import { receiveSetting } from '../../store/BuySellModal/BuySell.reducer';
-import { modalState } from '../../store/BuySellModal/BuySell.selector';
+import { modalState, sellNeedData } from '../../store/BuySellModal/BuySell.selector';
 import BuySellModal from './modals/BuySellModal';
 
 export default function StockList() {
   const dispatch = useDispatch();
   const modalStat = useSelector(modalState);
+  const canSell = useSelector(sellNeedData);
 
   const [stockData, setStockData] = useState(StockData);
   const handleOpenModal = (data) => {
@@ -31,7 +32,7 @@ export default function StockList() {
         <BuyButton type="button" onClick={() => handleOpenModal(true)}>
           매수
         </BuyButton>
-        <SellButton type="button" onClick={() => handleOpenModal(false)}>
+        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={canSell.holdingcount === 0}>
           매도
         </SellButton>
       </OrderButton>
