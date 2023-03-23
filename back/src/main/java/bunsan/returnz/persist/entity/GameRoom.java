@@ -25,14 +25,17 @@ public class GameRoom {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "GAME_ROOM_ID")
-	Long id;
-	Integer curTurn;
-	LocalDate curDate;
-	Integer totalTurn;
+	private Long id;
+
+	@Column(name = "ROOM_ID")
+	private String roomId; // uuid?
+	private Integer curTurn;
+	private LocalDate curDate;
+	private Integer totalTurn;
 	@Builder.Default
-	Integer roomMemberCount = 1;
+	private Integer roomMemberCount = 1;
 	@Convert(converter = TurnPerTimeConverter.class)
-	TurnPerTime turnPerTime;
+	private TurnPerTime turnPerTime;
 
 
 
