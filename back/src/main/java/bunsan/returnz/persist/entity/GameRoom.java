@@ -39,6 +39,7 @@ public class GameRoom {
 
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()
+			.id(gameRoom.id)
 			.roomId(gameRoom.roomId)
 			.curTurn(gameRoom.curTurn)
 			.totalTurn(gameRoom.totalTurn)
