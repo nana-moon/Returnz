@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class RequestSettingGame {
 	private String theme;
 	//---- 사용자 설정일때만 아래 값을 사용합니다 -----

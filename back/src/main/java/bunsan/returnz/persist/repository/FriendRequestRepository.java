@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import bunsan.returnz.persist.entity.FriendRequest;
+
 
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
 	boolean existsFriendRequestByRequestUsernameAndTargetUsername(String requestUsername, String targetUsername);
