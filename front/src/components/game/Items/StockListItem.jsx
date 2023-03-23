@@ -1,17 +1,16 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import imgpath from './bear.jpg';
-// import { handleSetPrice } from '../StockList';
+import { receiveBuyData } from '../../../store/BuySellModal/BuySell.reducer';
 
-export default function StockListItem({ Stock, i, handleSetPrice }) {
-  const handleEmitPrices = (e) => {
-    handleSetPrice(e);
-  };
-
+export default function StockListItem({ Stock, i }) {
+  const dispatch = useDispatch();
   return (
     <ItemContainer
       onClick={() => {
-        handleEmitPrices(Stock.price, Stock.name);
+        const value = { companyName: Stock.name, orderPrice: Stock.price };
+        dispatch(receiveBuyData(value));
       }}
     >
       <ItemTitleSection>

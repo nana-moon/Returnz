@@ -37,7 +37,10 @@ export default function HoldingListItem({ holding }) {
   );
 }
 const ItemContainer = styled.div`
-  ${tw`bg-negative rounded-xl mx-2`}
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${tw`bg-negative rounded-xl mx-2 mb-4`}
 `;
 
 const ItemTitleSection = styled.div`
@@ -50,9 +53,7 @@ const ItemTitleImgBox = styled.div`
 
 const CompanyName = styled.div`
   width: 40%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+
   ${tw`font-bold text-left`}
 `;
 

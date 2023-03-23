@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { Provider } from 'react-redux';
 import LoadPage from './components/loading/LoadPage';
-import { store } from './app/store';
+import { store } from './store/Store';
 
 function App() {
   const queryClient = new QueryClient({
