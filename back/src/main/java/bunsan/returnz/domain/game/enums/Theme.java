@@ -1,10 +1,5 @@
 package bunsan.returnz.domain.game.enums;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-
-import bunsan.returnz.domain.game.dto.RequestSettingGame;
-import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,5 +29,4 @@ public enum Theme {
 		return theme;
 	}
 
-	// TODO: 2023/03/23 이거 디티오에 있어야하는거 같은데요?
 }
