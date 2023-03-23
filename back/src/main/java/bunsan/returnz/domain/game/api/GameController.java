@@ -108,6 +108,10 @@ public class GameController {
 			// }
 		}
 
+		// 방 roomId로 멤버 불러오기
+
+		// 나의 현재 보유 종목
+
 		return null;
 	}
 
