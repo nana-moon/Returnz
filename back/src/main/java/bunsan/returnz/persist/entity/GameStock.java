@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -21,7 +22,7 @@ public class GameStock {
 	@Column(name = "SYMBOL_ID")
 	private String symbolId;
 	private String stockName;
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAME_ROOM_ID")
 	private GameRoom gameRoom;
 }
