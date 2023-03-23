@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class GameRoomDto {
+	private Long id;
 	private String roomId;
 	private Integer curTurn;
 	private Integer totalTurn;
