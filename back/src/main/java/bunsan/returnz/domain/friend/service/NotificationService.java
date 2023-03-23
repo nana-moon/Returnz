@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.friend.sevice;
+package bunsan.returnz.domain.friend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

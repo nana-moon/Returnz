@@ -19,14 +19,14 @@ public class WaitController {
 
 
 	//====================================대기방 만드는 요청======================================
-	@PostMapping("/api/wait-rooms")
+	@PostMapping("/api/wait-room")
 	public ResponseEntity<WaitRoom> createWaitRoom(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		WaitRoom waitRoom = waitService.createWaitRoom(token);
 		return ResponseEntity.ok().body(waitRoom);
 	}
 	//====================================대기방 송신 요청======================================
-	@MessageMapping("/wait-rooms")
+	@MessageMapping("/wait-room")
 	public void sendToWaitRoom(@RequestHeader(value = "Authorization") String bearerToken, WaitMessageDto waitRequest) {
 		String token = bearerToken.substring(7);
 		if (waitRequest.getType().equals(WaitMessageDto.MessageType.ENTER)) {
