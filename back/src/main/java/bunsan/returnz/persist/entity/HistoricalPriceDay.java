@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,4 +40,18 @@ public class HistoricalPriceDay {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COMPANY_CODE", nullable = true)
 	private Company company;
+
+	public GameHistoricalPriceDayDto toDto(HistoricalPriceDay historicalPriceDay) {
+		return GameHistoricalPriceDayDto.builder()
+			.open(historicalPriceDay.getOpen())
+			.high(historicalPriceDay.getHigh())
+			.low(historicalPriceDay.getLow())
+			.close(historicalPriceDay.getClose())
+			.volume(historicalPriceDay.getVolume())
+			.adjclose(historicalPriceDay.getAdjclose())
+			.dividends(historicalPriceDay.getDividends())
+			.companyName(historicalPriceDay.getCompany().getCompanyName())
+			.logo(historicalPriceDay.getCompany().getCompanyDetail().getLogo())
+			.build();
+	}
 }

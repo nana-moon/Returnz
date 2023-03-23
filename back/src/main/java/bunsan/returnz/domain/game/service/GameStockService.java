@@ -22,9 +22,15 @@ public class GameStockService {
 	public List<GameStockDto> findAllBygameRoomId(String gameRoomId) {
 		List<GameStock> gameStocks = gameStockRepository.findAllBygameRoomId(gameRoomId);
 
+		// TODO: gameStocks 없을 경우 에러 발생 / 또는 개수가 적은 경우
+		// if(gameStocks.isEmpty() && gameStocks.size() == 0) {
+		//
+		// }
+
 		List<GameStockDto> gameStockDtos = new ArrayList<>();
 		GameStock gameStock = new GameStock();
 		for (int i = 0; i < gameStocks.size(); ++i) {
+			GameStock gameStock = new GameStock();
 			gameStockDtos.add(gameStock.toDto(gameStocks.get(i)));
 		}
 		return gameStockDtos;
