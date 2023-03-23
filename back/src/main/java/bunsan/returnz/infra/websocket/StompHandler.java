@@ -2,6 +2,10 @@ package bunsan.returnz.infra.websocket;
 
 import java.util.Objects;
 
+import bunsan.returnz.domain.member.enums.MemberState;
+import bunsan.returnz.global.advice.exception.NotFoundException;
+import bunsan.returnz.persist.entity.Member;
+import bunsan.returnz.persist.repository.MemberRepository;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -25,22 +29,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
 	private final JwtTokenProvider jwtTokenProvider;
+	private final MemberRepository memberRepository;
 	@SneakyThrows
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		StompHeaderAccessor headerAccessor  = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 		assert headerAccessor != null;
-		// log.info("message:" + message);
-		// log.info("header:" + message.getHeaders());
-		// log.info("token:" + accessor.getNativeHeader("Authorization"));
+
 		if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-			String token = String.valueOf(headerAccessor.getNativeHeader("Authorization").get(0));
-			log.info(token);
-			// jwtTokenProvider.validateToken(Objects.requireNonNull(
 			String authToken = headerAccessor.getFirstNativeHeader("Authorization").substring(7);
-			log.info(authToken);
 			Authentication authentication = jwtTokenProvider.getAuthentication(authToken);
 			headerAccessor.setUser(authentication);
+			log.info("online: " + authentication.getName());
+		}
+		else if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())) {
+			String username = headerAccessor.getUser().getName();
+			log.info("offline: " + username);
+			Member member = memberRepository.findByUsername(username)
+					.orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
+			member.changeState(MemberState.OFFLINE);
+			memberRepository.save(member);
+			// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
 		}
 		return message;
 	}
