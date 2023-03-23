@@ -28,7 +28,7 @@ public class TurnResultInfo {
 	@Column(name = "TURN_INFO_ID")
 	private Long id;
 	private Integer seq;
-	private String symbolId;
+	private String companyCode;
 	private Integer balance;
 	@Convert(converter = DecisionConverter.class)
 	private Decision decision;
