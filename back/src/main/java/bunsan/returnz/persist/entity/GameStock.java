@@ -22,7 +22,7 @@ public class GameStock {
 	@Id
 	@Column(name = "COMPANY_CODE")
 	private String companyCode;
-	private String stockName;
+	private String companyName;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAME_ROOM_ID")
 	private GameRoom gameRoom;
@@ -30,7 +30,7 @@ public class GameStock {
 	public GameStockDto toDto(GameStock gameStock) {
 		return GameStockDto.builder()
 			.companyCode(gameStock.companyCode)
-			.stockName(gameStock.stockName)
+			.companyName(gameStock.companyName)
 			.gameRoomId(gameStock.gameRoom.getRoomId())
 			.build();
 	}
