@@ -32,7 +32,6 @@ public class TurnResultInfo {
 	private Integer balance;
 	@Convert(converter = DecisionConverter.class)
 	private Decision decision;
-	// TODO: 2023-03-23 게임 연관 관계 추가
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAME_ROOM_ID")
 	private GameRoom gameRoom;
