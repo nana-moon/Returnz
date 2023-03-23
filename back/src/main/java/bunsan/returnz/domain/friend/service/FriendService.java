@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.friend.sevice;
+package bunsan.returnz.domain.friend.service;
 
 import java.util.ArrayList;
 import java.util.List;

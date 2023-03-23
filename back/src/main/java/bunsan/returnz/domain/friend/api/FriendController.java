@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.friend.dto.FriendRequestDto;
-import bunsan.returnz.domain.friend.sevice.FriendService;
+import bunsan.returnz.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
 
 //----------------------------------------컨트롤러 명 변경 필요------------------------------------------

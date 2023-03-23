@@ -39,7 +39,7 @@ public class MemberController {
 		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
 		return ResponseEntity.ok().body(tokenInfo);
 	}
-	//--------------------------------------로그인-------------------------------------------
+	//--------------------------------------회원 검색-------------------------------------------
 	@GetMapping("/{nickname}")
 	public ResponseEntity findByNickname(@PathVariable String nickname) {
 		List<FriendInfo> memberList = memberService.findByNickname(nickname);
