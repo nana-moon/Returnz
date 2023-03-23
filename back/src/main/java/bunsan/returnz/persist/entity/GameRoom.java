@@ -31,7 +31,8 @@ public class GameRoom {
 	private Long id;
 	@Column(unique = true) // 소켓에서 쓰일 아이디
 	private String roomId;
-	private Integer curTurn;
+	@Builder.Default
+	private Integer curTurn = 0;
 	private LocalDateTime curDate;
 	private Integer totalTurn;
 	@Builder.Default
