@@ -38,6 +38,7 @@ public class GameController {
 	 * Description : 게임 턴이 진행될때 마다 필요한 정보를 출력
 	 * ex) 0번 째 턴 -> 시작 화면 구성
 	 * ex) X번 째 턴 -> 진행 정보 전달
+	 *
 	 * @param roomId
 	 * @return
 	 */
@@ -75,7 +76,7 @@ public class GameController {
 
 		// 첫 번째 턴인경우, 20 번 전 정보를 제공, HashMap에 저장
 		if (gameRoomDto.getCurTurn() == 0) {
-			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
+			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 				for (int i = 0; i < gameStockDtoList.size(); ++i) {
 					String companyCode = gameStockDtoList.get(i).getCompanyCode();
 					List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllBydateTimeIsBeforeAndcompanyCodeOrderBydateTimeDescLimit20(
@@ -94,7 +95,7 @@ public class GameController {
 		}
 		// 첫 번째 턴이 아닌 경우 하나만
 		else {
-			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
+			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 				for (int i = 0; i < gameStockDtoList.size(); ++i) {
 					String companyCode = gameStockDtoList.get(i).getCompanyCode();
 					List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllBydateTimeIsBeforeAndcompanyCodeOrderBydateTimeDescLimit1(
@@ -125,16 +126,15 @@ public class GameController {
 		if (!Theme.isValid(requestSettingGame.getTheme())) {
 			throw new BadRequestException("테마가 잘못됬습니다");
 		}
-		if (requestSettingGame.equals(Theme.USER.getTheme())) {
-			if (requestSettingGame.getTotalTurn().equals(null)
-				| requestSettingGame.getStartTime().equals(null) |
-				requestSettingGame.getTernPerTime().equals(null)) {
-
-			}
+		//테마 가 유저면 턴당 정보, 총턴수 , 턴시작 을 알려줘야합니다. 아니면 애러 발생
+		requestSettingGame.getTheme().validateRequestSettingGame(requestSettingGame);
+		if (!(requestSettingGame.getMemberIdList().size() > 0)) {
+			throw new BadRequestException("유저는 최소 한명 이상이여야합니다.");
 		}
 
-		String roomId = "test";
+		Integer roomId = 1;
+		String socketId = "socketId23";
 
-		return ResponseEntity.ok().body(Map.of("romID", roomId));
+		return ResponseEntity.ok().body(Map.of("socketId", socketId, "roomId", roomId));
 	}
 }

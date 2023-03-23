@@ -30,7 +30,6 @@ public class GameStockService {
 		List<GameStockDto> gameStockDtos = new ArrayList<>();
 		GameStock gameStock = new GameStock();
 		for (int i = 0; i < gameStocks.size(); ++i) {
-			GameStock gameStock = new GameStock();
 			gameStockDtos.add(gameStock.toDto(gameStocks.get(i)));
 		}
 		return gameStockDtos;
