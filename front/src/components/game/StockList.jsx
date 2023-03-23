@@ -1,34 +1,37 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
+import { receiveSetting } from '../../store/BuySellModal/BuySell.reducer';
+import { modalState } from '../../store/BuySellModal/BuySell.selector';
 import BuySellModal from './modals/BuySellModal';
 
 export default function StockList() {
-  const [stockData, setStockData] = useState(StockData);
-  const [stockPrice, setStockPrice] = useState(0);
-  const [openBuySellModal, setopenBuySellModal] = useState({ state: false, name: null, money: null, price: null });
+  const dispatch = useDispatch();
+  const modalStat = useSelector(modalState);
 
-  const handleSetPrice = (data) => {
-    console.log(data, 'data');
-    setStockPrice(data);
+  const [stockData, setStockData] = useState(StockData);
+  const handleOpenModal = (data) => {
+    const value = { isOpen: true, isType: data };
+    dispatch(receiveSetting(value));
   };
   return (
     <StockListContanier>
-      {openBuySellModal ? <BuySellModal /> : null}
+      {modalStat.isOpen ? <BuySellModal /> : null}
       <StockListSection>상장종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {stockData.map(function (Stock, i) {
-            return <StockListItem Stock={Stock} key={Stock.name} handleSetPrice={handleSetPrice} />;
+            return <StockListItem Stock={Stock} key={Stock.name} />;
           })}
         </div>
       </ListContanier>
       <OrderButton>
-        <BuyButton type="button" onClick={() => setopenBuySellModal(true, 1)}>
+        <BuyButton type="button" onClick={() => handleOpenModal(true)}>
           매수
         </BuyButton>
-        <SellButton type="button" onClick={() => setopenBuySellModal(true, 2)}>
+        <SellButton type="button" onClick={() => handleOpenModal(false)}>
           매도
         </SellButton>
       </OrderButton>
