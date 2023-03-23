@@ -1,8 +1,11 @@
 package bunsan.returnz.domain.sideBar.service;
 
+import bunsan.returnz.domain.friend.dto.FriendInfo;
+import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.sideBar.dto.SideMessageDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import bunsan.returnz.persist.entity.FriendRequest;
 import bunsan.returnz.persist.entity.Member;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,26 +30,22 @@ public class SideBarService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final FriendRequestRepository friendRequestRepository;
     private final MemberRepository memberRepository;
-
-    public void sendFriendRequest(SideMessageDto sideRequest) {
+    @Transactional
+    public void sendFriendRequest(SideMessageDto sideRequest, String token) {
         Map<String, Object> requestBody = sideRequest.getMessageBody();
 
         // token에 저장된 Member > 요청한 사람
-        // Member requester = jwtTokenProvider.getMember(token);
-        String requestUsername = (String)requestBody.get("requestUsername");
+        Member requester = jwtTokenProvider.getMember(token);
+        String requestUsername = requester.getUsername();
         String targetUsername = (String)requestBody.get("targetUsername");
-        log.info(requestUsername);
-        log.info(targetUsername);
 
-        // checkValidRequest(requestUsername, targetUsername);
-        log.info(requestUsername);
-        log.info(targetUsername);
+        checkValidRequest(requestUsername, targetUsername);
 
         // 친구 요청 존재 여부 확인
-        // if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
-        //         targetUsername)) {
-        //     throw new ConflictException("이미 요청을 보낸 유저입니다.");
-        // }
+         if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
+                 targetUsername)) {
+             throw new ConflictException("이미 요청을 보낸 유저입니다.");
+         }
         FriendRequest friendRequest = FriendRequest.builder()
                 .requestUsername(requestUsername)
                 .targetUsername(targetUsername)
@@ -56,12 +56,12 @@ public class SideBarService {
         // 새로운 사이드 메세지 생성
         Map<String, Object> messageBody = new HashMap<>();
         messageBody.put("requestId", savedRequest.getId());
-        // messageBody.put("username", requester.getUsername());
-        // messageBody.put("nickname", requester.getNickname());
-        // messageBody.put("profileIcon", requester.getProfileIcon());
+        messageBody.put("username", requester.getUsername());
+        messageBody.put("nickname", requester.getNickname());
+        messageBody.put("profileIcon", requester.getProfileIcon());
 
         SideMessageDto sideMessageDto = SideMessageDto.builder()
-                .type("FRIEND")
+                .type(SideMessageDto.MessageType.FRIEND)
                 .messageBody(messageBody)
                 .build();
 
@@ -71,20 +71,21 @@ public class SideBarService {
         simpMessagingTemplate.convertAndSendToUser(targetUsername,
                 "/sub/side-bar", sideMessageDto);
     }
-    public void sendInviteMessage(SideMessageDto sideRequest) {
+    @Transactional
+    public void sendInviteMessage(SideMessageDto sideRequest, String token) {
         // token에 저장된 Member > 요청한 사람
         Map<String, Object> requestBody = sideRequest.getMessageBody();
-        // Member requester = requestBody.get("requestUsername");
+        Member requester = jwtTokenProvider.getMember(token);
 
         // 새로운 사이드 메세지 생성
         Map<String, Object> messageBody = new HashMap<>();
         messageBody.put("roomId", requestBody.get("roomId"));
-        // messageBody.put("username", requester.getUsername());
-        // messageBody.put("nickname", requester.getNickname());
-        // messageBody.put("profileIcon", requester.getProfileIcon());
+        messageBody.put("username", requester.getUsername());
+        messageBody.put("nickname", requester.getNickname());
+        messageBody.put("profileIcon", requester.getProfileIcon());
 
         SideMessageDto sideMessageDto = SideMessageDto.builder()
-                .type("INVITE")
+                .type(SideMessageDto.MessageType.INVITE)
                 .messageBody(messageBody)
                 .build();
 
@@ -92,7 +93,7 @@ public class SideBarService {
         simpMessagingTemplate.convertAndSendToUser((String) requestBody.get("targetUsername"),
                 "/sub/side-bar", sideMessageDto);
     }
-    private List<Member> checkValidRequest(String requestUsername, String targetUsername) {
+    private void checkValidRequest(String requestUsername, String targetUsername) {
         // 우선 확인 사항
         // Member 반환
         Member requestMember = memberRepository.findByUsername(requestUsername)
@@ -106,12 +107,40 @@ public class SideBarService {
         if (requestMember.isFriend(targetMember)) {
             throw new ConflictException("이미 친구인 유저와 친구를 할 수 없습니다.");
         }
-        return new ArrayList<Member>() {
-            {
-                add(requestMember);
-                add(targetMember);
-            }
-        };
+//        return new ArrayList<Member>() {
+//            {
+//                add(requestMember);
+//                add(targetMember);
+//            }
+//        };
     }
+    @Transactional
+    public void sendEnterMessage(String username) {
+        // member 조회 후 online으로 바꿔주기
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
+        member.changeState(MemberState.ONLINE);
+        memberRepository.save(member);
 
+        // 친구 조회 후 상태 전부 리턴
+        List<FriendInfo> friendInfoList = new ArrayList<>();
+        for (Member friend : member.getFriends()) {
+            friendInfoList.add(new FriendInfo(friend));
+        }
+
+        Map<String, Object> messageBody = new HashMap<>();
+        messageBody.put("friendList", friendInfoList);
+
+        SideMessageDto sideMessageDto = SideMessageDto.builder()
+                .type(SideMessageDto.MessageType.ENTER)
+                .messageBody(messageBody)
+                .build();
+
+        // 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
+        simpMessagingTemplate.convertAndSendToUser(username,
+                "/sub/side-bar", sideMessageDto);
+        // 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
+    }
+    public void sendExitMessage(SideMessageDto sideRequest, String token) {
+    }
 }

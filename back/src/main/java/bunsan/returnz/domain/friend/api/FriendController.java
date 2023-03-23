@@ -49,7 +49,7 @@ public class FriendController {
 		friendService.addFriend(id, token);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
-	//=================================친구 리스트 불러오기======================================
+	//==========================친구 리스트 불러오기 > 소켓으로 바꿈=============================
 
 	@GetMapping("api/friends")
 	public ResponseEntity<Map> getFriends(@RequestHeader(value = "Authorization") String bearerToken) {

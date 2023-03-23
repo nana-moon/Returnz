@@ -18,8 +18,8 @@ import lombok.ToString;
 @ToString
 public class SideMessageDto implements Serializable {
 	public enum MessageType {
-		INVITE, CONNECTION, FRIEND;
+		INVITE, STATE, FRIEND, ENTER, EXIT;
 	}
-	private String type;
+	private MessageType type;
 	private Map<String, Object> messageBody;
 }
