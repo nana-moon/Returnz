@@ -19,12 +19,12 @@ import lombok.NoArgsConstructor;
 public class GamerStock {
 	@Id
 	@Column(name = "SYMBOL_ID")
-	String symbolId;
-	Integer totalCount;
-	Integer totalAmount;
+	private String symbolId;
+	private Integer totalCount;
+	private Integer totalAmount;
 
 	@ManyToOne
 	@JoinColumn(name = "GAMER_ID")
-	Gamer gamer;
+	private Gamer gamer;
 
 }
