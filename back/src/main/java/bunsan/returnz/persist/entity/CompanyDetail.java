@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +30,14 @@ public class CompanyDetail {
 	@OneToOne
 	@JoinColumn(name = "COMPANY_CODE")
 	private Company company;
-	String country;
-
-	String industry;
-
+	String countryCode;
+	String koName;
+	@Size(max = 1000)
+	String description;
 	String sector;
-
+	String industry;
+	String logo;
+	String market;
 	String phone;
-
 	String website;
 }

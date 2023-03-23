@@ -11,9 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-// 'ForwardPeRatio', 'PsRatio', 'PbRatio',
-// 	'EnterprisesValueEBITDARatio', 'EnterprisesValueRevenueRatio',
-// 	'PeRatio', 'MarketCap', 'EnterpriseValue', 'PegRatio', 'TotalDebt', 'TotalAssets', 'ShareIssued', 'TotalRevenue', 'NetIcome', 'FreeCashFlow', 'OperatingCashFlow'
 @Getter
 @Entity
 @Builder
