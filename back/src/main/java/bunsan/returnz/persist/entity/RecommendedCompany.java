@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,7 @@ public class RecommendedCompany {
 	@Column(name = "RECOMMENDED_COMPANY_ID")
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COMAPNY_CODE")
 	private Company company;
 
