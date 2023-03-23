@@ -29,7 +29,7 @@ public class RequestSettingGame {
 	private LocalDateTime startTime;
 	@Nullable
 	private Integer totalTurn;
-	private List<String> memberIdList;
+	private List<Integer> memberIdList;
 
 	public void validateRequestSettingGame() {
 
