@@ -1,11 +1,8 @@
 package bunsan.returnz.domain.game.api;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.*;
-
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
+import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.service.GameStockService;
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -54,12 +53,23 @@ public class GameController {
 
 		return null;
 	}
+
 	@PostMapping("/init")
-	public ResponseEntity<?> settingGame(@RequestBody RequestSettingGame requestSettingGame){
+	public ResponseEntity settingGame(@RequestBody RequestSettingGame requestSettingGame) {
+		// TODO: 2023-03-23 입력에 대한 검증..
+		if (!Theme.isValid(requestSettingGame.getTheme())) {
+			throw new BadRequestException("테마가 잘못됬습니다");
+		}
+		if (requestSettingGame.equals(Theme.USER.getTheme())) {
+			if (requestSettingGame.getTotalTurn().equals(null)
+				| requestSettingGame.getStartTime().equals(null) |
+				requestSettingGame.getTernPerTime().equals(null)) {
 
-		// return ResponseEntity<>("test", HttpStatus.OK);
-		return null;
+			}
+		}
 
+		String roomId = "test";
+
+		return ResponseEntity.ok().body(Map.of("romID", roomId));
 	}
-
 }
