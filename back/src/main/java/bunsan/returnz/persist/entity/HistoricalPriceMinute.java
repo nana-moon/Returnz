@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,22 +21,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoricalPrice {
+public class HistoricalPriceMinute {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "HISTORICAL_PRICE_ID")
+	@Column(name = "HISTORICAL_PRICE_MINUTE_ID")
 	private Long id;
 
 	private LocalDateTime dateTime;
-	private double open;
-	private double high;
-	private double low;
-	private double close;
-	private double volume;
-	private double adjclose;
-	private double dividends;
+	private String open;
+	private String high;
+	private String low;
+	private String close;
+	private String volume;
+	private String adjclose;
+	private String dividends;
 
-	@ManyToOne
-	@JoinColumn(name = "COMPANY_CODE")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "COMPANY_CODE", nullable = true)
 	private Company company;
 }
