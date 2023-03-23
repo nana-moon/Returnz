@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -21,14 +22,14 @@ public class Waiter {
 	@GeneratedValue
 	@Id
 	@Column(name = "WAIT_MEMBER_ID")
-	Long id;
-	Long profit;
-	Long deposit;
-	Boolean isCaptain;
-	String userName;
-	@ManyToOne
+	private Long id;
+	private Long profit;
+	private Long deposit;
+	private Boolean isCaptain;
+	private String userName;
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "WAIT_ROOM_ID")
-	WaitRoom waitRoom;
+	private WaitRoom waitRoom;
 
 
 }

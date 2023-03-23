@@ -3,9 +3,12 @@ package bunsan.returnz.persist.entity;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import bunsan.returnz.domain.game.enums.Decision;
 import bunsan.returnz.domain.game.enums.DecisionConverter;
@@ -23,11 +26,15 @@ public class TurnResultInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "TURN_INFO_ID")
-	Long id;
-	Integer seq;
-	String symbolId;
-	Integer balance;
+	private Long id;
+	private Integer seq;
+	private String companyCode;
+	private Integer balance;
 	@Convert(converter = DecisionConverter.class)
-	Decision decision;
+	private Decision decision;
+	// TODO: 2023-03-23 게임 연관 관계 추가
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GAME_ROOM_ID")
+	private GameRoom gameRoom;
 
 }

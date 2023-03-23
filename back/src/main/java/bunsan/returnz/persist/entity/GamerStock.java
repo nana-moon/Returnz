@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,13 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GamerStock {
 	@Id
-	@Column(name = "SYMBOL_ID")
-	String symbolId;
-	Integer totalCount;
-	Integer totalAmount;
+	@Column(name = "COMPANY_CODE")
+	private String companyCode;
+	private Integer totalCount;
+	private Integer totalAmount;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAMER_ID")
-	Gamer gamer;
+	private Gamer gamer;
 
 }
