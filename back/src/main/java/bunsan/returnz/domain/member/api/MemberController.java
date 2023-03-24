@@ -6,10 +6,16 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import bunsan.returnz.domain.friend.dto.FriendInfo;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.member.dto.LoginRequest;
 import bunsan.returnz.domain.member.dto.SignupRequest;
 import bunsan.returnz.domain.member.service.MemberService;
@@ -39,6 +45,7 @@ public class MemberController {
 		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
 		return ResponseEntity.ok().body(tokenInfo);
 	}
+
 	//--------------------------------------회원 검색-------------------------------------------
 	@GetMapping("/{nickname}")
 	public ResponseEntity findByNickname(@PathVariable String nickname) {

@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class WaitController {
 	private final WaitService waitService;
 
-
 	//----------------------------------대기방 만드는 요청------------------------------------
 	@PostMapping("/api/wait-room")
 	public ResponseEntity<WaitRoom> createWaitRoom(@RequestHeader(value = "Authorization") String bearerToken) {
@@ -25,6 +24,7 @@ public class WaitController {
 		WaitRoom waitRoom = waitService.createWaitRoom(token);
 		return ResponseEntity.ok().body(waitRoom);
 	}
+
 	//------------------------------------대기방 송신 요청-------------------------------------
 	@MessageMapping("/wait-room")
 	public void sendToWaitRoom(WaitMessageDto waitRequest, @Header("Authorization") String bearerToken) {

@@ -1,14 +1,16 @@
 package bunsan.returnz.domain.member.service;
 
-import bunsan.returnz.domain.friend.dto.FriendInfo;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.member.dto.SignupRequest;
-import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
@@ -18,9 +20,6 @@ import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -100,10 +99,10 @@ public class MemberService {
 		return member;
 	}
 
-    public List<FriendInfo> findByNickname(String nickname) {
+	public List<FriendInfo> findByNickname(String nickname) {
 		List<Member> resultMembers = memberRepository.findByNicknameContaining(nickname);
 		List<FriendInfo> memberList = new ArrayList<>();
 		resultMembers.forEach(member -> memberList.add(new FriendInfo(member)));
 		return memberList;
-    }
+	}
 }
