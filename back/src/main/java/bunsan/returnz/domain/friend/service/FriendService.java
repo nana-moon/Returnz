@@ -3,13 +3,13 @@ package bunsan.returnz.domain.friend.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import bunsan.returnz.global.advice.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.friend.dto.FriendRequestDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import bunsan.returnz.persist.entity.FriendRequest;
 import bunsan.returnz.persist.entity.Member;
@@ -32,7 +32,7 @@ public class FriendService {
 		List<FriendRequestDto> requestDtoList = new ArrayList<>();
 		for (FriendRequest request : requestList) {
 			Member requester = memberRepository.findByUsername(request.getRequestUsername())
-					.orElseThrow(() -> new NotFoundException("요청 유저를 찾을 수 없습니다."));
+				.orElseThrow(() -> new NotFoundException("요청 유저를 찾을 수 없습니다."));
 			FriendRequestDto dto = request.toDto(requester);
 			requestDtoList.add(dto);
 		}
@@ -51,7 +51,7 @@ public class FriendService {
 			throw new BadRequestException("요청 유저에 대한 친구 요청이 아닙니다.");
 		}
 		Member targetMember = memberRepository.findByUsername(request.getTargetUsername())
-				.orElseThrow(() -> new NotFoundException("타겟 맴버가 삭제 되었습니다."));
+			.orElseThrow(() -> new NotFoundException("타겟 맴버가 삭제 되었습니다."));
 		Member requestMember = memberRepository.findByUsername(request.getRequestUsername())
 			.orElseThrow(() -> new NotFoundException("요청 맴버가 삭제 되었습니다."));
 
@@ -65,7 +65,6 @@ public class FriendService {
 		memberRepository.save(targetMember);
 		friendRequestRepository.deleteById(request.getId());
 	}
-
 
 	public void deleteRequest(Long id, String token) {
 		// token에 저장된 Member > 요청한 사람
@@ -96,7 +95,7 @@ public class FriendService {
 		for (Member friend : friends) {
 			if (friend.getUsername().equals(username)) {
 				Member targetFriend = memberRepository.findByUsername(username)
-					.orElseThrow(()-> new NotFoundException("친구의 계정이 삭제되었습니다."));
+					.orElseThrow(() -> new NotFoundException("친구의 계정이 삭제되었습니다."));
 				me.deleteFriend(targetFriend);
 				targetFriend.deleteFriend(me);
 				memberRepository.save(me);

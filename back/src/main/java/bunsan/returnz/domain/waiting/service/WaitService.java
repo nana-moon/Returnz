@@ -6,18 +6,15 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
-import bunsan.returnz.domain.sideBar.service.SideBarService;
-import bunsan.returnz.global.advice.exception.NotFoundException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-
+import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.WaitRoom;
-import bunsan.returnz.persist.repository.FriendRequestRepository;
-import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.WaitRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,23 +27,25 @@ public class WaitService {
 	private final WaitRoomRepository waitRoomRepository;
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final SideBarService sideBarService;
+
 	public WaitRoom createWaitRoom(String token) {
 		// 엔티티 생성
 		Member captain = jwtTokenProvider.getMember(token);
 
-		WaitRoom waitRoom =  WaitRoom.builder()
+		WaitRoom waitRoom = WaitRoom.builder()
 			.roomId(UUID.randomUUID().toString())
 			.captainName(captain.getUsername())
 			.build();
 
 		return waitRoomRepository.save(waitRoom);
 	}
+
 	@Transactional
 	public void sendEnterMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		String roomId = (String) waitRequest.getMessageBody().get("roomId");
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
-				.orElseThrow(() -> new NotFoundException("해당 대기방을 찾을 수 없습니다."));
+			.orElseThrow(() -> new NotFoundException("해당 대기방을 찾을 수 없습니다."));
 
 		// 상태 조회 및 변경
 		sideBarService.checkOnline(member);
@@ -64,9 +63,9 @@ public class WaitService {
 		messageBody.put("captainName", waitRoom.getCaptainName());
 
 		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
-				.type(WaitMessageDto.MessageType.ENTER)
-				.messageBody(messageBody)
-				.build();
+			.type(WaitMessageDto.MessageType.ENTER)
+			.messageBody(messageBody)
+			.build();
 
 		log.info(waitMessageDto.toString());
 
@@ -92,7 +91,7 @@ public class WaitService {
 			.messageBody(messageBody)
 			.build();
 
-		String roomId = (String) waitRequest.getMessageBody().get("roomId");
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 	}
 
@@ -108,7 +107,7 @@ public class WaitService {
 			.type(WaitMessageDto.MessageType.EXIT)
 			.messageBody(messageBody)
 			.build();
-		String roomId = (String) waitRequest.getMessageBody().get("roomId");
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 	}
 
@@ -123,7 +122,7 @@ public class WaitService {
 			.messageBody(returnBody)
 			.build();
 
-		String roomId = (String) waitRequest.getMessageBody().get("roomId");
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 	}
 }

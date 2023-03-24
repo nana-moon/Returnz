@@ -1,9 +1,10 @@
 package bunsan.returnz.domain.friend.dto;
 
 import bunsan.returnz.domain.member.enums.ProfileIcon;
-import bunsan.returnz.persist.entity.FriendRequest;
-import bunsan.returnz.persist.entity.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
