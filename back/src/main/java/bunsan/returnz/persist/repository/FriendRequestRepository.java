@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import bunsan.returnz.persist.entity.FriendRequest;
 
+
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
 	boolean existsFriendRequestByRequestUsernameAndTargetUsername(String requestUsername, String targetUsername);
 
