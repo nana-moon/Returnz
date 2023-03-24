@@ -35,10 +35,10 @@ public class RequestSettingGame {
 
 		if (this.theme.getTheme().equals("USER")) {
 			// 세게중 하나라도 널이면 안된다.
-			if ((this.totalTurn == null
+			if (this.totalTurn == null
 				|| this.startTime == null
 				|| this.ternPerTime == null
-			)) {
+			) {
 				throw new BadRequestException("사용자 태마는 총턴수, 시작 일,시, 턴당 시간 을 지정하세요");
 			}
 			// 시작일로 부터 현재까지 남은 턴수
