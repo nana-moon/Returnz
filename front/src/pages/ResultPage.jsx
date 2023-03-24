@@ -7,6 +7,7 @@ import UnlockResult from '../components/result/UnlockResult';
 import Chatting from '../components/chatting/Chatting';
 
 export default function ResultPage() {
+  // api 요청하기
   return (
     <ResultContainer>
       <ResultRank />
@@ -21,10 +22,7 @@ export default function ResultPage() {
 }
 
 const ResultContainer = styled.div`
-  gap: 20px;
-  margin-top: 40px;
-  width: 75%;
-  display: grid;
+  ${tw`gap-[20px] mt-[40px] w-[75%] grid`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
