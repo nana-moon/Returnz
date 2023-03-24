@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.game.service.readOnly;
+package bunsan.returnz.domain.game.service.readonly;
 
 import org.springframework.stereotype.Service;
 
