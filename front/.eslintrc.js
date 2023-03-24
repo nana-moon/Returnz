@@ -4,13 +4,20 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'airbnb', 'prettier', 'react-app', 'plugin:prettier/recommended', 'plugin:import/typescript'],
+  extends: [
+    'eslint:recommended',
+    'airbnb',
+    'prettier',
+    'react-app',
+    'plugin:prettier/recommended',
+    'plugin:import/typescript',
+  ],
   parser: '@babel/eslint-parser',
   parserOptions: {
     requireConfigFile: false,
   },
   rules: {
-    'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx'] }],
+    'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'prettier/prettier': [
       'error',
       {
@@ -27,5 +34,6 @@ module.exports = {
     'no-alert': 'off',
     'import/prefer-default-export': 'off',
     'react/prop-types': 'off',
+    'import/no-unresolved': 'off',
   },
 };
