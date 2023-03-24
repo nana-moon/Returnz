@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.repository.GameRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,10 @@ public class GameRoomService {
 
 	public boolean updateGameTurn(LocalDateTime nextCurDate, String roomId) {
 		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByRoomId(roomId);
-		return optionalGameRoom.map(gameRoom -> gameRoom.updateGameTurn(nextCurDate))
-			.orElseThrow(() -> new BadRequestException(""));
+
+		optionalGameRoom.map(gameRoom -> gameRoom.updateGameTurn(nextCurDate))
+			.orElseThrow(() -> new NotFoundException(""));
+		gameRoomRepository.save(optionalGameRoom.orElseThrow(() -> new BadRequestException("")));
+		return true;
 	}
 }

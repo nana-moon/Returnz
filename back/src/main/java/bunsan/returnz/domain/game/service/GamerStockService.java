@@ -16,11 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class GamerStockService {
-	private static GamerStockRepository gamerStockRepository;
+
+	private final GamerStockRepository gamerStockRepository;
 
 	public List<GameGamerStockDto> findAllByGamer_Id(Long gamerId) {
 		System.out.println(gamerId);
-		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamer_Id(gamerId);
+		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamer_Id(25L);
 
 		// TODO: gamerStocks empty 오류 발생
 		// if(gamerStocks.isEmpty())
