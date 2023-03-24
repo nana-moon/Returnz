@@ -5,7 +5,7 @@ import TradeListItem from './TradeListItem';
 export default function TradeList() {
   const trades = [
     { id: 1, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 2, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
+    { id: 2, type: '매도', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
     { id: 3, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
     { id: 4, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
     { id: 5, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },

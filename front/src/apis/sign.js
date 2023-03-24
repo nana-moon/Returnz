@@ -16,8 +16,8 @@ const userLogin = (payload) => {
       // accessToken을 Decoding을 통해 데이터 조회
       const decodedToken = jwtDecode(token);
 
-      Cookies.set('access_token', token);
-      Cookies.set('refresh_token', refreshToken);
+      Cookies.set('access_token', `Bearer ${token}`);
+      Cookies.set('refresh_token', `Bearer ${refreshToken}`);
       Cookies.set('email', decodedToken.username);
       Cookies.set('id', decodedToken.id);
       Cookies.set('nickname', decodedToken.nickname);

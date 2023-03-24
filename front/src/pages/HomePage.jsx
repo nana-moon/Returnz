@@ -41,5 +41,5 @@ const TopUsersSection = styled.div`
 `;
 
 const InfoSection = styled.div`
-  ${tw`row-span-2 col-span-2 bg-red-200`}
+  ${tw`row-span-2 col-span-2`}
 `;
