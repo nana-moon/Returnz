@@ -15,6 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByUsername(String username);
 
 	Optional<Member> findById(Long id);
+
 	// 맴버 리스트를 받고 찾아오는 래포지토리
 	List<Member> findAllById(Iterable<Long> ids);
 }

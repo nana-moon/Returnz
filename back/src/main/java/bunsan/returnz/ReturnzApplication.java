@@ -13,6 +13,7 @@ public class ReturnzApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ReturnzApplication.class, args);
 	}
+
 	@PostConstruct
 	public void started() {
 		// timezone UTC 셋팅
