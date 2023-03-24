@@ -36,6 +36,9 @@ public class SideBarService {
 
         // token에 저장된 Member > 요청한 사람
         Member requester = jwtTokenProvider.getMember(token);
+        if (requester.getFriends().size() >= 20) {
+            throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
+        }
         String requestUsername = requester.getUsername();
         String targetUsername = (String)requestBody.get("targetUsername");
 
@@ -119,8 +122,9 @@ public class SideBarService {
         // member 조회 후 online으로 바꿔주기
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
-        member.changeState(MemberState.ONLINE);
-        memberRepository.save(member);
+
+        // 상태 확인 후 변경
+        checkOnline(member);
 
         // 친구 조회 후 상태 전부 리턴
         List<FriendInfo> friendInfoList = new ArrayList<>();
@@ -140,7 +144,29 @@ public class SideBarService {
         simpMessagingTemplate.convertAndSendToUser(username,
                 "/sub/side-bar", sideMessageDto);
         // 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
+        log.info("222");
     }
+
+    public void checkOnline(Member member) {
+        if (!member.getState().equals(MemberState.ONLINE)) {
+            log.info("222");
+            member.changeState(MemberState.ONLINE);
+            memberRepository.save(member);
+            // 친구들에게 전송
+            for (Member friend : member.getFriends()) {
+                Map<String, Object> messageBody = new HashMap<>();
+                messageBody.put("username", friend.getUsername());
+
+                SideMessageDto sideMessageDto = SideMessageDto.builder()
+                    .type(SideMessageDto.MessageType.STATE)
+                    .messageBody(messageBody)
+                    .build();
+                simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
+                    "/sub/side-bar", sideMessageDto);
+            }
+        }
+    }
+
     public void sendExitMessage(SideMessageDto sideRequest, String token) {
     }
 }

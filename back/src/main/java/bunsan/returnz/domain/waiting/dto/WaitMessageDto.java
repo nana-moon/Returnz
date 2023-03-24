@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.wait.dto;
+package bunsan.returnz.domain.waiting.dto;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class WaitMessageDto {
 	public enum MessageType {
-		ENTER, CHAT, EXIT;
+		ENTER, CHAT, EXIT, SETTING;
 	}
 	private MessageType type;
 	private Map<String, Object> messageBody;

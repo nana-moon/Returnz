@@ -42,7 +42,9 @@ public class FriendService {
 	public void addFriend(Long id, String token) {
 		// token에 저장된 Member > 요청한 사람
 		Member me = jwtTokenProvider.getMember(token);
-
+		if (me.getFriends().size() >= 20) {
+			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
+		}
 		FriendRequest request = friendRequestRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException("해당 요청이 존재하지 않습니다."));
 		if (!request.getTargetUsername().equals(me.getUsername())) {

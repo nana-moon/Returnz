@@ -47,9 +47,11 @@ public class StompHandler implements ChannelInterceptor {
 			log.info("offline: " + username);
 			Member member = memberRepository.findByUsername(username)
 					.orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
-			member.changeState(MemberState.OFFLINE);
-			memberRepository.save(member);
-			// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
+			if (!member.getState().equals(MemberState.OFFLINE)) {
+				member.changeState(MemberState.OFFLINE);
+				memberRepository.save(member);
+				// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
+			}
 		}
 		return message;
 	}

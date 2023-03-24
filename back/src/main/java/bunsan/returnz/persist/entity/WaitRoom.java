@@ -30,4 +30,7 @@ public class WaitRoom {
 
 	String captainName;
 
+	public void plusMemberCount() {
+		this.memberCount++;
+	}
 }
