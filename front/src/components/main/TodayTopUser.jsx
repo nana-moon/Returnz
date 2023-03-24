@@ -1,12 +1,18 @@
-import React from 'react';
-import styled from 'styled-components';
-import tw from 'twin.macro';
+import { React, useState } from 'react';
+import tw, { styled } from 'twin.macro';
+import TodayTopUserItem from './Items/TodayTopUserItem';
+import wordDummy from './todayWordDummy';
 
 export default function TodayTopUser() {
+  const [data] = useState(wordDummy);
   return (
     <TopUserContainer>
       <TopUserTitle>오늘의 수익률 TOP 10</TopUserTitle>
-      <TopUserBox>사람</TopUserBox>
+      <TopUserBox>
+        {data.map((person, i) => {
+          return <TodayTopUserItem person={person} i={i} />;
+        })}
+      </TopUserBox>
     </TopUserContainer>
   );
 }
@@ -16,7 +22,7 @@ const TopUserContainer = styled.div`
 `;
 
 const TopUserBox = styled.div`
-  ${tw`bg-white border border-negative rounded-lg border-2 px-4 py-1 mx-2`}
+  ${tw``}
 `;
 
 const TopUserTitle = styled.div`
