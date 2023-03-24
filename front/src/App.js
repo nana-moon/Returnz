@@ -3,28 +3,30 @@ import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import Header from './components/common/Header';
-import SideBar from './components/common/SideBar';
+import { Provider } from 'react-redux';
+import LoadPage from './components/loading/LoadPage';
+import { store } from './store/Store';
 
 function App() {
-  const queryClient = new QueryClient();
-  const path = window.location.pathname;
-  const pageList = ['/', '/waiting', '/profile'];
-  const thisPage = (page) => page === path;
-  const handleHeader = pageList.some(thisPage) ? <Header /> : null;
-  const handleSideBar = pageList.some(thisPage) ? <SideBar /> : null;
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        suspense: true,
+      },
+    },
+  });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {handleHeader}
-      <div className="flex pt-14 justify-between w-[100%] h-screen bg-base">
-        <div className="flex justify-center w-[100%]">
-          <Outlet />
-        </div>
-        {handleSideBar}
-      </div>
-      <ReactQueryDevtools initialIsOpen />
-    </QueryClientProvider>
+    <React.Suspense fallback={<LoadPage />}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <div className="bg-base h-screen">
+            <Outlet />
+          </div>
+          <ReactQueryDevtools initialIsOpen />
+        </QueryClientProvider>
+      </Provider>
+    </React.Suspense>
   );
 }
 

@@ -3,8 +3,6 @@ import React from 'react';
 import { ThemeProvider } from '@material-tailwind/react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
 
 import reportWebVitals from './reportWebVitals';
 import App from './App';
@@ -12,10 +10,11 @@ import NotFoundPage from './pages/NotFoundPage';
 import HomePage from './pages/HomePage';
 import WaitingPage from './pages/WaitingPage';
 import ProfilePage from './pages/ProfilePage';
-import SignPage from './pages/SignPage';
 import GamePage from './pages/GamePage';
 import TutorialPage from './pages/TutorialPage';
 import LoginPage from './pages/LoginPage';
+import UsePage from './pages/UsePage';
+import ResultPage from './pages/ResultPage';
 
 const router = createBrowserRouter([
   {
@@ -23,15 +22,19 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFoundPage />,
     children: [
-      { index: true, element: <HomePage /> },
-      // 게임
-      { path: '/waiting', element: <WaitingPage /> },
+      {
+        path: '/',
+        element: <UsePage />,
+        children: [
+          { path: '/', element: <HomePage /> },
+          { path: '/waiting', element: <WaitingPage /> },
+          { path: '/profile', element: <ProfilePage /> },
+          { path: '/result', element: <ResultPage /> },
+        ],
+      },
       { path: '/tutorial', element: <TutorialPage /> },
       { path: '/game', element: <GamePage /> },
-      // 회원
-      { path: '/signup', element: <SignPage /> },
       { path: '/login', element: <LoginPage /> },
-      { path: '/profile', element: <ProfilePage /> },
     ],
   },
 ]);
@@ -41,9 +44,7 @@ const root = createRoot(container);
 
 root.render(
   <ThemeProvider>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <RouterProvider router={router} />
   </ThemeProvider>,
 );
 

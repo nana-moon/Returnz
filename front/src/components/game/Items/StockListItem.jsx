@@ -1,44 +1,76 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import imgpath from './bear.jpg';
+import { receiveBuyData, receiveSellData } from '../../../store/BuySellModal/BuySell.reducer';
 
-export default function StockListItem() {
+export default function StockListItem({ Stock, i }) {
+  const dispatch = useDispatch();
   return (
-    <ItemContainer>
+    <ItemContainer
+      onClick={() => {
+        const value = { companyName: Stock.name, orderPrice: Stock.price };
+        dispatch(receiveBuyData(value));
+        // 보유수량 확인 가능하면 수정해야됨
+        dispatch(receiveSellData(value));
+      }}
+    >
       <ItemTitleSection>
         <ItemTitleImgBox>
           <img src={imgpath} alt="dd" />
         </ItemTitleImgBox>
-        <p>카카오</p>
+        <CompanyName>{Stock.name}</CompanyName>
+        <ItemPriceSection>{Stock.price}</ItemPriceSection>
       </ItemTitleSection>
-      <ItemPriceSection>
-        <p>78,472</p>
-      </ItemPriceSection>
       <ItemInfoSection>
-        <p className="ml-4">IT</p>
-        <p className="ml-16">0 -</p>
-        <p className="ml-4">0 -</p>
+        <IndustryBox>{Stock.Industry}</IndustryBox>
+        <UpDownBox>{Stock.e}</UpDownBox>
+        <UpDownBox>{Stock.f}</UpDownBox>
       </ItemInfoSection>
     </ItemContainer>
   );
 }
-
 const ItemContainer = styled.button`
-  ${tw`border w-[90%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl focus:drop-shadow-none`}
+  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl focus:drop-shadow-none`}
 `;
 
 const ItemTitleSection = styled.div`
-  ${tw`flex absolute ml-2 mt-2`}
+  width: 10%;
+  ${tw`flex absolute ml-2 mt-2 items-center w-full`}
 `;
 
 const ItemTitleImgBox = styled.div`
-  ${tw`border h-6 w-6 mr-2`}
+  ${tw`border-2 h-10 w-10 mr-2 rounded-full overflow-hidden`}
 `;
 
-const ItemPriceSection = styled.div`
-  ${tw`absolute right-16 mt-2`}
+const CompanyName = styled.div`
+  width: 40%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${tw`font-bold text-left`}
+`;
+
+const ItemPriceSection = styled.p`
+  width: 25%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${tw`text-left ml-1`}
 `;
 
 const ItemInfoSection = styled.div`
-  ${tw`mt-10 mb-2 flex relative`}
+  ${tw`mt-14 ml-2 mb-2 flex w-full`}
+`;
+
+const IndustryBox = styled.div`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 35%;
+  ${tw`text-left ml-4`}
+`;
+
+const UpDownBox = styled.div`
+  ${tw`mr-6`}
 `;
