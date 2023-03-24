@@ -115,12 +115,6 @@ public class SideBarService {
 		if (requestMember.isFriend(targetMember)) {
 			throw new ConflictException("이미 친구인 유저와 친구를 할 수 없습니다.");
 		}
-		//        return new ArrayList<Member>() {
-		//            {
-		//                add(requestMember);
-		//                add(targetMember);
-		//            }
-		//        };
 	}
 
 	@Transactional
