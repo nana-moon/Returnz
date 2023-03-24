@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import tw, { styled } from 'twin.macro';
 
 export default function ProfileEditModal({ onModal }) {
-  // const [modal, setModalClose] = useState(false);
+  const outside = useRef();
+  const [modal, setModalClose] = useState(false);
   const closeModal = () => {
-    onModal(false);
+    setModalClose(false);
   };
   return (
     <ProfileEditContainer>
