@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,4 +29,12 @@ public class GamerStock {
 	@JoinColumn(name = "GAMER_ID")
 	private Gamer gamer;
 
+	public GameGamerStockDto toDto(GamerStock gamerStock) {
+		return GameGamerStockDto.builder()
+			.companyCode(gamerStock.getCompanyCode())
+			.totalCount(gamerStock.getTotalCount())
+			.totalAmount(gamerStock.getTotalAmount())
+			.gamerId(gamerStock.getGamer().getId())
+			.build();
+	}
 }
