@@ -11,8 +11,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class GameGamerStockDto {
 
+	private Long id;
 	private String companyCode;
 	private Integer totalCount;
 	private Integer totalAmount;
 	private Long gamerId;
+
+	// public GamerStock toEntity(GameGamerStockDto){
+	// 	return GamerStock.builder()
+	//
+	// 		.build();
+	// }
 }
