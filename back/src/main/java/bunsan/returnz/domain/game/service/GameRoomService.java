@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.game.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -18,12 +19,18 @@ public class GameRoomService {
 	private final GameRoomRepository gameRoomRepository;
 
 	@SuppressWarnings("checkstyle:WhitespaceAround")
-	public GameRoomDto findById(String roomId) {
+	public GameRoomDto findByroomId(String roomId) {
 		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByroomId(roomId);
 		// TODO: gameRoom이 비어있을 때 에러 반환 / 또는 개수가 적은 경우
 		// if(gameRoom.isEmpty())
 		GameRoom gameRoom = new GameRoom();
 
 		return optionalGameRoom.map(gameRoom::toDto).orElse(null);
+	}
+
+	public boolean updateGameTurn(LocalDateTime nextCurDate, String roomId) {
+		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByroomId(roomId);
+
+		return optionalGameRoom.map(gameRoom -> gameRoom.updateGameTurn(nextCurDate)).orElse(false);
 	}
 }
