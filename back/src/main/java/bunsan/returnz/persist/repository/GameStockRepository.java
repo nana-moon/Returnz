@@ -9,5 +9,5 @@ import bunsan.returnz.persist.entity.GameStock;
 
 @Repository
 public interface GameStockRepository extends JpaRepository<GameStock, String> {
-	List<GameStock> findAllBygameRoomId(String gameRoomId);
+	List<GameStock> findAllByGameRoomId(String gameRoomId);
 }
