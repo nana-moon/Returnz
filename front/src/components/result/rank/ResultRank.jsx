@@ -3,18 +3,17 @@ import tw, { styled } from 'twin.macro';
 import RankListItem from './RankListItem';
 
 export default function ResultRank() {
-  const users = [
-    { rank: 1, profile: 'bear.jpg', nickname: 'j', returnRate: 10 },
-    { rank: 2, profile: 'cat.jpg', nickname: 'i', returnRate: 10 },
-    { rank: 3, profile: 'fox.jpg', nickname: 'a', returnRate: 10 },
-    { rank: 4, profile: 'giraffe.jpg', nickname: 'e', returnRate: 10 },
+  const rankList = [
+    { rank: 1, id: 1, profile: 'bear.jpg', nickname: 'chat혜성', profit: 10 },
+    { rank: 2, id: 2, profile: 'cat.jpg', nickname: '꿀밤여경', profit: 10 },
+    { rank: 3, id: 3, profile: 'fox.jpg', nickname: '기믹명진', profit: 10 },
+    { rank: 4, id: 4, profile: 'giraffe.jpg', nickname: 'ㄱㅈㅇ', profit: 10 },
   ];
   return (
     <RankContainer>
-      <RankListItem user={users[0]} />
-      <RankListItem user={users[1]} />
-      <RankListItem user={users[2]} />
-      <RankListItem user={users[3]} />
+      {rankList.map((user) => {
+        return <RankListItem key={user.id} user={user} />;
+      })}
     </RankContainer>
   );
 }
