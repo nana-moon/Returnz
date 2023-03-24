@@ -25,7 +25,7 @@ export default function StockList() {
       <ListContanier>
         <div className="mt-16 mb-4">
           {stockData.map(function (Stock, i) {
-            return <StockListItem Stock={Stock} key={Stock.name} />;
+            return <StockListItem Stock={Stock} i={i} key={Stock.name} />;
           })}
         </div>
       </ListContanier>

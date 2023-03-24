@@ -18,6 +18,9 @@ export const BuySellData = createSlice({
       isOpen: false,
       isType: '',
     },
+    isSelect: {
+      idx: 0,
+    },
   },
   reducers: {
     receiveBuyData: (state, action) => {
@@ -31,8 +34,11 @@ export const BuySellData = createSlice({
     receiveSetting: (state, action) => {
       state.ifopen = action.payload;
     },
+    selectIdx: (state, action) => {
+      state.isSelect.idx = action.payload;
+    },
   },
 });
 
-export const { receiveBuyData, receiveSellData, receiveSetting } = BuySellData.actions;
+export const { receiveBuyData, receiveSellData, receiveSetting, selectIdx } = BuySellData.actions;
 export default BuySellData;
