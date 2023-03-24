@@ -10,6 +10,7 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 
+import bunsan.returnz.domain.game.dto.GameCompanyDetailDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,4 +41,12 @@ public class CompanyDetail {
 	String market;
 	String phone;
 	String website;
+
+	public GameCompanyDetailDto toDto(CompanyDetail companyDetail) {
+		return GameCompanyDetailDto.builder()
+			.company(companyDetail.getCompany())
+			.countryCode(companyDetail.getCountryCode())
+			.koName(companyDetail.getKoName())
+			.build();
+	}
 }
