@@ -23,8 +23,9 @@ public class GameHistoricalPriceDayService {
 
 	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit20(
 		LocalDateTime date, String companyCode) {
-		List<HistoricalPriceDay> historicalPriceDays = historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit20(
-			date, companyCode);
+		List<HistoricalPriceDay> historicalPriceDays =
+			historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit20(
+				date, companyCode);
 
 		// TODO: historicalPriceDays 없을 경우 에러 발생 / 또는 개수가 적을 경우
 		// if(historicalPriceDays.isEmpty())
@@ -41,8 +42,9 @@ public class GameHistoricalPriceDayService {
 
 	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit1(
 		LocalDateTime date, String companyCode) {
-		List<HistoricalPriceDay> historicalPriceDays = historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit1(
-			date, companyCode);
+		List<HistoricalPriceDay> historicalPriceDays =
+			historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit1(
+				date, companyCode);
 
 		// TODO: historicalPriceDays 없을 경우 에러 발생 / 또는 개수가 적을 경우
 		// if(historicalPriceDays.isEmpty())
@@ -56,16 +58,18 @@ public class GameHistoricalPriceDayService {
 	}
 
 	public GameHistoricalPriceDayDto findByDateTimeIsAfterWithCodeLimit1(LocalDateTime date, String companyCode) {
-		Optional<HistoricalPriceDay> optionalHistoricalPriceDay = historicalPriceDayRepository.findByDateTimeIsAfterWithCodeLimit1(
-			date, companyCode);
+		Optional<HistoricalPriceDay> optionalHistoricalPriceDay =
+			historicalPriceDayRepository.findByDateTimeIsAfterWithCodeLimit1(
+				date, companyCode);
 		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
 
 		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
 	}
 
 	public GameHistoricalPriceDayDto findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode) {
-		Optional<HistoricalPriceDay> optionalHistoricalPriceDay = historicalPriceDayRepository.findByDateTimeAndCompanyCode(
-			dateTime, companyCode);
+		Optional<HistoricalPriceDay> optionalHistoricalPriceDay =
+			historicalPriceDayRepository.findByDateTimeAndCompanyCode(
+				dateTime, companyCode);
 		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
 
 		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
