@@ -2,6 +2,7 @@ package bunsan.returnz.persist.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -20,15 +21,15 @@ import lombok.NoArgsConstructor;
 public class Waiter {
 	@GeneratedValue
 	@Id
-	@Column(name = "WAITER_ID")
-	Long id;
-	Boolean isCaptain;
-	String username;
-	String nickname;
-
-	@ManyToOne
+	@Column(name = "WAIT_MEMBER_ID")
+	private Long id;
+	private Long profit;
+	private Long deposit;
+	private Boolean isCaptain;
+	private String userName;
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "WAIT_ROOM_ID")
-	WaitRoom waitRoom;
+	private WaitRoom waitRoom;
 
 
 }
