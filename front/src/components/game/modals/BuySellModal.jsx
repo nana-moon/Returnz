@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
+import { createGlobalStyle } from 'styled-components';
 
 import { buyNeedData, sellNeedData, modalState } from '../../../store/BuySellModal/BuySell.selector';
 import { receiveSetting } from '../../../store/BuySellModal/BuySell.reducer';
@@ -30,12 +31,14 @@ export default function BuySellModal() {
   }, [orderCount, lastValidOrderCount, maxOrderCount]);
 
   const handleCloseModal = () => {
-    const value = { isOpen: false, isType: '' };
-    dispatch(receiveSetting(value));
+    setTimeout(() => {
+      const value = { isOpen: false, isType: '' };
+      dispatch(receiveSetting(value));
+    }, 500);
   };
 
   const handleUpCount = () => {
-    if (orderCount < Math.floor(modalData.holdingCash / modalData.orderPrice)) {
+    if (orderCount < maxOrderCount) {
       setOrderCount(orderCount + 1);
     }
   };
@@ -60,8 +63,9 @@ export default function BuySellModal() {
 
   return (
     <>
+      <GlobalStyle />
       <ModalContainer> </ModalContainer>
-      <ModalSection>
+      <ModalSection modalStat={modalStat}>
         <ModalTitle mode={modalStat.isType ? 'gain' : 'lose'}> {modalStat.isType ? '매수' : '매도'} 주문 </ModalTitle>
 
         <StockSection>
@@ -142,6 +146,30 @@ export default function BuySellModal() {
 // const tmp = styled.div`
 //   ${tw``}
 // `;
+const GlobalStyle = createGlobalStyle`
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+  }
+  }
+`;
+
 const ModalContainer = styled.div`
   opacity: 0.6;
   ${tw`fixed inset-0 w-[100%] bg-black z-20`}
@@ -155,6 +183,7 @@ const ModalSection = styled.div`
   min-height: 350px;
   min-width: 250px;
   ${tw`fixed z-40 w-[25%] h-[40%] border justify-center bg-white rounded-2xl`}
+  animation: ${({ modalStat }) => (modalStat.isOpen ? 'fadeIn' : 'fadeOut')} 0.5s linear forwards;
 `;
 
 const ModalTitle = styled.div`

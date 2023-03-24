@@ -139,7 +139,7 @@ export default function Graph() {
   };
   return (
     <GraphContainer>
-      <Chart options={options} series={options.series} />
+      {/* <Chart options={options} series={options.series} /> */}
       {/* {datas.map((stock, i) => {
         return (
           <div key={i}>
