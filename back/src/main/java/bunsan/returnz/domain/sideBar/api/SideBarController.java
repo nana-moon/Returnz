@@ -23,19 +23,10 @@ public class SideBarController {
     private final SideBarService sideBarService;
 
     //==================================사이드 바 메세지 송신===================================
-//    @PostMapping("/side-bar")
     @MessageMapping("/side-bar")
     public void sendToSideBar(SideMessageDto sideRequest, @Header("Authorization") String bearerToken) {
         // SimpMessageHeaderAccessor accessor
         String token = bearerToken.substring(7);
-
-//        if (sideRequest.getType().equals(SideMessageDto.MessageType.ENTER)) {
-//            sideBarService.sendEnterMessage((String) sideRequest.getMessageBody().get("username"));
-//        } else if (sideRequest.getType().equals(SideMessageDto.MessageType.INVITE)) {
-//            sideBarService.sendInviteMessage(sideRequest, token);
-//        } else if (sideRequest.getType().equals(SideMessageDto.MessageType.FRIEND)) {
-//            sideBarService.sendFriendRequest(sideRequest, token);
-//        }
 
         if (sideRequest.getType().equals(SideMessageDto.MessageType.FRIEND)) {
             sideBarService.sendFriendRequest(sideRequest, token);

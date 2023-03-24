@@ -17,22 +17,20 @@ import bunsan.returnz.domain.friend.dto.FriendRequestDto;
 import bunsan.returnz.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
 
-//----------------------------------------컨트롤러 명 변경 필요------------------------------------------
 @RestController
 @RequiredArgsConstructor
 public class FriendController {
 	private final FriendService friendService;
 
-	//====================================친구 요청 불러오기=========================================
-
+	//----------------------------------친구 요청 불러오기-----------------------------------
 	@GetMapping("/api/requests")
 	public ResponseEntity<Map> getRequestList(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		List<FriendRequestDto> requestDtoList = friendService.getRequestList(token);
 		return ResponseEntity.ok(Map.of("friendRequestList", requestDtoList));
 	}
-	//====================================친구 요청 거절=========================================
 
+	//-----------------------------------친구 요청 거절--------------------------------------
 	@DeleteMapping("/api/requests/{id}")
 	public ResponseEntity deleteRequest(@RequestHeader(value = "Authorization") String bearerToken,
 		@PathVariable Long id) {
@@ -41,7 +39,7 @@ public class FriendController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	//====================================친구 요청 수락=========================================
+	//-----------------------------------친구 요청 수락----------------------------------------
 	@PostMapping("/api/friends/{id}")
 	public ResponseEntity addFriend(@RequestHeader(value = "Authorization") String bearerToken,
 									@PathVariable Long id) {
@@ -49,16 +47,16 @@ public class FriendController {
 		friendService.addFriend(id, token);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
-	//==========================친구 리스트 불러오기 > 소켓으로 바꿈=============================
 
+	//------------------------------친구 리스트 불러오기 > 소켓으로 바꿈--------------------------------
 	@GetMapping("api/friends")
 	public ResponseEntity<Map> getFriends(@RequestHeader(value = "Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		List<FriendInfo> friendList = friendService.getFriendList(token);
 		return ResponseEntity.ok(Map.of("friendList", friendList));
 	}
-	//==================================친구 삭제=====================================
 
+	//----------------------------------------친구 삭제---------------------------------------------
 	@DeleteMapping("/api/friends/{username}")
 	public ResponseEntity deleteFriend(@RequestHeader(value = "Authorization") String bearerToken,
 		@PathVariable String username) {
