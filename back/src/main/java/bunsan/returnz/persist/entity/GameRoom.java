@@ -47,4 +47,22 @@ public class GameRoom {
 			.roomMemberCount(gameRoom.roomMemberCount)
 			.build();
 	}
+
+	public boolean updateGameTurn(LocalDateTime nextCurDate) {
+		// TODO: nextCurDate validation Check
+		if (nextCurDate.isEqual(null)) {
+			return false;
+		}
+
+		// TODO : 현재턴은 토탈턴을 넘길 수 없음
+		//  if(this.totalTurn < this.curTurn)
+		if (this.totalTurn < this.curTurn) {
+			return false;
+		}
+
+		this.curDate = nextCurDate;
+		this.curTurn += 1;
+		return true;
+	}
+
 }
