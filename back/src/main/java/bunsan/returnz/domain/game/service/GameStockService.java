@@ -17,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class GameStockService {
 	private final GameStockRepository gameStockRepository;
 
-	public List<GameStockDto> findAllBygameRoomId(String gameRoomId) {
-		List<GameStock> gameStocks = gameStockRepository.findAllBygameRoomId(gameRoomId);
+	public List<GameStockDto> findAllByGameRoomId(String gameRoomId) {
+		List<GameStock> gameStocks = gameStockRepository.findAllByGameRoomId(gameRoomId);
 
 		// TODO: gameStocks 없을 경우 에러 발생 / 또는 개수가 적은 경우
 		// if(gameStocks.isEmpty() && gameStocks.size() == 0) {

@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 public class GamerService {
 	private final GamerRepository gamerRepository;
 
-	public List<GameGamerDto> findAllBygameRoomId(Long id) {
-		List<Gamer> gamerList = gamerRepository.findAllBygameRoomId(id);
+	public List<GameGamerDto> findAllByGameRoomId(Long id) {
+		List<Gamer> gamerList = gamerRepository.findAllByGameRoomId(id);
 		// TODO: gamerList가 empty면 에러 발생
 		// if(gamerList.isEmpty())
 
@@ -39,5 +39,13 @@ public class GamerService {
 		}
 		// TODO : else
 		return null;
+	}
+
+	public boolean updateDeposit(Integer changeDeposit) {
+		if (changeDeposit >= 0) {
+			Gamer gamer = new Gamer();
+			return gamer.updateDeposit(changeDeposit);
+		}
+		return false;
 	}
 }
