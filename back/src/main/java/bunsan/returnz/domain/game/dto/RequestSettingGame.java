@@ -1,6 +1,5 @@
 package bunsan.returnz.domain.game.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -14,7 +13,6 @@ import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 import reactor.util.annotation.Nullable;
 
 @Builder
@@ -71,7 +69,7 @@ public class RequestSettingGame {
 		if (this.theme.getTheme().equals("RIEMANN")) {
 			return LocalDateTime.of(2008, 1, 1, 0, 0, 0);
 		}
-		throw new BadRequestException("잘못된 테마입니다");
+		return this.startTime;
 	}
 
 }
