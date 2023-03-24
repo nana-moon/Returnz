@@ -103,8 +103,9 @@ public class GameController {
 				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 					for (int i = 0; i < gameStockDtoList.size(); ++i) {
 						String companyCode = gameStockDtoList.get(i).getCompanyCode();
-						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
-							gameRoomDto.getCurDate(), companyCode);
+						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
+							gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
+								gameRoomDto.getCurDate(), companyCode);
 
 						// Key를 가지고 있지 않을 경우만
 						if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
@@ -113,17 +114,15 @@ public class GameController {
 					}
 				}
 				// TODO: Month, Minute 구현
-				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Month)) {
-				// } else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Minute)) {
-				// }
-			}
-			// 첫 번째 턴이 아닌 경우 하나만
-			else {
+				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Month))
+				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Minute))
+			} else { // 첫 번째 턴이 아닌 경우 하나만
 				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 					for (int i = 0; i < gameStockDtoList.size(); ++i) {
 						String companyCode = gameStockDtoList.get(i).getCompanyCode();
-						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
-							gameRoomDto.getCurDate().plusDays(1), companyCode);
+						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
+							gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
+								gameRoomDto.getCurDate().plusDays(1), companyCode);
 
 						// Key를 가지고 있지 않을 경우만
 						if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
@@ -159,8 +158,9 @@ public class GameController {
 			// 게임방 정보 업데이트 후 넘겨줘야 함
 			String companyCode = gameStockDtoList.get(0).getCompanyCode();
 			LocalDateTime curTime = gameRoomDto.getCurDate();
-			GameHistoricalPriceDayDto gameHistoricalPriceDayDto = gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-				curTime, companyCode);
+			GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
+				gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
+					curTime, companyCode);
 
 			boolean success = gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 			// TODO : if(!success) 시 Error 발생
@@ -190,7 +190,8 @@ public class GameController {
 	// 		double stockClosePrice = 0;
 	// 		int amount = gameBuySellRequestBody.getAmoount();
 	// 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
-	// 			GameHistoricalPriceDayDto historicalPriceDayDto = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+	// 			GameHistoricalPriceDayDto historicalPriceDayDto =
+	// 			gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 	// 				gameRoomDto.getCurDate(),
 	// 				companyCode);
 	// 			stockClosePrice = Double.parseDouble(historicalPriceDayDto.getClose());
@@ -209,7 +210,8 @@ public class GameController {
 	// 				if (deposit >= 0 && gamerService.updateDeposit(deposit)) {
 	//
 	// 					// Gamer Stock Entity 저장
-	// 					GameGamerStockDto gameGamerStockDto = gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
+	// 					GameGamerStockDto gameGamerStockDto =
+	// 					gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 	//
 	// 					// 새로 사는 경우
 	// 					if (gameGamerStockDto == null) {
