@@ -25,41 +25,41 @@ export default function SideBar({ onModal }) {
   // client 객체 생성 및 서버주소 입력
   const stomp = StompJs.over(sock);
   // stomp로 감싸기
-  const me = Cookies.get('access_token');
+  const myToken = Cookies.get('access_token');
+  const myMail = Cookies.get('email');
   const stompConnect = () => {
     try {
       stomp.debug = null;
       // console에 보여주는데 그것을 감추기 위한 debug
-      console.log('111');
+      console.log('Connected');
       stomp.connect(
         {
           // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `Bearer ${me}`,
+          Authorization: `Bearer ${myToken}`,
         },
         () => {
           stomp.subscribe(
             `/user/sub/side-bar`,
             (data) => {
               const newMessage = JSON.parse(data.body);
-              console.log(newMessage);
+              console.log(newMessage, 'Received');
               // 데이터 파싱
             },
             {
               // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-              Authorization: `Bearer ${me}`,
+              Authorization: `Bearer ${myToken}`,
             },
           );
           stomp.send(
             '/pub/side-bar',
             {
               // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-              Authorization: `Bearer ${me}`,
+              Authorization: `Bearer ${myToken}`,
             },
             JSON.stringify({
-              type: 'FRIEND',
+              type: 'ENTER',
               messageBody: {
-                requestUsername: 'giokim12@naver.com',
-                targetUsername: 'moon@naver.com',
+                username: `${myMail}`,
               },
             }),
           );

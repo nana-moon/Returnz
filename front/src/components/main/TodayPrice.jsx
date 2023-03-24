@@ -16,7 +16,7 @@ export default function TodayPrice() {
     queryKey: ['exchangerate', param],
     queryFn: () => getExchangeRateApi(param),
     onSuccess: (data) => {
-      console.log(data.data['Realtime Currency Exchange Rate'], 'please.......');
+      // console.log(data.data['Realtime Currency Exchange Rate'], 'please.......');
     },
     onError: (e) => {
       console.log(e);
