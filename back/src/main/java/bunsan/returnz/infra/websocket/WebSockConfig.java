@@ -15,17 +15,16 @@ import lombok.RequiredArgsConstructor;
 public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	private final StompHandler stompHandler;
 
-
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
-		registry.enableSimpleBroker("/topic", "/direct");
-		registry.setApplicationDestinationPrefixes("/ws");
-		// registry.setUserDestinationPrefix("/user");
+		registry.enableSimpleBroker("/sub");
+		registry.setApplicationDestinationPrefixes("/pub");
 	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/our-websocket")
+		// TODO: 2023-03-24  setAllowedOriginPatterns 프론트 주소로 바꾸기
+		registry.addEndpoint("/ws").setAllowedOriginPatterns("*")
 			.withSockJS();
 	}
 

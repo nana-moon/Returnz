@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	// 맴버 리스트를 받고 찾아오는 래포지토리
 	List<Member> findAllById(Iterable<Long> ids);
+
+	List<Member> findByNicknameContaining(String nickname);
 }
