@@ -157,5 +157,5 @@ export default function Graph() {
 
 const GraphContainer = styled.div`
   margin-top: 1.25rem;
-  ${tw`border bg-white rounded-xl h-[65%]`}
+  ${tw`border bg-white rounded-xl h-[60%]`}
 `;
