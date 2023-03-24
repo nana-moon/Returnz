@@ -4,12 +4,13 @@ import tw, { styled } from 'twin.macro';
 import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
 import { receiveSetting } from '../../store/BuySellModal/BuySell.reducer';
-import { modalState, sellNeedData } from '../../store/BuySellModal/BuySell.selector';
+import { modalState, sellNeedData, buyNeedData } from '../../store/BuySellModal/BuySell.selector';
 import BuySellModal from './modals/BuySellModal';
 
 export default function StockList() {
   const dispatch = useDispatch();
   const modalStat = useSelector(modalState);
+  const canBuy = useSelector(buyNeedData);
   const canSell = useSelector(sellNeedData);
 
   const [stockData, setStockData] = useState(StockData);
@@ -29,10 +30,10 @@ export default function StockList() {
         </div>
       </ListContanier>
       <OrderButton>
-        <BuyButton type="button" onClick={() => handleOpenModal(true)}>
+        <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === ''}>
           매수
         </BuyButton>
-        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={canSell.holdingcount === 0}>
+        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={canSell.companyName === ''}>
           매도
         </SellButton>
       </OrderButton>
@@ -64,7 +65,9 @@ const OrderButton = styled.div`
 `;
 const BuyButton = styled.button`
   ${tw`text-white bg-gain font-bold rounded-lg w-[25%] py-2 align-middle text-center`}
+  ${({ disabled }) => (disabled ? tw`bg-negative` : tw`bg-gain`)}
 `;
 const SellButton = styled.button`
   ${tw`text-white bg-lose font-bold rounded-lg w-[25%] py-2 text-center`}
+  ${({ disabled }) => (disabled ? tw`bg-negative` : tw`bg-lose`)}
 `;
