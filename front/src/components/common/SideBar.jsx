@@ -1,17 +1,20 @@
 /* eslint-disable no-empty */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import SockJs from 'sockjs-client';
 import StompJs from 'stompjs';
 import Cookies from 'js-cookie';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { Card, CardHeader, Input, Avatar, Button } from '@material-tailwind/react';
+// import { useQuery, QueryClient } from 'react-query';
+import { Card, CardHeader, Input, Avatar } from '@material-tailwind/react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { friendRequest } from '../../apis/friend';
+// import FriendListItems from './Items/FriendListItems';
 
 export default function SideBar({ onModal }) {
   const [friendNickname, setfriendNickname] = useState('');
+  // const [friendList, setfriendList] = useState();
   const onChange = (e) => setfriendNickname(e.target.value);
   const openModal = () => {
     onModal(true);
@@ -42,7 +45,9 @@ export default function SideBar({ onModal }) {
             `/user/sub/side-bar`,
             (data) => {
               const newMessage = JSON.parse(data.body);
-              console.log(newMessage, 'Received');
+              const newFriend = newMessage.messageBody.friendList;
+              console.log(newFriend, '친구칭긔');
+              // setfriendList(newFriend);
               // 데이터 파싱
             },
             {
@@ -70,6 +75,12 @@ export default function SideBar({ onModal }) {
     }
   };
   stompConnect();
+
+  // const { data: friendlist } = useQuery('friendlist', async () => {
+  //   const response = await stompConnect();
+  //   console.log(response, '리액트쿼리');
+  //   return response;
+  // });
 
   // const stompDisConnect = () => {
   //   console.log('222');
@@ -120,11 +131,15 @@ export default function SideBar({ onModal }) {
             <MyInfoBox>
               <UsernameContent>내 유저네임</UsernameContent>
               <ProfileChangeButton onClick={openModal}>프로필 수정하러 가기</ProfileChangeButton>
-              {/* {modal === true ? <ProfileEditModal /> : null} */}
             </MyInfoBox>
           </CardHeader>
         </Card>
       </MyProfileCard>
+      {/* <FriendListContainer>
+        {friendList.map((friend, i) => {
+          return <FriendListItems person={friend} i={i} />;
+        })}
+      </FriendListContainer> */}
       <FriendSearchContainer>
         <Input
           type="text"
@@ -172,3 +187,7 @@ const ProfileChangeButton = styled.button`
   */
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;
+
+// const FriendListContainer = styled.button`
+//   ${tw`bg-red-200`}
+// `;
