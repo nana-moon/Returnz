@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-// import SockJs from 'sockjs-client';
-// import StompJs from 'stompjs';
-// import { io } from 'socket.io-client';
+/* eslint-disable no-empty */
+/* eslint-disable prettier/prettier */
+import React, { useEffect, useRef, useState } from 'react';
+import SockJs from 'sockjs-client';
+import StompJs from 'stompjs';
+import Cookies from 'js-cookie';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { Card, CardHeader, Input, Avatar } from '@material-tailwind/react';
+import { Card, CardHeader, Input, Avatar, Button } from '@material-tailwind/react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { friendRequest } from '../../apis/friend';
 
 export default function SideBar({ onModal }) {
-  // const socket = new io('http://서버주소');
-  // const stomp = StompJs.over(sock);
   const [friendNickname, setfriendNickname] = useState('');
   const onChange = (e) => setfriendNickname(e.target.value);
   const openModal = () => {
@@ -20,35 +20,92 @@ export default function SideBar({ onModal }) {
     const result = await friendRequest(friendNickname);
     console.log(result);
   };
-  // const stompConnect = () => {
+
+  const sock = new SockJs('http://192.168.100.175:8080/ws');
+  // client 객체 생성 및 서버주소 입력
+  const stomp = StompJs.over(sock);
+  // stomp로 감싸기
+  const me = Cookies.get('access_token');
+  const stompConnect = () => {
+    try {
+      stomp.debug = null;
+      // console에 보여주는데 그것을 감추기 위한 debug
+      console.log('111');
+      stomp.connect(
+        {
+          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+          Authorization: `Bearer ${me}`,
+        },
+        () => {
+          stomp.subscribe(
+            `/user/sub/side-bar`,
+            (data) => {
+              const newMessage = JSON.parse(data.body);
+              console.log(newMessage);
+              // 데이터 파싱
+            },
+            {
+              // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+              Authorization: `Bearer ${me}`,
+            },
+          );
+          stomp.send(
+            '/pub/side-bar',
+            {
+              // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+              Authorization: `Bearer ${me}`,
+            },
+            JSON.stringify({
+              type: 'FRIEND',
+              messageBody: {
+                requestUsername: 'giokim12@naver.com',
+                targetUsername: 'moon@naver.com',
+              },
+            }),
+          );
+        },
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  stompConnect();
+
+  // const stompDisConnect = () => {
+  //   console.log('222');
   //   try {
   //     stomp.debug = null;
-  //     //웹소켓 연결시 stomp에서 자동으로 connect이 되었다는것을
-  //     //console에 보여주는데 그것을 감추기 위한 debug
-
-  //     stomp.connect(token, () => {
-  //       stomp.subscribe(
-  //         `서버주소`,
-  //         (data) => {
-  //           const newMessage = JSON.parse(data.body);
-  //           //데이터 파싱
-  //         },
-  //         token,
-  //       );
-  //     });
+  //     stomp.disconnect(
+  //       () => {
+  //         stomp.unsubscribe('sub-0');
+  //       },
+  //       {
+  //         // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+  //         Authorization:
+  //           'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb29uQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJ1c2VybmFtZSI6Im1vb25AbmF2ZXIuY29tIiwiaWQiOjgsIm5pY2tuYW1lIjoibW9vbiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY3OTc5NDMyMH0.CN8mcVj8BSqW49qHnwcbjMi8jZ8EMPBEvoIXxWai0M4',
+  //       },
+  //     );
   //   } catch (err) {}
   // };
-  // message event listener
-  // useEffect(() => {
-  //   const messageHandler = (chat: IChat) =>
-  //     setChats((prevChats) => [...prevChats, chat]);
+  // const sendMessage = () => {
+  //   stomp.send(
+  //     '/pub/side-bar',
+  //     JSON.stringify({
+  //       type: 'FRINED',
+  //       messageBody: {
+  //         requestUsername: 'moon@naver.com',
+  //         targetUsername: 'ssafy6@naver.com',
+  //       },
+  //     }),
+  //     {
+  //       // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+  //       Authorization:
+  //         'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb29uQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJ1c2VybmFtZSI6Im1vb25AbmF2ZXIuY29tIiwiaWQiOjgsIm5pY2tuYW1lIjoibW9vbiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY3OTgxNTQwNn0.fKPM4dJ45QhnUkAy9eOh2nNnsDbyef8RXT5zkthArhM',
+  //     },
+  //   );
+  // };
+  // sendMessage();
 
-  //   socket.on('message', messageHandler);
-
-  //   return () => {
-  //     socket.off('message', messageHandler);
-  //   };
-  // }, []);
   return (
     <SideBarContainer>
       <MyProfileCard>
@@ -110,7 +167,7 @@ const UsernameContent = styled.div`
 `;
 
 const ProfileChangeButton = styled.button`
-  /* 
+  /*
   z-index: 0;
   */
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
