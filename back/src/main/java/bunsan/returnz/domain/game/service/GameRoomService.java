@@ -17,7 +17,6 @@ public class GameRoomService {
 
 	private final GameRoomRepository gameRoomRepository;
 
-	@SuppressWarnings("checkstyle:WhitespaceAround")
 	public GameRoomDto findById(String roomId) {
 		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByroomId(roomId);
 		// TODO: gameRoom이 비어있을 때 에러 반환 / 또는 개수가 적은 경우
