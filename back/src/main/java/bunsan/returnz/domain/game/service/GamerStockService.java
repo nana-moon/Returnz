@@ -18,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public class GamerStockService {
 	private static GamerStockRepository gamerStockRepository;
 
-	public List<GameGamerStockDto> findAllByGamerId(Long gamerId) {
-		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamerId(gamerId);
+	public List<GameGamerStockDto> findAllByGamer_Id(Long gamerId) {
+		System.out.println(gamerId);
+		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamer_Id(gamerId);
 
 		// TODO: gamerStocks empty 오류 발생
 		// if(gamerStocks.isEmpty())

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import bunsan.returnz.persist.entity.GamerStock;
 
 public interface GamerStockRepository extends JpaRepository<GamerStock, Long> {
-	List<GamerStock> findAllByGamerId(Long id);
+	List<GamerStock> findAllByGamer_Id(Long id);
 
 	Optional<GamerStock> findByGamerIdAndCompanyCode(Long id, String companyCode);
 }

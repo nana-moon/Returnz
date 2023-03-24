@@ -12,7 +12,7 @@ export default function Turn() {
 }
 
 const TurnContanier = styled.div`
-  ${tw`border row-span-1 bg-white rounded-xl`}
+  ${tw`border bg-white rounded-xl h-[8%]`}
 `;
 
 const CountSection = styled.div`
