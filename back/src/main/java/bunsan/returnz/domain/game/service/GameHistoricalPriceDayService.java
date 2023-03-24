@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class GameHistoricalPriceDayService {
 
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
-	public List<GameHistoricalPriceDayDto> findAllBydateTimeIsBeforeAndcompanyCodeOrderBydateTimeDescLimit20(
+	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit20(
 		LocalDateTime date, String companyCode) {
 		List<HistoricalPriceDay> historicalPriceDays = historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit20(
 			date, companyCode);
@@ -38,7 +39,7 @@ public class GameHistoricalPriceDayService {
 		return gameHistoricalPriceDayDtos;
 	}
 
-	public List<GameHistoricalPriceDayDto> findAllBydateTimeIsBeforeAndcompanyCodeOrderBydateTimeDescLimit1(
+	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit1(
 		LocalDateTime date, String companyCode) {
 		List<HistoricalPriceDay> historicalPriceDays = historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit1(
 			date, companyCode);
@@ -53,4 +54,21 @@ public class GameHistoricalPriceDayService {
 		}
 		return gameHistoricalPriceDayDtos;
 	}
+
+	public GameHistoricalPriceDayDto findByDateTimeIsAfterWithCodeLimit1(LocalDateTime date, String companyCode) {
+		Optional<HistoricalPriceDay> optionalHistoricalPriceDay = historicalPriceDayRepository.findByDateTimeIsAfterWithCodeLimit1(
+			date, companyCode);
+		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+
+		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
+	}
+
+	public GameHistoricalPriceDayDto findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode) {
+		Optional<HistoricalPriceDay> optionalHistoricalPriceDay = historicalPriceDayRepository.findByDateTimeAndCompanyCode(
+			dateTime, companyCode);
+		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+
+		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
+	}
+
 }
