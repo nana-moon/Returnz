@@ -37,7 +37,7 @@ public class RequestSettingGame {
 			// 세게중 하나라도 널이면 안된다.
 			if ((this.totalTurn == null
 				|| this.startTime == null
-				||this.ternPerTime == null
+				|| this.ternPerTime == null
 			)) {
 				throw new BadRequestException("사용자 태마는 총턴수, 시작 일,시, 턴당 시간 을 지정하세요");
 			}
@@ -47,7 +47,7 @@ public class RequestSettingGame {
 			long daysBetweenTurn = ChronoUnit.DAYS.between(this.startTime, LocalDateTime.now());
 			if (this.ternPerTime.getTime().equals("DAY")
 				&& this.totalTurn > daysBetweenTurn) {
-				throw new BadRequestException("시작일수로 부터 가능한 일 이 더 작습니다. 계산된 일 "+ daysBetweenTurn);
+				throw new BadRequestException("시작일수로 부터 가능한 일 이 더 작습니다. 계산된 일 " + daysBetweenTurn);
 			}
 			if (this.ternPerTime.getTime().equals("WEEK")
 				&& this.totalTurn > weekBetweenTurn) {
@@ -59,6 +59,19 @@ public class RequestSettingGame {
 			}
 
 		}
+	}
+
+	public LocalDateTime getThemeStartTime() {
+		if (this.theme.getTheme().equals("COVID")) {
+			return LocalDateTime.of(2019, 12, 31, 0, 0, 0);
+		}
+		if (this.theme.getTheme().equals("DOTCOM")) {
+			return LocalDateTime.of(1997, 1, 1, 0, 0, 0);
+		}
+		if (this.theme.getTheme().equals("RIEMANN")) {
+			return LocalDateTime.of(2008, 1, 1, 0, 0, 0);
+		}
+		throw new BadRequestException("잘못된 테마입니다");
 	}
 
 }

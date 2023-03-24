@@ -25,6 +25,7 @@ public class Gamer {
 	@Column(name = "GAMER_ID")
 	Long id;
 
+	private Long memberId;
 	private String username;
 	private Integer deposit;
 	@Builder.Default
