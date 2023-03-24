@@ -175,6 +175,8 @@ public class GameController {
 				gameRoomDto.getCurDate(),
 				gameBuySellRequestBody.getCompanyCode());
 
+			// 살려는 종목이 해외 주식인지, 국내 주식인지
+
 		} else if (gameBuySellRequestBody.getType().equals("SELL")) {
 
 		}
