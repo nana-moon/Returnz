@@ -71,21 +71,18 @@ public class GameController {
 			 * 9. 턴 수도 줘요
 			 */
 
-			System.out.println(gameRequestBody.getGamerId() + " " + gameRequestBody.getRoomId());
-
 			String roomId = gameRequestBody.getRoomId();
 			Long gamerId = gameRequestBody.getGamerId();
 
 			// 날짜 데이터 구하기
 			GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 			Long gameRoomId = gameRoomDto.getId();
-			System.out.println(gameRoomDto.toString());
 			// TODO: gameRoomDto가 null이면 에러 발생
 
 			// TODO: 게임 종료 처리
-			// if(gameRoomDto.getTotalTurn() == gameRoomDto.getCurTurn()) {
-			// 	return new ResponseEntity<>(responseBody, HttpStatus.OK);
-			// }
+			if (gameRoomDto.getTotalTurn() <= gameRoomDto.getCurTurn()) {
+				return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
+			}
 
 			// 주가 데이터를 가지고 있는 HashMap
 			HashMap<String, List<GameHistoricalPriceDayDto>> mapGameHistoricalPriceDayDto = new HashMap<>();
@@ -149,7 +146,6 @@ public class GameController {
 			}
 
 			// 나의 현재 보유 종목
-			System.out.println(gamerId);
 			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
 			HashMap<String, List<GameGamerStockDto>> mapGameGamerStockDtos = new HashMap<>();
 			mapGameGamerStockDtos.put("gamerStock", gameGamerStockDtos);

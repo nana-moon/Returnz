@@ -57,7 +57,7 @@ public class GameRoom {
 
 	public boolean updateGameTurn(LocalDateTime nextCurDate) {
 		// TODO: nextCurDate validation Check
-		if (nextCurDate.isEqual(null)) {
+		if (nextCurDate == null) {
 			return false;
 		}
 
