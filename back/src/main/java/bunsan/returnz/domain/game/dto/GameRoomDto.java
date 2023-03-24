@@ -19,5 +19,5 @@ public class GameRoomDto {
 	private Integer totalTurn;
 	private LocalDateTime curDate;
 	private Integer roomMemberCount;
-	TurnPerTime turnPerTime;
+	private TurnPerTime turnPerTime;
 }
