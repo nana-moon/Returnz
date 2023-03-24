@@ -6,7 +6,9 @@ export default function TradeListItem({ trade }) {
   const { type, corp, date, unit, count, amount } = trade;
   return (
     <TradeItemContainer>
-      <Tooltip content="매매유형">{type}</Tooltip>
+      <Tooltip content="매매유형">
+        <p className={type === '매수' ? 'text-gain' : 'text-lose'}>{type}</p>
+      </Tooltip>
       <Tooltip content="거래종목">{corp}</Tooltip>
       <Tooltip content="거래일자">{date}</Tooltip>
       <Tooltip content="거래단가">{`${unit}`}</Tooltip>

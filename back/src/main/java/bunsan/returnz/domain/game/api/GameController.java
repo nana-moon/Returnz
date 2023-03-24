@@ -3,6 +3,7 @@ package bunsan.returnz.domain.game.api;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,17 @@ import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRequestBody;
 import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameStockDto;
+import bunsan.returnz.domain.game.dto.RequestSettingGame;
+import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.service.GameCompanyDetailService;
 import bunsan.returnz.domain.game.service.GameHistoricalPriceDayService;
 import bunsan.returnz.domain.game.service.GameRoomService;
+import bunsan.returnz.domain.game.service.GameStartService;
 import bunsan.returnz.domain.game.service.GameStockService;
 import bunsan.returnz.domain.game.service.GamerService;
 import bunsan.returnz.domain.game.service.GamerStockService;
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -34,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
 
+	private final GameStartService gameStartService;
 	private final GameStockService gameStockService;
 	private final GameRoomService gameRoomService;
 	private final GameHistoricalPriceDayService gameHistoricalPriceDayService;
@@ -45,6 +51,7 @@ public class GameController {
 	 * Description : 게임 턴이 진행될때 마다 필요한 정보를 출력
 	 * ex) 0번 째 턴 -> 시작 화면 구성
 	 * ex) X번 째 턴 -> 진행 정보 전달
+	 *
 	 * @param gameRequestBody
 	 * @return
 	 */
@@ -71,6 +78,7 @@ public class GameController {
 
 			// 날짜 데이터 구하기
 			GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
+			Long gameRoomId = gameRoomDto.getId();
 			System.out.println(gameRoomDto.toString());
 			// TODO: gameRoomDto가 null이면 에러 발생
 
@@ -86,7 +94,7 @@ public class GameController {
 
 			// 1. 날짜 별 그래프 데이터
 			// 게임 진행 주식 종목 가져오기
-			List<GameStockDto> gameStockDtoList = gameStockService.findAllByGameRoomId(roomId);
+			List<GameStockDto> gameStockDtoList = gameStockService.findAllByGameRoomId(gameRoomId);
 
 			// TODO: gameStockDtoList가 비어있으면 에러 발생
 			// if (gameStockDtoList.isEmpty() || gameStockDtoList.size() == 0) {
@@ -95,7 +103,7 @@ public class GameController {
 
 			// 첫 번째 턴인경우, 20 번 전 정보를 제공, HashMap에 저장
 			if (gameRoomDto.getCurTurn() == 0) {
-				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
+				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 					for (int i = 0; i < gameStockDtoList.size(); ++i) {
 						String companyCode = gameStockDtoList.get(i).getCompanyCode();
 						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
@@ -114,7 +122,7 @@ public class GameController {
 			}
 			// 첫 번째 턴이 아닌 경우 하나만
 			else {
-				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
+				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 					for (int i = 0; i < gameStockDtoList.size(); ++i) {
 						String companyCode = gameStockDtoList.get(i).getCompanyCode();
 						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
@@ -141,7 +149,8 @@ public class GameController {
 			}
 
 			// 나의 현재 보유 종목
-			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamerId(gamerId);
+			System.out.println(gamerId);
+			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
 			HashMap<String, List<GameGamerStockDto>> mapGameGamerStockDtos = new HashMap<>();
 			mapGameGamerStockDtos.put("gamerStock", gameGamerStockDtos);
 
@@ -231,5 +240,19 @@ public class GameController {
 	// 	// TODO : else 시 Error 발생
 	//
 	// }
+	@PostMapping("/init")
+	public ResponseEntity settingGame(@RequestBody RequestSettingGame requestSettingGame) {
+		if (!Theme.isValid(requestSettingGame.getTheme())) {
+			throw new BadRequestException("테마가 잘못됬습니다");
+		}
+		//테마 가 유저면 턴당 정보, 총턴수 , 턴시작 을 알려줘야합니다. 아니면 애러 발생
+		requestSettingGame.validateRequestSettingGame();
+		if (!(requestSettingGame.getMemberIdList().size() > 0)) {
+			throw new BadRequestException("유저는 최소 한명 이상이여야합니다.");
+		}
+		Map<String, Object> stringObjectMap = gameStartService.settingGame(requestSettingGame);
+		// 태마 게임일경우
+		return ResponseEntity.ok().body(stringObjectMap);
+	}
 
 }

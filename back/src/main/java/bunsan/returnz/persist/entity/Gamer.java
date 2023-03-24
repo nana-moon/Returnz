@@ -26,10 +26,13 @@ public class Gamer {
 	@Column(name = "GAMER_ID")
 	Long id;
 
+	private Long memberId;
 	private String username;
 	private Integer deposit;
-	private Integer totalBuyAmount;
-	private Integer totalEvaluationAmount;
+	@Builder.Default
+	private Integer totalBuyAmount = 0;
+	@Builder.Default
+	private Integer totalEvaluationAmount = 0;
 
 	@Builder.Default
 	private Boolean readyState = false;

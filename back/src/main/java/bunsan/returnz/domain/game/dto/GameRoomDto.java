@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@ToString
 public class GameRoomDto {
 	private Long id;
 	private String roomId;
@@ -19,5 +21,5 @@ public class GameRoomDto {
 	private Integer totalTurn;
 	private LocalDateTime curDate;
 	private Integer roomMemberCount;
-	TurnPerTime turnPerTime;
+	private TurnPerTime turnPerTime;
 }

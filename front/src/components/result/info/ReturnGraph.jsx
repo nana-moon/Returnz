@@ -21,7 +21,7 @@ export default function ReturnGraph() {
   };
   return (
     <ReturnGraphContainer>
-      <Chart options={data.options} series={data.series} type="line" width="500" height="200" />
+      <Chart options={data.options} series={data.series} type="line" width="500" height="180" />
     </ReturnGraphContainer>
   );
 }
