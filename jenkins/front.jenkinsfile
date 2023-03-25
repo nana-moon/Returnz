@@ -5,6 +5,9 @@ node {
     }
 
     stage('FrontBuild') { 
+        dir("front"){
+        sh "pwd"
+        }
     }
 
 
@@ -14,4 +17,4 @@ node {
     }
     stage('Deploy') { 
     }
-}
+}   
