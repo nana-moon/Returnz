@@ -50,7 +50,26 @@ public class GameRoom {
 			.curTurn(gameRoom.curTurn)
 			.totalTurn(gameRoom.totalTurn)
 			.curDate(gameRoom.curDate)
+			.turnPerTime(gameRoom.turnPerTime)
 			.roomMemberCount(gameRoom.roomMemberCount)
 			.build();
 	}
+
+	public boolean updateGameTurn(LocalDateTime nextCurDate) {
+		// TODO: nextCurDate validation Check
+		if (nextCurDate == null) {
+			return false;
+		}
+
+		// TODO : 현재턴은 토탈턴을 넘길 수 없음
+		//  if(this.totalTurn < this.curTurn)
+		if (this.totalTurn < this.curTurn) {
+			return false;
+		}
+
+		this.curDate = nextCurDate;
+		this.curTurn += 1;
+		return true;
+	}
+
 }
