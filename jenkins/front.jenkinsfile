@@ -9,7 +9,8 @@ node {
             nodejs('returnz') {
                 sh 'npm i'
                 sh 'npm run build'
-                sh "sudo rm -r returnz_build"
+                sh 'pwd'
+                sh "sudo rm -rf returnz_build"
                 sh "sudo mv build  returnz_build"
             }
         }
