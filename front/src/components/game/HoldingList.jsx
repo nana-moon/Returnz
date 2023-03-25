@@ -28,13 +28,7 @@ const HoldingListContanier = styled.div`
 const ListContanier = styled.div`
   height: 100%;
   &::-webkit-scrollbar {
-    width: 0px;
-  }
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: transparent;
+    display: none;
   }
   ${tw` bg-white rounded-xl overflow-y-auto relative pt-12 pb-4`}
 `;
