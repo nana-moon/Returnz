@@ -1,5 +1,7 @@
 node {  
-
+    environment {
+        CI = 'false'
+    }
     stage('checkout'){
        checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'mandu', url: 'https://lab.ssafy.com/s08-bigdata-dist-sub2/S08P22C106.git']])
     }
@@ -23,24 +25,23 @@ node {
         
     }
     stage('Deploy') { 
-         sh "pwd"
-            // dir('front') {
-            // sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
-            // ,transfers: 
-            // [sshTransfer(cleanRemote: false, 
-            // excludes: '', execCommand: 'ls -al', 
-            // execTimeout: 120000, 
-            // flatten: false, 
-            // makeEmptyDirs: false, 
-            // noDefaultExcludes: false, 
-            // patternSeparator: '[, ]+', 
-            // remoteDirectory: '', 
-            // remoteDirectorySDF: false, 
-            // removePrefix: '', 
-            // sourceFiles: 'returnz_build/')], 
-            // usePromotionTimestamp: false, 
-            // useWorkspaceInPromotion: false, 
-            // verbose: false)])
-        // }
+        dir('front') {
+            sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
+            ,transfers: 
+            [sshTransfer(cleanRemote: false, 
+            excludes: '', execCommand: 'ls -al', 
+            execTimeout: 120000, 
+            flatten: false, 
+            makeEmptyDirs: false, 
+            noDefaultExcludes: false, 
+            patternSeparator: '[, ]+', 
+            remoteDirectory: '', 
+            remoteDirectorySDF: false, 
+            removePrefix: '', 
+            sourceFiles: 'returnz_build/')], 
+            usePromotionTimestamp: false, 
+            useWorkspaceInPromotion: false, 
+            verbose: false)])
+        }
     }
 }   
