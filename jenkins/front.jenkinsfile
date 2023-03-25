@@ -21,7 +21,6 @@ node {
         
     }
     stage('Deploy') { 
-        sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz',
-         transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ls', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'returnz_build/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+        sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz',transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ls -al', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'returnz_build/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
     }
 }   
