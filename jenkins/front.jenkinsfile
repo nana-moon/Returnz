@@ -10,8 +10,9 @@ node {
                 sh 'npm i'
                 sh 'npm run build'
                 sh "rm -r returnz_build"
-                sh "mv build returnz_build"
+                sh "mv build  returnz_build"
         }
+    }
     }
 
 
@@ -20,19 +21,7 @@ node {
         
     }
     stage('Deploy') { 
-        sshPublisher(publishers: [
-            sshPublisherDesc(configName: 'returnz', 
-            transfers: [sshTransfer(cleanRemote: false, 
-            excludes: '', execCommand: 'ls'
-            , execTimeout: 120000, flatten: false
-            , makeEmptyDirs: false
-            , noDefaultExcludes: false
-            , patternSeparator: '[, ]+'
-            , remoteDirectory: ''
-            , remoteDirectorySDF: false
-            , removePrefix: ''
-            , sourceFiles: 'returnz_build/')]
-            , usePromotionTimestamp: false
-            , useWorkspaceInPromotion: false, verbose: false)])
+        sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz',
+         transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'ls', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'returnz_build/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
     }
 }   
