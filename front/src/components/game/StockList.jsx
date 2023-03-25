@@ -64,7 +64,7 @@ const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}
 `;
 const BuyButton = styled.button`
-  ${tw`text-white bg-gain font-bold rounded-lg w-[25%] py-2 align-middle text-center`}
+  ${tw`text-white bg-gain font-bold rounded-lg w-[25%] py-2 align-middle text-center shadow-lg`}
   ${({ disabled }) => (disabled ? tw`bg-negative` : tw`bg-gain`)}
 `;
 const SellButton = styled.button`
