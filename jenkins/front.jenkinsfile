@@ -11,8 +11,8 @@ node {
                     sh 'npm i'
                     sh 'npm run build'
                     sh 'pwd'
-                    sh "rm -rf returnz_build"
-                    sh "mv build returnz_build"
+                    sh "rm -rf front"
+                    sh "mv build front"
                 }
             }
         }
@@ -35,10 +35,10 @@ node {
             makeEmptyDirs: false, 
             noDefaultExcludes: false, 
             patternSeparator: '[, ]+', 
-            remoteDirectory: '', 
+            remoteDirectory: 'retrunz/', 
             remoteDirectorySDF: false, 
             removePrefix: '', 
-            sourceFiles: 'returnz_build/')], 
+            sourceFiles: 'front/')], 
             usePromotionTimestamp: false, 
             useWorkspaceInPromotion: false, 
             verbose: false)])
