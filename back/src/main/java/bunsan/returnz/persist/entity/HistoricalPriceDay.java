@@ -52,6 +52,7 @@ public class HistoricalPriceDay {
 			.dividends(historicalPriceDay.getDividends())
 			.companyName(historicalPriceDay.getCompany().getCompanyName())
 			.logo(historicalPriceDay.getCompany().getCompanyDetail().getLogo())
+			.dateTime(historicalPriceDay.getDateTime())
 			.build();
 	}
 }

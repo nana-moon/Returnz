@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bunsan.returnz.domain.game.dto.GameGamerDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +41,23 @@ public class Gamer {
 	@JoinColumn(name = "GAME_ROOM_ID")
 	private GameRoom gameRoom;
 
+	public GameGamerDto toDto(Gamer gamer) {
+		return GameGamerDto.builder()
+			.gamerId(gamer.getId())
+			.userName(gamer.getUsername())
+			.deposit(gamer.getDeposit())
+			.totalBuyAmoount(gamer.getTotalBuyAmount())
+			.totalEvaluationAmount(gamer.getTotalBuyAmount())
+			.build();
+	}
 
+	public boolean updateDeposit(Integer changeDeposit) {
+		if (changeDeposit >= 0) {
+			this.deposit = changeDeposit;
+			return true;
+		}
+		// TODO : else Error
+		return false;
+	}
 
 }
