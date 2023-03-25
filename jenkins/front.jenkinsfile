@@ -21,8 +21,9 @@ node {
         
     }
     stage('Deploy') { 
+         sh "pwd"
             dir('front') {
-                sh "pwd"
+                         sh "pwd"
             // sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
             // ,transfers: 
             // [sshTransfer(cleanRemote: false, 
