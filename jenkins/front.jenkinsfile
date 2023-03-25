@@ -7,7 +7,7 @@ node {
     stage('FrontBuild') { 
         dir("front"){
             nodejs('returnz') {
-                sh 'node -version'
+                sh 'node --version'
                 sh 'npm i'
                 sh 'npm run build'
                 sh 'pwd'
