@@ -37,6 +37,7 @@ const LeftSection = styled.div`
   ${tw`col-span-3 gap-5 h-screen`};
 `;
 const MiddleSection = styled.div`
+  max-height: 88vh;
   ${tw`col-span-6 gap-5`}
 `;
 const RightSection = styled.div`

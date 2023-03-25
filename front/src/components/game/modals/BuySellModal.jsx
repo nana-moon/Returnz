@@ -31,10 +31,8 @@ export default function BuySellModal() {
   }, [orderCount, lastValidOrderCount, maxOrderCount]);
 
   const handleCloseModal = () => {
-    setTimeout(() => {
-      const value = { isOpen: false, isType: '' };
-      dispatch(receiveSetting(value));
-    }, 500);
+    const value = { isOpen: false, isType: '' };
+    dispatch(receiveSetting(value));
   };
 
   const handleUpCount = () => {
@@ -157,16 +155,6 @@ const GlobalStyle = createGlobalStyle`
       transform: translateY(0);
     }
   }
-  @keyframes fadeOut {
-    0% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-50px);
-    }
-  }
   }
 `;
 
@@ -183,7 +171,7 @@ const ModalSection = styled.div`
   min-height: 350px;
   min-width: 250px;
   ${tw`fixed z-40 w-[25%] h-[40%] border justify-center bg-white rounded-2xl`}
-  animation: ${({ modalStat }) => (modalStat.isOpen ? 'fadeIn' : 'fadeOut')} 0.5s linear forwards;
+  animation: 'fadeIn' 0.2s linear forwards;
 `;
 
 const ModalTitle = styled.div`
