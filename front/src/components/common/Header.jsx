@@ -44,6 +44,6 @@ const NavLink = styled(Link)`
   ${tw`flex text-white font-ibm font-bold text-4xl mx-2`}
 `;
 
-const LogoutLink = styled.div`
+const LogoutLink = styled.button`
   ${tw`text-white font-spoq text-lg mx-4 my-2`}
 `;
