@@ -37,6 +37,21 @@ export default function TodayPrice() {
         <StockPrice>322,243,291</StockPrice>
         <StockPrice>▼ -0.8111111%</StockPrice>
       </TodayPriceItem>
+      <TodayPriceItem>
+        <StockTitle>NASDAQ</StockTitle>
+        <StockPrice>322,243,291</StockPrice>
+        <StockPrice>▼ -0.8111111%</StockPrice>
+      </TodayPriceItem>
+      <TodayPriceItem>
+        <StockTitle>NASDAQ</StockTitle>
+        <StockPrice>322,243,291</StockPrice>
+        <StockPrice>▼ -0.8111111%</StockPrice>
+      </TodayPriceItem>
+      <TodayPriceItem>
+        <StockTitle>NASDAQ</StockTitle>
+        <StockPrice>322,243,291</StockPrice>
+        <StockPrice>▼ -0.8111111%</StockPrice>
+      </TodayPriceItem>
     </TodayPriceContainer>
   );
 }
