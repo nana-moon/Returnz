@@ -22,7 +22,7 @@ export default function Header() {
     <div>
       <NavHeader>
         <NavLink to="/">
-          <img src="../../logo.png" alt="" className="h-10 mr-2" />
+          <img src="/logo.png" alt="" className="h-10 mr-2" />
           Returnz
         </NavLink>
         <LogoutLink onClick={handleLogout}>로그아웃</LogoutLink>
