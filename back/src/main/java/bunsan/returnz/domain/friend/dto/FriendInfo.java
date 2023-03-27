@@ -12,12 +12,12 @@ public class FriendInfo {
 	public String username;
 	public String nickname;
 	public MemberState state;
-	public ProfileIcon profileIcon;
+	public String profileIcon;
 	public FriendInfo(Member member) {
 		this.username = member.getUsername();
 		this.nickname = member.getNickname();
 		this.state = member.getState();
-		this.profileIcon = member.getProfileIcon();
+		this.profileIcon = member.getProfileIcon().getCode();
 	}
 
 }

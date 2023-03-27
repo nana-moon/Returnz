@@ -6,7 +6,7 @@ import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { makeRoomApi } from '../apis/gameApi';
+import { startGameApi, gameDataApi } from '../apis/gameApi';
 
 export default function WaitingPage() {
   const navigate = useNavigate();
@@ -73,7 +73,8 @@ export default function WaitingPage() {
   // 게임 시작
   const handleStart = async (e) => {
     if (isValidSetting) {
-      makeRoomApi(setting);
+      const gameId = await startGameApi(setting);
+      await gameDataApi(gameId);
       navigate('/game');
     }
   };

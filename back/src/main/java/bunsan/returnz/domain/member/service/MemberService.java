@@ -65,7 +65,7 @@ public class MemberService {
 	}
 
 	public TokenInfo login(String username, String password) {
-		Member selectedMember = getMemberbyUsername(username);
+		Member selectedMember = getMemberByUsername(username);
 		checkPasswordMatch(selectedMember, password);
 
 		// exception 안 났으면 토큰 발행
@@ -93,7 +93,7 @@ public class MemberService {
 		}
 	}
 
-	private Member getMemberbyUsername(String username) {
+	private Member getMemberByUsername(String username) {
 		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
 		return member;

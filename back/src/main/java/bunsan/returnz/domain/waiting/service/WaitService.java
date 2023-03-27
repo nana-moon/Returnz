@@ -58,7 +58,7 @@ public class WaitService {
 		messageBody.put("id", member.getId());
 		messageBody.put("username", member.getUsername());
 		messageBody.put("nickname", member.getNickname());
-		messageBody.put("profileIcon", member.getProfileIcon());
+		messageBody.put("profileIcon", member.getProfileIcon().getCode());
 		messageBody.put("avgProfit", avgProfit);
 		messageBody.put("captainName", waitRoom.getCaptainName());
 
