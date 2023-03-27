@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class TodayWord {
 	private Integer id;
 	private String topic;
 	private String word;
-	@Column(length = 10000)
+	@Lob
 	private String description;
 
 	public TodayWordDto toDto() {
