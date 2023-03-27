@@ -3,7 +3,7 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-const API_URL = 'http://192.168.100.175:8080';
+const API_URL = 'http://j8c106.p.ssafy.io:8188';
 
 const userLogin = (payload) => {
   return axios
@@ -15,6 +15,7 @@ const userLogin = (payload) => {
 
       // accessToken을 Decoding을 통해 데이터 조회
       const decodedToken = jwtDecode(token);
+      console.log(decodedToken);
 
       Cookies.set('access_token', `Bearer ${token}`);
       Cookies.set('refresh_token', `Bearer ${refreshToken}`);

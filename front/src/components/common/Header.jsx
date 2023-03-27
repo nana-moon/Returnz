@@ -22,7 +22,7 @@ export default function Header() {
     <div>
       <NavHeader>
         <NavLink to="/">
-          <img src="../../logo.png" alt="" className="h-10 mr-2" />
+          <img src="/logo.png" alt="" className="h-10 mr-2" />
           Returnz
         </NavLink>
         <LogoutLink onClick={handleLogout}>로그아웃</LogoutLink>
@@ -44,6 +44,6 @@ const NavLink = styled(Link)`
   ${tw`flex text-white font-ibm font-bold text-4xl mx-2`}
 `;
 
-const LogoutLink = styled.div`
+const LogoutLink = styled.button`
   ${tw`text-white font-spoq text-lg mx-4 my-2`}
 `;
