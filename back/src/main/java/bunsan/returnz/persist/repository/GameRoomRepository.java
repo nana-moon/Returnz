@@ -9,5 +9,5 @@ import bunsan.returnz.persist.entity.GameRoom;
 
 @Repository
 public interface GameRoomRepository extends JpaRepository<GameRoom, Long> {
-	Optional<GameRoom> findByroomId(String roomId);
+	Optional<GameRoom> findByRoomId(String roomId);
 }

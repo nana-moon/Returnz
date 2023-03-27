@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Tooltip } from '@material-tailwind/react';
 
 export default function ThemeSetting({ getIsUserSetting, getTheme }) {
+  // theme state
+  const [activeTheme, setActiveTheme] = useState('');
+
   const themeList = [
     { name: '최근 한 달', description: '최신 한 달간의 주식 차트 상황' },
     {
@@ -25,6 +28,12 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
     },
   ];
 
+  // theme action
+  const handleClick = (e) => {
+    setActiveTheme(e.target.value);
+    handleTheme(e);
+  };
+
   const handleTheme = (e) => {
     e.target.value === 'usersetting' && getIsUserSetting();
     getTheme(e.target.value);
@@ -43,7 +52,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
               unmount: { scale: 0, y: 25 },
             }}
           >
-            <ThemeBox key={theme.name} onClick={handleTheme} value={theme.name}>
+            <ThemeBox key={theme.name} value={theme.name} onClick={handleClick} active={activeTheme === theme.name}>
               {theme.name}
             </ThemeBox>
           </Tooltip>
@@ -60,5 +69,6 @@ const ThemeContainer = styled.div`
 `;
 
 const ThemeBox = styled.button`
-  ${tw`border rounded-xl w-[100%] flex justify-center items-center hover:bg-blue-gray-50 focus:bg-blue-gray-50`}
+  ${tw`border rounded-xl w-[100%] flex justify-center items-center hover:bg-blue-gray-50`}
+  ${({ active }) => active && tw`bg-blue-gray-50`}
 `;
