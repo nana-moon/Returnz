@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Input, Button } from '@material-tailwind/react';
-import { userSignup } from '../../apis/sign';
+import { userSignup } from '../../apis/signApi';
 
 export default function Signup({ changeMode }) {
   const [userSignupData, setUserSignupData] = useState({

@@ -28,7 +28,7 @@ public class FriendRequest {
 			.requestId(this.id)
 			.username(requester.getUsername())
 			.nickname(requester.getNickname())
-			.profileIcon(requester.getProfileIcon())
+			.profileIcon(requester.getProfileIcon().getCode())
 			.build();
 	}
 }
