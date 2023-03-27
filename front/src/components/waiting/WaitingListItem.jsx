@@ -4,7 +4,7 @@ import { Avatar } from '@material-tailwind/react';
 
 export default function WaitingListItem({ user }) {
   const { profile, nickname, profit } = user;
-  const profilePath = `../../profile_pics/${profile}`;
+  const profilePath = `profile_pics/${profile}`;
   return (
     <UserContainer>
       <Avatar size="xxl" variant="circular" src={profilePath} />
