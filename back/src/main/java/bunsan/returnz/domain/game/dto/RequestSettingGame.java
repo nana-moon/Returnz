@@ -55,7 +55,6 @@ public class RequestSettingGame {
 				&& this.totalTurn > monthsBetweenTurn) {
 				throw new BadRequestException("시작일수로 부터 가능한 달 이 더 작습니다. 계산된 달 " + monthsBetweenTurn);
 			}
-
 		}
 	}
 
