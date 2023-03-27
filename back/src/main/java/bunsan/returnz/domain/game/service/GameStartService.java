@@ -1,6 +1,5 @@
 package bunsan.returnz.domain.game.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,44 +44,29 @@ public class GameStartService {
 	@Transactional
 	public Map<String, Object> settingGame(RequestSettingGame requestSettingGame) {
 		// 주식방 만들기
-		GameRoom newGameRoom = GameRoom.builder()
-			.roomId(UUID.randomUUID().toString())
-			.turnPerTime(requestSettingGame.getTernPerTime())
-			.theme(requestSettingGame.getTheme())
-			.curDate(requestSettingGame.getThemeStartTime())
-			.totalTurn(requestSettingGame.getTotalTurn())
-			.roomMemberCount(requestSettingGame.getMemberIdList().size())
-			.build();
+		GameRoom newGameRoom = buildGameRoom(requestSettingGame);
 		// 랜덤 주식 가져와서 할당하기
 		gameRoomRepository.save(newGameRoom);
 		Pageable pageable = PageRequest.of(0, 10);
-		Page<Company> randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
-		List<Company> companyList = randomCompaniesPage.getContent();
-		for (Company company : companyList) {
-			GameStock companyEntity = GameStock.builder()
-				.companyName(company.getCompanyName())
-				.companyCode(company.getCode())
-				.gameRoom(newGameRoom)
-				.build();
-			gameStockRepository.save(companyEntity);
-		}
+		List<Company> companyList = buildCompanies(newGameRoom, pageable);
 		// 맴버 가져와서 주식방 게이머 에 할당하기
-		log.info(requestSettingGame.getMemberIdList().toString());
 		List<Member> getMemberId = memberRepository.findAllById(requestSettingGame.getMemberIdList());
 		if (getMemberId.size() == 0) {
 			throw new BadRequestException("유효한 참가자 아이디가 아닙니다");
 		}
 		List<Gamer> gamers = new ArrayList<>();
-		for (Member member : getMemberId) {
-			Gamer gamer = Gamer.builder()
-				.memberId(member.getId())
-				.gameRoom(newGameRoom)
-				.deposit(100000000)
-				.username(member.getUsername())
-				.build();
-			gamers.add(gamer);
-			gamerRepository.save(gamer);
-		}
+		List<Map> gamersIdList = new ArrayList<>();
+		buildGamerFromMember(newGameRoom, getMemberId, gamers, gamersIdList);
+		buildGamerStock(companyList, gamers);
+		Map<String, Object> gameRoomsRes = new HashMap<>();
+		gameRoomsRes.put("roomId", newGameRoom.getRoomId());
+		gameRoomsRes.put("id", newGameRoom.getId());
+		gameRoomsRes.put("gamerList", gamersIdList);
+
+		return gameRoomsRes;
+	}
+
+	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
 		// 게이머가 가진 주식 할당하기
 		// 게임 스톡을 만들면서 게이머를 할당해야한다
 		// 게이머들순회해서 아이디 가져오고
@@ -95,11 +79,51 @@ public class GameStartService {
 				GamerStock save = gamerStockRepository.save(gamerStock);
 			}
 		}
+	}
 
-		Map<String, Object> gameRoomsRes = new HashMap<>();
-		gameRoomsRes.put("roomId", newGameRoom.getRoomId());
-		gameRoomsRes.put("id", newGameRoom.getId());
-		return gameRoomsRes;
+	private void buildGamerFromMember(GameRoom newGameRoom, List<Member> getMemberId, List<Gamer> gamers,
+		List<Map> gamersIdList) {
+		for (Member member : getMemberId) {
+			Gamer gamer = Gamer.builder()
+				.memberId(member.getId())
+				.gameRoom(newGameRoom)
+				.deposit(100000000)
+				.userNickname(member.getNickname())
+				.username(member.getUsername())
+				.build();
+			gamerRepository.save(gamer);
+			gamers.add(gamer);
+			Map<String, Object> userNameAndGameId = new HashMap<>();
+			userNameAndGameId.put("userName", gamer.getUserNickname());
+			userNameAndGameId.put("gamerId", gamer.getId());
+			gamersIdList.add(userNameAndGameId);
+		}
+	}
+
+	private List<Company> buildCompanies(GameRoom newGameRoom, Pageable pageable) {
+		Page<Company> randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
+		List<Company> companyList = randomCompaniesPage.getContent();
+		for (Company company : companyList) {
+			GameStock companyEntity = GameStock.builder()
+				.companyName(company.getCompanyName())
+				.companyCode(company.getCode())
+				.gameRoom(newGameRoom)
+				.build();
+			gameStockRepository.save(companyEntity);
+		}
+		return companyList;
+	}
+
+	private static GameRoom buildGameRoom(RequestSettingGame requestSettingGame) {
+		GameRoom newGameRoom = GameRoom.builder()
+			.roomId(UUID.randomUUID().toString())
+			.turnPerTime(requestSettingGame.getTernPerTime())
+			.theme(requestSettingGame.getTheme())
+			.curDate(requestSettingGame.getThemeStartTime())
+			.totalTurn(requestSettingGame.getTotalTurn())
+			.roomMemberCount(requestSettingGame.getMemberIdList().size())
+			.build();
+		return newGameRoom;
 	}
 
 }
