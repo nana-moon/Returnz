@@ -10,11 +10,11 @@ export default function Chatting() {
   );
 }
 const ChattingContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[100%] min-h-[200px] p-2`}
+  ${tw`border bg-white rounded-xl w-[100%] h-[100%] p-2`}
 `;
 const ChattingBox = styled.div`
-  ${tw`bg-white rounded-xl w-[100%] min-h-[170px]`}
+  ${tw`bg-white rounded-xl w-[100%] h-[calc(100%-35px)]`}
 `;
 const ChattingInput = styled.input`
-  ${tw`border bg-[#EDEEFF] rounded-xl w-[100%] h-[20%] p-2`}
+  ${tw`border bg-[#EDEEFF] rounded-xl w-[100%] max-h-8 p-2`}
 `;
