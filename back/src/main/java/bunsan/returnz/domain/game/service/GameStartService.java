@@ -20,12 +20,14 @@ import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.GameStock;
 import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerStock;
+import bunsan.returnz.persist.entity.HistoricalPriceDay;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.CompanyRepository;
 import bunsan.returnz.persist.repository.GameRoomRepository;
 import bunsan.returnz.persist.repository.GameStockRepository;
 import bunsan.returnz.persist.repository.GamerRepository;
 import bunsan.returnz.persist.repository.GamerStockRepository;
+import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,8 @@ public class GameStartService {
 	private final GameStockRepository gameStockRepository;
 	private final GamerStockRepository gamerStockRepository;
 	private final MemberRepository memberRepository;
-	CompanyRepository companyRepository;
+	private final CompanyRepository companyRepository;
+	private final HistoricalPriceDayRepository historicalPriceDay;
 
 	@Transactional
 	public Map<String, Object> settingGame(RequestSettingGame requestSettingGame) {
@@ -54,6 +57,9 @@ public class GameStartService {
 		if (getMemberId.size() == 0) {
 			throw new BadRequestException("유효한 참가자 아이디가 아닙니다");
 		}
+		if (!checkRangeValid(requestSettingGame)) {
+			throw new BadRequestException("실제 영업일과 일치 하지 않습니다.");
+		}
 		List<Gamer> gamers = new ArrayList<>();
 		List<Map> gamersIdList = new ArrayList<>();
 		buildGamerFromMember(newGameRoom, getMemberId, gamers, gamersIdList);
@@ -64,6 +70,19 @@ public class GameStartService {
 		gameRoomsRes.put("gamerList", gamersIdList);
 
 		return gameRoomsRes;
+	}
+
+	private boolean checkRangeValid(RequestSettingGame requestSettingGame) {
+
+		if (requestSettingGame.getTheme().getTheme().equals("USER")) {
+			// 실제 데이터와 하나와 토탈 턴이 일치한느지 검사해라
+			// 길이를 검사할땐 집계함수 count 를 활용
+			Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
+			// List<HistoricalPriceDay> historicalPriceDays = historicalPriceDay.countHistoricalPriceDayByDateTimeAfter(
+			// 	requestSettingGame.getThemeStartTime(), pageable);
+			// log.info("조회된 데이터의 갯수는 day :" + historicalPriceDays.size());
+		}
+		return true;
 	}
 
 	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
