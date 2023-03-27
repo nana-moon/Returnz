@@ -82,15 +82,19 @@ public class GameStartService {
 			for (Company stock : gameStock) {
 				gameStockIds.add(stock.getCode());
 			}
-			try {
+			// day 일때 데이터가 있는지 체크
+			if(requestSettingGame.getTernPerTime().getTime().equals("DAY")){
 				Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
 				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDay.getDayDataAfterStartDay(
 					requestSettingGame.getStartTime(), gameStockIds, pageable);
-				log.info("조회된 갯수 "+dayDataAfterStartDay.size());
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
+				Integer countInDB = dayDataAfterStartDay.size();
+				if (!countInDB.equals(requestSettingGame.getTotalTurn())) {
+					return false;
+				}
 			}
+			// week 라면 사작일이 목요일 수요일이라면? 전체주를 다가져오는지?
+			// 합쳐서 주는거라면
+
 		}
 		return true;
 	}
