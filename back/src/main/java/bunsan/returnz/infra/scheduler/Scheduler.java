@@ -24,7 +24,7 @@ public class Scheduler {
 	private final TodayWordRepository todayWordRepository;
 	private final EconomicWordRepository economicWordRepository;
 
-	@Scheduled(cron = "0 0 22 * * *")
+	@Scheduled(cron = "0 0 0 * * *")
 	public void updateTodayWords() {
 		log.info("{}에 실행되었습니다.", LocalDateTime.now());
 		todayWordRepository.deleteAll();
