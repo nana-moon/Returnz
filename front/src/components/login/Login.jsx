@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Input, Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
-import { userLogin } from '../../apis/sign';
+import { userLogin } from '../../apis/signApi';
 
 export default function Login({ changeMode }) {
   const navigate = useNavigate();
