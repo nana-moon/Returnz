@@ -7,10 +7,7 @@ export default function UserProfile() {
   const myPic = Cookies.get('profileIcon');
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
-  const [modal, setModalOpen] = useState(false);
-  const handleModal = () => {
-    setModalOpen(true);
-  };
+
   return (
     <MyProfileCard>
       <Card color="transparent" shadow={false} className="w-full">
@@ -23,7 +20,7 @@ export default function UserProfile() {
           <Avatar size="lg" variant="circular" src={picPath} />
           <MyInfoBox>
             <UsernameContent>{myNick}</UsernameContent>
-            <ProfileChangeButton onClick={handleModal}>프로필 수정하러 가기</ProfileChangeButton>
+            <ProfileChangeButton>프로필 수정하러 가기</ProfileChangeButton>
           </MyInfoBox>
         </CardHeader>
       </Card>
