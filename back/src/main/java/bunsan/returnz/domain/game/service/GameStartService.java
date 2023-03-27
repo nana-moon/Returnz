@@ -49,21 +49,22 @@ public class GameStartService {
 		// 주식방 만들기
 		GameRoom newGameRoom = buildGameRoom(requestSettingGame);
 		// 랜덤 주식 가져와서 할당하기
-		gameRoomRepository.save(newGameRoom);
 		Pageable pageable = PageRequest.of(0, 10);
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
+		if (!checkRangeValid(requestSettingGame, companyList)) {
+			throw new BadRequestException("실제 영업일과 일치 하지 않습니다.");
+		}
+
 		// 맴버 가져와서 주식방 게이머 에 할당하기
 		List<Member> getMemberId = memberRepository.findAllById(requestSettingGame.getMemberIdList());
 		if (getMemberId.size() == 0) {
 			throw new BadRequestException("유효한 참가자 아이디가 아닙니다");
 		}
-		if (!checkRangeValid(requestSettingGame)) {
-			throw new BadRequestException("실제 영업일과 일치 하지 않습니다.");
-		}
 		List<Gamer> gamers = new ArrayList<>();
 		List<Map> gamersIdList = new ArrayList<>();
 		buildGamerFromMember(newGameRoom, getMemberId, gamers, gamersIdList);
 		buildGamerStock(companyList, gamers);
+
 		Map<String, Object> gameRoomsRes = new HashMap<>();
 		gameRoomsRes.put("roomId", newGameRoom.getRoomId());
 		gameRoomsRes.put("id", newGameRoom.getId());
@@ -72,15 +73,24 @@ public class GameStartService {
 		return gameRoomsRes;
 	}
 
-	private boolean checkRangeValid(RequestSettingGame requestSettingGame) {
+	private boolean checkRangeValid(RequestSettingGame requestSettingGame, List<Company> gameStock) {
 
 		if (requestSettingGame.getTheme().getTheme().equals("USER")) {
 			// 실제 데이터와 하나와 토탈 턴이 일치한느지 검사해라
 			// 길이를 검사할땐 집계함수 count 를 활용
-			Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
-			// List<HistoricalPriceDay> historicalPriceDays = historicalPriceDay.countHistoricalPriceDayByDateTimeAfter(
-			// 	requestSettingGame.getThemeStartTime(), pageable);
-			// log.info("조회된 데이터의 갯수는 day :" + historicalPriceDays.size());
+			List<String> gameStockIds = new ArrayList<>();
+			for (Company stock : gameStock) {
+				gameStockIds.add(stock.getCode());
+			}
+			try {
+				Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
+				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDay.getDayDataAfterStartDay(
+					requestSettingGame.getStartTime(), gameStockIds, pageable);
+				log.info("조회된 갯수 "+dayDataAfterStartDay.size());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
 		return true;
 	}
@@ -133,7 +143,7 @@ public class GameStartService {
 		return companyList;
 	}
 
-	private static GameRoom buildGameRoom(RequestSettingGame requestSettingGame) {
+	private GameRoom buildGameRoom(RequestSettingGame requestSettingGame) {
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
 			.turnPerTime(requestSettingGame.getTernPerTime())
@@ -142,6 +152,7 @@ public class GameStartService {
 			.totalTurn(requestSettingGame.getTotalTurn())
 			.roomMemberCount(requestSettingGame.getMemberIdList().size())
 			.build();
+		gameRoomRepository.save(newGameRoom);
 		return newGameRoom;
 	}
 

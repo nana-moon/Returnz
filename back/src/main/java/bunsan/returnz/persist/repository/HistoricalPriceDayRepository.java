@@ -39,7 +39,7 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 	// week
 	//month 별 턴처리 필요
 	@Query(value = "SELECT h FROM HistoricalPriceDay h WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds ORDER BY h.dateTime ASC")
-	List<HistoricalPriceDay> countHistoricalPriceDayByDateTimeAfter(@Param("dateTime") LocalDateTime dateTime,
-		@Param("stockIds") List<Integer> stockIds,
+	List<HistoricalPriceDay> getDayDataAfterStartDay(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds,
 		Pageable pageable);
 }
