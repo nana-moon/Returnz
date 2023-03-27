@@ -3,11 +3,9 @@ import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import Cookies from 'js-cookie';
 
-const API_URL = 'http://j8c106.p.ssafy.io:8188';
-
 const userLogin = (payload) => {
   return axios
-    .post(`${API_URL}/api/members/login`, payload)
+    .post('members/login', payload)
     .then((res) => {
       console.log('로그인 성공', res.data);
       const token = res.data.accessToken;
@@ -34,7 +32,7 @@ const userLogin = (payload) => {
 
 const userSignup = (payload) => {
   return axios
-    .post(`${API_URL}/api/members/signup`, payload)
+    .post('members/signup', payload)
     .then((res) => {
       console.log('회원가입 성공', res);
       return true;
