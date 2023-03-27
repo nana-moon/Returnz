@@ -1,5 +1,6 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { useLocation } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -7,8 +8,12 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
+import UserLogList from '../components/game/userlog/UserLogList';
+import Chatting from '../components/chatting/Chatting';
 
 export default function GamePage() {
+  const { state } = useLocation();
+  console.log(state, '-----잘나옴-----');
   return (
     <>
       <Header />
@@ -23,7 +28,10 @@ export default function GamePage() {
           <Graph />
           <StockInfo />
         </MiddleSection>
-        <RightSection>친구와 채팅</RightSection>
+        <RightSection>
+          <UserLogList />
+          <Chatting />
+        </RightSection>
       </GameContainer>
     </>
   );
@@ -41,5 +49,6 @@ const MiddleSection = styled.div`
   ${tw`col-span-6 gap-5`}
 `;
 const RightSection = styled.div`
-  ${tw`col-span-3 border-2 bg-white rounded-xl`}
+  max-height: 88vh;
+  ${tw`col-span-3 grid gap-5`}
 `;
