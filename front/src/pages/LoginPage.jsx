@@ -68,8 +68,8 @@ const LoginMode = keyframes`
 `;
 
 const LoginPageContanier = styled.div`
-  margin-top: 10%;
-  ${tw`relative w-[50%] h-[50%]`}
+  padding-top: 10%;
+  ${tw`relative w-[50%] h-[50%] mx-auto`}
 `;
 
 const BackSection = styled.div`
