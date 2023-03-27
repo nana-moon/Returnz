@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
 import { createGlobalStyle } from 'styled-components';
 
-import { buyNeedData, sellNeedData, modalState } from '../../../store/BuySellModal/BuySell.selector';
-import { receiveSetting } from '../../../store/BuySellModal/BuySell.reducer';
+import { buyNeedData, sellNeedData, modalState } from '../../../store/buysellmodal/BuySell.selector';
+import { receiveSetting } from '../../../store/buysellmodal/BuySell.reducer';
 
 export default function BuySellModal() {
   const dispatch = useDispatch();
