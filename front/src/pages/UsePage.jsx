@@ -5,19 +5,19 @@ import SideBar from '../components/common/SideBar';
 import ProfileEditModal from '../components/common/ProfileEditModal';
 
 export default function UsePage() {
-  const [modal, setModalOpen] = useState(false);
-  const handleModal = (data) => {
-    setModalOpen(data);
-  };
+  const [modal, setModal] = useState(false);
+  // const handleModal = (data) => {
+  //   setModal(data);
+  // };
   return (
     <div>
       {modal === true ? <ProfileEditModal /> : null}
-      <Header />
       <div className="flex">
         <div className="w-[100%] flex justify-center">
           <Outlet />
         </div>
-        <SideBar onModal={handleModal} />
+        {/* <SideBar onModal={handleModal} /> */}
+        <SideBar />
       </div>
     </div>
   );

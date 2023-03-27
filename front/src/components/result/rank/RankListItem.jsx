@@ -4,7 +4,7 @@ import { Avatar } from '@material-tailwind/react';
 
 export default function RankListItem({ user, getUser }) {
   const { rank, profile, nickname, returnRate } = user;
-  const profilePath = `../../profile_pics/${profile}`;
+  const profilePath = `profile_pics/${profile}`;
   const rankIcon = ['🥇', '🥈', '🥉', '💸'];
   const handleResultInfo = () => {
     getUser(user);

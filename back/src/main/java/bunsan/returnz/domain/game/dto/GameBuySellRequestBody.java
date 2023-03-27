@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
-public class GameGamerDto {
+public class GameBuySellRequestBody {
+	private String type;
+	private String roomId;
 	private Long gamerId;
-	private String userName;
-	private Integer deposit;
-	private Integer totalBuyAmoount;
-	private Integer totalEvaluationAmount;
+	private String companyCode;
+	private Integer amoount;
+
 }
