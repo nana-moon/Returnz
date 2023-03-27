@@ -9,7 +9,7 @@ import tw from 'twin.macro';
 // import { useQuery, QueryClient } from 'react-query';
 import { Card, CardHeader, Input, Avatar } from '@material-tailwind/react';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { friendRequest } from '../../apis/friend';
+import { friendRequest } from '../../apis/friendApi';
 // import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
 
