@@ -47,15 +47,15 @@ export default function StockInfoTab() {
 }
 
 const StyledTable = styled.table`
-  ${tw`table-auto w-full`}
+  ${tw`table-auto w-full text-xs`}
 `;
 
 const StyledHeader = styled.th`
-  ${tw`border px-4 py-2`}
+  ${tw`border px-4 py-1`}
 `;
 
 const StyledCell = styled.td`
-  ${tw`border px-4 py-2`}
+  ${tw`border px-4`}
 `;
 
 const StyledRow = styled.tr`

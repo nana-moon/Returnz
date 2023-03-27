@@ -6,7 +6,9 @@ export default function NewsTab() {
   return (
     <TabContanier>
       <ImageBox>
-        <img className="w-[90%]" src={imgPath} alt="" />
+        <a href="http://naver.com" target="_blank" rel="noopener noreferrer">
+          <img className="w-[90%]" src={imgPath} alt="" />
+        </a>
         <HelpText>이미지 클릭시 원문으로 이동</HelpText>
       </ImageBox>
       <ContentSection>
@@ -21,7 +23,7 @@ export default function NewsTab() {
 }
 
 const TabContanier = styled.div`
-  ${tw`flex overflow-y-scroll relative max-h-[80%]`}
+  ${tw`flex relative max-h-[80%]`}
 `;
 
 const ImageBox = styled.div`
