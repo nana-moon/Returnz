@@ -14,6 +14,6 @@ public class FriendRequestDto {
 	public Long requestId;
 	public String username;
 	public String nickname;
-	public ProfileIcon profileIcon;
+	public String profileIcon;
 
 }
