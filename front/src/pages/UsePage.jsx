@@ -12,6 +12,7 @@ export default function UsePage() {
   return (
     <div>
       {modal === true ? <ProfileEditModal /> : null}
+      <Header />
       <div className="flex">
         <div className="w-[100%] flex justify-center">
           <Outlet />
