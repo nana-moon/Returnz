@@ -1,37 +1,91 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
-import imgpath from './bear.jpg';
-import { receiveBuyData, receiveSellData } from '../../../store/BuySellModal/BuySell.reducer';
+import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buysellmodal/BuySell.reducer';
+import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
+import { stockDataList } from '../../../store/gamedata/GameData.selector';
 
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
+  const isSelect = useSelector(selectedIdx);
+
+  const handleselectIdx = (data) => {
+    dispatch(selectIdx(data));
+  };
+
+  const createRipple = (e) => {
+    const button = e.currentTarget;
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+
+    const rect = button.getBoundingClientRect();
+    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    circle.style.width = `${diameter}px`;
+    circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - (rect.left + scrollLeft) - radius}px`;
+    circle.style.top = `${e.clientY - (rect.top + scrollTop) - radius}px`;
+    circle.classList.add('ripple');
+
+    const ripple = button.getElementsByClassName('ripple')[0];
+
+    if (ripple) {
+      ripple.remove();
+    }
+
+    button.appendChild(circle);
+  };
+
   return (
     <ItemContainer
-      onClick={() => {
-        const value = { companyName: Stock.name, orderPrice: Stock.price };
+      i={i}
+      j={isSelect}
+      onClick={(e) => {
+        createRipple(e);
+        handleselectIdx(i);
+        const value = { companyName: Stock[Stock.length - 1].companyName, orderPrice: Stock[Stock.length - 1].close };
         dispatch(receiveBuyData(value));
         // 보유수량 확인 가능하면 수정해야됨
         dispatch(receiveSellData(value));
       }}
     >
+      <span className="ripple" />
       <ItemTitleSection>
         <ItemTitleImgBox>
-          <img src={imgpath} alt="dd" />
+          <img src={Stock[Stock.length - 1].logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{Stock.name}</CompanyName>
-        <ItemPriceSection>{Stock.price}</ItemPriceSection>
+        <CompanyName>{Stock[Stock.length - 1].companyName}</CompanyName>
+        <ItemPriceSection>{Stock[Stock.length - 1].close}</ItemPriceSection>
       </ItemTitleSection>
       <ItemInfoSection>
-        <IndustryBox>{Stock.Industry}</IndustryBox>
-        <UpDownBox>{Stock.e}</UpDownBox>
-        <UpDownBox>{Stock.f}</UpDownBox>
+        <IndustryBox>산업군</IndustryBox>
+        <UpDownBox>1000</UpDownBox>
+        <UpDownBox>0.3</UpDownBox>
       </ItemInfoSection>
     </ItemContainer>
   );
 }
+
 const ItemContainer = styled.button`
-  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl focus:drop-shadow-none`}
+  position: relative; // Add this line
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+    transform: scale(0);
+    animation: ripple-effect 1s linear forwards;
+  }
+
+  @keyframes ripple-effect {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  ${(props) => (props.i === props.j ? tw`ring-2 ring-negative drop-shadow-none` : tw``)}
+  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl overflow-hidden`}
 `;
 
 const ItemTitleSection = styled.div`

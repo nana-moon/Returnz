@@ -1,16 +1,21 @@
 import axios from 'axios';
 
-const makeRoomApi = (payload) => {
-  console.log(payload);
-  return axios.post('/wait-rooms', { payload });
+const makeRoomApi = () => {
+  return axios.post('/wait-rooms');
 };
 
 const startGameApi = (payload) => {
   return axios.post('/games/init', { payload });
 };
 
-const resultApi = (param, payload) => {
-  return axios.get(`url${param}`, { payload });
+const gameDataApi = (payload) => {
+  const gameData = axios.post('/games/game', { payload });
+  // 데이터 넣어주기
+  return gameData;
 };
 
-export { makeRoomApi, startGameApi, resultApi };
+const resultApi = (param, payload) => {
+  // return axios.get(`url${param}`, { payload });
+};
+
+export { makeRoomApi, startGameApi, gameDataApi, resultApi };

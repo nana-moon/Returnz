@@ -9,8 +9,9 @@ import tw from 'twin.macro';
 // import { useQuery, QueryClient } from 'react-query';
 import { Card, CardHeader, Input, Avatar } from '@material-tailwind/react';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { friendRequest } from '../../apis/friend';
+import { friendRequest } from '../../apis/friendApi';
 // import FriendListItems from './Items/FriendListItems';
+import UserProfile from './SideBar/UserProfile';
 
 export default function SideBar({ onModal }) {
   const [friendNickname, setfriendNickname] = useState('');
@@ -119,22 +120,7 @@ export default function SideBar({ onModal }) {
 
   return (
     <SideBarContainer>
-      <MyProfileCard>
-        <Card color="transparent" shadow={false} className="w-full">
-          <CardHeader
-            color="transparent"
-            floated={false}
-            shadow={false}
-            className="mx-2 flex items-center gap-4 pt-0 pb-4"
-          >
-            <Avatar size="lg" variant="circular" src="../../profile_pics/green.jpg" />
-            <MyInfoBox>
-              <UsernameContent>내 유저네임</UsernameContent>
-              <ProfileChangeButton onClick={openModal}>프로필 수정하러 가기</ProfileChangeButton>
-            </MyInfoBox>
-          </CardHeader>
-        </Card>
-      </MyProfileCard>
+      <UserProfile />
       {/* <FriendListContainer>
         {friendList.map((friend, i) => {
           return <FriendListItems person={friend} i={i} />;
@@ -161,10 +147,6 @@ const SideBarContainer = styled.div`
   ${tw`bg-white border-l-2 border-negative w-1/5`}
 `;
 
-const MyProfileCard = styled.div`
-  ${tw`border-b-2 border-negative`}
-`;
-
 const FriendSearchContainer = styled.div`
   ${tw`flex border-t-2 border-negative px-2 pt-2 gap-2`}
 `;
@@ -172,22 +154,3 @@ const FriendSearchContainer = styled.div`
 const SearchButton = styled.button`
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;
-
-const MyInfoBox = styled.div`
-  ${tw`font-spoq`}
-`;
-
-const UsernameContent = styled.div`
-  ${tw`text-lg py-1 font-bold`}
-`;
-
-const ProfileChangeButton = styled.button`
-  /*
-  z-index: 0;
-  */
-  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
-`;
-
-// const FriendListContainer = styled.button`
-//   ${tw`bg-red-200`}
-// `;

@@ -153,8 +153,8 @@ public class Member implements UserDetails {
 		}
 	}
 
-	public void changeState(MemberState online) {
-		this.state = online;
+	public void changeState(MemberState state) {
+		this.state = state;
 	}
 
 	public void deleteFriend(Member friend) {
