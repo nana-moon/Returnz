@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	private final StompHandler stompHandler;
 
