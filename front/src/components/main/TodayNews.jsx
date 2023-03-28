@@ -14,7 +14,8 @@ export default function TodayNews() {
       </TodayNewsTitle>
       <TodayNewsSection>
         {data.map((news, i) => {
-          return <TodayNewsItem news={news} i={i} />;
+          // eslint-disable-next-line react/no-array-index-key
+          return <TodayNewsItem news={news} key={i} />;
         })}
       </TodayNewsSection>
     </TodayNewsContainer>
