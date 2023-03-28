@@ -95,4 +95,9 @@ public class MemberService {
 			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
 		return member;
 	}
+
+	public Member getMemberbyId(Long id) {
+		return memberRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
+	}
 }
