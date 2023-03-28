@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class CalDateRange {
 	public static List<WeekRange> calculateWeekRanges(LocalDateTime startDate, int weeks) {
 		List<WeekRange> weekRanges = new ArrayList<>();
-		LocalDateTime currentMonday = startDate.toLocalDate().atTime(0,0,0);
+		LocalDateTime currentMonday = startDate.toLocalDate().atTime(0, 0, 0);
 		LocalDateTime currentFriday;
 
 		if (startDate.getDayOfWeek() != DayOfWeek.MONDAY) {
@@ -39,6 +39,7 @@ public class CalDateRange {
 
 		return weekRanges;
 	}
+
 	public static List<MonthRange> calculateMonthRanges(LocalDateTime startDate, int months) {
 		List<MonthRange> monthRanges = new ArrayList<>();
 		LocalDateTime currentFirstDay = startDate;
@@ -59,6 +60,5 @@ public class CalDateRange {
 
 		return monthRanges;
 	}
-
 
 }

@@ -63,6 +63,7 @@ public class GameStartService {
 		List<Gamer> gamers = new ArrayList<>();
 		List<Map> gamersIdList = new ArrayList<>();
 		buildGamerFromMember(newGameRoom, getMemberId, gamers, gamersIdList);
+		// 게이머들이 소유한 주식 초기화
 		buildGamerStock(companyList, gamers);
 
 		Map<String, Object> gameRoomsRes = new HashMap<>();
@@ -83,7 +84,7 @@ public class GameStartService {
 				gameStockIds.add(stock.getCode());
 			}
 			// day 일때 데이터가 있는지 체크
-			if(requestSettingGame.getTernPerTime().getTime().equals("DAY")){
+			if (requestSettingGame.getTurnPerTime().getTime().equals("DAY")) {
 				Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
 				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDay.getDayDataAfterStartDay(
 					requestSettingGame.getStartTime(), gameStockIds, pageable);
@@ -94,7 +95,12 @@ public class GameStartService {
 			}
 			// week 라면 사작일이 목요일 수요일이라면? 전체주를 다가져오는지?
 			// 합쳐서 주는거라면
-
+			if (requestSettingGame.getTurnPerTime().getTime().equals("WEEK")) {
+				log.info("init Week");
+			}
+			if (requestSettingGame.getTurnPerTime().getTime().equals("MONTH")) {
+				log.info("init Month");
+			}
 		}
 		return true;
 	}
@@ -150,7 +156,7 @@ public class GameStartService {
 	private GameRoom buildGameRoom(RequestSettingGame requestSettingGame) {
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
-			.turnPerTime(requestSettingGame.getTernPerTime())
+			.turnPerTime(requestSettingGame.getTurnPerTime())
 			.theme(requestSettingGame.getTheme())
 			.curDate(requestSettingGame.getThemeStartTime())
 			.totalTurn(requestSettingGame.getTotalTurn())
