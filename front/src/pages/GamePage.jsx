@@ -20,7 +20,6 @@ export default function GamePage() {
   const testdata = useSelector(stockDataList);
   const dispatch = useDispatch();
   const { state } = useLocation();
-  console.log(state, '-----잘나옴-----');
 
   const readd = () => {
     console.log(testdata, 'test');
@@ -33,7 +32,7 @@ export default function GamePage() {
     };
 
     axios
-      .post('http://j8c106.p.ssafy.io/api/games/game', datas)
+      .post('/games/game', datas)
       .then((res) => {
         if (count === 0) {
           console.log(res.data, '데이터보냄');
@@ -72,7 +71,9 @@ export default function GamePage() {
         </MiddleSection>
         <RightSection>
           <UserLogList />
-          <Chatting />
+          <div className="h-[50%]">
+            <Chatting />
+          </div>
         </RightSection>
       </GameContainer>
     </>
@@ -91,5 +92,5 @@ const MiddleSection = styled.div`
 `;
 const RightSection = styled.div`
   max-height: 88vh;
-  ${tw`col-span-3 grid gap-5`}
+  ${tw`col-span-3 flex flex-col gap-5 h-screen`}
 `;
