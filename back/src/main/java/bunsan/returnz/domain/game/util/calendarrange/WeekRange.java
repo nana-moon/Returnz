@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.game.util.calendar_range;
+package bunsan.returnz.domain.game.util.calendarrange;
 
 import java.time.LocalDateTime;
 

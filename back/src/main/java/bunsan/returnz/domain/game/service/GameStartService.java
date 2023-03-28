@@ -15,9 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
-import bunsan.returnz.domain.game.util.calendar_range.CalDateRange;
-import bunsan.returnz.domain.game.util.calendar_range.MonthRange;
-import bunsan.returnz.domain.game.util.calendar_range.WeekRange;
+import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
+import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
+import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Company;
 import bunsan.returnz.persist.entity.GameRoom;
@@ -56,7 +56,6 @@ public class GameStartService {
 		Pageable pageable = PageRequest.of(0, 10);
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
 		checkRangeValid(requestSettingGame, companyList);
-
 
 		// 맴버 가져와서 주식방 게이머 에 할당하기
 		List<Member> getMemberId = memberRepository.findAllById(requestSettingGame.getMemberIdList());
@@ -102,8 +101,9 @@ public class GameStartService {
 					LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
 					LocalDateTime endDay = weekRange.getWeekLastDay();
 
-					boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
-						weekFirstDay, endDay, gameStockIds, 10L);
+					boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository
+						.existsAtLeastOneRecordForEachCompany(
+							weekFirstDay, endDay, gameStockIds, 10L);
 					if (!checkAllStockIsThereMoreThenInWeek) {
 						throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 					}
@@ -116,9 +116,11 @@ public class GameStartService {
 				for (MonthRange monthRange : monthRanges) {
 					LocalDateTime monthStart = monthRange.getFirstDay();
 					LocalDateTime monthEnd = monthRange.getLastDay();
-					boolean checkDataInMonthTurn = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(monthStart, monthEnd,
-						gameStockIds, 10L);
-					if(!checkDataInMonthTurn){
+					boolean checkDataInMonthTurn = historicalPriceDayRepository
+						.existsAtLeastOneRecordForEachCompany(
+							monthStart, monthEnd,
+							gameStockIds, 10L);
+					if (!checkDataInMonthTurn) {
 						throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 					}
 				}
