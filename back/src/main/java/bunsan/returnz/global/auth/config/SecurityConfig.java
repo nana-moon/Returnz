@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsUtils;
 
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +44,6 @@ public class SecurityConfig {
 			.and()
 			//
 			.authorizeRequests()
-			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			.antMatchers("/api/game").authenticated()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
