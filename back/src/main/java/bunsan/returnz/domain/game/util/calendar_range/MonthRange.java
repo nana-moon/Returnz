@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 public class MonthRange {
-	public LocalDateTime firstDay;
-	public LocalDateTime lastDay;
+	private LocalDateTime firstDay;
+	private LocalDateTime lastDay;
 
 	public MonthRange(LocalDateTime firstDay, LocalDateTime lastDay) {
 		this.firstDay = firstDay;
