@@ -24,6 +24,4 @@ public class GameHistoricalPriceDayDto {
 	private String adjclose;
 	private String dividends;
 	private String companyName;
-	private String logo;
-
 }
