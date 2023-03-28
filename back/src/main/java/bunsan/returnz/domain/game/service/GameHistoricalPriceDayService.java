@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 import lombok.RequiredArgsConstructor;
@@ -71,8 +72,25 @@ public class GameHistoricalPriceDayService {
 			historicalPriceDayRepository.findByDateTimeAndCompanyCode(
 				dateTime, companyCode);
 		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto)
+			.orElseThrow(() -> new NotFoundException("해당 날짜의 종목 가격을 찾을 수 없습니다."));
+	}
 
-		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
+	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit6(
+		LocalDateTime date, String companyCode) {
+		List<HistoricalPriceDay> historicalPriceDays =
+			historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit6(
+				date, companyCode);
+
+		// TODO: historicalPriceDays 없을 경우 에러 발생 / 또는 개수가 적을 경우
+		// if(historicalPriceDays.isEmpty())
+
+		List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = new LinkedList<>();
+		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+		for (int i = 0; i < historicalPriceDays.size(); ++i) {
+			gameHistoricalPriceDayDtos.add(historicalPriceDay.toDto(historicalPriceDays.get(i)));
+		}
+		return gameHistoricalPriceDayDtos;
 	}
 
 }
