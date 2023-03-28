@@ -26,15 +26,16 @@ class CalDateRangeTest {
 
 		assertEquals(weeks, weekRanges.size());
 
-		assertEquals(LocalDateTime.of(2023, 3, 29, 0, 0), weekRanges.get(0).monday);
-		assertEquals(LocalDateTime.of(2023, 3, 31, 0, 0), weekRanges.get(0).friday);
+		assertEquals(LocalDateTime.of(2023, 3, 29, 0, 0), weekRanges.get(0).getWeekFirstDay());
+		assertEquals(LocalDateTime.of(2023, 3, 31, 0, 0), weekRanges.get(0).getWeekLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 4, 3, 0, 0), weekRanges.get(1).monday);
-		assertEquals(LocalDateTime.of(2023, 4, 7, 0, 0), weekRanges.get(1).friday);
+		assertEquals(LocalDateTime.of(2023, 4, 3, 0, 0), weekRanges.get(1).getWeekFirstDay());
+		assertEquals(LocalDateTime.of(2023, 4, 7, 0, 0), weekRanges.get(1).getWeekLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 4, 10, 0, 0), weekRanges.get(2).monday);
-		assertEquals(LocalDateTime.of(2023, 4, 14, 0, 0), weekRanges.get(2).friday);
+		assertEquals(LocalDateTime.of(2023, 4, 10, 0, 0), weekRanges.get(2).getWeekFirstDay());
+		assertEquals(LocalDateTime.of(2023, 4, 14, 0, 0), weekRanges.get(2).getWeekLastDay());
 	}
+
 	@Test
 	void testCalculateMonthRanges() {
 		LocalDateTime startDate = LocalDateTime.of(2023, 3, 15, 0, 0);
@@ -44,22 +45,22 @@ class CalDateRangeTest {
 
 		assertEquals(months, monthRanges.size());
 
-		assertEquals(LocalDateTime.of(2023, 3, 15, 0, 0), monthRanges.get(0).firstDay);
-		assertEquals(LocalDateTime.of(2023, 3, 31, 0, 0), monthRanges.get(0).lastDay);
+		assertEquals(LocalDateTime.of(2023, 3, 15, 0, 0), monthRanges.get(0).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 3, 31, 0, 0), monthRanges.get(0).getLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 4, 1, 0, 0), monthRanges.get(1).firstDay);
-		assertEquals(LocalDateTime.of(2023, 4, 30, 0, 0), monthRanges.get(1).lastDay);
+		assertEquals(LocalDateTime.of(2023, 4, 1, 0, 0), monthRanges.get(1).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 4, 30, 0, 0), monthRanges.get(1).getLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 5, 1, 0, 0), monthRanges.get(2).firstDay);
-		assertEquals(LocalDateTime.of(2023, 5, 31, 0, 0), monthRanges.get(2).lastDay);
+		assertEquals(LocalDateTime.of(2023, 5, 1, 0, 0), monthRanges.get(2).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 5, 31, 0, 0), monthRanges.get(2).getLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 6, 1, 0, 0), monthRanges.get(3).firstDay);
-		assertEquals(LocalDateTime.of(2023, 6, 30, 0, 0), monthRanges.get(3).lastDay);
+		assertEquals(LocalDateTime.of(2023, 6, 1, 0, 0), monthRanges.get(3).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 6, 30, 0, 0), monthRanges.get(3).getLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 6, 1, 0, 0), monthRanges.get(3).firstDay);
-		assertEquals(LocalDateTime.of(2023, 6, 30, 0, 0), monthRanges.get(3).lastDay);
+		assertEquals(LocalDateTime.of(2023, 6, 1, 0, 0), monthRanges.get(3).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 6, 30, 0, 0), monthRanges.get(3).getLastDay());
 
-		assertEquals(LocalDateTime.of(2023, 7, 1, 0, 0), monthRanges.get(4).firstDay);
-		assertEquals(LocalDateTime.of(2023, 7, 31, 0, 0), monthRanges.get(4).lastDay);
+		assertEquals(LocalDateTime.of(2023, 7, 1, 0, 0), monthRanges.get(4).getFirstDay());
+		assertEquals(LocalDateTime.of(2023, 7, 31, 0, 0), monthRanges.get(4).getLastDay());
 	}
 }

@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.game.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
+import bunsan.returnz.domain.game.util.calendar_range.CalDateRange;
+import bunsan.returnz.domain.game.util.calendar_range.WeekRange;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Company;
 import bunsan.returnz.persist.entity.GameRoom;
@@ -42,7 +45,7 @@ public class GameStartService {
 	private final GamerStockRepository gamerStockRepository;
 	private final MemberRepository memberRepository;
 	private final CompanyRepository companyRepository;
-	private final HistoricalPriceDayRepository historicalPriceDay;
+	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
 	@Transactional
 	public Map<String, Object> settingGame(RequestSettingGame requestSettingGame) {
@@ -86,18 +89,30 @@ public class GameStartService {
 			// day 일때 데이터가 있는지 체크
 			if (requestSettingGame.getTurnPerTime().getTime().equals("DAY")) {
 				Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
-				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDay.getDayDataAfterStartDay(
+				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
 					requestSettingGame.getStartTime(), gameStockIds, pageable);
 				Integer countInDB = dayDataAfterStartDay.size();
 				if (!countInDB.equals(requestSettingGame.getTotalTurn())) {
 					return false;
 				}
 			}
-			// week 라면 사작일이 목요일 수요일이라면? 전체주를 다가져오는지?
-			// 합쳐서 주는거라면
+			// week 일때 테스트
 			if (requestSettingGame.getTurnPerTime().getTime().equals("WEEK")) {
-				log.info("init Week");
+				List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(requestSettingGame.getStartTime(),
+					requestSettingGame.getTotalTurn());
+				for (WeekRange weekRange : weekRanges) {
+					LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
+					LocalDateTime endDay = weekRange.getWeekLastDay();
+
+					boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
+						weekFirstDay, endDay, gameStockIds, 10L);
+					if(!checkAllStockIsThereMoreThenInWeek){
+						// throw new
+					}
+
+				}
 			}
+			// MONTH 일때 테스으
 			if (requestSettingGame.getTurnPerTime().getTime().equals("MONTH")) {
 				log.info("init Month");
 			}
@@ -111,10 +126,7 @@ public class GameStartService {
 		// 게이머들순회해서 아이디 가져오고
 		for (Gamer gamer : gamers) {
 			for (Company company : companyList) {
-				GamerStock gamerStock = GamerStock.builder()
-					.companyCode(company.getCode())
-					.gamer(gamer)
-					.build();
+				GamerStock gamerStock = GamerStock.builder().companyCode(company.getCode()).gamer(gamer).build();
 				GamerStock save = gamerStockRepository.save(gamerStock);
 			}
 		}

@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class WeekRange {
-	public LocalDateTime monday;
-	public LocalDateTime friday;
+	private LocalDateTime weekFirstDay;
+	private LocalDateTime weekLastDay;
 
-	public WeekRange(LocalDateTime monday, LocalDateTime friday) {
-		this.monday = monday;
-		this.friday = friday;
+	public WeekRange(LocalDateTime weekFirstDay, LocalDateTime weekLastDay) {
+		this.weekFirstDay = weekFirstDay;
+		this.weekLastDay = weekLastDay;
 	}
 
 }
