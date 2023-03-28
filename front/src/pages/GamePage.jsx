@@ -12,11 +12,15 @@ import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
 import { handleGetGameData, handleMoreGameData } from '../store/gamedata/GameData.reducer';
 import { stockDataList } from '../store/gamedata/GameData.selector';
+import UserLogList from '../components/game/userlog/UserLogList';
+import Chatting from '../components/chatting/Chatting';
 
 export default function GamePage() {
   const [count, setCount] = useState(0);
   const testdata = useSelector(stockDataList);
   const dispatch = useDispatch();
+  const { state } = useLocation();
+  console.log(state, '-----잘나옴-----');
 
   const readd = () => {
     console.log(testdata, 'test');
@@ -27,6 +31,7 @@ export default function GamePage() {
       roomId: '30def8aa-ebbf-405b-9555-e6d1a6c730ac',
       gamerId: 47,
     };
+
     axios
       .post('http://j8c106.p.ssafy.io/api/games/game', datas)
       .then((res) => {
@@ -45,23 +50,17 @@ export default function GamePage() {
         console.log(err);
       });
   };
-import UserLogList from '../components/game/userlog/UserLogList';
-import Chatting from '../components/chatting/Chatting';
-
-export default function GamePage() {
-  const { state } = useLocation();
-  console.log(state, '-----잘나옴-----');
   return (
     <>
       <Header />
       <GameContainer>
         <LeftSection>
-          {/* <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
+          <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
             Redux 데이터 테스트
           </div>
           <div onClick={axiospost} onKeyDown={axiospost} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
             시작 테스트
-          </div> */}
+          </div>
           <Rate />
           <Stocks />
           <HoldingList />
@@ -79,7 +78,6 @@ export default function GamePage() {
     </>
   );
 }
-
 const GameContainer = styled.div`
   ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq`}
 `;
