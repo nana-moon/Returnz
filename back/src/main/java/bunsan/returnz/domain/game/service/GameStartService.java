@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.util.calendar_range.CalDateRange;
+import bunsan.returnz.domain.game.util.calendar_range.MonthRange;
 import bunsan.returnz.domain.game.util.calendar_range.WeekRange;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Company;
@@ -54,9 +55,8 @@ public class GameStartService {
 		// 랜덤 주식 가져와서 할당하기
 		Pageable pageable = PageRequest.of(0, 10);
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
-		if (!checkRangeValid(requestSettingGame, companyList)) {
-			throw new BadRequestException("실제 영업일과 일치 하지 않습니다.");
-		}
+		checkRangeValid(requestSettingGame, companyList);
+
 
 		// 맴버 가져와서 주식방 게이머 에 할당하기
 		List<Member> getMemberId = memberRepository.findAllById(requestSettingGame.getMemberIdList());
@@ -77,11 +77,9 @@ public class GameStartService {
 		return gameRoomsRes;
 	}
 
-	private boolean checkRangeValid(RequestSettingGame requestSettingGame, List<Company> gameStock) {
+	private void checkRangeValid(RequestSettingGame requestSettingGame, List<Company> gameStock) {
 
 		if (requestSettingGame.getTheme().getTheme().equals("USER")) {
-			// 실제 데이터와 하나와 토탈 턴이 일치한느지 검사해라
-			// 길이를 검사할땐 집계함수 count 를 활용
 			List<String> gameStockIds = new ArrayList<>();
 			for (Company stock : gameStock) {
 				gameStockIds.add(stock.getCode());
@@ -93,7 +91,7 @@ public class GameStartService {
 					requestSettingGame.getStartTime(), gameStockIds, pageable);
 				Integer countInDB = dayDataAfterStartDay.size();
 				if (!countInDB.equals(requestSettingGame.getTotalTurn())) {
-					return false;
+					throw new BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 				}
 			}
 			// week 일때 테스트
@@ -106,18 +104,26 @@ public class GameStartService {
 
 					boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
 						weekFirstDay, endDay, gameStockIds, 10L);
-					if(!checkAllStockIsThereMoreThenInWeek){
-						// throw new
+					if (!checkAllStockIsThereMoreThenInWeek) {
+						throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 					}
-
 				}
 			}
-			// MONTH 일때 테스으
+			// MONTH 일때 테스트
 			if (requestSettingGame.getTurnPerTime().getTime().equals("MONTH")) {
-				log.info("init Month");
+				List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(requestSettingGame.getStartTime(),
+					requestSettingGame.getTotalTurn());
+				for (MonthRange monthRange : monthRanges) {
+					LocalDateTime monthStart = monthRange.getFirstDay();
+					LocalDateTime monthEnd = monthRange.getLastDay();
+					boolean checkDataInMonthTurn = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(monthStart, monthEnd,
+						gameStockIds, 10L);
+					if(!checkDataInMonthTurn){
+						throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+					}
+				}
 			}
 		}
-		return true;
 	}
 
 	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
