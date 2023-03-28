@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
-import StockData from './Items/StockListData';
+// import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
-import { receiveSetting } from '../../store/BuySellModal/BuySell.reducer';
-import { modalState, sellNeedData, buyNeedData } from '../../store/BuySellModal/BuySell.selector';
+import { receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
+import { modalState, sellNeedData, buyNeedData } from '../../store/buysellmodal/BuySell.selector';
 import BuySellModal from './modals/BuySellModal';
+import { stockDataList } from '../../store/gamedata/GameData.selector';
 
 export default function StockList() {
   const dispatch = useDispatch();
   const modalStat = useSelector(modalState);
   const canBuy = useSelector(buyNeedData);
   const canSell = useSelector(sellNeedData);
+  const stockDatas = useSelector(stockDataList);
 
-  const [stockData, setStockData] = useState(StockData);
+  // const [stockData, setStockData] = useState(StockData);
   const handleOpenModal = (data) => {
     const value = { isOpen: true, isType: data };
     dispatch(receiveSetting(value));
@@ -24,9 +26,12 @@ export default function StockList() {
       <StockListSection>상장종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
-          {stockData.map(function (Stock, i) {
-            return <StockListItem Stock={Stock} key={Stock.name} />;
+          {Object.values(stockDatas).map((Stock, i) => {
+            return <StockListItem Stock={Stock} i={i} key={Stock.name} />;
           })}
+          {/* {stockDatas.map(function (Stock, i) {
+            return <StockListItem Stock={Stock} i={i} key={Stock.name} />;
+          })} */}
         </div>
       </ListContanier>
       <OrderButton>
@@ -64,7 +69,7 @@ const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}
 `;
 const BuyButton = styled.button`
-  ${tw`text-white bg-gain font-bold rounded-lg w-[25%] py-2 align-middle text-center`}
+  ${tw`text-white bg-gain font-bold rounded-lg w-[25%] py-2 align-middle text-center shadow-lg`}
   ${({ disabled }) => (disabled ? tw`bg-negative` : tw`bg-gain`)}
 `;
 const SellButton = styled.button`

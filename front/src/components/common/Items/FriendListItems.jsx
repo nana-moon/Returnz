@@ -1,10 +1,10 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 
-export default function FriendListItems() {
+export default function FriendListItems({ friend }) {
   return (
     <FriendInfoContainer>
-      <FriendPicItem>친구프사</FriendPicItem>
+      <FriendPicItem>{friend.username}</FriendPicItem>
       <FriendNameItem>친구이름</FriendNameItem>
       <ContentText>친구...뭐시기</ContentText>
     </FriendInfoContainer>

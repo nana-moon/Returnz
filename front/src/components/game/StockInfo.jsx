@@ -36,7 +36,6 @@ export default function StockInfo() {
           ))}
         </TabsHeader>
         <TabsBodys
-          className={view === '주가정보' ? 'overflow-y-scroll' : null}
           animate={{
             initial: { y: 250 },
             mount: { y: 0 },
@@ -58,8 +57,8 @@ export default function StockInfo() {
 
 const StockInfoContanier = styled.div`
   margin-top: 1.25rem;
-  max-height: 285px;
-  ${tw`border row-span-3 bg-white rounded-xl h-[28%] pt-2 flex justify-center`}
+  max-height: 28%;
+  ${tw`border row-span-3 bg-white rounded-xl h-[28%] pt-2 flex justify-center overflow-hidden`}
 `;
 
 const TabContainer = styled(Tabs)`
