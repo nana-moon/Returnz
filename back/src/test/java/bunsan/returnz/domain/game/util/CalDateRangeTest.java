@@ -10,9 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import bunsan.returnz.domain.game.util.calendar_range.CalDateRange;
-import bunsan.returnz.domain.game.util.calendar_range.MonthRange;
-import bunsan.returnz.domain.game.util.calendar_range.WeekRange;
+import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
+import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
+import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
