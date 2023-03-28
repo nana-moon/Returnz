@@ -28,8 +28,8 @@ export default function GamePage() {
 
   const axiospost = () => {
     const datas = {
-      roomId: '30def8aa-ebbf-405b-9555-e6d1a6c730ac',
-      gamerId: 47,
+      roomId: 'fbcd354e-c3b2-4434-9af8-331e1f20786e',
+      gamerId: 87,
     };
 
     axios
@@ -40,7 +40,7 @@ export default function GamePage() {
           dispatch(handleGetGameData(res.data.Stocks));
         } else {
           console.log(res.data, '데이터보냄');
-          dispatch(handleMoreGameData());
+          dispatch(handleMoreGameData(res.data.Stocks));
         }
         const copy = count;
         setCount(copy + 1);
