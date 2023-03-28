@@ -21,11 +21,12 @@ export default function Graph() {
 
   const options = {
     series: [
-      // {
-      //   name: '거래량',
-      //   type: 'line',
-      //   data: Volumedata,
-      // },
+      {
+        name: '거래량',
+        type: 'line',
+        color: '#D4D4D4',
+        data: Volumedata,
+      },
       // [
       //   {
       //     x: new Date('2023-03-10'),
@@ -63,47 +64,50 @@ export default function Graph() {
       {
         name: '주가',
         type: 'candlestick',
+        color: '#FF5454',
         data: stockdata,
-        // {
-        //   x: new Date('2023-03-10'),
-        //   y: [6629.81, 6650.5, 6623.04, 6633.33],
-        // },
-        // {
-        //   x: new Date('2023-03-11'),
-        //   y: [6632.01, 6643.59, 6620, 6630.11],
-        // },
-        // {
-        //   x: new Date('2023-03-12'),
-        //   y: [6630.71, 6648.95, 6623.34, 6635.65],
-        // },
-        // {
-        //   x: new Date('2023-03-13'),
-        //   y: [6635.65, 6651, 6629.67, 6638.24],
-        // },
-        // {
-        //   x: new Date('2023-03-14'),
-        //   y: [6638.24, 6640, 6620, 6624.47],
-        // },
-        // {
-        //   x: new Date('2023-03-15'),
-        //   y: [6624.53, 6636.03, 6621.68, 6624.31],
-        // },
-        // {
-        //   x: new Date('2023-03-16'),
-        //   y: [6624.61, 6632.2, 6617, 6626.02],
-        // },
-        // {
-        //   x: new Date('2023-03-17'),
-        //   y: [6627, 6627.62, 6584.22, 6603.02],
-        // },
-        // {
-        //   x: new Date('2023-03-18'),
-        //   y: [6605, 6608.03, 6598.95, 6604.01],
-        // },
+        // [
+        //   {
+        //     x: new Date('2023-03-10'),
+        //     y: [6629.81, 6650.5, 6623.04, 6633.33],
+        //   },
+        //   {
+        //     x: new Date('2023-03-11'),
+        //     y: [6632.01, 6643.59, 6620, 6630.11],
+        //   },
+        //   {
+        //     x: new Date('2023-03-12'),
+        //     y: [66300000.71, 6648.95, 6623.34, 6635.65],
+        //   },
+        //   {
+        //     x: new Date('2023-03-13'),
+        //     y: [6635.65, 6651, 6629.67, 6638.24],
+        //   },
+        //   {
+        //     x: new Date('2023-03-14'),
+        //     y: [6638.24, 6640, 6620, 6624.47],
+        //   },
+        //   {
+        //     x: new Date('2023-03-15'),
+        //     y: [6624.53, 6636.03, 6621.68, 6624.31],
+        //   },
+        //   {
+        //     x: new Date('2023-03-16'),
+        //     y: [6624.61, 6632.2, 6617, 6626.02],
+        //   },
+        //   {
+        //     x: new Date('2023-03-17'),
+        //     y: [6627, 6627.62, 6584.22, 6603.02],
+        //   },
+        //   {
+        //     x: new Date('2023-03-18'),
+        //     y: [6605, 6608.03, 6598.95, 6604.01],
+        //   },
+        // ],
       },
     ],
     chart: {
-      height: 100,
+      height: '100%',
       type: 'line',
     },
     title: {
@@ -114,32 +118,78 @@ export default function Graph() {
       width: [1, 1],
     },
     tooltip: {
-      shared: true,
+      style: {
+        padding: '8px',
+        left: '16px',
+        right: '16px',
+      },
       custom: [
         function idx({ seriesIndex, dataPointIndex, w }) {
-          return w.globals.series[seriesIndex][dataPointIndex];
+          return `거래량 : ${w.globals.series[seriesIndex][dataPointIndex]}`;
         },
         function cost({ seriesIndex, dataPointIndex, w }) {
-          console.log(datas[0]);
           const o = w.globals.seriesCandleO[seriesIndex][dataPointIndex];
           const h = w.globals.seriesCandleH[seriesIndex][dataPointIndex];
           const l = w.globals.seriesCandleL[seriesIndex][dataPointIndex];
           const c = w.globals.seriesCandleC[seriesIndex][dataPointIndex];
-          const tmp = `시가: ${o}\n
-          고가: ${h}\n
-          저가: ${l}\n
-          종가: ${c}`;
+
+          // template literal로 문자열을 작성하고, \n을 이용해 줄바꿈을 적용합니다.
+          const tmp = `시가 : ${o}<br>고가 : ${h}<br>저가 : ${l}<br>종가 : ${c}`;
           return tmp;
         },
       ],
     },
+    yaxis: [
+      {
+        title: {
+          text: '거래량',
+        },
+      },
+      {
+        opposite: true,
+        title: {
+          text: '주가',
+        },
+      },
+    ],
     xaxis: {
       type: 'datetime',
     },
+    plotOptions: {
+      candlestick: {
+        colors: {
+          upward: '#FF5454',
+          downward: '#556BD5',
+        },
+        wicks: {
+          useFillColor: true,
+        },
+      },
+    },
   };
+  // plotOptions: {
+  //   candlestick: {
+  //     colors: {
+  //       upward: {
+  //         fill: 'red',
+  //         stroke: 'red',
+  //       },
+  //       downward: {
+  //         fill: 'blue',
+  //         stroke: 'blue',
+  //       },
+  //     },
+  //     wicks: {
+  //       colors: {
+  //         upward: 'red',
+  //         downward: 'blue',
+  //       },
+  //     },
+  //   },
+  // },
   return (
     <GraphContainer>
-      <Chart options={options} series={options.series} />
+      <Chart options={options} series={options.series} height="95%" />
       {/* {datas.map((stock, i) => {
         return (
           <div key={i}>
@@ -157,5 +207,6 @@ export default function Graph() {
 
 const GraphContainer = styled.div`
   margin-top: 1.25rem;
+  max-hegiht: 60%;
   ${tw`border bg-white rounded-xl h-[60%]`}
 `;
