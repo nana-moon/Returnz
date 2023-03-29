@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-// import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
@@ -166,9 +165,9 @@ public class SideBarService {
 			// 친구들에게 전송
 			for (Member friend : member.getFriends()) {
 				Map<String, Object> messageBody = new HashMap<>();
-				messageBody.put("state", MemberState.ONLINE.getCode());
-				messageBody.put("friendName", friend.getUsername());
-				messageBody.put("username", member.getUsername());
+				messageBody.put("state", MemberState.ONLINE);
+				messageBody.put("friendName", member.getUsername());
+				messageBody.put("username", friend.getUsername());
 
 				SideMessageDto sideMessageDto = SideMessageDto.builder()
 					.type(SideMessageDto.MessageType.STATE)

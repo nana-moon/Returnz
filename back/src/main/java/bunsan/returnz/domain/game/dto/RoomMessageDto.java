@@ -1,6 +1,5 @@
-package bunsan.returnz.domain.sidebar.dto;
+package bunsan.returnz.domain.game.dto;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
@@ -16,11 +15,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SideMessageDto implements Serializable {
+public class RoomMessageDto {
 	private MessageType type;
+	private String roomId;
 	private Map<String, Object> messageBody;
-
 	public enum MessageType {
-		INVITE, STATE, FRIEND, ENTER, EXIT, @JsonEnumDefaultValue UNKNOWN;
+		MAKE_GAME, READY, TURN, CHAT, END, @JsonEnumDefaultValue UNKNOWN;
 	}
 }
