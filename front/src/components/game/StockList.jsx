@@ -4,9 +4,9 @@ import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
 import { receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
-import { modalState, sellNeedData, buyNeedData } from '../../store/buysellmodal/BuySell.selector';
+import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
+import { stockDataList, noWorkDay } from '../../store/gamedata/GameData.selector';
 import BuySellModal from './modals/BuySellModal';
-import { stockDataList } from '../../store/gamedata/GameData.selector';
 
 export default function StockList() {
   const dispatch = useDispatch();
@@ -14,6 +14,10 @@ export default function StockList() {
   const canBuy = useSelector(buyNeedData);
   const canSell = useSelector(sellNeedData);
   const stockDatas = useSelector(stockDataList);
+  const selectidx = useSelector(selectedIdx);
+  const noWorkidx = useSelector(noWorkDay);
+
+  const isThis = noWorkidx.includes(selectidx);
 
   // const [stockData, setStockData] = useState(StockData);
   const handleOpenModal = (data) => {
@@ -32,10 +36,14 @@ export default function StockList() {
         </div>
       </ListContanier>
       <OrderButton>
-        <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === ''}>
+        <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === '' || isThis}>
           매수
         </BuyButton>
-        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={canSell.companyName === ''}>
+        <SellButton
+          type="button"
+          onClick={() => handleOpenModal(false)}
+          disabled={canSell.companyName === '' || isThis}
+        >
           매도
         </SellButton>
       </OrderButton>
