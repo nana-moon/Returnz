@@ -30,12 +30,14 @@ public class RedisConfig {
 
 	@Value("${spring.redis.port}")
 	private int redisPort;
+
 	@Bean
 	public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		return container;
 	}
+
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
@@ -53,13 +55,17 @@ public class RedisConfig {
 		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
 		return redisTemplate;
 	}
+
 	@Bean
 	public CacheManager testCacheManager(RedisConnectionFactory cf) {
 		RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
 			.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-			.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+			.serializeValuesWith(
+				RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
 			.entryTtl(Duration.ofMinutes(3L));
 
-		return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf).cacheDefaults(redisCacheConfiguration).build();
+		return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf)
+			.cacheDefaults(redisCacheConfiguration)
+			.build();
 	}
 }
