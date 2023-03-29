@@ -2,8 +2,8 @@ package bunsan.returnz.domain.sidebar.api;
 
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.sidebar.dto.SideMessageDto;
 import bunsan.returnz.domain.sidebar.service.SideBarService;
