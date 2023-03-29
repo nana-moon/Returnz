@@ -236,9 +236,7 @@ public class GameService {
 		if (gameRoomDto.getCurTurn() == 0) {
 			for (int i = 0; i < gameStockDtoList.size(); ++i) {
 
-				if (gameStockDtoList.get(i).get)
-
-					String companyCode = gameStockDtoList.get(i).getCompanyCode();
+				String companyCode = gameStockDtoList.get(i).getCompanyCode();
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
 						gameRoomDto.getCurDate(), companyCode);
