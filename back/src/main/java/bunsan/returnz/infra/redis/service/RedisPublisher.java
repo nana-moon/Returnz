@@ -28,6 +28,7 @@ public class RedisPublisher {
 
 	public void publishWaitRoom(ChannelTopic topic, WaitMessageDto waitMessageDto) {
 		log.info("[publishWaitRoom]" + topic.getTopic());
+		log.info(waitMessageDto.toString());
 		redisTemplate.convertAndSend(topic.getTopic(), waitMessageDto);
 	}
 
