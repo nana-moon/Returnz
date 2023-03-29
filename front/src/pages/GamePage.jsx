@@ -27,8 +27,8 @@ export default function GamePage() {
 
   const axiospost = () => {
     const datas = {
-      roomId: 'fe9a9cd5-61f1-4a43-a7b6-e45dfd1b3ab1',
-      gamerId: 149,
+      roomId: '4000fa4c-856b-4d00-b3dc-dec776bb6a5c',
+      gamerId: 783,
     };
 
     axios
