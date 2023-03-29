@@ -22,6 +22,7 @@ public class SideBarController {
 	//==================================사이드 바 메세지 송신===================================
 	@MessageMapping("/side-bar")
 	public void sendToSideBar(SideMessageDto sideRequest, @Header("Authorization") String bearerToken) {
+		// SimpMessageHeaderAccessor accessor
 		String token = bearerToken.substring(7);
 
 		if (sideRequest.getType().equals(SideMessageDto.MessageType.FRIEND)) {
