@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+// TODO: 2023-03-29 프론트 서버에 맞게 CrossOrigin 변경
+
 @SpringBootApplication
 @EnableScheduling
 @CrossOrigin(origins = "*", allowedHeaders = "*")

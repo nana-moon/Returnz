@@ -13,6 +13,8 @@ import bunsan.returnz.domain.waiting.service.WaitService;
 import bunsan.returnz.persist.entity.WaitRoom;
 import lombok.RequiredArgsConstructor;
 
+// TODO: 2023-03-29 프론트 서버에 맞게 CrossOrigin 변경
+
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
