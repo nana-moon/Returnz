@@ -53,6 +53,10 @@ public class HistoricalPriceDay {
 			.companyName(historicalPriceDay.getCompany().getCompanyDetail().getKoName())
 			.dateTime(historicalPriceDay.getDateTime())
 			.logo(historicalPriceDay.getCompany().getCompanyDetail().getLogo())
+			.market(historicalPriceDay.getCompany().getCompanyDetail().getMarket())
+			.currencyType(historicalPriceDay.getCompany().getCompanyDetail().getMarket().equals("kospi") ? "\\" : "$")
+			.industry(historicalPriceDay.getCompany().getCompanyDetail().getIndustry())
+			.sector(historicalPriceDay.getCompany().getCompanyDetail().getSector())
 			.build();
 	}
 }

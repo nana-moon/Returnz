@@ -36,15 +36,21 @@ public class GamerStockService {
 		return gameGamerStockDtos;
 	}
 
-	public GameGamerStockDto findByGamerIdAndCompanyCode(Long gmaerId, String companyCode) {
-		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gmaerId,
+	public GameGamerStockDto findByGamerIdAndCompanyCode(Long gamerId, String companyCode) {
+		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gamerId,
 			companyCode);
 		GamerStock gamerStock = new GamerStock();
 
 		return optionalGamerStock.map(gamerStock::toDto).orElse(null);
 	}
 
-	// public boolean createGamerStockService(GameGamerStockDto gameGamerStockDto) {
-	//
-	// }
+	public boolean updateGamerStock(String companyCode, Long gamerId, Integer count, Double stockClosePrice) {
+		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gamerId,
+			companyCode);
+
+		if (optionalGamerStock.isPresent()) {
+			return optionalGamerStock.get().updateBuyStockCount(count, stockClosePrice);
+		}
+		return false;
+	}
 }

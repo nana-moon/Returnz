@@ -20,8 +20,8 @@ public class GameGamerStockDto {
 	private String companyCode;
 	private Integer totalCount; // 보유 수
 	private Integer totalAmount; // 총 가격
-	private Integer averagePrice; // 평균 단가
-	private Integer valuation; // 평가손익
+	private Double averagePrice; // 평균 단가
+	private Double valuation; // 평가손익
 	private Double profitRate; // 손익비율
 
 	// public GamerStock toEntity(GameGamerStockDto){

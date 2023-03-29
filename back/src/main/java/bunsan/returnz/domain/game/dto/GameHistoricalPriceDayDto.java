@@ -27,4 +27,8 @@ public class GameHistoricalPriceDayDto {
 	private String dividends;
 	private String companyName;
 	private String logo;
+	private String market;
+	private String currencyType;
+	private String industry;
+	private String sector;
 }
