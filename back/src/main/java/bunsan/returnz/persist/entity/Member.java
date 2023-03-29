@@ -168,15 +168,16 @@ public class Member implements UserDetails {
 
 	// 평균 수익률 계산
 	public void setAvgProfit() {
-		this.avgProfit = (double)this.accumulatedReturn/ this.gameCount;
+		this.avgProfit = (double)this.accumulatedReturn / this.gameCount;
 	}
 
 	// 누적 수익률 증가
 	public void increaseAccReturn(Long gameReturn) {
 		this.accumulatedReturn += gameReturn;
 	}
+
 	// 게임 횟수 증가
 	public void increaseGameCount() {
-		this.gameCount ++;
+		this.gameCount++;
 	}
 }

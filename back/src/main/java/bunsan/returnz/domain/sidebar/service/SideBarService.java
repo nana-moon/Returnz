@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-// import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
@@ -180,6 +179,7 @@ public class SideBarService {
 			}
 		}
 	}
+
 	public void sendExitMessage(SideMessageDto sideRequest, String token) {
 	}
 }
