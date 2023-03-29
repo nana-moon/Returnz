@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+// import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
@@ -17,10 +17,12 @@ import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
+import bunsan.returnz.infra.redis.service.RedisPublisher;
 import bunsan.returnz.persist.entity.FriendRequest;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.FriendRequestRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
+import bunsan.returnz.persist.repository.RedisSideBarRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,9 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SideBarService {
 	private final JwtTokenProvider jwtTokenProvider;
-	private final SimpMessagingTemplate simpMessagingTemplate;
+	// private final SimpMessagingTemplate simpMessagingTemplate;
 	private final FriendRequestRepository friendRequestRepository;
 	private final MemberRepository memberRepository;
+	private final RedisPublisher redisPublisher;
+	private final RedisSideBarRepository redisSideBarRepository;
 
 	@Transactional
 	public void sendFriendRequest(SideMessageDto sideRequest, String token) {
@@ -43,7 +47,7 @@ public class SideBarService {
 			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
 		}
 		String requestUsername = requester.getUsername();
-		String targetUsername = (String)requestBody.get("targetUsername");
+		String targetUsername = (String)requestBody.get("username");
 
 		checkValidRequest(requestUsername, targetUsername);
 
@@ -62,7 +66,8 @@ public class SideBarService {
 		// 새로운 사이드 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("requestId", savedRequest.getId());
-		messageBody.put("username", requester.getUsername());
+		messageBody.put("username", targetUsername);
+		messageBody.put("requestUsername", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
 		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
 
@@ -74,8 +79,9 @@ public class SideBarService {
 		log.info(sideMessageDto.toString());
 
 		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		simpMessagingTemplate.convertAndSendToUser(targetUsername,
-			"/sub/side-bar", sideMessageDto);
+		// simpMessagingTemplate.convertAndSendToUser(targetUsername,
+		// 	"/sub/side-bar", sideMessageDto);
+		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
 	@Transactional
@@ -97,8 +103,9 @@ public class SideBarService {
 			.build();
 
 		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		simpMessagingTemplate.convertAndSendToUser((String)requestBody.get("targetUsername"),
-			"/sub/side-bar", sideMessageDto);
+		// simpMessagingTemplate.convertAndSendToUser((String)requestBody.get("targetUsername"),
+		// 	"/sub/side-bar", sideMessageDto);
+		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
 	private void checkValidRequest(String requestUsername, String targetUsername) {
@@ -134,6 +141,7 @@ public class SideBarService {
 
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("friendList", friendInfoList);
+		messageBody.put("username", username);
 
 		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.ENTER)
@@ -141,32 +149,37 @@ public class SideBarService {
 			.build();
 
 		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		simpMessagingTemplate.convertAndSendToUser(username,
-			"/sub/side-bar", sideMessageDto);
+		// simpMessagingTemplate.convertAndSendToUser(username,
+		// 	"/sub/side-bar", sideMessageDto);
+
+		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
+
 		// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
-		log.info("222");
+		// log.info("222");
 	}
 
 	public void checkOnline(Member member) {
 		if (!member.getState().equals(MemberState.ONLINE)) {
-			log.info("222");
+			// log.info("222");
 			member.changeState(MemberState.ONLINE);
 			memberRepository.save(member);
 			// 친구들에게 전송
 			for (Member friend : member.getFriends()) {
 				Map<String, Object> messageBody = new HashMap<>();
+				messageBody.put("state", MemberState.ONLINE);
+				messageBody.put("friendName", member.getUsername());
 				messageBody.put("username", friend.getUsername());
 
 				SideMessageDto sideMessageDto = SideMessageDto.builder()
 					.type(SideMessageDto.MessageType.STATE)
 					.messageBody(messageBody)
 					.build();
-				simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
-					"/sub/side-bar", sideMessageDto);
+				// simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
+				// 	"/sub/side-bar", sideMessageDto);
+				redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 			}
 		}
 	}
-
 	public void sendExitMessage(SideMessageDto sideRequest, String token) {
 	}
 }

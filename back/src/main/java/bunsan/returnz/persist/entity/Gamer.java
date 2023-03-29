@@ -45,9 +45,10 @@ public class Gamer {
 	public GameGamerDto toDto(Gamer gamer) {
 		return GameGamerDto.builder()
 			.gamerId(gamer.getId())
+			.mermberId(gamer.getMemberId())
 			.userName(gamer.getUsername())
 			.deposit(gamer.getDeposit())
-			.totalBuyAmoount(gamer.getTotalBuyAmount())
+			.totalBuyAmount(gamer.getTotalBuyAmount())
 			.totalEvaluationAmount(gamer.getTotalBuyAmount())
 			.build();
 	}
