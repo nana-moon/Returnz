@@ -1,7 +1,14 @@
 package bunsan.returnz.domain.game.service;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.game.dto.GameExchangeInterestDto;
+import bunsan.returnz.global.advice.exception.BadRequestException;
+import bunsan.returnz.persist.entity.ExchangeInterest;
+import bunsan.returnz.persist.repository.ExchangeInterestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,34 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class GameExchangeInterestService {
 
-	// public Double findKoreaByDateIsBeforeLimit1(LocalDate date) {
-	// 	EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistence-unit-name");
-	// 	@PersistenceContext
-	// 	EntityManager em;
-	// 	EntityTransaction tx = em.getTransaction();
-	// 	String jpql = "SELECT e.korea FROM ExchangeInterest e WHERE e.date >= :date ORDER BY date ASC";
-	// 	return em.createQuery(jpql, Double.class).getSingleResult();
-	// }
-	//
-	// public Double findUsaByDateIsBeforeLimit1(LocalDate date) {
-	// 	EntityManager em;
-	// 	EntityTransaction tx = em.getTransaction();
-	// 	String jpql = "SELECT e.usa FROM ExchangeInterest e WHERE e.date >= :date ORDER BY date ASC";
-	// 	return em.createQuery(jpql, Double.class).getSingleResult();
-	// }
-	//
-	// public Double findExchangeRateByDateIsBeforeLimit1(LocalDate date) {
-	// 	EntityManager em;
-	// 	EntityTransaction tx = em.getTransaction();
-	// 	String jpql = "SELECT e.exchangeRate FROM ExchangeInterest e WHERE e.date >= :date ORDER BY date ASC";
-	// 	return em.createQuery(jpql, Double.class).getSingleResult();
-	// }
-	//
-	// public List<Double> findAllByDateIsBeforeLimit1(LocalDate date) {
-	// 	EntityManager em;
-	// 	EntityTransaction tx = em.getTransaction();
-	// 	String jpql = "SELECT e FROM ExchangeInterest e WHERE e.date >= :date ORDER BY date ASC";
-	// 	return em.createQuery(jpql, Double.class).getResultList();
-	// }
+	private final ExchangeInterestRepository exchangeInterestRepository;
 
+	public GameExchangeInterestDto findAllByDateIsBeforeLimit1(LocalDate date) {
+		Optional<ExchangeInterest> gameExchangeInterestDtoOptional =
+			exchangeInterestRepository.findAllByDateIsBeforeLimit1(date);
+
+		if (gameExchangeInterestDtoOptional.isPresent()) {
+			ExchangeInterest exchangeInterest = new ExchangeInterest();
+			return exchangeInterest.toDto(gameExchangeInterestDtoOptional.get());
+		}
+		throw new BadRequestException("잘못된 날짜 요청입니다.");
+	}
 }
