@@ -1,206 +1,99 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable import/extensions */
 import tw, { styled } from 'twin.macro';
-import { React, useState } from 'react';
+import { useSelector } from 'react-redux';
+import React from 'react';
 import Chart from 'react-apexcharts';
-
-import data from './data.jsx';
+import { stockGraphList } from '../../store/gamedata/GameData.selector';
+import { selectedIdx } from '../../store/buysellmodal/BuySell.selector';
 
 export default function Graph() {
-  const [datas] = useState(data);
-  const stockdata = [];
-  const Volumedata = [];
-  datas.map((stock, i) => {
-    const tmp = { x: new Date(stock.Date), y: [stock.Open, stock.High, stock.Low, stock.Close] };
-    const tmp2 = { x: new Date(stock.Date), y: stock.Volume };
-    stockdata.push(tmp);
-    Volumedata.push(tmp2);
-    return 0;
-  });
-  console.log(stockdata);
+  const stockGraphData = useSelector(stockGraphList);
+  const selectidx = useSelector(selectedIdx);
 
-  const options = {
-    series: [
-      {
-        name: '거래량',
-        type: 'line',
-        color: '#D4D4D4',
-        data: Volumedata,
-      },
-      // [
-      //   {
-      //     x: new Date('2023-03-10'),
-      //     y: 32,
-      //   },
-      //   {
-      //     x: new Date('2023-03-11'),
-      //     y: 64,
-      //   },
-      //   {
-      //     x: new Date('2023-03-12'),
-      //     y: 152,
-      //   },
-      //   {
-      //     x: new Date('2023-03-14'),
-      //     y: 221,
-      //   },
-      //   {
-      //     x: new Date('2023-03-15'),
-      //     y: 32,
-      //   },
-      //   {
-      //     x: new Date('2023-03-16'),
-      //     y: 88,
-      //   },
-      //   {
-      //     x: new Date('2023-03-17'),
-      //     y: 66,
-      //   },
-      //   {
-      //     x: new Date('2023-03-18'),
-      //     y: 30,
-      //   },
-      // ],
-      {
-        name: '주가',
-        type: 'candlestick',
-        color: '#FF5454',
-        data: stockdata,
-        // [
-        //   {
-        //     x: new Date('2023-03-10'),
-        //     y: [6629.81, 6650.5, 6623.04, 6633.33],
-        //   },
-        //   {
-        //     x: new Date('2023-03-11'),
-        //     y: [6632.01, 6643.59, 6620, 6630.11],
-        //   },
-        //   {
-        //     x: new Date('2023-03-12'),
-        //     y: [66300000.71, 6648.95, 6623.34, 6635.65],
-        //   },
-        //   {
-        //     x: new Date('2023-03-13'),
-        //     y: [6635.65, 6651, 6629.67, 6638.24],
-        //   },
-        //   {
-        //     x: new Date('2023-03-14'),
-        //     y: [6638.24, 6640, 6620, 6624.47],
-        //   },
-        //   {
-        //     x: new Date('2023-03-15'),
-        //     y: [6624.53, 6636.03, 6621.68, 6624.31],
-        //   },
-        //   {
-        //     x: new Date('2023-03-16'),
-        //     y: [6624.61, 6632.2, 6617, 6626.02],
-        //   },
-        //   {
-        //     x: new Date('2023-03-17'),
-        //     y: [6627, 6627.62, 6584.22, 6603.02],
-        //   },
-        //   {
-        //     x: new Date('2023-03-18'),
-        //     y: [6605, 6608.03, 6598.95, 6604.01],
-        //   },
-        // ],
-      },
-    ],
-    chart: {
-      height: '100%',
-      type: 'line',
-    },
-    title: {
-      text: '종목이름',
-      align: 'middle',
-    },
-    stroke: {
-      width: [1, 1],
-    },
-    tooltip: {
-      style: {
-        padding: '8px',
-        left: '16px',
-        right: '16px',
-      },
-      custom: [
-        function idx({ seriesIndex, dataPointIndex, w }) {
-          return `거래량 : ${w.globals.series[seriesIndex][dataPointIndex]}`;
+  let options = null;
+  if (selectidx != null) {
+    const companyName = Object.keys(stockGraphData[selectidx]);
+    options = {
+      series: [
+        {
+          name: '주가',
+          type: 'candlestick',
+          color: '#FF5454',
+          data: stockGraphData[selectidx][companyName].candledata,
         },
-        function cost({ seriesIndex, dataPointIndex, w }) {
-          const o = w.globals.seriesCandleO[seriesIndex][dataPointIndex];
-          const h = w.globals.seriesCandleH[seriesIndex][dataPointIndex];
-          const l = w.globals.seriesCandleL[seriesIndex][dataPointIndex];
-          const c = w.globals.seriesCandleC[seriesIndex][dataPointIndex];
-
-          // template literal로 문자열을 작성하고, \n을 이용해 줄바꿈을 적용합니다.
-          const tmp = `시가 : ${o}<br>고가 : ${h}<br>저가 : ${l}<br>종가 : ${c}`;
-          return tmp;
+        {
+          name: '거래량',
+          type: 'line',
+          color: '#D4D4D4',
+          data: stockGraphData[selectidx][companyName].linedata,
         },
       ],
-    },
-    yaxis: [
-      {
-        title: {
-          text: '거래량',
+      chart: {
+        height: '100%',
+        type: 'line',
+      },
+      title: {
+        text: companyName,
+        align: 'middle',
+      },
+      stroke: {
+        width: [1, 1],
+      },
+      tooltip: {
+        style: {
+          padding: '8px',
+          left: '16px',
+          right: '16px',
+        },
+        custom: [
+          function idx({ seriesIndex, dataPointIndex, w }) {
+            return `거래량 : ${w.globals.series[seriesIndex][dataPointIndex]}`;
+          },
+          function cost({ seriesIndex, dataPointIndex, w }) {
+            const o = w.globals.seriesCandleO[seriesIndex][dataPointIndex];
+            const h = w.globals.seriesCandleH[seriesIndex][dataPointIndex];
+            const l = w.globals.seriesCandleL[seriesIndex][dataPointIndex];
+            const c = w.globals.seriesCandleC[seriesIndex][dataPointIndex];
+
+            // template literal로 문자열을 작성하고, \n을 이용해 줄바꿈을 적용합니다.
+            const tmp = `시가 : ${o}<br>고가 : ${h}<br>저가 : ${l}<br>종가 : ${c}`;
+            return tmp;
+          },
+        ],
+      },
+      yaxis: [
+        {
+          title: {
+            text: '주가',
+          },
+        },
+        {
+          opposite: true,
+          title: {
+            text: '거래량',
+          },
+        },
+      ],
+      xaxis: {
+        type: 'datetime',
+      },
+      plotOptions: {
+        candlestick: {
+          colors: {
+            upward: '#FF5454',
+            downward: '#556BD5',
+          },
+          wicks: {
+            useFillColor: true,
+          },
         },
       },
-      {
-        opposite: true,
-        title: {
-          text: '주가',
-        },
-      },
-    ],
-    xaxis: {
-      type: 'datetime',
-    },
-    plotOptions: {
-      candlestick: {
-        colors: {
-          upward: '#FF5454',
-          downward: '#556BD5',
-        },
-        wicks: {
-          useFillColor: true,
-        },
-      },
-    },
-  };
-  // plotOptions: {
-  //   candlestick: {
-  //     colors: {
-  //       upward: {
-  //         fill: 'red',
-  //         stroke: 'red',
-  //       },
-  //       downward: {
-  //         fill: 'blue',
-  //         stroke: 'blue',
-  //       },
-  //     },
-  //     wicks: {
-  //       colors: {
-  //         upward: 'red',
-  //         downward: 'blue',
-  //       },
-  //     },
-  //   },
-  // },
+    };
+  }
   return (
     <GraphContainer>
-      <Chart options={options} series={options.series} height="95%" />
-      {/* {datas.map((stock, i) => {
-        return (
-          <div key={i}>
-            날짜 : {stock.Date}
-            시가 : {stock.Open}
-            종가 : {stock.Close}
-            고가 : {stock.High}
-            저가 : {stock.Low}
-          </div>
-        );
-      })} */}
+      {selectidx != null && <Chart options={options} series={options.series} height="95%" />}
     </GraphContainer>
   );
 }
