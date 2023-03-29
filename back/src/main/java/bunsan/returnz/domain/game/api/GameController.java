@@ -56,7 +56,7 @@ public class GameController {
 		if (gameRequestBody == null || gameRequestBody.getRoomId() == null || gameRequestBody.getGamerId() == null) {
 			throw new BadRequestException("잘못된 요청입니다.");
 		}
-		
+
 		HashMap<String, Object> turnInformation = gameService.getTurnInformation(gameRequestBody.getRoomId(),
 			gameRequestBody.getGamerId());
 		if ((boolean)turnInformation.get("turnEnd")) {
