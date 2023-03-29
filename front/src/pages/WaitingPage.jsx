@@ -1,25 +1,33 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
+import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
 import { startGameApi, gameDataApi } from '../apis/gameApi';
+import { getIsHost } from '../store/myroominfo/MyRoomInfo.selector';
 
 export default function WaitingPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  // useEffect(()=> {
 
-  // }, [])
+  // 방정보
+  const roomInfo = location.state;
+  console.log(roomInfo, '------');
 
-  // 방장
-  const [isHost, setIsHost] = useState(true);
+  // 방장 state
+  const myEmail = Cookies.get('email');
+  const myProfile = Cookies.get('profileIcon');
+  const myNickname = Cookies.get('nickname');
+  const isHost = roomInfo.captainName === myEmail;
+  const newUser = { myProfile, myNickname };
 
-  // 대기자 리스트
-  const [userList, setUserList] = useState([{ id: 1, profile: 'A.jpg', nickname: 'chat혜성', profit: '28.7' }]);
+  // 대기자 state
+  const [userList, setUserList] = useState([{}, {}, {}, {}]);
 
   // 게임 설정 state
   const initial = {
