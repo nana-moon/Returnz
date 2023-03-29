@@ -48,9 +48,11 @@ public class GameStartService {
 	private final CompanyRepository companyRepository;
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
+	private final Integer DEFAULT_DEPOSIT = 10000000;
+
 	/**
 	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
-	 * @param gameSettings
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @return
 	 */
 	@Transactional
@@ -66,12 +68,7 @@ public class GameStartService {
 		for (Company stock : companyList) {
 			gameStockIds.add(stock.getCode());
 		}
-		if (gameSettings.getTheme().getTheme().equals("COVID")
-			|| gameSettings.getTheme().getTheme().equals("DOTCOM")
-			|| gameSettings.getTheme().getTheme().equals("RIEMANN")
-			|| gameSettings.getTheme().getTheme().equals("LAST_YEAR")
-			|| gameSettings.getTheme().getTheme().equals("LAST_MONTH")
-		) {
+		if (!gameSettings.getTheme().getTheme().equals("USER")) {
 			checkThemeRange(gameSettings, gameStockIds);
 		}
 
@@ -99,17 +96,15 @@ public class GameStartService {
 	 * 테마 검사
 	 * 요청 받은 테마 구분해 실제 디비 데이터 검사진행
 	 * 지정한 턴수 에 비해 데이터가 있는지 검사하는 함수
-	 * @param gameSettings
-	 * @param gameStockIds
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
+	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkThemeRange(GameSettings gameSettings, List<String> gameStockIds) {
 		if (gameSettings.getTurnPerTime().getTime().equals("WEEK")) {
 			checkWeek(gameSettings, gameStockIds);
-		}
-		if (gameSettings.getTurnPerTime().getTime().equals("MONTH")) {
+		} else if (gameSettings.getTurnPerTime().getTime().equals("MONTH")) {
 			checkMonthRange(gameSettings, gameStockIds);
-		}
-		if (gameSettings.getTurnPerTime().getTime().equals("DAY")) {
+		} else if (gameSettings.getTurnPerTime().getTime().equals("DAY")) {
 			checkDayRange(gameSettings, gameStockIds);
 		}
 	}
@@ -117,8 +112,8 @@ public class GameStartService {
 	/**
 	 * 유저 모드 검사
 	 * 요청 받은 유져 모드 의 설정 (총턴수 시작일) 보고 데이터가 있는지 검사진행
-	 * @param gameSettings
-	 * @param gameStockIds
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
+	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkRangeValid(GameSettings gameSettings, List<String> gameStockIds) {
 		if (gameSettings.getTheme().getTheme().equals("USER")) {
@@ -141,8 +136,8 @@ public class GameStartService {
 	 * 달 단위 일때
 	 * 총 턴수에 해당되는 데이터가 있는지 검사
 	 * 안되면 BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-	 * @param gameSettings
-	 * @param gameStockIds
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
+	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkMonthRange(GameSettings gameSettings, List<String> gameStockIds) {
 		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(
@@ -162,11 +157,11 @@ public class GameStartService {
 	}
 
 	/**
-	 * 일 별 단위일때
+	 * 주 별 단위일때
 	 * 총 턴수에 해당되는 데이터가 있는지 검사
 	 * 안되면 BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-	 * @param gameSettings
-	 * @param gameStockIds
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
+	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
@@ -182,8 +177,8 @@ public class GameStartService {
 	 * 일단위 일때
 	 * checkWeek 주단위를 보았을때 데이터가 없다면
 	 * throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-	 * @param gameSettings
-	 * @param gameStockIds
+	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
+	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkWeek(GameSettings gameSettings, List<String> gameStockIds) {
 		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(
@@ -204,8 +199,8 @@ public class GameStartService {
 
 	/**
 	 * gameStock 데이터 INSERT
-	 * @param companyList
-	 * @param gamers
+	 * @param companyList 회사객체를 가지고 있는 리스트
+	 * @param gamers 게이머 리스트
 	 */
 	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
 		// 게이머가 가진 주식 할당하기
@@ -221,10 +216,10 @@ public class GameStartService {
 
 	/**
 	 * 맴버 조회 해서 Gamer 데이터 INSERT
-	 * @param newGameRoom
-	 * @param getMemberId
-	 * @param gamers
-	 * @param gamersIdList
+	 * @param newGameRoom 생성된 게임룸 엔티티
+	 * @param getMemberId 입력받은 맴버 아이디를 조회하고 담고 있는 리스트
+	 * @param gamers 만들어진 게이머 리스트
+	 * @param gamersIdList 게임에 사용할 주식 아이디 리스트
 	 */
 	private void buildGamerFromMember(GameRoom newGameRoom, List<Member> getMemberId, List<Gamer> gamers,
 		List<Map> gamersIdList) {
@@ -232,7 +227,7 @@ public class GameStartService {
 			Gamer gamer = Gamer.builder()
 				.memberId(member.getId())
 				.gameRoom(newGameRoom)
-				.deposit(10000000)
+				.deposit(DEFAULT_DEPOSIT)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
 				.build();
@@ -274,7 +269,7 @@ public class GameStartService {
 	private GameRoom buildGameRoom(GameSettings gameSettings) {
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
-			.turnPerTime(gameSettings.getTunPerTime())
+			.turnPerTime(gameSettings.setThemTurnPerTime())
 			.theme(gameSettings.getTheme())
 			.curDate(gameSettings.getStartDateTime())
 			.totalTurn(gameSettings.getTotalTurn())

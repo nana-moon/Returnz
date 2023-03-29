@@ -98,7 +98,7 @@ public class RequestSettingGame {
 		return this.startTime.atStartOfDay();
 	}
 
-	public TurnPerTime getTunPerTime() {
+	public TurnPerTime setThemTurnPerTime() {
 		if (this.theme != Theme.USER)
 			return TurnPerTime.DAY;
 		return this.turnPerTime;
