@@ -8,6 +8,8 @@ export const gamedata = createSlice({
     stockDataList: {},
     // 그래프
     stockGraphList: [],
+    // 영업날이 아님
+    noWorkDay: [],
     // 뉴스, 주가정보, 종목 내용
     stockDetailDataList: {},
     // 보유종목
@@ -50,14 +52,50 @@ export const gamedata = createSlice({
     // 두번째 부터
     handleMoreGameData(state, action) {
       const keys = Object.keys(state.stockDataList);
-
-      console.log(state.stockGraphList, '데이터');
+      const actionkeys = Object.keys(action.payload);
+      let tmpdata;
+      const noWorkIdx = [];
 
       for (const key of keys) {
-        state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
+        if (action.payload[key][0].volume === '0') {
+          const lastIndex = state.stockDataList[key].length - 1;
+          state.stockDataList[key].push(state.stockDataList[key][lastIndex]);
+          console.log('영업날이아니래');
+        } else {
+          state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
+        }
       }
 
-      // for
+      for (const key of actionkeys) {
+        const name = action.payload[key][0].companyName;
+        const datex = action.payload[key][0].dateTime;
+        const candley = [
+          action.payload[key][0].open,
+          action.payload[key][0].high,
+          action.payload[key][0].low,
+          action.payload[key][0].close,
+        ];
+        const liney = action.payload[key][0].volume;
+
+        if (liney === '0') {
+          const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[0] === name);
+          const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[0];
+          const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[0];
+          console.log('짤랐어', lastIndex, lastCandle, lastLine);
+          noWorkIdx.push(lastIndex);
+          tmpdata = { [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } } };
+        } else {
+          tmpdata = { [name]: { candledata: { x: datex, y: candley }, linedata: { x: datex, y: liney } } };
+        }
+
+        const index = state.stockGraphList.findIndex((item) => Object.keys(item)[0] === name);
+        if (index !== -1) {
+          state.stockGraphList[index][name].candledata.push(tmpdata[name].candledata);
+          state.stockGraphList[index][name].linedata.push(tmpdata[name].linedata);
+        }
+      }
+
+      state.noWorkDay = noWorkIdx;
     },
     // 뉴스, 주가정보, 종목 내용
     handleGetGameDetailData(state, action) {},

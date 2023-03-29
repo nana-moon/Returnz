@@ -22,13 +22,14 @@ export default function GamePage() {
   const { state } = useLocation();
 
   const readd = () => {
+    // const keys = testdata.map((item) => Object.keys(item)[0]);
     console.log(testdata, 'test');
   };
 
   const axiospost = () => {
     const datas = {
-      roomId: '4000fa4c-856b-4d00-b3dc-dec776bb6a5c',
-      gamerId: 783,
+      roomId: 'cb08d65a-8da3-4932-b84e-cc4d877eec5a',
+      gamerId: 975,
     };
 
     axios

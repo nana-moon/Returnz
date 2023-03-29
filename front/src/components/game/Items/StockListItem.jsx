@@ -1,12 +1,16 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
+import { Tooltip } from '@material-tailwind/react';
 import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buysellmodal/BuySell.reducer';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
+import { noWorkDay } from '../../../store/gamedata/GameData.selector';
 
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
+  const isWork = useSelector(noWorkDay);
+  const isThis = isWork.includes(i);
   const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
     matched === '보통주' ? '' : ' (우)',
   );
@@ -75,7 +79,10 @@ export default function StockListItem({ Stock, i }) {
         <ItemTitleImgBox>
           <img src={Stock[Stock.length - 1].logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{replacedName}</CompanyName>
+        <CompanyName>
+          {replacedName}
+          {isThis && <Tooltip content="영업날이 아닙니다">⚠️</Tooltip>}
+        </CompanyName>
         <ItemPriceSection isUp={isUp}>
           {Stock[Stock.length - 1].close}
           {isUp === 'UP' && ' ▲'}
