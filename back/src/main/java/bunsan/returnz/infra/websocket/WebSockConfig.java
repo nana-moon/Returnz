@@ -26,7 +26,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		// TODO: 2023-03-24  setAllowedOriginPatterns 프론트 주소로 바꾸기
-		registry.addEndpoint("/ws").setAllowedOrigins("*")
+		registry.addEndpoint("/ws").setAllowedOriginPatterns("*")
 			.withSockJS();
 	}
 
