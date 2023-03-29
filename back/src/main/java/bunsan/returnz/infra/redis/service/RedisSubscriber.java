@@ -19,15 +19,16 @@ public class RedisSubscriber implements MessageListener {
 	private final ObjectMapper objectMapper;
 	private final RedisTemplate redisTemplate;
 	private final SimpMessageSendingOperations messagingTemplate;
+
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		try {
-			String topic = (String) redisTemplate.getStringSerializer().deserialize(message.getChannel());
-			String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+			String topic = (String)redisTemplate.getStringSerializer().deserialize(message.getChannel());
+			String publishMessage = (String)redisTemplate.getStringSerializer().deserialize(message.getBody());
 
-			if(topic.equals("side-bar")){
+			if (topic.equals("side-bar")) {
 				log.info("side-bar");
-				SideMessageDto sideMessageDto =  objectMapper.readValue(publishMessage, SideMessageDto.class);
+				SideMessageDto sideMessageDto = objectMapper.readValue(publishMessage, SideMessageDto.class);
 				messagingTemplate.convertAndSendToUser((String)sideMessageDto.getMessageBody().get("username"),
 					"/sub/side-bar", sideMessageDto);
 			}

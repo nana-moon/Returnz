@@ -15,7 +15,7 @@ public class RedisPublisher {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	public void publishSideBar(ChannelTopic topic, SideMessageDto sideMessageDto) {
-		log.info("[publishSideBar]"+ topic.getTopic());
+		log.info("[publishSideBar]" + topic.getTopic());
 		redisTemplate.convertAndSend(topic.getTopic(), sideMessageDto);
 	}
 }

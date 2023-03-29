@@ -52,7 +52,7 @@ public class WaitService {
 
 		// 평균 수익률 계산
 		double avgProfit = (double)member.getAccumulatedReturn() / member.getGameCount() * 100;
-		avgProfit = Math.round(avgProfit*100)/100.0; // 둘째자리까지 반올림
+		avgProfit = Math.round(avgProfit * 100) / 100.0; // 둘째자리까지 반올림
 
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
