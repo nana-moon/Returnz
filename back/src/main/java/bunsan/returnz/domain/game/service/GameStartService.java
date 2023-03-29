@@ -48,7 +48,7 @@ public class GameStartService {
 	private final CompanyRepository companyRepository;
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
-	private final Integer DEFAULT_DEPOSIT = 10000000;
+	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
 	/**
 	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
