@@ -5,18 +5,20 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.friend.dto.FriendRequestDto;
 import bunsan.returnz.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
+
+// TODO: 2023-03-29 프론트 서버에 맞게 CrossOrigin 변경
 
 @RestController
 @RequiredArgsConstructor
