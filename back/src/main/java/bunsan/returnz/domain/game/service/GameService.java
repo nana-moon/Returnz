@@ -148,26 +148,27 @@ public class GameService {
 				for (int x = 1; x < gameHistoricalPriceDayDtos.size(); ++x) {
 					// 주가 정보 생성
 					GameStockPriceInformationDto gameStockPriceInformationDto = GameStockPriceInformationDto.builder()
-						.historyDate(6 - x)
+						.historyDate(x)
 						.historyPrice(Double.parseDouble(
-							String.format(".2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose()))))
+							String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose()))))
 						.historyDiff(
 							Double.parseDouble(
-								String.format(".2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
+								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
 								- Double.parseDouble(String.format(".2f", Double.parseDouble(
 								gameHistoricalPriceDayDtos.get(x - 1).getClose()))))
 						.historyUpAndDown(
 							Double.parseDouble(
-								String.format(".2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
+								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
 								- Double.parseDouble(String.format(".2f", Double.parseDouble(
 								gameHistoricalPriceDayDtos.get(x - 1).getClose()))) > 0
 								? (Double.parseDouble(
-								String.format(".2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
-								- Double.parseDouble(String.format(".2f", Double.parseDouble(
+								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
+								- Double.parseDouble(String.format("%.2f", Double.parseDouble(
 								gameHistoricalPriceDayDtos.get(x - 1).getClose()))) == 0 ? StockState.STAY :
 								StockState.UP) :
 								StockState.DOWN)
 						.volume(Long.parseLong(gameHistoricalPriceDayDtos.get(x).getVolume()))
+						.dateTime(gameHistoricalPriceDayDtos.get(x).getDateTime())
 						.build();
 					// 주가 정보 List에 추가
 					gameStockPriceInformationDtos.add(gameStockPriceInformationDto);
@@ -194,12 +195,13 @@ public class GameService {
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, companyCode);
 
-		// TODO : 다음 턴 정보를 주기 전, update된 유저 정보를 줘야 한다.
-		// update된 유저 정보는
-
 		if (gameRoomDto.getCurTurn() == 0) {
 			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 		}
+
+		// TODO : 다음 턴 정보를 주기 전, update된 유저 정보를 줘야 한다.
+		// "gamer" Table의 "total_evaluation_amount"를 update 해야 한다.
+		// "gamer_stock" Table의 정보를 update 해야 한다.
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
@@ -222,7 +224,6 @@ public class GameService {
 				mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
 			}
 		}
-
 		return mapGameGamerDto;
 	}
 
