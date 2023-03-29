@@ -95,7 +95,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   );
 }
 const ThemeContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-1`}
+  ${tw`bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-1`}
 `;
 
 const ThemeBox = styled.button`
