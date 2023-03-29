@@ -69,6 +69,8 @@ public class GameStartService {
 		if (gameSettings.getTheme().getTheme().equals("COVID")
 			|| gameSettings.getTheme().getTheme().equals("DOTCOM")
 			|| gameSettings.getTheme().getTheme().equals("RIEMANN")
+			|| gameSettings.getTheme().getTheme().equals("LAST_YEAR")
+			|| gameSettings.getTheme().getTheme().equals("LAST_MONTH")
 		) {
 			checkThemeRange(gameSettings, gameStockIds);
 		}
@@ -272,7 +274,7 @@ public class GameStartService {
 	private GameRoom buildGameRoom(GameSettings gameSettings) {
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
-			.turnPerTime(gameSettings.getTurnPerTime())
+			.turnPerTime(gameSettings.getTunPerTime())
 			.theme(gameSettings.getTheme())
 			.curDate(gameSettings.getStartDateTime())
 			.totalTurn(gameSettings.getTotalTurn())

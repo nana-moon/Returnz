@@ -29,7 +29,7 @@ public class RequestSettingGame {
 	@NotNull
 	private Theme theme;
 	//---- 사용자 설정일때만 아래 값을 사용합니다 -----
-	@Nullable
+	@NotNull
 	private TurnPerTime turnPerTime;
 	@DateTimeFormat(pattern = "yyyy-MM-dd") // 이 양식은 널러블 합니다.
 	private LocalDate startTime;
@@ -96,6 +96,12 @@ public class RequestSettingGame {
 			return oneMonthAgo;
 		}
 		return this.startTime.atStartOfDay();
+	}
+
+	public TurnPerTime getTunPerTime() {
+		if (this.theme != Theme.USER)
+			return TurnPerTime.DAY;
+		return this.turnPerTime;
 	}
 
 	public Integer setThemeTotalTurnTime() {
