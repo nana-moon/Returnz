@@ -1,5 +1,7 @@
-// 상장종목, 그래프
+// 상장종목
 export const stockDataList = (state) => state.gamedatas.stockDataList;
+// 그래프
+export const stockGraphList = (state) => state.gamedatas.stockGraphList;
 // 뉴스, 주가정보, 종목 내용
 export const stockDetailDataList = (state) => state.gamedatas.stockDetailDataList;
 // 보유 종목

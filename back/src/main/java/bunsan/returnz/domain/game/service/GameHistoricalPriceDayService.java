@@ -71,8 +71,25 @@ public class GameHistoricalPriceDayService {
 			historicalPriceDayRepository.findByDateTimeAndCompanyCode(
 				dateTime, companyCode);
 		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto)
+			.orElse(null);
+	}
 
-		return optionalHistoricalPriceDay.map(historicalPriceDay::toDto).orElse(null);
+	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit6(
+		LocalDateTime date, String companyCode) {
+		List<HistoricalPriceDay> historicalPriceDays =
+			historicalPriceDayRepository.findAllByDateTimeIsBeforeWithCodeLimit6(
+				date, companyCode);
+
+		// TODO: historicalPriceDays 없을 경우 에러 발생 / 또는 개수가 적을 경우
+		// if(historicalPriceDays.isEmpty())
+
+		List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = new LinkedList<>();
+		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+		for (int i = 0; i < historicalPriceDays.size(); ++i) {
+			gameHistoricalPriceDayDtos.add(historicalPriceDay.toDto(historicalPriceDays.get(i)));
+		}
+		return gameHistoricalPriceDayDtos;
 	}
 
 }
