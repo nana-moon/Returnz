@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import bunsan.returnz.domain.game.dto.RoomMessageDto;
 import bunsan.returnz.domain.sidebar.dto.SideMessageDto;
+import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +33,16 @@ public class RedisSubscriber implements MessageListener {
 				SideMessageDto sideMessageDto = objectMapper.readValue(publishMessage, SideMessageDto.class);
 				messagingTemplate.convertAndSendToUser((String)sideMessageDto.getMessageBody().get("username"),
 					"/sub/side-bar", sideMessageDto);
+			} else if (topic.equals("game-room")) {
+				RoomMessageDto roomMessageDto = objectMapper.readValue(publishMessage, RoomMessageDto.class);
+				messagingTemplate.convertAndSend("/sub/game-room/" + roomMessageDto.getRoomId(), roomMessageDto);
+			} else if (topic.equals("wait-room")) {
+				WaitMessageDto waitMessageDto = objectMapper.readValue(publishMessage, WaitMessageDto.class);
+				String roomId = (String)waitMessageDto.getMessageBody().get("roomId");
+				messagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
+			} else {
+				RoomMessageDto roomMessageDto = objectMapper.readValue(publishMessage, RoomMessageDto.class);
+				messagingTemplate.convertAndSend("/sub/result-room/" + roomMessageDto.getRoomId(), roomMessageDto);
 			}
 			// else if (topic.equals("likes")){
 			// 	LikeResponse likeResponse = objectMapper.readValue(publishMessage, LikeResponse.class);
