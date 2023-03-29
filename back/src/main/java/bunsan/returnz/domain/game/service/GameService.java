@@ -145,12 +145,13 @@ public class GameService {
 								gameHistoricalPriceDayDtos.get(x - 1).getClose()))
 						.historyUpAndDown(
 							Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose()) - Double.parseDouble(
-								gameHistoricalPriceDayDtos.get(x - 1).getClose()) > 0 ?
-								(Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose()) - Double.parseDouble(
-									gameHistoricalPriceDayDtos.get(x - 1).getClose()) == 0 ? StockState.STAY :
-									StockState.UP) :
+								gameHistoricalPriceDayDtos.get(x - 1).getClose()) > 0
+								? (Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())
+								- Double.parseDouble(
+								gameHistoricalPriceDayDtos.get(x - 1).getClose()) == 0 ? StockState.STAY :
+								StockState.UP) :
 								StockState.DOWN)
-						.Volume(Long.parseLong(gameHistoricalPriceDayDtos.get(x).getVolume()))
+						.volume(Long.parseLong(gameHistoricalPriceDayDtos.get(x).getVolume()))
 						.build();
 					// 주가 정보 List에 추가
 					gameStockPriceInformationDtos.add(gameStockPriceInformationDto);
@@ -324,7 +325,8 @@ public class GameService {
 	public Double getStockPrice(String roomId, String companyCode) {
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 
-		GameHistoricalPriceDayDto gameHistoricalPriceDayDto = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
+			= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 			gameRoomDto.getCurDate(),
 			companyCode);
 
