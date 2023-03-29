@@ -93,6 +93,10 @@ public class GameService {
 		return turnInformation;
 	}
 
+	public void getExchangeIntrerest(LocalDateTime curDate) {
+
+	}
+
 	/**
 	 * Description : companyCode list가 주어졌을 때 대해서 추가 정보를 반환한다.
 	 * @param gameStockDtoList :  현재 게임 주식 종목 리스트
@@ -198,7 +202,7 @@ public class GameService {
 				// TODO : uerProfilePath 추가하기 (member에서 조회한 후 직접 input)
 				gameGamerDtos.get(i)
 					.setUserProfileIcon(
-						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon());
+						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon().getCode());
 				mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
 			}
 		}
