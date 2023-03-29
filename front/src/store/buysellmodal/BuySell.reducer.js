@@ -19,7 +19,7 @@ export const BuySellData = createSlice({
       isType: '',
     },
     isSelect: {
-      idx: 0,
+      idx: null,
     },
   },
   reducers: {
