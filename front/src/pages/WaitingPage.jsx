@@ -27,54 +27,50 @@ export default function WaitingPage() {
     turnPerTime: 'NO',
     startTime: null,
     totalTurn: null,
-    memberIdList: [],
+    memberIdList: [1, 2, 3, 4],
   };
   const [setting, setSetting] = useState(initial);
   const [isUserSetting, setIsUserSetting] = useState(false); // 사용자 설정 확인
   const [isValidSetting, setIsValidSetting] = useState(false); // 설정 유효성 검사
 
   // 게임 설정 action
-  const isValid = () => {
-    if (setting.theme === null) {
-      return false;
-    }
-    if (setting.theme === 'usersetting') {
-      if (setting.turnPerTime === 'NO' || setting.startTime === null || setting.totalTurn === null) {
-        return false;
-      }
-      return true;
-    }
-    return true;
-  };
   const getIsUserSetting = () => {
     setIsUserSetting(!isUserSetting);
   };
   const getTheme = (data) => {
+    console.log(data);
     const newData = { ...setting, theme: data };
     setSetting(newData);
   };
   const getUserSetting = (newData) => {
-    console.log('setting update!!!');
     setSetting(newData);
   };
 
-  //
   useEffect(() => {
-    const flag = isValid();
-    setIsValidSetting(flag);
-    console.log(flag, '--------');
-    console.log(setting);
+    const isValid = () => {
+      console.log(setting, '왜 안나오지...?');
+      if (setting.theme === null) {
+        return false;
+      }
+      if (setting.theme === 'USER') {
+        if (setting.turnPerTime === 'NO' || setting.startTime === null || setting.totalTurn === null) {
+          return false;
+        }
+        return true;
+      }
+      return true;
+    };
+    setIsValidSetting(isValid());
   }, [setting]);
 
-  useEffect(() => {
-    console.log(isValidSetting);
-  }, [isValidSetting]);
+  useEffect(() => {}, [isValidSetting]);
 
   // 게임 시작
   const handleStart = async (e) => {
     if (isValidSetting) {
       const gameId = await startGameApi(setting);
-      await gameDataApi(gameId);
+      const res = await gameDataApi(gameId);
+      console.log(res.data, '데이터 나오라ㅡㅡ');
       navigate('/game');
     }
   };

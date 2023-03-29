@@ -4,10 +4,11 @@ public enum TurnPerTime {
 	NO("NO"),
 	WEEK("WEEK"),
 	MONTH("MONTH"),
-	DAY("DAY");
-
+	DAY("DAY"),
+	MINUTE("MINUTE");
 
 	private String time;
+
 	TurnPerTime(String time) {
 		this.time = time;
 	}

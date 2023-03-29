@@ -37,11 +37,27 @@ public class GamerStock {
 	private Gamer gamer;
 
 	public GameGamerStockDto toDto(GamerStock gamerStock) {
-		return GameGamerStockDto.builder()
+		GameGamerStockDto gameGamerStockDto = GameGamerStockDto.builder()
+			.id(gamerStock.getId())
 			.companyCode(gamerStock.getCompanyCode())
 			.totalCount(gamerStock.getTotalCount())
 			.totalAmount(gamerStock.getTotalAmount())
 			.gamerId(gamerStock.getGamer().getId())
 			.build();
+		// 평균단가 : 전체 가격 / 보유 수
+		if (gamerStock.getTotalCount() == 0) {
+			gameGamerStockDto.setAveragePrice(0);
+		} else {
+			gameGamerStockDto.setAveragePrice(gamerStock.getTotalAmount() / gamerStock.getTotalCount());
+		}
+		// 평가손익 : (보유 수 * 평균단가) - 총 가격
+		gameGamerStockDto.setValuation((gameGamerStockDto.getTotalCount() * gameGamerStockDto.getAveragePrice())
+			- gameGamerStockDto.getTotalAmount());
+
+		if (gameGamerStockDto.getAveragePrice() == 0) {
+			gameGamerStockDto.setProfitRate(0.0);
+		}
+
+		return gameGamerStockDto;
 	}
 }
