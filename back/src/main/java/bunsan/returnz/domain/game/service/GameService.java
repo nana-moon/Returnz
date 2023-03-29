@@ -56,7 +56,7 @@ public class GameService {
 			return turnInformation;
 		}
 
-		turnInformation.put("currentDate", gameRoomDto.getCurDate().plusDays(1));
+		turnInformation.put("currentDate", gameRoomDto.getCurDate());
 
 		// 환율, 금리, 유가 정보 - JPQL
 		GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
@@ -193,11 +193,13 @@ public class GameService {
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, companyCode);
-		if (gameRoomDto.getCurTurn() == 0) {
-			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), roomId);
-		}
 
 		// TODO : 다음 턴 정보를 주기 전, update된 유저 정보를 줘야 한다.
+		// update된 유저 정보는
+
+		if (gameRoomDto.getCurTurn() == 0) {
+			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+		}
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
@@ -358,6 +360,10 @@ public class GameService {
 
 		return stockClosePrice;
 	}
+
+	/**
+	 * Description
+	 */
 
 	/**
 	 * Description : 주식 매수. (현재 작성 중)
