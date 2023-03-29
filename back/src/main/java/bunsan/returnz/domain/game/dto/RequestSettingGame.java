@@ -22,7 +22,7 @@ public class RequestSettingGame {
 	private Theme theme;
 	//---- 사용자 설정일때만 아래 값을 사용합니다 -----
 	@Nullable
-	private TurnPerTime ternPerTime;
+	private TurnPerTime turnPerTime;
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") // 이 양식은 널러블 합니다.
 	private LocalDateTime startTime;
 	@Nullable
@@ -35,7 +35,7 @@ public class RequestSettingGame {
 			// 세게중 하나라도 널이면 안된다.
 			if (this.totalTurn == null
 				|| this.startTime == null
-				|| this.ternPerTime == null
+				|| this.turnPerTime == null
 			) {
 				throw new BadRequestException("사용자 태마는 총턴수, 시작 일,시, 턴당 시간 을 지정하세요");
 			}
@@ -43,19 +43,18 @@ public class RequestSettingGame {
 			long weekBetweenTurn = ChronoUnit.WEEKS.between(this.startTime, LocalDateTime.now());
 			long monthsBetweenTurn = ChronoUnit.MONTHS.between(this.startTime, LocalDateTime.now());
 			long daysBetweenTurn = ChronoUnit.DAYS.between(this.startTime, LocalDateTime.now());
-			if (this.ternPerTime.getTime().equals("DAY")
+			if (this.turnPerTime.getTime().equals("DAY")
 				&& this.totalTurn > daysBetweenTurn) {
 				throw new BadRequestException("시작일수로 부터 가능한 일 이 더 작습니다. 계산된 일 " + daysBetweenTurn);
 			}
-			if (this.ternPerTime.getTime().equals("WEEK")
+			if (this.turnPerTime.getTime().equals("WEEK")
 				&& this.totalTurn > weekBetweenTurn) {
 				throw new BadRequestException("시작일수로 부터 가능한 주 가 더 작습니다. 계산된 주 " + weekBetweenTurn);
 			}
-			if (this.ternPerTime.getTime().equals("MONTH")
+			if (this.turnPerTime.getTime().equals("MONTH")
 				&& this.totalTurn > monthsBetweenTurn) {
 				throw new BadRequestException("시작일수로 부터 가능한 달 이 더 작습니다. 계산된 달 " + monthsBetweenTurn);
 			}
-
 		}
 	}
 
