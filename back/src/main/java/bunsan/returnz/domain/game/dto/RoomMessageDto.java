@@ -2,6 +2,8 @@ package bunsan.returnz.domain.game.dto;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +20,6 @@ public class RoomMessageDto {
 	private String roomId;
 	private Map<String, Object> messageBody;
 	public enum MessageType {
-		MAKE_GAME, READY, TURN, CHAT, END
+		MAKE_GAME, READY, TURN, CHAT, END, @JsonEnumDefaultValue UNKNOWN;
 	}
 }
