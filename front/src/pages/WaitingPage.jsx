@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
@@ -10,16 +10,16 @@ import { startGameApi, gameDataApi } from '../apis/gameApi';
 
 export default function WaitingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // useEffect(()=> {
+
+  // }, [])
+
   // 방장
   const [isHost, setIsHost] = useState(true);
 
   // 대기자 리스트
-  const [userList, setUserList] = useState([
-    { id: 1, profile: 'green.jpg', nickname: 'chat혜성', profit: '28.7' },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-  ]);
+  const [userList, setUserList] = useState([{ id: 1, profile: 'A.jpg', nickname: 'chat혜성', profit: '28.7' }]);
 
   // 게임 설정 state
   const initial = {
@@ -38,7 +38,6 @@ export default function WaitingPage() {
     setIsUserSetting(!isUserSetting);
   };
   const getTheme = (data) => {
-    console.log(data);
     const newData = { ...setting, theme: data };
     setSetting(newData);
   };
@@ -48,7 +47,6 @@ export default function WaitingPage() {
 
   useEffect(() => {
     const isValid = () => {
-      console.log(setting, '왜 안나오지...?');
       if (setting.theme === null) {
         return false;
       }
@@ -70,7 +68,6 @@ export default function WaitingPage() {
     if (isValidSetting) {
       const gameId = await startGameApi(setting);
       const res = await gameDataApi(gameId);
-      console.log(res.data, '데이터 나오라ㅡㅡ');
       navigate('/game');
     }
   };

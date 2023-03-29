@@ -1,15 +1,22 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import { makeRoomApi } from '../../apis/gameApi';
+import { setIsHost } from '../../store/userinfo/UserInfo.reducer';
 
 export default function TopButtons() {
+  const dispatch = useDispatch();
+  const myNickname = Cookies.get('nickname');
+  const myProfile = Cookies.get('profileIcon');
   const handleMakeRoom = () => {
+    dispatch(setIsHost(true));
     makeRoomApi();
   };
   return (
     <ButtonsContainer>
-      <MakeRoomButton onClick={handleMakeRoom} to="/waiting">
+      <MakeRoomButton to="/waiting" state={{}} onClick={handleMakeRoom}>
         게임 개설하기
       </MakeRoomButton>
       <StartTutorialButton to="/tutorial">튜토리얼 보기</StartTutorialButton>
