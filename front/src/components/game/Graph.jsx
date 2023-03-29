@@ -96,7 +96,7 @@ export default function Graph() {
               return value.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
-              }); // 세 자리마다 쉼표 추가
+              });
             },
           },
         },
