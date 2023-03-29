@@ -50,8 +50,9 @@ public class HistoricalPriceDay {
 			.volume(historicalPriceDay.getVolume())
 			.adjclose(historicalPriceDay.getAdjclose())
 			.dividends(historicalPriceDay.getDividends())
-			.companyName(historicalPriceDay.getCompany().getCompanyName())
+			.companyName(historicalPriceDay.getCompany().getCompanyDetail().getKoName())
 			.dateTime(historicalPriceDay.getDateTime())
+			.logo(historicalPriceDay.getCompany().getCompanyDetail().getLogo())
 			.build();
 	}
 }
