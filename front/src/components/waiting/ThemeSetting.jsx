@@ -7,22 +7,26 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   const [activeTheme, setActiveTheme] = useState('');
 
   const themeList = [
-    { name: 'LAST_MONTH', description: '최신 한 달간의 주식 차트 상황' },
+    { value: 'LAST_MONTH', name: '최근 한 달', description: '최신 한 달간의 주식 차트 상황' },
     {
+      value: 'INTEREST_BIG_STEP',
       name: '美, 금리 빅스텝',
       description:
         '미국 연방준비제도(Fed)가 코로나 이후 급상승한 물가를 잡기 위해 기준금리를 예상보다 급격하게 인상한 상황',
     },
     {
-      name: 'COVID',
+      value: 'COVID',
+      name: '코로나 바이러스',
       description: '2019년을 기점으로 코로나 바이러스가 창궐하며 금리를 낮추는 경제 정책이 증폭된 상황',
     },
     {
-      name: 'RIEMANN',
+      value: 'RIEMANN',
+      name: '리만-브라더스 사태',
       description: '리먼-브라더스 사태는 금융위기의 시작점이었으며, 글로벌 증시에 대한 패닉과 불안감을 유발시킨 상황',
     },
     {
-      name: 'DOTCOM',
+      value: 'DOTCOM',
+      name: '닷컴버블',
       description:
         '인터넷 기업들의 과도한 투자와 기대에 기인한 거품으로, 급격한 상승과 함께 대규모 하락을 유발하며 글로벌 증시에 큰 충격을 가져온 상황',
     },
@@ -30,7 +34,9 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
 
   // theme action
   const handleClick = (e) => {
+    console.log(e.target.value, '값 무조건 나와야함');
     setActiveTheme(e.target.value);
+    // createRipple(e);
     handleTheme(e);
   };
 
@@ -55,7 +61,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
     circle.style.top = `${e.clientY - (rect.top + scrollTop) - radius}px`;
     circle.classList.add('ripple');
 
-    const ripple = button.getElementsByClassName('ripple')[0];
+    const ripple = button.parentElement.getElementsByClassName('ripple')[0];
 
     if (ripple) {
       ripple.remove();
@@ -77,12 +83,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
               unmount: { scale: 0, y: 25 },
             }}
           >
-            <ThemeBox
-              key={theme.name}
-              value={theme.name}
-              onClick={(createRipple, handleClick)}
-              active={activeTheme === theme.name}
-            >
+            <ThemeBox key={theme.name} value={theme.value} onClick={handleClick} active={activeTheme === theme.value}>
               {theme.name}
             </ThemeBox>
           </Tooltip>
@@ -95,15 +96,11 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   );
 }
 const ThemeContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-2 p-2`}
+  ${tw`border bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-1`}
 `;
 
 const ThemeBox = styled.button`
-  ${tw`border rounded-xl w-[100%] flex justify-center items-center hover:border-black`}
-  ${({ active }) => active && tw`bg-blue-gray-50`}
-  position: relative;
-  overflow: hidden;
-
+  position: relative; // Add this line
   .ripple {
     position: absolute;
     border-radius: 50%;
@@ -112,10 +109,12 @@ const ThemeBox = styled.button`
     animation: ripple-effect 1s linear forwards;
   }
 
-  @keyframes ripple {
+  @keyframes ripple-effect {
     to {
       transform: scale(4);
       opacity: 0;
     }
   }
+  ${tw`flex justify-center items-center border w-[100%] relative drop-shadow-lg bg-white rounded-xl overflow-hidden`}
+  ${({ active }) => active && tw`bg-blue-gray-100`}
 `;
