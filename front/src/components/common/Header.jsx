@@ -54,7 +54,7 @@ const NavHeader = styled.div`
   ${tw`bg-primary flex justify-between py-2 w-[100%]`}
 `;
 
-const NavDisabledLink = styled(Link)`
+const NavDisabledLink = styled.div`
   ${tw`flex text-white font-ibm font-bold text-4xl mx-2`}
 `;
 const NavLink = styled(Link)`
