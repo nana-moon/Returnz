@@ -1,56 +1,87 @@
 import { React, useState, useMemo } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useQuery } from 'react-query';
-import axios from 'axios';
+import {
+  getExchangeKrUs,
+  getExchangeKrJp,
+  getExchangeKrEu,
+  getExchangeKrBit,
+  // getOilPrice,
+} from '../../apis/todayRateApi';
 
 export default function TodayPrice() {
-  const BASE_URL = 'https://www.alphavantage.co/query';
-  const param = process.env.EXCHANGE_API_KEY;
-  const getExchangeRateApi = (payload) => {
-    const res = axios.get(
-      `${BASE_URL}?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=KRW&apikey=${payload}`,
-    );
-    return res;
-  };
-  const { data: exchangerate } = useQuery({
-    queryKey: ['exchangerate', param],
-    queryFn: () => getExchangeRateApi(param),
-    onSuccess: (data) => {
-      // console.log(data.data['Realtime Currency Exchange Rate'], 'please.......');
-    },
+  const { data: exchangeKrUs } = useQuery({
+    queryKey: ['exchangeKrUs'],
+    queryFn: () => getExchangeKrUs(),
     onError: (e) => {
       console.log(e);
     },
+    staleTime: 1000000,
   });
+  const { data: exchangeKrJp } = useQuery({
+    queryKey: ['exchangeKrJp'],
+    queryFn: () => getExchangeKrJp(),
+    onError: (e) => {
+      console.log(e);
+    },
+    staleTime: 1000000,
+  });
+  const { data: exchangeKrEu } = useQuery({
+    queryKey: ['exchangeKrEu'],
+    queryFn: () => getExchangeKrEu(),
+    onError: (e) => {
+      console.log(e);
+    },
+    staleTime: 1000000,
+  });
+
+  const { data: exchangeKrBit } = useQuery({
+    queryKey: ['getExchangeKrBit'],
+    queryFn: () => getExchangeKrBit(),
+    onError: (e) => {
+      console.log(e);
+    },
+    staleTime: 1000000,
+  });
+  // const { data: oilPrice } = useQuery({
+  //   queryKey: ['getOilPrice'],
+  //   queryFn: () => getOilPrice(),
+  //   onError: (e) => {
+  //     console.log(e);
+  //   },
+  //   staleTime: 1000000,
+  // });
 
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
         <StockTitle>
-          {exchangerate?.data['Realtime Currency Exchange Rate']['1. From_Currency Code']}-
-          {exchangerate?.data['Realtime Currency Exchange Rate']['3. To_Currency Code']}
+          {exchangeKrUs?.['1. From_Currency Code']}-{exchangeKrUs?.['3. To_Currency Code']}
         </StockTitle>
-        <StockPrice>{exchangerate?.data['Realtime Currency Exchange Rate']['5. Exchange Rate']}</StockPrice>
+        <StockPrice>{exchangeKrUs?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>NASDAQ</StockTitle>
-        <StockPrice>322,243,291</StockPrice>
-        <StockPrice>▼ -0.8111111%</StockPrice>
+        <StockTitle>
+          {exchangeKrJp?.['1. From_Currency Code']}-{exchangeKrJp?.['3. To_Currency Code']}
+        </StockTitle>
+        <StockPrice>{exchangeKrJp?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>NASDAQ</StockTitle>
-        <StockPrice>322,243,291</StockPrice>
-        <StockPrice>▼ -0.8111111%</StockPrice>
+        <StockTitle>
+          {exchangeKrEu?.['1. From_Currency Code']}-{exchangeKrEu?.['3. To_Currency Code']}
+        </StockTitle>
+        <StockPrice>{exchangeKrEu?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>NASDAQ</StockTitle>
-        <StockPrice>322,243,291</StockPrice>
-        <StockPrice>▼ -0.8111111%</StockPrice>
+        <StockTitle>
+          {exchangeKrBit?.['1. From_Currency Code']}-{exchangeKrBit?.['3. To_Currency Code']}
+        </StockTitle>
+        <StockPrice>{exchangeKrBit?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>NASDAQ</StockTitle>
-        <StockPrice>322,243,291</StockPrice>
-        <StockPrice>▼ -0.8111111%</StockPrice>
+        <StockTitle> 원유 가격</StockTitle>
+        {/* <StockPrice>{oilPrice[0].date}</StockPrice>
+        <StockPrice>{oilPrice[0].value}</StockPrice> */}
       </TodayPriceItem>
     </TodayPriceContainer>
   );
