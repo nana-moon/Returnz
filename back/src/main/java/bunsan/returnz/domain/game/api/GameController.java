@@ -1,8 +1,6 @@
 package bunsan.returnz.domain.game.api;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -22,10 +20,10 @@ import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.enums.Theme;
-import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.service.GameCompanyDetailService;
 import bunsan.returnz.domain.game.service.GameHistoricalPriceDayService;
 import bunsan.returnz.domain.game.service.GameRoomService;
+import bunsan.returnz.domain.game.service.GameService;
 import bunsan.returnz.domain.game.service.GameStartService;
 import bunsan.returnz.domain.game.service.GameStockService;
 import bunsan.returnz.domain.game.service.GamerService;
@@ -49,6 +47,7 @@ public class GameController {
 	private final GamerService gamerService;
 	private final GamerStockService gamerStockService;
 	private final GameCompanyDetailService gameCompanyDetailService;
+	private final GameService gameService;
 
 	/**
 	 * Description : 게임 턴이 진행될때 마다 필요한 정보를 출력
@@ -60,119 +59,19 @@ public class GameController {
 	 */
 	@PostMapping("/game")
 	public ResponseEntity<?> gameStart(@RequestBody GameRequestBody gameRequestBody) {
-		try {
-			/**
-			 * 필요한 데이터 목록
-			 * 1. 날짜별 그래프 총 데이터 ( 환율 계산해서 그래프 데이터주세요 )
-			 * 2. 주가정보는 턴 시간 상관없이 일단위로 (20턴 전 까지)
-			 * 3. 과거대비 과거등락도 계산해서 주고, 상태 (UP, DOWN, STAY)
-			 * 4. 금리, 환율
-			 * 5. 첫턴에 상장종목 셀트리온처럼 주세요
-			 * 6. 두번째 턴 부턴 저번 턴 기준으로 대비 등락, 상태(UP, DOWN, SATY)까지
-			 * 7. 친구 정보
-			 * 8. 예수금 천만 총 매입금액 0 총 평가금액 0 평가손익 0 총 평가자산 천만
-			 * 9. 턴 수도 줘요
-			 */
 
-			String roomId = gameRequestBody.getRoomId();
-			Long gamerId = gameRequestBody.getGamerId();
-
-			// 날짜 데이터 구하기
-			GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-			Long gameRoomId = gameRoomDto.getId();
-			// TODO: gameRoomDto가 null이면 에러 발생
-
-			// TODO: 게임 종료 처리
-			if (gameRoomDto.getTotalTurn() <= gameRoomDto.getCurTurn()) {
-				return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
-			}
-
-			// 주가 데이터를 가지고 있는 HashMap
-			HashMap<String, List<GameHistoricalPriceDayDto>> mapGameHistoricalPriceDayDto = new HashMap<>();
-			// 멤버 데이터를 가지고 있는 HashMap
-			HashMap<String, GameGamerDto> mapGameGamerDto = new HashMap<>();
-
-			// 1. 날짜 별 그래프 데이터
-			// 게임 진행 주식 종목 가져오기
-			List<GameStockDto> gameStockDtoList = gameStockService.findAllByGameRoomId(gameRoomId);
-
-			// TODO: gameStockDtoList가 비어있으면 에러 발생
-			// if (gameStockDtoList.isEmpty() || gameStockDtoList.size() == 0) {
-			//
-			// }
-
-			// 첫 번째 턴인경우, 20 번 전 정보를 제공, HashMap에 저장
-			if (gameRoomDto.getCurTurn() == 0) {
-				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
-					for (int i = 0; i < gameStockDtoList.size(); ++i) {
-						String companyCode = gameStockDtoList.get(i).getCompanyCode();
-						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
-							gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
-								gameRoomDto.getCurDate(), companyCode);
-
-						// Key를 가지고 있지 않을 경우만
-						if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
-							mapGameHistoricalPriceDayDto.put(companyCode, gameHistoricalPriceDayDtos);
-						}
-					}
-				}
-				// TODO: Month, Minute 구현
-				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Month))
-				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Minute))
-			} else { // 첫 번째 턴이 아닌 경우 하나만
-				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
-					for (int i = 0; i < gameStockDtoList.size(); ++i) {
-						String companyCode = gameStockDtoList.get(i).getCompanyCode();
-						List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
-							gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
-								gameRoomDto.getCurDate().plusDays(1), companyCode);
-
-						// Key를 가지고 있지 않을 경우만
-						if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
-							mapGameHistoricalPriceDayDto.put(companyCode, gameHistoricalPriceDayDtos);
-						}
-					}
-				}
-				// TODO: Month, Minute 구현
-				// else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Month)) {
-				// } else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Minute)) {
-				// }
-			}
-
-			// id로 멤버 불러오기
-			List<GameGamerDto> gameGamerDtos = gamerService.findAllByGameRoomId(gameRoomDto.getId());
-			for (int i = 0; i < gameGamerDtos.size(); ++i) {
-				if (!mapGameGamerDto.containsKey(gameGamerDtos.get(i))) {
-					mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
-				}
-			}
-
-			// 나의 현재 보유 종목
-			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
-			HashMap<String, List<GameGamerStockDto>> mapGameGamerStockDtos = new HashMap<>();
-			mapGameGamerStockDtos.put("gamerStock", gameGamerStockDtos);
-
-			HashMap<String, HashMap> responseBody = new HashMap<>();
-			responseBody.put("Stocks", mapGameHistoricalPriceDayDto);
-			responseBody.put("Gamer", mapGameGamerDto);
-			responseBody.put("gamerStock", mapGameGamerStockDtos);
-
-			// TODO: curdate + 1, cur_turn + 1
-			// 게임방 정보 업데이트 후 넘겨줘야 함
-			String companyCode = gameStockDtoList.get(0).getCompanyCode();
-			LocalDateTime curTime = gameRoomDto.getCurDate();
-			GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
-				gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-					curTime, companyCode);
-
-			boolean success = gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
-			// TODO : if(!success) 시 Error 발생
-
-			return new ResponseEntity<>(responseBody, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
+		// gameRequestBody null이면 에러 발생
+		if (gameRequestBody == null || gameRequestBody.getRoomId() == null || gameRequestBody.getGamerId() == null) {
+			throw new BadRequestException("잘못된 요청입니다.");
 		}
-		return null;
+
+		HashMap<String, Object> turnInformation = gameService.getTurnInformation(gameRequestBody.getRoomId(),
+			gameRequestBody.getGamerId());
+		if ((boolean)turnInformation.get("turnEnd")) {
+			return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
+		}
+		return new ResponseEntity<>(turnInformation, HttpStatus.OK);
+
 	}
 
 	// @PostMapping("/buy-sell")
@@ -189,14 +88,14 @@ public class GameController {
 	// 		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
 	//
 	// 		// stock 가격 확인
-	// 		GameRoomDto gameRoomDto = gameRoomService.findByroomId(gameBuySellRequestBody.getRoomId());
+	// 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(gameBuySellRequestBody.getRoomId());
 	// 		double stockClosePrice = 0;
 	// 		int amount = gameBuySellRequestBody.getAmoount();
-	// 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.Day)) {
+	// 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 	// 			GameHistoricalPriceDayDto historicalPriceDayDto =
-	// 			gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-	// 				gameRoomDto.getCurDate(),
-	// 				companyCode);
+	// 				gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+	// 					gameRoomDto.getCurDate(),
+	// 					companyCode);
 	// 			stockClosePrice = Double.parseDouble(historicalPriceDayDto.getClose());
 	// 		}
 	// 		// TODO : else hour, minute 구현 필요
@@ -209,19 +108,14 @@ public class GameController {
 	// 			if (gameGamerDto.getDeposit() >= (stockClosePrice * amount)) {
 	//
 	// 				// depostit 차감
-	// 				Integer deposit = gameGamerDto.getDeposit() - stockClosePrice * amount
+	// 				Integer deposit = (int)(gameGamerDto.getDeposit() - stockClosePrice * amount);
 	// 				if (deposit >= 0 && gamerService.updateDeposit(deposit)) {
 	//
 	// 					// Gamer Stock Entity 저장
 	// 					GameGamerStockDto gameGamerStockDto =
-	// 					gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
+	// 						gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 	//
-	// 					// 새로 사는 경우
-	// 					if (gameGamerStockDto == null) {
-	//
-	// 					} else {	// 이미 있는 경우
-	//
-	// 					}
+	// 					// 주식은 default로 모든 주식에 대해서 0개씩 가지고 있음
 	//
 	// 					System.out.println("BUY 성공");
 	// 					// TODO : sout => log or Response
@@ -239,8 +133,9 @@ public class GameController {
 	//
 	// 	}
 	// 	// TODO : else 시 Error 발생
-	//
+	// 	return null;
 	// }
+
 	@PostMapping("/init")
 	public ResponseEntity<?> settingGame(@RequestBody RequestSettingGame requestSettingGame) {
 		if (!Theme.isValid(requestSettingGame.getTheme())) {
