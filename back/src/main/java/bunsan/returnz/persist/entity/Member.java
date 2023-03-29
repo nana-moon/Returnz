@@ -68,6 +68,11 @@ public class Member implements UserDetails {
 	// 누적 수익률
 	@Builder.Default
 	private Long accumulatedReturn = 0L;
+
+	// 평균 슈익률
+	@Builder.Default
+	private Double avgProfit = 0D;
+
 	/**
 	 * 수정 필요
 	 */
@@ -159,5 +164,19 @@ public class Member implements UserDetails {
 
 	public void deleteFriend(Member friend) {
 		this.getFriends().remove(friend);
+	}
+
+	// 평균 수익률 계산
+	public void setAvgProfit() {
+		this.avgProfit = (double)this.accumulatedReturn/ this.gameCount;
+	}
+
+	// 누적 수익률 증가
+	public void increaseAccReturn(Long gameReturn) {
+		this.accumulatedReturn += gameReturn;
+	}
+	// 게임 횟수 증가
+	public void increaseGameCount() {
+		this.gameCount ++;
 	}
 }

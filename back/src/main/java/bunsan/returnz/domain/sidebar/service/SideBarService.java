@@ -166,6 +166,7 @@ public class SideBarService {
 			// 친구들에게 전송
 			for (Member friend : member.getFriends()) {
 				Map<String, Object> messageBody = new HashMap<>();
+				// messageBody.put("state", MemberState.ONLINE.getCode());
 				messageBody.put("friendName", friend.getUsername());
 				messageBody.put("username", member.getUsername());
 
