@@ -44,7 +44,6 @@ public class SecurityConfig {
 			.and()
 			//
 			.authorizeRequests()
-			//
 			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			.antMatchers("/api/game").authenticated()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
