@@ -60,6 +60,7 @@ public class WaitService {
 		double avgProfit = member.getAvgProfit();
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
+		messageBody.put("roomId", roomId);
 		messageBody.put("id", member.getId());
 		messageBody.put("username", member.getUsername());
 		messageBody.put("nickname", member.getNickname());
@@ -88,17 +89,18 @@ public class WaitService {
 	@Transactional
 	public void sendChatMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("nickname", member.getNickname());
 		messageBody.put("contents", waitRequest.getMessageBody().get("contents"));
+		messageBody.put("roomId", roomId);
 
 		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
 			.type(WaitMessageDto.MessageType.CHAT)
 			.messageBody(messageBody)
 			.build();
 
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}
@@ -106,8 +108,10 @@ public class WaitService {
 	@Transactional
 	public void sendExitMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
+		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
+		messageBody.put("roomId", roomId);
 		messageBody.put("id", member.getId());
 		messageBody.put("username", member.getUsername());
 
@@ -115,7 +119,6 @@ public class WaitService {
 			.type(WaitMessageDto.MessageType.EXIT)
 			.messageBody(messageBody)
 			.build();
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}

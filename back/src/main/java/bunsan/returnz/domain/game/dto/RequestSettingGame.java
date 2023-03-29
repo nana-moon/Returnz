@@ -99,8 +99,9 @@ public class RequestSettingGame {
 	}
 
 	public TurnPerTime setThemTurnPerTime() {
-		if (this.theme != Theme.USER)
+		if (this.theme != Theme.USER) {
 			return TurnPerTime.DAY;
+		}
 		return this.turnPerTime;
 	}
 
