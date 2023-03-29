@@ -17,5 +17,5 @@ public class GameStockPriceInformationDto {
 	Double historyPrice;
 	Double historyDiff;
 	StockState historyUpAndDown;
-	Long Volume;
+	Long volume;
 }
