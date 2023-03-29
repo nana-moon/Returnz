@@ -28,7 +28,7 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 
 	@Query(value = "SELECT * FROM historical_price_day h\n"
 		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
-		+ "ORDER BY h.date_time ASC\n"
+		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 6", nativeQuery = true)
 	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit6(LocalDateTime dateTime,
 		String companyCode);

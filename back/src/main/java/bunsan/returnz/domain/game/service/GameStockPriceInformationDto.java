@@ -1,5 +1,7 @@
 package bunsan.returnz.domain.game.service;
 
+import java.time.LocalDateTime;
+
 import bunsan.returnz.domain.game.enums.StockState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +20,5 @@ public class GameStockPriceInformationDto {
 	Double historyDiff;
 	StockState historyUpAndDown;
 	Long volume;
+	LocalDateTime dateTime;
 }
