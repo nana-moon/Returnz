@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
-import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import Cookies from 'js-cookie';
+import { axios } from './axiosConfig';
 
 const userLogin = (payload) => {
   return axios

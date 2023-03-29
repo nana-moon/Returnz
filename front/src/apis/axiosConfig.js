@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const BASE_URL = 'https://localhost:8080/api';
-const BASE_URL = 'http://j8c106.p.ssafy.io:8188/api/';
+const BASE_URL = 'http://j8c106.p.ssafy.io/api/';
 
 // 로그인 전 사용할 api
 axios.defaults.baseURL = BASE_URL;
@@ -15,4 +15,4 @@ openApi.defaults.baseURL = 'http://apis.data.go.kr/1160100/service/GetMarketInde
 // wsApi.defaults.baseURL = 'http://j8c106.p.ssafy.io:8188/ws';
 // wsApi.defaults.baseURL = 'http://192.168.100.175:8080/ws';
 
-export { openApi };
+export { axios, openApi };
