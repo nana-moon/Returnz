@@ -1,22 +1,30 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { BsFillArrowRightCircleFill, BsFillArrowLeftCircleFill } from 'react-icons/bs';
 import { FaBook } from 'react-icons/fa';
-import wordDummy from './todayWordDummy';
+import { getTodayWord } from '../../apis/homeApi';
 
 export default function TodayWord() {
   const [currentIndex, setcurrentIndex] = useState(0);
-  const [data] = useState(wordDummy);
+  const [word, setWord] = useState('');
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? data.length - 1 : currentIndex - 1;
+    const newIndex = isFirstSlide ? word.length - 1 : currentIndex - 1;
     setcurrentIndex(newIndex);
   };
   const nextSlide = () => {
-    const isLastSlide = currentIndex === data.length - 1;
+    const isLastSlide = currentIndex === word.length - 1;
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setcurrentIndex(newIndex);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await getTodayWord();
+      setWord(result.data.todayWordList);
+    };
+    fetchData();
+  }, []);
   return (
     <TodayWordContainer>
       <TodayWordTitle>
@@ -24,8 +32,8 @@ export default function TodayWord() {
         <FaBook className="my-auto" />
       </TodayWordTitle>
       <TodayWordCarousel>
-        <WordTitle>{data[currentIndex].용어}</WordTitle>
-        <WordContent>{data[currentIndex].설명}</WordContent>
+        <WordTitle>{word[currentIndex]?.keyWord}</WordTitle>
+        <WordContent>{word[currentIndex]?.description}</WordContent>
         <LeftArrow>
           <BsFillArrowLeftCircleFill onClick={prevSlide} />
         </LeftArrow>
