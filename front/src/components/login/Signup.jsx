@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Input, Button } from '@material-tailwind/react';
 import { userSignup } from '../../apis/signApi';

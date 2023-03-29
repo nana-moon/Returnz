@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buysellmodal/BuySell.reducer';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
-import { stockDataList } from '../../../store/gamedata/GameData.selector';
 
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
+  const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
+    matched === '보통주' ? '' : ' (우)',
+  );
 
+  let isUp;
+  if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) === 0) {
+    isUp = 'STAY';
+  } else if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) > 0) {
+    isUp = 'UP';
+  } else {
+    isUp = 'DOWN';
+  }
+
+  const diff = [
+    parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10),
+    (
+      ((parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10)) /
+        parseInt(Stock[Stock.length - 2].close, 10)) *
+      100
+    ).toFixed(2),
+  ];
   const handleselectIdx = (data) => {
     dispatch(selectIdx(data));
   };
@@ -56,13 +75,28 @@ export default function StockListItem({ Stock, i }) {
         <ItemTitleImgBox>
           <img src={Stock[Stock.length - 1].logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{Stock[Stock.length - 1].companyName}</CompanyName>
-        <ItemPriceSection>{Stock[Stock.length - 1].close}</ItemPriceSection>
+        <CompanyName>{replacedName}</CompanyName>
+        <ItemPriceSection isUp={isUp}>
+          {Stock[Stock.length - 1].close}
+          {isUp === 'UP' && ' ▲'}
+          {isUp === 'DOWN' && ' ▼'}
+          {isUp === 'STAY' && ' -'}
+        </ItemPriceSection>
       </ItemTitleSection>
       <ItemInfoSection>
         <IndustryBox>산업군</IndustryBox>
-        <UpDownBox>1000</UpDownBox>
-        <UpDownBox>0.3</UpDownBox>
+        <UpDownBox isUp={isUp}>
+          {diff[0]}
+          {isUp === 'UP' && ' ▲'}
+          {isUp === 'DOWN' && ' ▼'}
+          {isUp === 'STAY' && ' -'}
+        </UpDownBox>
+        <UpDownBox isUp={isUp}>
+          {diff[1]}
+          {isUp === 'UP' && ' ▲'}
+          {isUp === 'DOWN' && ' ▼'}
+          {isUp === 'STAY' && ' -'}
+        </UpDownBox>
       </ItemInfoSection>
     </ItemContainer>
   );
@@ -98,7 +132,7 @@ const ItemTitleImgBox = styled.div`
 `;
 
 const CompanyName = styled.div`
-  width: 40%;
+  width: 53%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -106,11 +140,13 @@ const CompanyName = styled.div`
 `;
 
 const ItemPriceSection = styled.p`
-  width: 25%;
+  ${(props) => props.isUp === 'UP' && tw`mr-6 text-gain`}
+  ${(props) => props.isUp === 'DOWN' && tw`mr-6 text-lose`}
+  width: 22%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  ${tw`text-left ml-1`}
+  ${tw`text-right ml-1`}
 `;
 
 const ItemInfoSection = styled.div`
@@ -121,10 +157,16 @@ const IndustryBox = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 35%;
+  width: 25%;
   ${tw`text-left ml-4`}
 `;
 
 const UpDownBox = styled.div`
-  ${tw`mr-6`}
+  width: 27%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${(props) => props.isUp === 'UP' && tw`mr-6 text-gain`}
+  ${(props) => props.isUp === 'DOWN' && tw`mr-6 text-lose`}
+  ${tw`mr-6 text-right`}
 `;

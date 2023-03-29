@@ -6,7 +6,12 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
   // 사용자 설정 데이터
   const handleUserSetting = (e) => {
     const newName = e.target.name;
-    const newValue = e.target.value;
+    let newValue;
+    if (newName === 'totalTurn') {
+      newValue = parseInt(e.target.value, 10);
+    } else {
+      newValue = e.target.value;
+    }
     const newData = { ...setting, [newName]: newValue };
     getUserSetting(newData);
   };
@@ -31,13 +36,13 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
       <TurnPeriodSection>
         <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
         <TurnPeriodForm onChange={handleUserSetting}>
-          <input type="radio" id="periodChoice1" name="turnPerTime" value="day" />
+          <input type="radio" id="periodChoice1" name="turnPerTime" value="DAY" />
           <label htmlFor="periodChoice1">1일</label>
 
-          <input type="radio" id="periodChoice2" name="turnPerTime" value="week" />
+          <input type="radio" id="periodChoice2" name="turnPerTime" value="WEEK" />
           <label htmlFor="periodChoice2">1주</label>
 
-          <input type="radio" id="periodChoice3" name="turnPerTime" value="month" />
+          <input type="radio" id="periodChoice3" name="turnPerTime" value="MONTH" />
           <label htmlFor="periodChoice3">한 달</label>
         </TurnPeriodForm>
       </TurnPeriodSection>
