@@ -15,5 +15,5 @@ export default function WaitingListItem({ user }) {
 }
 
 const UserContainer = styled.div`
-  ${tw`border bg-white rounded-xl p-3 w-[100%] min-h-[200px] flex flex-col justify-evenly items-center`}
+  ${tw`border bg-white rounded-xl w-[100%] min-h-[200px] flex flex-col justify-evenly items-center`}
 `;
