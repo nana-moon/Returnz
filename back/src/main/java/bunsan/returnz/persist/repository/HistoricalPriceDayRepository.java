@@ -8,13 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 
 public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPriceDay, Long> {
 	@Query(value = "SELECT * FROM historical_price_day h\n"
-		+ "WHERE h.date_time < :dateTime AND h.company_code = :companyCode\n"
+		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
 		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 20", nativeQuery = true)
 	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit20(LocalDateTime dateTime,
@@ -29,7 +28,7 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 
 	@Query(value = "SELECT * FROM historical_price_day h\n"
 		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
-		+ "ORDER BY h.date_time ASC\n"
+		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 6", nativeQuery = true)
 	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit6(LocalDateTime dateTime,
 		String companyCode);
@@ -60,8 +59,5 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 	boolean existsAtLeastOneRecordForEachCompany(@Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate, @Param("stockIds") List<String> stockIds,
 		@Param("stockCount") Long stockCount);
-
-
-
 
 }
