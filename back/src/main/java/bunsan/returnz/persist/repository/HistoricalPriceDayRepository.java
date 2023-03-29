@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 
@@ -39,4 +42,26 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 		String companyCode);
 
 	Optional<HistoricalPriceDay> findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode);
+
+	// day
+	// week
+	//month 별 턴처리 필요
+	@Query(value = "SELECT h FROM HistoricalPriceDay h "
+		+ "WHERE h.dateTime > :dateTime "
+		+ "AND h.company.code IN :stockIds "
+		+ "ORDER BY h.dateTime ASC")
+	List<HistoricalPriceDay> getDayDataAfterStartDay(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds, Pageable pageable);
+
+	// 해당기간내에 데이터가 몇개 있는지
+	@Query(value = "SELECT COUNT(DISTINCT h.company.code) = :stockCount FROM HistoricalPriceDay h "
+		+ "WHERE h.dateTime BETWEEN :startDate AND :endDate "
+		+ "AND h.company.code IN :stockIds")
+	boolean existsAtLeastOneRecordForEachCompany(@Param("startDate") LocalDateTime startDate,
+		@Param("endDate") LocalDateTime endDate, @Param("stockIds") List<String> stockIds,
+		@Param("stockCount") Long stockCount);
+
+
+
+
 }
