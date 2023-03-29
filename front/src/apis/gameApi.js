@@ -6,7 +6,7 @@ const makeRoomApi = async () => {
     .post('/wait-room')
     .then((res) => {
       console.log('방만들기 성공', res);
-      return res;
+      return res.data;
     })
     .catch((err) => {
       console.log('방만들기 실패', err);
