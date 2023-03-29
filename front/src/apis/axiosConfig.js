@@ -2,6 +2,7 @@ import axios from 'axios';
 import StompJs from 'stompjs';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
+import Cookies from 'js-cookie';
 
 // const BASE_URL = 'https://localhost:8080/api';
 const BASE_URL = 'http://j8c106.p.ssafy.io/api';
@@ -33,13 +34,12 @@ const openApi = axios.create({
 // 로그인 후 사용할 api (프사수정, 닉수정)
 const authApi = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
 });
 
 authApi.interceptors.request.use(
   (request) => {
-    const AUTH_TOKEN = '';
-    request.headers.common.Authorization = AUTH_TOKEN;
+    const ACCESS_TOKEN = Cookies.get('access_token');
+    request.headers.Authorization = ACCESS_TOKEN || null;
     return request;
   },
   (error) => {

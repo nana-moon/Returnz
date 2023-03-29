@@ -6,7 +6,7 @@ import {
   getExchangeKrJp,
   getExchangeKrEu,
   getExchangeKrBit,
-  // getOilPrice,
+  getOilPrice,
 } from '../../apis/todayRateApi';
 
 export default function TodayPrice() {
@@ -38,50 +38,51 @@ export default function TodayPrice() {
   const { data: exchangeKrBit } = useQuery({
     queryKey: ['getExchangeKrBit'],
     queryFn: () => getExchangeKrBit(),
+    onSuccess: (res) => {
+      // res['5. Exchange Rate'] = res['5. Exchange Rate'] * 100;
+      console.log(res['5. Exchange Rate'], 'gg');
+    },
     onError: (e) => {
       console.log(e);
     },
     staleTime: 1000000,
   });
-  // const { data: oilPrice } = useQuery({
-  //   queryKey: ['getOilPrice'],
-  //   queryFn: () => getOilPrice(),
-  //   onError: (e) => {
-  //     console.log(e);
-  //   },
-  //   staleTime: 1000000,
-  // });
+  const { data: oilPrice } = useQuery({
+    queryKey: ['getOilPrice'],
+    queryFn: () => getOilPrice(),
+    onError: (e) => {
+      console.log(e);
+    },
+    staleTime: 1000000,
+  });
 
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
+        <StockTitle>미국 달러 환율</StockTitle>
+        <StockPrice>{exchangeKrUs?.['5. Exchange Rate']}</StockPrice>
+      </TodayPriceItem>
+      {/* <TodayPriceItem>
         <StockTitle>
           {exchangeKrUs?.['1. From_Currency Code']}-{exchangeKrUs?.['3. To_Currency Code']}
         </StockTitle>
         <StockPrice>{exchangeKrUs?.['5. Exchange Rate']}</StockPrice>
-      </TodayPriceItem>
+      </TodayPriceItem> */}
       <TodayPriceItem>
-        <StockTitle>
-          {exchangeKrJp?.['1. From_Currency Code']}-{exchangeKrJp?.['3. To_Currency Code']}
-        </StockTitle>
+        <StockTitle>일본 엔 환율</StockTitle>
         <StockPrice>{exchangeKrJp?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>
-          {exchangeKrEu?.['1. From_Currency Code']}-{exchangeKrEu?.['3. To_Currency Code']}
-        </StockTitle>
+        <StockTitle>유럽 유로 환율</StockTitle>
         <StockPrice>{exchangeKrEu?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle>
-          {exchangeKrBit?.['1. From_Currency Code']}-{exchangeKrBit?.['3. To_Currency Code']}
-        </StockTitle>
+        <StockTitle>비트코인 현재가</StockTitle>
         <StockPrice>{exchangeKrBit?.['5. Exchange Rate']}</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle> 원유 가격</StockTitle>
-        {/* <StockPrice>{oilPrice[0].date}</StockPrice>
-        <StockPrice>{oilPrice[0].value}</StockPrice> */}
+        <StockTitle> {oilPrice?.date} 원유 가격</StockTitle>
+        <StockPrice>{oilPrice?.value}</StockPrice>
       </TodayPriceItem>
     </TodayPriceContainer>
   );
@@ -92,13 +93,13 @@ const TodayPriceContainer = styled.div`
 `;
 
 const TodayPriceItem = styled.div`
-  ${tw`bg-white border border-negative rounded-lg border-2 px-4 py-1 text-center`}
+  ${tw`bg-white w-1/6 border border-negative rounded-lg border-2 px-4 py-1 text-center`}
 `;
 
 const StockTitle = styled.div`
-  ${tw`text-black text-lg`}
+  ${tw`text-black`}
 `;
 
 const StockPrice = styled.div`
-  ${tw`text-lose text-sm`}
+  ${tw`text-sm`}
 `;

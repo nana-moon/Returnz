@@ -7,10 +7,13 @@ import Cookies from 'js-cookie';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import Stomp from 'webstomp-client';
-// import { useQuery, QueryClient } from 'react-query';
+import { useQuery, QueryClient } from 'react-query';
 import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
 import FriendSearchInput from './SideBar/FriendSearchInput';
+import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
+import { getFriendRequests } from '../../apis/friendApi';
+
 // import { stomp } from '../../apis/axiosConfig';
 
 export default function SideBar() {
@@ -43,7 +46,9 @@ export default function SideBar() {
               `/user/sub/side-bar`,
               (data) => {
                 const newMessage = JSON.parse(data.body);
+
                 const newFriend = newMessage.messageBody.friendList;
+                console.log('친구리스트 불러옴', newFriend);
                 setfriendList(newFriend);
                 // 데이터 파싱
               },
@@ -114,10 +119,18 @@ export default function SideBar() {
   //   );
   // };
   // sendMessage();
-
+  const { data: friendRequests } = useQuery({
+    queryKey: ['friendRequests'],
+    queryFn: () => getFriendRequests(),
+    onError: (e) => {
+      console.log(e);
+    },
+    staleTime: 1000000,
+  });
   return (
     <SideBarContainer>
       <UserProfile />
+      {friendRequests.length > 0 ? <IncomingFriendRequests /> : null}
       <FriendListContainer>
         {friendList?.map((friend) => {
           return <FriendListItems friend={friend} key={friend.username} />;

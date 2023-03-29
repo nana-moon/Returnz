@@ -6,14 +6,14 @@ import tw, { styled } from 'twin.macro';
 // import Stomp from 'webstomp-client';
 import { Input } from '@material-tailwind/react';
 import { AiOutlineSearch } from 'react-icons/ai';
-import { friendRequest } from '../../../apis/friendApi';
+// import { friendRequest } from '../../../apis/friendApi';
 
 export default function FriendSearchInput() {
   const onChange = (e) => setfriendNickname(e.target.value);
   const [friendNickname, setfriendNickname] = useState('');
   const handleFriendRequest = async () => {
-    const result = await friendRequest(friendNickname);
-    console.log(result);
+    // const result = await friendRequest(friendNickname);
+    // console.log(result);
   };
   return (
     <FriendSearchContainer>
