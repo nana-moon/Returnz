@@ -7,6 +7,9 @@ import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
+  const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
+    matched === '보통주' ? '' : ' (우)',
+  );
 
   let isUp;
   if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) === 0) {
@@ -72,7 +75,7 @@ export default function StockListItem({ Stock, i }) {
         <ItemTitleImgBox>
           <img src={Stock[Stock.length - 1].logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{Stock[Stock.length - 1].companyName}</CompanyName>
+        <CompanyName>{replacedName}</CompanyName>
         <ItemPriceSection isUp={isUp}>
           {Stock[Stock.length - 1].close}
           {isUp === 'UP' && ' ▲'}
