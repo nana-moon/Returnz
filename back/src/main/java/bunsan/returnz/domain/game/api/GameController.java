@@ -11,7 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.game.dto.GameGamerDto;
+import bunsan.returnz.domain.game.dto.GameGamerStockDto;
+import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRequestBody;
+import bunsan.returnz.domain.game.dto.GameRoomDto;
+import bunsan.returnz.domain.game.dto.GameSettings;
+import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.service.GameCompanyDetailService;
@@ -24,11 +30,13 @@ import bunsan.returnz.domain.game.service.GamerService;
 import bunsan.returnz.domain.game.service.GamerStockService;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@Slf4j
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
 
@@ -127,9 +135,9 @@ public class GameController {
 	// 	// TODO : else 시 Error 발생
 	// 	return null;
 	// }
-
+	//--------------------------------------게임 세팅-------------------------------------------
 	@PostMapping("/init")
-	public ResponseEntity settingGame(@RequestBody RequestSettingGame requestSettingGame) {
+	public ResponseEntity<?> settingGame(@RequestBody RequestSettingGame requestSettingGame) {
 		if (!Theme.isValid(requestSettingGame.getTheme())) {
 			throw new BadRequestException("테마가 잘못됬습니다");
 		}
@@ -138,7 +146,9 @@ public class GameController {
 		if (!(requestSettingGame.getMemberIdList().size() > 0)) {
 			throw new BadRequestException("유저는 최소 한명 이상이여야합니다.");
 		}
-		Map<String, Object> stringObjectMap = gameStartService.settingGame(requestSettingGame);
+
+		GameSettings gameSettings = new GameSettings(requestSettingGame);
+		Map<String, Object> stringObjectMap = gameStartService.settingGame(gameSettings);
 		// 태마 게임일경우
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
