@@ -18,9 +18,11 @@ module.exports = withMT({
         gold: '#EBD516',
         silver: '#A7A7A7',
         bronze: '#948150',
+        // 온라인
+        online: '#05FF00',
+        busy: '#00D1FF',
       },
-      backgroundImage: {
-      },
+      backgroundImage: {},
     },
     fontFamily: {
       spoq: ['Spoqa Han Sans Neo', 'sans-serif'],
