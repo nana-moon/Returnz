@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameStockPriceInformationDto {
 	Integer historyDate;
-	Integer historyPrice;
-	Integer historyDiff;
+	Double historyPrice;
+	Double historyDiff;
 	StockState historyUpAndDown;
 	Long Volume;
 }

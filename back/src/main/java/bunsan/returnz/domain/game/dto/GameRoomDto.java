@@ -1,6 +1,8 @@
 package bunsan.returnz.domain.game.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import lombok.AllArgsConstructor;
@@ -22,4 +24,8 @@ public class GameRoomDto {
 	private LocalDateTime curDate;
 	private Integer roomMemberCount;
 	private TurnPerTime turnPerTime;
+
+	public LocalDateTime getCurDate() {
+		return LocalDateTime.of(LocalDate.from(this.curDate), LocalTime.of(0, 0, 0));
+	}
 }
