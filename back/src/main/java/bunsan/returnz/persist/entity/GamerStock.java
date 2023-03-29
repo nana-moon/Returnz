@@ -32,32 +32,34 @@ public class GamerStock {
 	@Builder.Default
 	private Integer totalAmount = 0;
 
+	@Builder.Default
+	private Double averagePrice = 0.0;
+
+	@Builder.Default
+	private Double valuation = 0.0;
+
+	private Double profitRate = 0.0;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAMER_ID")
 	private Gamer gamer;
 
 	public GameGamerStockDto toDto(GamerStock gamerStock) {
-		GameGamerStockDto gameGamerStockDto = GameGamerStockDto.builder()
+		return GameGamerStockDto.builder()
 			.id(gamerStock.getId())
 			.companyCode(gamerStock.getCompanyCode())
 			.totalCount(gamerStock.getTotalCount())
 			.totalAmount(gamerStock.getTotalAmount())
 			.gamerId(gamerStock.getGamer().getId())
+			.averagePrice(gamerStock.getAveragePrice())
+			.valuation(gamerStock.getValuation())
+			.profitRate(gamerStock.getProfitRate())
 			.build();
-		// 평균단가 : 전체 가격 / 보유 수
-		if (gamerStock.getTotalCount() == 0) {
-			gameGamerStockDto.setAveragePrice(0);
-		} else {
-			gameGamerStockDto.setAveragePrice(gamerStock.getTotalAmount() / gamerStock.getTotalCount());
-		}
-		// 평가손익 : (보유 수 * 평균단가) - 총 가격
-		gameGamerStockDto.setValuation((gameGamerStockDto.getTotalCount() * gameGamerStockDto.getAveragePrice())
-			- gameGamerStockDto.getTotalAmount());
+	}
 
-		if (gameGamerStockDto.getAveragePrice() == 0) {
-			gameGamerStockDto.setProfitRate(0.0);
-		}
-
-		return gameGamerStockDto;
+	public boolean updateBuyStockCount(Integer count, Double price) {
+		this.totalCount += count;
+		this.totalAmount = Math.toIntExact(Math.round(this.totalCount * price));
+		return true;
 	}
 }
