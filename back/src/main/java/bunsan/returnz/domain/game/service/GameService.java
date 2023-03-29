@@ -241,13 +241,9 @@ public class GameService {
 		} else { // 첫 번째 턴이 아닌 경우 하나만
 			for (int i = 0; i < gameStockDtoList.size(); ++i) {
 				String companyCode = gameStockDtoList.get(i).getCompanyCode();
-				System.out.println(gameRoomDto.getCurDate());
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
 						gameRoomDto.getCurDate(), companyCode);
-				System.out.println("==================================");
-				System.out.println(gameHistoricalPriceDayDtos.get(0).getDateTime());
-				System.out.println(gameRoomDto.getCurDate());
 
 				if (!gameHistoricalPriceDayDtos.get(0).getDateTime().isEqual(gameRoomDto.getCurDate())) {
 					gameHistoricalPriceDayDtos.get(0).setDateTime(gameRoomDto.getCurDate());
