@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsUtils;
 
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -38,17 +37,13 @@ public class SecurityConfig {
 			// rest api만 사용
 			.httpBasic().disable()
 			.cors().and()
-			.csrf()
-			.ignoringAntMatchers("/pub/**")
-			.ignoringAntMatchers("/sub/**")
-			.disable()
+			.csrf().disable()
 			// iframe 요소를 통한 전송 허용
 			.headers()
 			.frameOptions().sameOrigin()
 			.and()
 			//
 			.authorizeRequests()
-			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()  //추가
 			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			.antMatchers("/api/game").authenticated()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
@@ -62,7 +57,6 @@ public class SecurityConfig {
 			// .antMatchers(HttpMethod.DELETE,"/temp/{tempId}").hasAnyAuthority("ROLE_MANAGER")
 			// .antMatchers(HttpMethod.POST, "/comments/**").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/comments/**").authenticated()
-			.requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
 			.anyRequest().permitAll()
 			//
 			.and()

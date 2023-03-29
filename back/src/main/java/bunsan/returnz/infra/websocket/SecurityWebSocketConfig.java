@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.web.bind.annotation.CrossOrigin;
-
 @Configuration
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class SecurityWebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
