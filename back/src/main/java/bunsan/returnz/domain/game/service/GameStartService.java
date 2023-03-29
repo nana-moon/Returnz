@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.game.dto.RequestSettingGame;
+import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
 import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
@@ -49,16 +49,27 @@ public class GameStartService {
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
 	@Transactional
-	public Map<String, Object> settingGame(RequestSettingGame requestSettingGame) {
+	public Map<String, Object> settingGame(GameSettings gameSettings) {
 		// 주식방 만들기
-		GameRoom newGameRoom = buildGameRoom(requestSettingGame);
+		gameSettings.setThemeTotalTurnTime();
+		GameRoom newGameRoom = buildGameRoom(gameSettings);
 		// 랜덤 주식 가져와서 할당하기
 		Pageable pageable = PageRequest.of(0, 10);
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
-		checkRangeValid(requestSettingGame, companyList);
+		List<String> gameStockIds = new ArrayList<>();
+		// 아이디만 뽑아낸 리스트
+		for (Company stock : companyList) {
+			gameStockIds.add(stock.getCode());
+		}
+		if (gameSettings.getTheme().getTheme().equals("COVID")
+			|| gameSettings.getTheme().getTheme().equals("DOTCOM")
+			|| gameSettings.getTheme().getTheme().equals("RIEMANN")
+		) {
+			checkThemeRange(gameSettings, gameStockIds);
+		}
 
-		// 맴버 가져와서 주식방 게이머 에 할당하기
-		List<Member> getMemberId = memberRepository.findAllById(requestSettingGame.getMemberIdList());
+		checkRangeValid(gameSettings, gameStockIds);
+		List<Member> getMemberId = memberRepository.findAllById(gameSettings.getMemberIdList());
 		if (getMemberId.size() == 0) {
 			throw new BadRequestException("유효한 참가자 아이디가 아닙니다");
 		}
@@ -74,56 +85,87 @@ public class GameStartService {
 		gameRoomsRes.put("gamerList", gamersIdList);
 
 		return gameRoomsRes;
+
+
+		// 맴버 가져와서 주식방 게이머 에 할당하기
+
 	}
 
-	private void checkRangeValid(RequestSettingGame requestSettingGame, List<Company> gameStock) {
+	// 이걸 게임 리퀘스트로 해야지? 기업도 하나만 하면되지?
+	private void checkThemeRange(GameSettings gameSettings, List<String> gameStockIds) {
+		log.info("checkThemeRange" + gameSettings.getTurnPerTime().getTime());
+		if (gameSettings.getTurnPerTime().getTime().equals("WEEK")) {
+			log.info("테마 위크 체크 시작");
+			checkWeek(gameSettings, gameStockIds);
+		}
+		if (gameSettings.getTurnPerTime().getTime().equals("MONTH")) {
+			log.info("테마 한달 체크 시작");
+			checkMonthRange(gameSettings, gameStockIds);
+		}
+		if (gameSettings.getTurnPerTime().getTime().equals("DAY")) {
+			log.info("테마 데이 체크 시작");
+			checkDayRange(gameSettings, gameStockIds);
+		}
+	}
 
-		if (requestSettingGame.getTheme().getTheme().equals("USER")) {
-			List<String> gameStockIds = new ArrayList<>();
-			for (Company stock : gameStock) {
-				gameStockIds.add(stock.getCode());
-			}
+	private void checkRangeValid(GameSettings gameSettings, List<String> gameStockIds) {
+		if (gameSettings.getTheme().getTheme().equals("USER")) {
 			// day 일때 데이터가 있는지 체크
-			if (requestSettingGame.getTurnPerTime().getTime().equals("DAY")) {
-				Pageable pageable = PageRequest.of(0, requestSettingGame.getTotalTurn());
-				List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
-					requestSettingGame.getStartTime(), gameStockIds, pageable);
-				Integer countInDB = dayDataAfterStartDay.size();
-				if (!countInDB.equals(requestSettingGame.getTotalTurn())) {
-					throw new BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-				}
+			if (gameSettings.getTurnPerTime().getTime().equals("DAY")) {
+				checkDayRange(gameSettings, gameStockIds);
 			}
 			// week 일때 테스트
-			if (requestSettingGame.getTurnPerTime().getTime().equals("WEEK")) {
-				List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(requestSettingGame.getStartTime(),
-					requestSettingGame.getTotalTurn());
-				for (WeekRange weekRange : weekRanges) {
-					LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
-					LocalDateTime endDay = weekRange.getWeekLastDay();
-
-					boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository
-						.existsAtLeastOneRecordForEachCompany(
-							weekFirstDay, endDay, gameStockIds, 10L);
-					if (!checkAllStockIsThereMoreThenInWeek) {
-						throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-					}
-				}
+			if (gameSettings.getTurnPerTime().getTime().equals("WEEK")) {
+				checkWeek(gameSettings, gameStockIds);
 			}
 			// MONTH 일때 테스트
-			if (requestSettingGame.getTurnPerTime().getTime().equals("MONTH")) {
-				List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(requestSettingGame.getStartTime(),
-					requestSettingGame.getTotalTurn());
-				for (MonthRange monthRange : monthRanges) {
-					LocalDateTime monthStart = monthRange.getFirstDay();
-					LocalDateTime monthEnd = monthRange.getLastDay();
-					boolean checkDataInMonthTurn = historicalPriceDayRepository
-						.existsAtLeastOneRecordForEachCompany(
-							monthStart, monthEnd,
-							gameStockIds, 10L);
-					if (!checkDataInMonthTurn) {
-						throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
-					}
-				}
+			if (gameSettings.getTurnPerTime().getTime().equals("MONTH")) {
+				checkMonthRange(gameSettings, gameStockIds);
+			}
+		}
+	}
+
+	private void checkMonthRange(GameSettings requestSettingGame, List<String> gameStockIds) {
+		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(
+			requestSettingGame.getStartDateTime(),
+			requestSettingGame.getTotalTurn());
+		for (MonthRange monthRange : monthRanges) {
+			LocalDateTime monthStart = monthRange.getFirstDay();
+			LocalDateTime monthEnd = monthRange.getLastDay();
+			boolean checkDataInMonthTurn = historicalPriceDayRepository
+				.existsAtLeastOneRecordForEachCompany(
+					monthStart, monthEnd,
+					gameStockIds, 10L);
+			if (!checkDataInMonthTurn) {
+				throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+			}
+		}
+	}
+
+	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
+		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
+		List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
+			gameSettings.getStartDateTime(), gameStockIds, pageable);
+		Integer countInDB = dayDataAfterStartDay.size();
+		if (!countInDB.equals(gameSettings.getTotalTurn())) {
+			throw new BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+		}
+	}
+
+	private void checkWeek(GameSettings gameSettings, List<String> gameStockIds) {
+
+		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(
+			gameSettings.getStartDateTime(),
+			gameSettings.getTotalTurn());
+		for (WeekRange weekRange : weekRanges) {
+			LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
+			LocalDateTime endDay = weekRange.getWeekLastDay();
+
+			boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository
+				.existsAtLeastOneRecordForEachCompany(
+					weekFirstDay, endDay, gameStockIds, 10L);
+			if (!checkAllStockIsThereMoreThenInWeek) {
+				throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
 		}
 	}
@@ -173,17 +215,18 @@ public class GameStartService {
 		return companyList;
 	}
 
-	private GameRoom buildGameRoom(RequestSettingGame requestSettingGame) {
+	private GameRoom buildGameRoom(GameSettings gameSettings) {
+		log.info("buildGameRoom gameSettings" + gameSettings.getStartDateTime());
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
-			.turnPerTime(requestSettingGame.getTurnPerTime())
-			.theme(requestSettingGame.getTheme())
-			.curDate(requestSettingGame.getThemeStartTime())
-			.totalTurn(requestSettingGame.getTotalTurn())
-			.roomMemberCount(requestSettingGame.getMemberIdList().size())
+			.turnPerTime(gameSettings.getTurnPerTime())
+			.theme(gameSettings.getTheme())
+			.curDate(gameSettings.getStartDateTime())
+			.totalTurn(gameSettings.getTotalTurn())
+			.roomMemberCount(gameSettings.getMemberIdList().size())
 			.build();
-		gameRoomRepository.save(newGameRoom);
-		return newGameRoom;
+		GameRoom save = gameRoomRepository.save(newGameRoom);
+		return save;
 	}
 
 }
