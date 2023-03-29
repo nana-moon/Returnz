@@ -1,28 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
+import { Avatar } from '@material-tailwind/react';
 
 export default function FriendListItems({ friend }) {
+  const [friendColor, setfriendColor] = useState(false);
+
+  useEffect(() => {
+    if (friend.state === 'ONLINE') {
+      setfriendColor('bg-online');
+    } else if (friend.state === 'BUSY') {
+      setfriendColor('bg-offline');
+    } else {
+      setfriendColor('bg-negative');
+    }
+  }, []);
+
   return (
     <FriendInfoContainer>
-      <FriendPicItem>{friend.username}</FriendPicItem>
-      <FriendNameItem>친구이름</FriendNameItem>
-      <ContentText>친구...뭐시기</ContentText>
+      <Avatar variant="circular" src={`profile_pics/${friend.profileIcon}.jpg`} />
+      <FriendNameItem>{friend.nickname}</FriendNameItem>
+      <FriendStateCircle className={friendColor} />
     </FriendInfoContainer>
   );
 }
 
 const FriendInfoContainer = styled.div`
-  ${tw`bg-white border-2 border-negative rounded-lg py-1 px-2 my-2 flex`}
-`;
-
-const FriendPicItem = styled.div`
-  ${tw`text-2xl`}
+  position: relative;
+  ${tw`border-negative border-dotted border-b-2 py-3 px-2 my-2 flex`}
 `;
 
 const FriendNameItem = styled.div`
-  ${tw`text-lg`}
+  ${tw`text-lg mx-4`}
 `;
 
-const ContentText = styled.div`
-  ${tw`text-sm`}
+const FriendStateCircle = styled.div`
+  position: absolute;
+  left: 3rem;
+  top: 3rem;
+  ${tw`rounded-full w-4 h-4`}
 `;
