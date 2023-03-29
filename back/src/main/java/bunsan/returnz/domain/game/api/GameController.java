@@ -135,7 +135,7 @@ public class GameController {
 	// 	// TODO : else 시 Error 발생
 	// 	return null;
 	// }
-
+	//--------------------------------------게임 세팅-------------------------------------------
 	@PostMapping("/init")
 	public ResponseEntity<?> settingGame(@RequestBody RequestSettingGame requestSettingGame) {
 		if (!Theme.isValid(requestSettingGame.getTheme())) {

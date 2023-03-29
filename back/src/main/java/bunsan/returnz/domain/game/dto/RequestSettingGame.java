@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.game.dto;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -75,21 +76,45 @@ public class RequestSettingGame {
 		if (this.theme.getTheme().equals("RIEMANN")) {
 			return LocalDateTime.of(2008, 1, 1, 0, 0, 0);
 		}
+		if (this.theme.getTheme().equals("LAST_YEAR")) {
+			LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+			// 주말을 건너뛰기 위한 로직
+			if (oneYearAgo.getDayOfWeek() == DayOfWeek.SATURDAY) {
+				oneYearAgo = oneYearAgo.minusDays(1);
+			} else if (oneYearAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				oneYearAgo = oneYearAgo.minusDays(2);
+			}
+			return oneYearAgo;
+		}
+		if (this.theme.getTheme().equals("LAST_MONTH")) {
+			LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+			if (oneMonthAgo.getDayOfWeek() == DayOfWeek.SATURDAY) {
+				oneMonthAgo = oneMonthAgo.minusDays(1);
+			} else if (oneMonthAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
+				oneMonthAgo = oneMonthAgo.minusDays(2);
+			}
+			return oneMonthAgo;
+		}
 		return this.startTime.atStartOfDay();
 	}
 
 	public Integer setThemeTotalTurnTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			this.totalTurn =  30;
+			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
-			this.totalTurn =  30;
+			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("RIEMANN")) {
-			this.totalTurn =  30;
+			this.totalTurn = 30;
+		}
+		if (this.theme.getTheme().equals("LAST_YEAR")) {
+			this.totalTurn = 30;
+		}
+		if (this.theme.getTheme().equals("LAST_MONTH")) {
+			this.totalTurn = 30;
 		}
 		return this.totalTurn;
 	}
-
 
 }
