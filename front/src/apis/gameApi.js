@@ -1,14 +1,24 @@
-import { axios } from './axiosConfig';
+import Cookies from 'js-cookie';
+import { axios, authApi } from './axiosConfig';
 
-const makeRoomApi = () => {
-  console.log('---------------');
-  return axios.post('/wait-rooms');
+const makeRoomApi = async () => {
+  return authApi
+    .post('/wait-room')
+    .then((res) => {
+      console.log('방만들기 성공', res);
+      return res;
+    })
+    .catch((err) => {
+      console.log('방만들기 실패', err);
+      return err;
+    });
 };
 
 const startGameApi = async (payload) => {
-  console.log(payload, '코비드 전달값');
   const res = await axios.post('/games/init', payload);
-  console.log(res);
+  console.log(res.data);
+  // 나인지 확인하고 roomId, gameId 저장하기
+  const myNickname = Cookies.get('nickname');
   return res;
 };
 
