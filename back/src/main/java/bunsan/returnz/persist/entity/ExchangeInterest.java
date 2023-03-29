@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import bunsan.returnz.domain.game.dto.GameExchangeInterestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,4 +28,13 @@ public class ExchangeInterest {
 	Double korea;
 	Double exchangeRate;
 	Double usa;
+
+	public GameExchangeInterestDto toDto(ExchangeInterest exchangeInterest) {
+		return GameExchangeInterestDto.builder()
+			.date(exchangeInterest.getDate())
+			.exchangeRate(exchangeInterest.getExchangeRate())
+			.korea(exchangeInterest.getKorea())
+			.usa(exchangeInterest.getUsa())
+			.build();
+	}
 }

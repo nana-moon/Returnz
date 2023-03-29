@@ -1,5 +1,6 @@
 package bunsan.returnz.domain.game.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameCompanyDetailDto;
+import bunsan.returnz.domain.game.dto.GameExchangeInterestDto;
 import bunsan.returnz.domain.game.dto.GameGamerDto;
 import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
@@ -33,6 +35,7 @@ public class GameService {
 	private final GamerStockService gamerStockService;
 	private final GameCompanyDetailService gameCompanyDetailService;
 	private final MemberService memberService;
+	private final GameExchangeInterestService gameExchangeInterestService;
 
 	/**
 	 * Description : 턴이 시작할 때 필요한 정보를 반환한다.
@@ -54,6 +57,10 @@ public class GameService {
 
 		turnInformation.put("currentDate", gameRoomDto.getCurDate().plusDays(1));
 
+		// 환율, 금리, 유가 정보 - JPQL
+		GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
+		turnInformation.put("exchangeInterest", gameExchangeInterestDto);
+
 		// 1. 날짜 별 그래프 데이터 - 게임 진행 주식 종목 가져오기
 		List<GameStockDto> gameStockDtoList = gameStockService.findAllByGameRoomId(gameRoomId);
 
@@ -61,7 +68,7 @@ public class GameService {
 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MINUTE)) { // TODO : Current Null Return
 			turnInformation.put("Stocks", getStockPriceMinute(gameStockDtoList, gameRoomDto));
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
-			turnInformation.put("Stocks", getStockPriceDay(gameStockDtoList, gameRoomDto));
+			turnInformation.put("Stocks", getStockPriceDay(gameStockDtoList, gameRoomDto, gameExchangeInterestDto));
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) { // TODO : Current Null Return
 			turnInformation.put("Stocks", getStockPriceWeek(gameStockDtoList, gameRoomDto));
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MONTH)) { // TODO : Current Null Return
@@ -80,8 +87,6 @@ public class GameService {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
 
-		// TODO : 5. 환율, 금리, 유가 정보 - JPQL
-
 		// 6. 주가 정보
 		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
 
@@ -93,8 +98,8 @@ public class GameService {
 		return turnInformation;
 	}
 
-	public void getExchangeIntrerest(LocalDateTime curDate) {
-
+	public GameExchangeInterestDto getExchangeInterest(LocalDateTime curDate) {
+		return gameExchangeInterestService.findAllByDateIsBeforeLimit1(LocalDate.from(curDate));
 	}
 
 	/**
@@ -165,7 +170,6 @@ public class GameService {
 					gameStockPriceInformationDtos);
 			}
 		}
-
 		// map 반환
 		return mapGameStockPriceInformationDto;
 	}
@@ -226,12 +230,15 @@ public class GameService {
 	 * @return : 일별 주식 가격을 반환한다.
 	 */
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceDay(List<GameStockDto> gameStockDtoList,
-		GameRoomDto gameRoomDto) {
+		GameRoomDto gameRoomDto, GameExchangeInterestDto gameExchangeInterestDto) {
 		HashMap<String, List<GameHistoricalPriceDayDto>> mapGameHistoricalPriceDayDto = new HashMap<>();
 		// 첫 번째 턴인경우, 20 번 전 정보를 제공, HashMap에 저장
 		if (gameRoomDto.getCurTurn() == 0) {
 			for (int i = 0; i < gameStockDtoList.size(); ++i) {
-				String companyCode = gameStockDtoList.get(i).getCompanyCode();
+
+				if (gameStockDtoList.get(i).get)
+
+					String companyCode = gameStockDtoList.get(i).getCompanyCode();
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
 						gameRoomDto.getCurDate(), companyCode);
@@ -289,32 +296,6 @@ public class GameService {
 	}
 
 	/**
-	 * Description : 주식 매수. (현재 작성 중)
-	 * @param gamerId : 현재 사용자의 게임 id
-	 * @param companyCode : 종목 코드
-	 * @param roomId : 현재 방의 아이디
-	 * @return : 현재 작성 중
-	 */
-	public boolean buyStock(Long gamerId, Long amount, String companyCode, String roomId) {
-
-		// 사용자의 자산확인
-		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
-		// stock 가격 확인
-		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-		Double stockClosePrice = getStockPrice(roomId, companyCode);
-		if (gameGamerDto.getDeposit() >= (stockClosePrice * amount)) {
-
-			GameGamerStockDto gameGamerStockDto =
-				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
-			// depostit 차감
-			Integer deposit = (int)(gameGamerDto.getDeposit() - stockClosePrice * amount);
-			return gamerService.updateDeposit(gamerId, deposit);
-			// TODO: Stock 수량 증가
-		}
-		return false;
-	}
-
-	/**
 	 * Description : 방 번호와 회사 코드를 입력받아 현재 턴에 맞는 주식 가격을 반환한다.
 	 * 				주식 가격은 Day로만 받아온다.
 	 * 				외국 회사인 경우에는 환율을 계산한 후 반환한다.
@@ -340,6 +321,32 @@ public class GameService {
 		// TODO : 환율 데이터 if (gameCompanyDetailDto.getCountryCode().equals("US"){ }
 
 		return stockClosePrice;
+	}
+
+	/**
+	 * Description : 주식 매수. (현재 작성 중)
+	 * @param gamerId : 현재 사용자의 게임 id
+	 * @param companyCode : 종목 코드
+	 * @param roomId : 현재 방의 아이디
+	 * @return : 현재 작성 중
+	 */
+	public boolean buyStock(Long gamerId, Long amount, String companyCode, String roomId) {
+
+		// 사용자의 자산확인
+		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
+		// stock 가격 확인
+		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
+		Double stockClosePrice = getStockPrice(roomId, companyCode);
+		if (gameGamerDto.getDeposit() >= (stockClosePrice * amount)) {
+
+			GameGamerStockDto gameGamerStockDto =
+				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
+			// depostit 차감
+			Integer deposit = (int)(gameGamerDto.getDeposit() - stockClosePrice * amount);
+			return gamerService.updateDeposit(gamerId, deposit);
+			// TODO: Stock 수량 증가
+		}
+		return false;
 	}
 
 }
