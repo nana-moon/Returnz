@@ -48,6 +48,11 @@ public class GameStartService {
 	private final CompanyRepository companyRepository;
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
+	/**
+	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
+	 * @param gameSettings
+	 * @return
+	 */
 	@Transactional
 	public Map<String, Object> settingGame(GameSettings gameSettings) {
 		// 주식방 만들기
@@ -86,28 +91,33 @@ public class GameStartService {
 
 		return gameRoomsRes;
 
-
-		// 맴버 가져와서 주식방 게이머 에 할당하기
-
 	}
 
-	// 이걸 게임 리퀘스트로 해야지? 기업도 하나만 하면되지?
+	/**
+	 * 테마 검사
+	 * 요청 받은 테마 구분해 실제 디비 데이터 검사진행
+	 * 지정한 턴수 에 비해 데이터가 있는지 검사하는 함수
+	 * @param gameSettings
+	 * @param gameStockIds
+	 */
 	private void checkThemeRange(GameSettings gameSettings, List<String> gameStockIds) {
-		log.info("checkThemeRange" + gameSettings.getTurnPerTime().getTime());
 		if (gameSettings.getTurnPerTime().getTime().equals("WEEK")) {
-			log.info("테마 위크 체크 시작");
 			checkWeek(gameSettings, gameStockIds);
 		}
 		if (gameSettings.getTurnPerTime().getTime().equals("MONTH")) {
-			log.info("테마 한달 체크 시작");
 			checkMonthRange(gameSettings, gameStockIds);
 		}
 		if (gameSettings.getTurnPerTime().getTime().equals("DAY")) {
-			log.info("테마 데이 체크 시작");
 			checkDayRange(gameSettings, gameStockIds);
 		}
 	}
 
+	/**
+	 * 유저 모드 검사
+	 * 요청 받은 유져 모드 의 설정 (총턴수 시작일) 보고 데이터가 있는지 검사진행
+	 * @param gameSettings
+	 * @param gameStockIds
+	 */
 	private void checkRangeValid(GameSettings gameSettings, List<String> gameStockIds) {
 		if (gameSettings.getTheme().getTheme().equals("USER")) {
 			// day 일때 데이터가 있는지 체크
@@ -125,10 +135,17 @@ public class GameStartService {
 		}
 	}
 
-	private void checkMonthRange(GameSettings requestSettingGame, List<String> gameStockIds) {
+	/**
+	 * 달 단위 일때
+	 * 총 턴수에 해당되는 데이터가 있는지 검사
+	 * 안되면 BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 * @param gameSettings
+	 * @param gameStockIds
+	 */
+	private void checkMonthRange(GameSettings gameSettings, List<String> gameStockIds) {
 		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(
-			requestSettingGame.getStartDateTime(),
-			requestSettingGame.getTotalTurn());
+			gameSettings.getStartDateTime(),
+			gameSettings.getTotalTurn());
 		for (MonthRange monthRange : monthRanges) {
 			LocalDateTime monthStart = monthRange.getFirstDay();
 			LocalDateTime monthEnd = monthRange.getLastDay();
@@ -142,6 +159,13 @@ public class GameStartService {
 		}
 	}
 
+	/**
+	 * 일 별 단위일때
+	 * 총 턴수에 해당되는 데이터가 있는지 검사
+	 * 안되면 BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 * @param gameSettings
+	 * @param gameStockIds
+	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
 		List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
@@ -152,8 +176,14 @@ public class GameStartService {
 		}
 	}
 
+	/**
+	 * 일단위 일때
+	 * checkWeek 주단위를 보았을때 데이터가 없다면
+	 * throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 * @param gameSettings
+	 * @param gameStockIds
+	 */
 	private void checkWeek(GameSettings gameSettings, List<String> gameStockIds) {
-
 		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(
 			gameSettings.getStartDateTime(),
 			gameSettings.getTotalTurn());
@@ -170,6 +200,11 @@ public class GameStartService {
 		}
 	}
 
+	/**
+	 * gameStock 데이터 INSERT
+	 * @param companyList
+	 * @param gamers
+	 */
 	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
 		// 게이머가 가진 주식 할당하기
 		// 게임 스톡을 만들면서 게이머를 할당해야한다
@@ -182,6 +217,13 @@ public class GameStartService {
 		}
 	}
 
+	/**
+	 * 맴버 조회 해서 Gamer 데이터 INSERT
+	 * @param newGameRoom
+	 * @param getMemberId
+	 * @param gamers
+	 * @param gamersIdList
+	 */
 	private void buildGamerFromMember(GameRoom newGameRoom, List<Member> getMemberId, List<Gamer> gamers,
 		List<Map> gamersIdList) {
 		for (Member member : getMemberId) {
@@ -201,6 +243,13 @@ public class GameStartService {
 		}
 	}
 
+	/**
+	 * 랜덤 회사 가져와서
+	 * Company 테이블 INSERT
+	 * @param newGameRoom
+	 * @param pageable
+	 * @return
+	 */
 	private List<Company> buildCompanies(GameRoom newGameRoom, Pageable pageable) {
 		Page<Company> randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
 		List<Company> companyList = randomCompaniesPage.getContent();
@@ -215,8 +264,12 @@ public class GameStartService {
 		return companyList;
 	}
 
+	/**
+	 * 설정을 받고 gameRoom table 에 할당
+	 * @param gameSettings
+	 * @return
+	 */
 	private GameRoom buildGameRoom(GameSettings gameSettings) {
-		log.info("buildGameRoom gameSettings" + gameSettings.getStartDateTime());
 		GameRoom newGameRoom = GameRoom.builder()
 			.roomId(UUID.randomUUID().toString())
 			.turnPerTime(gameSettings.getTurnPerTime())
