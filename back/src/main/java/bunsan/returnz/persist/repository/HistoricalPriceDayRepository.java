@@ -11,7 +11,7 @@ import bunsan.returnz.persist.entity.HistoricalPriceDay;
 
 public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPriceDay, Long> {
 	@Query(value = "SELECT * FROM historical_price_day h\n"
-		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
+		+ "WHERE h.date_time < :dateTime AND h.company_code = :companyCode\n"
 		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 20", nativeQuery = true)
 	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit20(LocalDateTime dateTime,
