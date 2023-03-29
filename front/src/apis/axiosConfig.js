@@ -1,4 +1,7 @@
 import axios from 'axios';
+import StompJs from 'stompjs';
+import SockJs from 'sockjs-client';
+import Stomp from 'webstomp-client';
 
 // const BASE_URL = 'https://localhost:8080/api';
 const BASE_URL = 'http://j8c106.p.ssafy.io/api';
@@ -15,6 +18,17 @@ const openApi = axios.create({
 // const wsApi = axios.create();
 // wsApi.defaults.baseURL = 'http://j8c106.p.ssafy.io:8188/ws';
 // wsApi.defaults.baseURL = 'http://192.168.100.175:8080/ws';
+// const wsApi = axios.create({
+//   baseURL: 'http://j8c106.p.ssafy.io:8188/ws',
+// });
+// const sock = new SockJs(wsApi);
+// // const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+// const options = {
+//   debug: false,
+//   protocols: Stomp.VERSIONS.supportedProtocols(),
+// };
+// // client 객체 생성 및 서버주소 입력
+// const stomp = StompJs.over(sock, options);
 
 // 로그인 후 사용할 api (프사수정, 닉수정)
 const authApi = axios.create({
