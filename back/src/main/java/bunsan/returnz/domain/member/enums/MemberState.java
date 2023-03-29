@@ -1,8 +1,8 @@
 package bunsan.returnz.domain.member.enums;
 
 public enum MemberState {
-	OFFLINE("OFFLINE"),
-	ONLINE("ONLINE"),
+	OFFLINE("OFF"),
+	ONLINE("ON"),
 	BUSY("BUSY");
 	private final String code;
 
