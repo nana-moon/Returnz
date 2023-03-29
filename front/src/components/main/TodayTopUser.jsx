@@ -23,7 +23,7 @@ const TopUserContainer = styled.div`
 `;
 
 const TopUserBox = styled.div`
-  ${tw``}
+  ${tw`w-[100%] h-[100%]`}
 `;
 
 const TopUserTitle = styled.div`

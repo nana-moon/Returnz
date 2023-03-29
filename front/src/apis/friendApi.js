@@ -1,16 +1,16 @@
-import { axios } from './axiosConfig';
+import { authApi } from './axiosConfig';
 
-const friendRequest = (payload) => {
-  return axios
-    .post('members/friends/request', payload)
+const getFriendRequests = () => {
+  return authApi
+    .get('requests')
     .then((res) => {
-      console.log('친구신청 성공', res);
+      console.log('친구리스트겟 성공', res);
       return res;
     })
     .catch((err) => {
-      console.log('친구신청 실패', err);
+      console.log('친구리스트겟 실패', err);
       return err;
     });
 };
 
-export { friendRequest };
+export { getFriendRequests };
