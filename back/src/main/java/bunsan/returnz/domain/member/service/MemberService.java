@@ -105,4 +105,9 @@ public class MemberService {
 		resultMembers.forEach(member -> memberList.add(new FriendInfo(member)));
 		return memberList;
 	}
+
+	public Member getMemberbyId(Long id) {
+		return memberRepository.findById(id)
+			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
+	}
 }
