@@ -38,6 +38,7 @@ export default function WaitingPage() {
     setIsUserSetting(!isUserSetting);
   };
   const getTheme = (data) => {
+    console.log(data);
     const newData = { ...setting, theme: data };
     setSetting(newData);
   };
@@ -47,6 +48,7 @@ export default function WaitingPage() {
 
   useEffect(() => {
     const isValid = () => {
+      console.log(setting, '왜 안나오지...?');
       if (setting.theme === null) {
         return false;
       }
