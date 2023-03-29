@@ -230,7 +230,7 @@ public class GameStartService {
 			Gamer gamer = Gamer.builder()
 				.memberId(member.getId())
 				.gameRoom(newGameRoom)
-				.deposit(100000000)
+				.deposit(10000000)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
 				.build();
