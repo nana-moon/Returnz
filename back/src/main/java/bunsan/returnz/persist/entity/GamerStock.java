@@ -47,10 +47,16 @@ public class GamerStock {
 		// 평균단가 : 전체 가격 / 보유 수
 		if (gamerStock.getTotalCount() == 0) {
 			gameGamerStockDto.setAveragePrice(0);
+		} else {
+			gameGamerStockDto.setAveragePrice(gamerStock.getTotalAmount() / gamerStock.getTotalCount());
 		}
 		// 평가손익 : (보유 수 * 평균단가) - 총 가격
 		gameGamerStockDto.setValuation((gameGamerStockDto.getTotalCount() * gameGamerStockDto.getAveragePrice())
 			- gameGamerStockDto.getTotalAmount());
+
+		if (gameGamerStockDto.getAveragePrice() == 0) {
+			gameGamerStockDto.setProfitRate(0.0);
+		}
 
 		return gameGamerStockDto;
 	}
