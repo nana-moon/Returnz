@@ -58,10 +58,13 @@ public class GameStartService {
 	@Transactional
 	public Map<String, Object> settingGame(GameSettings gameSettings) {
 		// 주식방 만들기
+		log.info("before gameSetting startTime: " + gameSettings.getStartTime());
 		gameSettings.setThemeTotalTurnTime();
 		GameRoom newGameRoom = buildGameRoom(gameSettings);
+		log.info("before gameSetting startTime: " + gameSettings.getStartTime());
 		// 랜덤 주식 가져와서 할당하기
 		Pageable pageable = PageRequest.of(0, 10);
+		gameSettings.setStartTime(gameSettings.convertThemeStartDateTime().toLocalDate());
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
 		List<String> gameStockIds = new ArrayList<>();
 		// 아이디만 뽑아낸 리스트
@@ -277,6 +280,18 @@ public class GameStartService {
 			.build();
 		GameRoom save = gameRoomRepository.save(newGameRoom);
 		return save;
+	}
+
+
+	public void setNewsList(GameSettings gameSettings){
+		// 턴당 시간에 따라 달라진다.
+		// gameSettings 은 방 빌드 이후 에는 정보가 다 기록 되어 있나?
+		log.info("게임 세팅 유지 되는지 확인 턴당 시간: "+gameSettings.getTurnPerTime().getTime());
+		log.info("게임 세팅 유지 되는지 확인 시작일: "+gameSettings.getStartTime());
+	}
+	private void getNewsList(LocalDateTime startDate, LocalDateTime endDate){
+		//여기서 해야하는것
+		//시작일 끝일을 잡고
 	}
 
 }
