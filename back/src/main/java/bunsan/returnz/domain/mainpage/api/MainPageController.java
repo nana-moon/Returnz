@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.mainpage.dto.RankDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
 import bunsan.returnz.domain.mainpage.service.MainPageService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,10 @@ public class MainPageController {
 		return ResponseEntity.ok(Map.of("todayWordList", requestDtoList));
 	}
 
+	@GetMapping("/api/user-ranks")
+	public ResponseEntity<Map> getUserRanks() {
+		List<RankDto> requestDtoList = mainPageService.getUserRanks();
+		return ResponseEntity.ok(Map.of("userRank", requestDtoList));
+	}
 
 }
