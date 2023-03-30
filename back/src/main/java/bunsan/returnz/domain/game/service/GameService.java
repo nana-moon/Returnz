@@ -82,18 +82,18 @@ public class GameService {
 		// 3. 나의 현재 보유 종목
 		turnInformation.put("gamerStock", gamerStockService.findAllByGamer_Id(gamerId));
 
-		// 4. 다음 턴 정보 업데이트
-		if (!updateTurnInformation(gameStockDtoList.get(0).getCompanyCode(), roomId,
-			gameRoomDto)) {
-			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
-		}
-
 		// 6. 주가 정보
 		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
 
 		//  7. 첫턴일 떄만 종목 디테일 정보 제공
 		if (gameRoomDto.getCurTurn() == 0) {
 			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
+		}
+
+		// 4. 다음 턴 정보 업데이트
+		if (!updateTurnInformation(gameStockDtoList.get(0).getCompanyCode(), roomId,
+			gameRoomDto, gameStockDtoList)) {
+			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
 
 		return turnInformation;
@@ -145,26 +145,26 @@ public class GameService {
 			if (gameHistoricalPriceDayDtos.size() != 6) {
 				throw new NotFoundException(curDate + "부터 5일 전의 주가 정보를 찾을 수 없습니다.");
 			} else {
-				for (int x = 1; x < gameHistoricalPriceDayDtos.size(); ++x) {
+				for (int x = gameHistoricalPriceDayDtos.size() - 2; x >= 0; --x) {
 					// 주가 정보 생성
 					GameStockPriceInformationDto gameStockPriceInformationDto = GameStockPriceInformationDto.builder()
-						.historyDate(x)
+						.historyDate(x + 1)
 						.historyPrice(Double.parseDouble(
 							String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose()))))
 						.historyDiff(
 							Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
 								- Double.parseDouble(String.format(".2f", Double.parseDouble(
-								gameHistoricalPriceDayDtos.get(x - 1).getClose()))))
+								gameHistoricalPriceDayDtos.get(x + 1).getClose()))))
 						.historyUpAndDown(
 							Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
 								- Double.parseDouble(String.format(".2f", Double.parseDouble(
-								gameHistoricalPriceDayDtos.get(x - 1).getClose()))) > 0
+								gameHistoricalPriceDayDtos.get(x + 1).getClose()))) > 0
 								? (Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
 								- Double.parseDouble(String.format("%.2f", Double.parseDouble(
-								gameHistoricalPriceDayDtos.get(x - 1).getClose()))) == 0 ? StockState.STAY :
+								gameHistoricalPriceDayDtos.get(x + 1).getClose()))) == 0 ? StockState.STAY :
 								StockState.UP) :
 								StockState.DOWN)
 						.volume(Long.parseLong(gameHistoricalPriceDayDtos.get(x).getVolume()))
@@ -189,19 +189,35 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
 	 */
-	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto) {
+	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto,
+		List<GameStockDto> gameStockDtoList) {
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, companyCode);
+		LocalDateTime nextDay = gameHistoricalPriceDayDto.getDateTime();
 
 		if (gameRoomDto.getCurTurn() == 0) {
-			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+			return gameRoomService.updateGameTurn(nextDay, roomId);
 		}
 
 		// TODO : 다음 턴 정보를 주기 전, update된 유저 정보를 줘야 한다.
-		// "gamer" Table의 "total_evaluation_amount"를 update 해야 한다.
+		// 게임 방 정보 업데이트
+		gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+		// gameHistoricalPriceDayDto.getDateTime()은 다음 날
+		// 다음날의 정보를 바탕으로
 		// "gamer_stock" Table의 정보를 update 해야 한다.
+		// "gamer" Table의 "total_evaluation_amount"를 update 해야 한다.
+
+		Integer totalEvaluationStock = 0;
+		for (int i = 0; i < gameStockDtoList.size(); ++i) {
+			Double stockPrice = getStockPrice(roomId, companyCode); // 업데이트 된 날짜 정보를 바탕으로 가격을 구한다.
+
+			// 가격이 0이 아닐때만 수행 (0인 경우, 주식 코드에 해당하는 데이터가 없음)
+			if (stockPrice != 0) {
+
+			}
+		}
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
@@ -390,8 +406,10 @@ public class GameService {
 			GameGamerStockDto gameGamerStockDto =
 				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 
+			// "gamer" Table update
 			// depostit 차감
 			Integer deposit = (int)(gameGamerDto.getDeposit() - stockClosePrice * amount);
+			//
 			gamerService.updateDeposit(gamerId, deposit);
 
 			// TODO : Stock 수량 증가, Stock 관련 정보 업데이트

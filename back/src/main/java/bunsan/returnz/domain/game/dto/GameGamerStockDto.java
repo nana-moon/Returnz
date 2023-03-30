@@ -23,6 +23,8 @@ public class GameGamerStockDto {
 	private Double averagePrice; // 평균 단가
 	private Double valuation; // 평가손익
 	private Double profitRate; // 손익비율
+	private String logo;
+	private String companyName;
 
 	// public GamerStock toEntity(GameGamerStockDto){
 	// 	return GamerStock.builder()

@@ -38,6 +38,7 @@ public class GamerStock {
 	@Builder.Default
 	private Double valuation = 0.0;
 
+	@Builder.Default
 	private Double profitRate = 0.0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
