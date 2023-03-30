@@ -29,6 +29,7 @@ public class Gamer {
 	private Long memberId;
 	private String username;
 	private String userNickname;
+	private Integer deposit;
 	private Integer originDeposit;
 	@Builder.Default
 	private Integer totalBuyAmount = 0;
