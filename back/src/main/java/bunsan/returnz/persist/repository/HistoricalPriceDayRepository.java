@@ -42,6 +42,19 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 
 	Optional<HistoricalPriceDay> findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode);
 
+
+	// 유니크한 날을 가져온다
+	@Query(value =
+		"SELECT DISTINCT h.dateTime FROM HistoricalPriceDay h WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds"
+			+ " ORDER BY h.dateTime ASC")
+	List<LocalDateTime> findDistinctDatesAfter(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds, Pageable pageable);
+	// 날을 기반으로 데이터를 가져온다.
+	@Query(value = "SELECT h FROM HistoricalPriceDay h WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds"
+		+ " ORDER BY h.dateTime ASC")
+	List<HistoricalPriceDay> findAllByDateAndStockIds(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds);
+
 	// day
 	// week
 	//month 별 턴처리 필요
