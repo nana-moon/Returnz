@@ -22,6 +22,7 @@ public class GameRoomService {
 
 	public GameRoomDto findByRoomId(String roomId) {
 		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByRoomId(roomId);
+
 		// TODO: gameRoom이 비어있을 때 에러 반환 / 또는 개수가 적은 경우
 		// if(gameRoom.isEmpty())
 		GameRoom gameRoom = new GameRoom();

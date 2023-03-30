@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,17 +30,27 @@ public class GamerStock {
 	@Column(name = "COMPANY_CODE")
 	private String companyCode;
 	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Integer totalCount = 0;
 	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Integer totalAmount = 0;
 
 	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Double averagePrice = 0.0;
 
 	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Double valuation = 0.0;
 
 	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Double profitRate = 0.0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -50,12 +62,20 @@ public class GamerStock {
 			.id(gamerStock.getId())
 			.companyCode(gamerStock.getCompanyCode())
 			.totalCount(gamerStock.getTotalCount())
-			.totalAmount(gamerStock.getTotalAmount())
 			.gamerId(gamerStock.getGamer().getId())
+			.totalAmount(gamerStock.getTotalAmount())
 			.averagePrice(gamerStock.getAveragePrice())
 			.valuation(gamerStock.getValuation())
 			.profitRate(gamerStock.getProfitRate())
 			.build();
+	}
+
+	public boolean updateDto(GameGamerStockDto gameGamerStockDto) {
+		this.totalAmount = gameGamerStockDto.getTotalAmount();
+		this.averagePrice = gameGamerStockDto.getAveragePrice();
+		this.valuation = gameGamerStockDto.getValuation();
+		this.profitRate = gameGamerStockDto.getProfitRate();
+		return true;
 	}
 
 	public boolean updateBuyStockCount(Integer count, Double price) {

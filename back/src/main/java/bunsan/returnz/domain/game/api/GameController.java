@@ -12,13 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
-import bunsan.returnz.domain.game.dto.GameGamerDto;
-import bunsan.returnz.domain.game.dto.GameGamerStockDto;
-import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRequestBody;
-import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
-import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.service.GameCompanyDetailService;
@@ -75,18 +70,17 @@ public class GameController {
 
 	}
 
-	@PostMapping("/buy-sell")
-	public ResponseEntity<?> buySellRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
+	@PostMapping("/purchases")
+	public ResponseEntity<?> purchasesRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
+		return new ResponseEntity<>(gameService.buyStock(gameBuySellRequestBody), HttpStatus.OK);
+	}
 
-		// gameService.getExchangeInterest(gameBuySellRequestBody.get);
+	@PostMapping("/sales")
+	public ResponseEntity<?> salesRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
 
-		// if (gameBuySellRequestBody == null) {
-		// 	throw new BadRequestException("잘못된 매수/ 매도 요청입니다.");
-		// }
-		//
-		// gameService.buyStock()
-		// return null;
-		return null;
+		gameService.buyStock(gameBuySellRequestBody);
+
+		return new ResponseEntity<>(gameService.buyStock(gameBuySellRequestBody), HttpStatus.OK);
 	}
 
 	@PostMapping("/init")

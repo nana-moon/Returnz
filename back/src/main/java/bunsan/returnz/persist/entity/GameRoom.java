@@ -18,12 +18,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class GameRoom {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,13 +47,13 @@ public class GameRoom {
 
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()
-			.id(gameRoom.id)
-			.roomId(gameRoom.roomId)
-			.curTurn(gameRoom.curTurn)
-			.totalTurn(gameRoom.totalTurn)
-			.curDate(gameRoom.curDate)
-			.turnPerTime(gameRoom.turnPerTime)
-			.roomMemberCount(gameRoom.roomMemberCount)
+			.id(gameRoom.getId())
+			.roomId(gameRoom.getRoomId())
+			.curTurn(gameRoom.getCurTurn())
+			.totalTurn(gameRoom.getTotalTurn())
+			.curDate(gameRoom.getCurDate())
+			.turnPerTime(gameRoom.getTurnPerTime())
+			.roomMemberCount(gameRoom.getRoomMemberCount())
 			.build();
 	}
 
