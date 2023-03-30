@@ -7,14 +7,12 @@ const userLogin = (payload) => {
   return axios
     .post('members/login', payload)
     .then((res) => {
-      console.log('로그인 성공', res.data);
       const token = res.data.accessToken;
       const refreshToken = res.data.refreshToken;
 
       // accessToken을 Decoding을 통해 데이터 조회
       const decodedToken = jwtDecode(token);
       console.log(decodedToken);
-
       Cookies.set('access_token', `Bearer ${token}`);
       Cookies.set('refresh_token', `Bearer ${refreshToken}`);
       Cookies.set('email', decodedToken.username);
@@ -25,7 +23,6 @@ const userLogin = (payload) => {
       // 로그인 성공했을 때 쿠키에 데이터 저장
     })
     .catch((err) => {
-      console.log('로그인 실패', err);
       return err.response.data.message;
     });
 };
@@ -34,11 +31,9 @@ const userSignup = (payload) => {
   return axios
     .post('members/signup', payload)
     .then((res) => {
-      console.log('회원가입 성공', res);
       return true;
     })
     .catch((err) => {
-      console.log('회원가입 실패', err);
       return err.response.data.message;
     });
 };

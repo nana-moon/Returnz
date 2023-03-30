@@ -24,7 +24,7 @@ export default function UserProfile() {
           shadow={false}
           className="mx-2 flex items-center gap-4 pt-0 pb-4"
         >
-          <Avatar size="lg" variant="circular" src={picPath} />
+          <Avatar size="xl" variant="circular" src={picPath} className="border-2 border-negative" />
           <MyInfoBox>
             <UsernameContent>{myNick}</UsernameContent>
             <ProfileChangeButton onClick={handleModal}>프로필 수정하러 가기</ProfileChangeButton>

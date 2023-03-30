@@ -9,7 +9,6 @@ export const EditModal = createSlice({
   reducers: {
     handleModalState: (state, action) => {
       // 여기서 api 함수 임포트해서 axios요청 가능
-      console.log('들어왔니', state);
       state.editModalState = action.payload;
     },
   },

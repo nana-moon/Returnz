@@ -11,32 +11,39 @@ export default function IncomingFriendRequests({ friendReq }) {
     declineFriendRequestApi(friendReq.requestId);
   };
   return (
-    <ReceivedFriendRequestContainer>
+    <RequestContainer>
+      <Avatar
+        size="md"
+        variant="circular"
+        src={`profile_pics/${friendReq.profileIcon}.jpg`}
+        className="my-auto border-2 border-negative "
+      />
       <RequestBox>
-        <Avatar size="md" variant="circular" src={`profile_pics/${friendReq.profileIcon}.jpg`} />
         <RequestNickname>{friendReq.nickname}</RequestNickname>
-        <AcceptButton onClick={acceptRequest}>수락</AcceptButton>
-        <DeclineButton onClick={declineRequest}>거절</DeclineButton>
+        <ButtonsContainer>
+          <AcceptButton onClick={acceptRequest}>수락</AcceptButton>
+          <DeclineButton onClick={declineRequest}>거절</DeclineButton>
+        </ButtonsContainer>
       </RequestBox>
-    </ReceivedFriendRequestContainer>
+    </RequestContainer>
   );
 }
 
-const ReceivedFriendRequestContainer = styled.div`
-  ${tw``}
+const RequestContainer = styled.div`
+  ${tw`flex py-2 pl-2 `}
 `;
 
 const RequestBox = styled.div`
-  ${tw`flex p-2 gap-1`}
+  ${tw`w-[100%]`}
 `;
 
 const RequestNickname = styled.div`
-  ${tw`text-xl my-auto mx-3`}
+  ${tw`text-lg my-auto ml-3`}
 `;
 
-// const ButtonsBox = styled.div`
-//   ${tw`flex gap-2`}
-// `;
+const ButtonsContainer = styled.div`
+  ${tw`flex ml-5 gap-4 mt-1`}
+`;
 
 const AcceptButton = styled.div`
   ${tw`text-white bg-primary hover:bg-dprimary focus:ring-4 focus:outline-none focus:ring-cyan-100 font-bold rounded-lg px-2 py-1 text-center my-auto`}

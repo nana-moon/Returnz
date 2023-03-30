@@ -1,7 +1,4 @@
 import axios from 'axios';
-import StompJs from 'stompjs';
-import SockJs from 'sockjs-client';
-import Stomp from 'webstomp-client';
 import Cookies from 'js-cookie';
 
 // const BASE_URL = 'https://localhost:8080/api';
