@@ -16,7 +16,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    staleTime: 10000000,
   });
   const { data: exchangeKrJp } = useQuery({
     queryKey: ['exchangeKrJp'],
@@ -24,7 +24,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    staleTime: 10000000,
   });
   const { data: exchangeKrEu } = useQuery({
     queryKey: ['exchangeKrEu'],
@@ -32,7 +32,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    staleTime: 10000000,
   });
 
   const { data: exchangeKrBit } = useQuery({
@@ -46,7 +46,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    staleTime: 10000000,
   });
   const { data: oilPrice } = useQuery({
     queryKey: ['getOilPrice'],
@@ -54,14 +54,13 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    staleTime: 6000000,
   });
-
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
         <StockTitle>미국 달러 환율</StockTitle>
-        <StockPrice>{exchangeKrUs?.['5. Exchange Rate']}</StockPrice>
+        <StockPrice>{parseFloat(exchangeKrUs?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       {/* <TodayPriceItem>
         <StockTitle>
@@ -71,19 +70,19 @@ export default function TodayPrice() {
       </TodayPriceItem> */}
       <TodayPriceItem>
         <StockTitle>일본 엔 환율</StockTitle>
-        <StockPrice>{exchangeKrJp?.['5. Exchange Rate']}</StockPrice>
+        <StockPrice>{(parseFloat(exchangeKrJp?.['5. Exchange Rate']) * 100).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
         <StockTitle>유럽 유로 환율</StockTitle>
-        <StockPrice>{exchangeKrEu?.['5. Exchange Rate']}</StockPrice>
+        <StockPrice>{parseFloat(exchangeKrEu?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
         <StockTitle>비트코인 현재가</StockTitle>
-        <StockPrice>{exchangeKrBit?.['5. Exchange Rate']}</StockPrice>
+        <StockPrice>{parseFloat(exchangeKrBit?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
-        <StockTitle> {oilPrice?.date} 원유 가격</StockTitle>
-        <StockPrice>{oilPrice?.value}</StockPrice>
+        <StockTitle> 원유 가격</StockTitle>
+        <StockPrice>${oilPrice?.value}</StockPrice>
       </TodayPriceItem>
     </TodayPriceContainer>
   );

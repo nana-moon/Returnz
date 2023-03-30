@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, Component } from 'react';
 import tw, { styled } from 'twin.macro';
 import TodayTopUserItem from './Items/TodayTopUserItem';
 import wordDummy from './todayWordDummy';

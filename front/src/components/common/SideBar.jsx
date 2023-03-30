@@ -19,7 +19,15 @@ import { getFriendRequestsApi } from '../../apis/friendApi';
 // import { stomp } from '../../apis/axiosConfig';
 
 export default function SideBar() {
+  // 내정보
+  const myToken = Cookies.get('access_token');
+  const myMail = Cookies.get('email');
+  // 내 친구
   const [friendList, setfriendList] = useState();
+  // 내가 친구 추가하고싶은 사람
+  const [newFriendNickname, setNewFriendNickname] = useState('');
+  const onChange = (e) => setNewFriendNickname(e.target.value);
+  // 웹소켓
   const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
   const options = {
     debug: false,
@@ -28,10 +36,6 @@ export default function SideBar() {
   // client 객체 생성 및 서버주소 입력
   const stomp = StompJs.over(sock, options);
   // stomp로 감싸기
-  const myToken = Cookies.get('access_token');
-  const myMail = Cookies.get('email');
-  const onChange = (e) => setfriendNickname(e.target.value);
-  const [friendNickname, setfriendNickname] = useState('');
   // const { data: friendList } = useQuery({
   //   queryKey: ['friendRequests'],
   //   queryFn: () => getFriendRequests(),
@@ -44,7 +48,7 @@ export default function SideBar() {
     JSON.stringify({
       type: 'FRIEND',
       messageBody: {
-        username: `${friendNickname}`,
+        username: `${newFriendNickname}`,
       },
     });
   };
@@ -65,8 +69,9 @@ export default function SideBar() {
               `/user/sub/side-bar`,
               (data) => {
                 const newMessage = JSON.parse(data.body);
+                console.log(newMessage, '이게뭔데;');
                 const newFriend = newMessage.messageBody.friendList;
-                console.log(newFriend);
+                console.log(newFriend, '나의 칭구칭긔');
                 setfriendList(newFriend);
                 // 데이터 파싱
               },
@@ -150,7 +155,7 @@ export default function SideBar() {
     <SideBarContainer>
       <UserProfile />
       <FriendRequestsContainer>
-        {friendRequests?.length > 0 ? <SectionTitle>친구요청을 받아주세요</SectionTitle> : null}
+        {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
         {friendRequests?.map((friendReq) => {
           return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
         })}
@@ -166,7 +171,7 @@ export default function SideBar() {
           type="text"
           label="닉네임을 검색하세요"
           color="cyan"
-          value={friendNickname}
+          value={newFriendNickname}
           onChange={onChange}
           className="bg-input"
         />
@@ -186,7 +191,7 @@ const FriendRequestsContainer = styled.div`
   ${tw`border-b-2`}
 `;
 const SectionTitle = styled.div`
-  ${tw`bg-negative text-center`}
+  ${tw`bg-dprimary text-white pl-4 font-bold `}
 `;
 const FriendListContainer = styled.div`
   ${tw``}
