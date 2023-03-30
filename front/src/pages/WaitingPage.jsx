@@ -1,33 +1,50 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { startGameApi, gameDataApi } from '../apis/gameApi';
+import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { startGameApi, gameDataApi } from '../apis/gameApi';
-import { getIsHost } from '../store/myroominfo/MyRoomInfo.selector';
+import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
+import NullListItem from '../components/waiting/NullListItem';
+import { setGamerId, setGameRoomId, setPlayerList, setRoomInfo } from '../store/roominfo/GameRoom.reducer';
+import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
+import { handleGetGameData } from '../store/gamedata/GameData.reducer';
 
 export default function WaitingPage() {
+  // hooks
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  // 방정보
+  // 대기자 state
+  const waiterList = useSelector(getWaiterList);
+  const gameRoomId = useSelector(getGameRoomId);
+  const gamerId = useSelector(getGamerId);
+
+  // 대기방 state
   const roomInfo = location.state;
-  console.log(roomInfo, '------');
+  console.log(roomInfo, '웨이팅페이지에서 출력중');
 
   // 방장 state
   const myEmail = Cookies.get('email');
   const myProfile = Cookies.get('profileIcon');
   const myNickname = Cookies.get('nickname');
-  const isHost = roomInfo.captainName === myEmail;
-  const newUser = { myProfile, myNickname };
-
-  // 대기자 state
-  const [userList, setUserList] = useState([{}, {}, {}, {}]);
+  const isHost = myEmail === roomInfo.captainName;
+  const newWaiter = { id: 1, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
+  const [initialDispatch, setInitialDispatch] = useState(false);
+  useEffect(() => {
+    if (!initialDispatch) {
+      dispatch(setWaiterList(newWaiter));
+      setInitialDispatch(true);
+    }
+  }, [dispatch, initialDispatch]);
 
   // 게임 설정 state
   const initial = {
@@ -69,22 +86,41 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  useEffect(() => {}, [isValidSetting]);
+  // useEffect(() => {}, [isValidSetting]);
 
-  // 게임 시작
+  // 게임 시작 action
   const handleStart = async (e) => {
     if (isValidSetting) {
-      const gameId = await startGameApi(setting);
-      const res = await gameDataApi(gameId);
+      const gameInit = await startGameApi(setting);
+      dispatch(setPlayerList(gameInit.gamerList));
+      dispatch(setGameRoomId(gameInit.roomId));
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.userName === 'ssafy');
+      dispatch(setGamerId(myGameInfo.gamerId));
+      const turnReq = {
+        gamerId: myGameInfo.gamerId,
+        roomId: gameInit.roomId,
+      };
+      const gameData = await gameDataApi(turnReq);
+      console.log('gameData', gameData);
+      dispatch(handleGetGameData(gameData.Stocks));
       navigate('/game');
     }
   };
 
+  // 게임 나가기 action
+  const handleBack = () => {
+    dispatch(removeWaiterList());
+  };
   return (
     <WaitingContainer>
       <WaitingListSection>
-        {userList.map((user) => {
-          return <WaitingListItem key={user.id} user={user} />;
+        {Array.from({ length: 4 }).map((_, i) => {
+          if (i < waiterList.length) {
+            console.log(i, waiterList[i]);
+            return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
+          }
+          // eslint-disable-next-line react/no-array-index-key
+          return <NullListItem key={i} />;
         })}
       </WaitingListSection>
       <SettingSection>
@@ -100,7 +136,7 @@ export default function WaitingPage() {
                 시작하기
               </StartButton>
             )}
-            <BackButton to="/" className="bg-[#E19999] hover:bg-[#976161]">
+            <BackButton to="/" onClick={handleBack} className="bg-[#E19999] hover:bg-[#976161]">
               나가기
             </BackButton>
           </BtnBox>

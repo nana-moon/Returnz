@@ -1,21 +1,15 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { Link, useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import { makeRoomApi } from '../../apis/gameApi';
-import { setRoomInfo, setIsHost } from '../../store/myroominfo/MyRoomInfo.reducer';
 
 export default function TopButtons() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  // 방만들기 - 방정보 받아오기
+  // 대기방 만들고 방정보 전달하기
   const handleMakeRoom = async () => {
-    const roomInfo = await makeRoomApi();
-    await dispatch(setIsHost(true));
-    await dispatch(setRoomInfo(roomInfo));
-    navigate('/waiting', { state: roomInfo });
+    const waitRoomInfo = await makeRoomApi();
+    navigate('/waiting', { state: waitRoomInfo });
   };
   return (
     <ButtonsContainer>
