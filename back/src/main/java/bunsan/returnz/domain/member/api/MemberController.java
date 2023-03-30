@@ -9,15 +9,18 @@ import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.member.dto.LoginRequest;
+import bunsan.returnz.domain.member.dto.NewNicknameDto;
 import bunsan.returnz.domain.member.dto.SignupRequest;
 import bunsan.returnz.domain.member.service.MemberService;
 import bunsan.returnz.global.auth.dto.TokenInfo;
@@ -54,6 +57,15 @@ public class MemberController {
 	public ResponseEntity findByNickname(@RequestParam("nickname") String nickname) {
 		List<FriendInfo> memberList = memberService.findByNickname(nickname);
 		return ResponseEntity.ok().body(Map.of("memberList", memberList));
+	}
+
+	//---------------------------------------닉네임 변경-----------------------------------------
+	@PatchMapping
+	public ResponseEntity changeNickname(@RequestHeader("Authorization") String bearerToken,
+		@RequestBody @Valid NewNicknameDto newNicknameDto) {
+		String token = bearerToken.substring(7);
+		memberService.changeNickname(token, newNicknameDto.getNewNickname());
+		return ResponseEntity.ok().body(Map.of("result", "success"));
 	}
 
 }

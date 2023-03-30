@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
 import bunsan.returnz.global.advice.exception.NotFoundException;
@@ -51,8 +52,8 @@ public class WaitService {
 		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
 			.orElseThrow(() -> new NotFoundException("해당 대기방을 찾을 수 없습니다."));
 
-		// 상태 조회 및 변경
-		sideBarService.checkOnline(member);
+		// 온라인인지 확인 후 변경
+		sideBarService.checkState(member, MemberState.ONLINE);
 
 		// 평균 수익률 계산
 		// double avgProfit = (double)member.getAccumulatedReturn() / member.getGameCount() * 100;
