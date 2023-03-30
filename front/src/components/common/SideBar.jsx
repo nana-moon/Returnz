@@ -14,14 +14,13 @@ import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
 // import FriendSearchInput from './SideBar/FriendSearchInput';
 import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
-import { getFriendRequests } from '../../apis/friendApi';
+import { getFriendRequestsApi } from '../../apis/friendApi';
 
 // import { stomp } from '../../apis/axiosConfig';
 
 export default function SideBar() {
   const [friendList, setfriendList] = useState();
   const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-
   const options = {
     debug: false,
     protocols: Stomp.VERSIONS.supportedProtocols(),
@@ -42,14 +41,12 @@ export default function SideBar() {
   //   staleTime: 1000000,
   // });
   const handleFriendRequest = () => {
-    console.log(friendNickname);
-    const res = JSON.stringify({
+    JSON.stringify({
       type: 'FRIEND',
       messageBody: {
         username: `${friendNickname}`,
       },
     });
-    return res;
   };
 
   useEffect(() => {
@@ -143,7 +140,7 @@ export default function SideBar() {
   // sendMessage();
   const { data: friendRequests } = useQuery({
     queryKey: ['friendRequests'],
-    queryFn: () => getFriendRequests(),
+    queryFn: () => getFriendRequestsApi(),
     onError: (e) => {
       console.log(e);
     },
@@ -152,8 +149,14 @@ export default function SideBar() {
   return (
     <SideBarContainer>
       <UserProfile />
-      {friendRequests.length > 0 ? <IncomingFriendRequests /> : null}
+      <FriendRequestsContainer>
+        {friendRequests?.length > 0 ? <SectionTitle>친구요청을 받아주세요</SectionTitle> : null}
+        {friendRequests?.map((friendReq) => {
+          return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
+        })}
+      </FriendRequestsContainer>
       <FriendListContainer>
+        {friendList?.length > 0 ? <SectionTitle>내 친구들</SectionTitle> : null}
         {friendList?.map((friend) => {
           return <FriendListItems friend={friend} key={friend.username} />;
         })}
@@ -179,6 +182,12 @@ const SideBarContainer = styled.div`
   ${tw`bg-white border-l-2 border-negative w-1/5`}
 `;
 
+const FriendRequestsContainer = styled.div`
+  ${tw`border-b-2`}
+`;
+const SectionTitle = styled.div`
+  ${tw`bg-negative text-center`}
+`;
 const FriendListContainer = styled.div`
   ${tw``}
 `;
