@@ -246,6 +246,7 @@ public class GameStartService {
 			Gamer gamer = Gamer.builder()
 				.memberId(member.getId())
 				.gameRoom(newGameRoom)
+				.deposit(DEFAULT_DEPOSIT)
 				.originDeposit(DEFAULT_DEPOSIT)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
