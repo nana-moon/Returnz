@@ -2,13 +2,15 @@ import { configureStore } from '@reduxjs/toolkit';
 import { test } from './TestFolder/Test.reducer';
 import { BuySellData } from './buysellmodal/BuySell.reducer';
 import { gamedata } from './gamedata/GameData.reducer';
-import { myRoomInfo } from './myroominfo/MyRoomInfo.reducer';
+import { waitRoom } from './roominfo/WaitRoom.reducer';
+import { gameRoom } from './roominfo/GameRoom.reducer';
 
 export const store = configureStore({
   reducer: {
     BuySell: BuySellData.reducer,
     gamedatas: gamedata.reducer,
-    userInfo: myRoomInfo.reducer,
+    waitRoom: waitRoom.reducer,
+    gameRoom: gameRoom.reducer,
     test: test.reducer,
   },
 });

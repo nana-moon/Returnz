@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { axios, authApi } from './axiosConfig';
 
 const makeRoomApi = async () => {
@@ -15,20 +14,23 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
-  const res = await axios.post('/games/init', payload);
-  console.log(res.data);
-  // 나인지 확인하고 roomId, gameId 저장하기
-  const myNickname = Cookies.get('nickname');
-  return res;
+  const res = await authApi.post('/games/init', payload);
+  return res.data;
 };
 
 const gameDataApi = (payload) => {
-  const gameData = axios.post('/games/game', payload);
-  console.log(gameData);
-  // 데이터 넣어주기
-  return gameData;
+  console.log(payload);
+  return authApi
+    .post('/games/game', payload)
+    .then((res) => {
+      console.log('데이터 가져오기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('데이터 가져오기 실패', err);
+      return err;
+    });
 };
-
 const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
