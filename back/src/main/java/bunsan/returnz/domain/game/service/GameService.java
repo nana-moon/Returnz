@@ -93,6 +93,11 @@ public class GameService {
 			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
 		}
 
+		// 첫 턴이 아닐 경우 수행, 해당 유저의 평가자산 다음날 정보로 업데이트
+		// if (gameRoomDto.getCurTurn() != 0) {
+		//
+		// }
+
 		// 4. 다음 턴 정보 업데이트
 		if (!updateTurnInformation(gameStockDtoList.get(0).getCompanyCode(), roomId,
 			gameRoomDto)) {
@@ -197,11 +202,6 @@ public class GameService {
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, companyCode);
-		LocalDateTime nextDay = gameHistoricalPriceDayDto.getDateTime();
-
-		if (gameRoomDto.getCurTurn() == 0) {
-			return gameRoomService.updateGameTurn(nextDay, roomId);
-		}
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
@@ -361,16 +361,12 @@ public class GameService {
 	}
 
 	/**
-	 * Description
-	 */
-
-	/**
 	 * Description : 주식 매수. (현재 작성 중)
 	 * @param gameBuySellRequestBody : 요청 시 body, gamerId, 주문 수량 count, 종목코드 comapnyCode, 방 번호 roomId를 담고 있다.
 	 * @return : 매수가 성공할 경우 True를 리턴한다. 이외에는 Error를 발생시킨다.
 	 */
 	@Transactional
-	public boolean buyStock(GameBuySellRequestBody gameBuySellRequestBody) {
+	public HashMap<String, Object> buyStock(GameBuySellRequestBody gameBuySellRequestBody) {
 
 		Long gamerId = gameBuySellRequestBody.getGamerId();
 		Integer count = gameBuySellRequestBody.getCount();
@@ -388,6 +384,8 @@ public class GameService {
 			= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 			gameRoomDto.getCurDate(),
 			companyCode);
+
+		log.info(gameHistoricalPriceDayDto.toString());
 
 		Double stockClosePrice = 0.0;
 		if (gameHistoricalPriceDayDto != null) {
@@ -407,9 +405,8 @@ public class GameService {
 			// 매수 요청 종목 불러오기
 			GameGamerStockDto gameGamerStockDto =
 				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
-
-			System.out.println("=======================");
-			System.out.println(gameGamerStockDto.toString());
+			log.info(gameGamerStockDto.toString());
+			log.info(gameGamerDto.toString());
 
 			// 구매 가격
 			Integer purchasePrice = (int)(stockClosePrice * count);
@@ -422,12 +419,6 @@ public class GameService {
 			// gamer - totalEvaluationAsset은 변동 없음, profitRate 변동 없음
 			// gamer - totalEvaluationStock 증가
 			Integer totalEvaluationStock = gameGamerDto.getTotalEvaluationStock() + purchasePrice;
-
-			gameGamerDto.setDeposit(deposit);
-			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
-			gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
-			gamerService.updateDto(gameGamerDto);
-
 			// gamerStock - totalCount 증가
 			Integer totalCount = gameGamerStockDto.getTotalCount() + count;
 			// gamerStock - totalAmount 증가
@@ -437,13 +428,24 @@ public class GameService {
 			// gamerStock - valuation 변동
 			Double valuation = (stockClosePrice * totalCount) - totalAmount;
 
+			gameGamerDto.setDeposit(deposit);
+			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
+			gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
+			gamerService.updateDto(gameGamerDto);
+
 			gameGamerStockDto.setTotalCount(totalCount);
 			gameGamerStockDto.setTotalAmount(totalAmount);
 			gameGamerStockDto.setAveragePrice(averagePrice);
 			gameGamerStockDto.setValuation(valuation);
-			System.out.println("=======================");
-			System.out.println(gameGamerStockDto.toString());
-			return gamerStockService.updateDto(gameGamerStockDto);
+			gamerStockService.updateDto(gameGamerStockDto);
+			log.info(gameGamerStockDto.toString());
+			log.info(gameGamerDto.toString());
+
+			HashMap<String, Object> stockInformation = new HashMap<>();
+			stockInformation.put("gamer", getAllGamer(gameRoomDto));
+			stockInformation.put("gamerStock", gamerStockService.findAllByGamer_Id(gamerId));
+
+			return stockInformation;
 
 		} else {
 			throw new BadRequestException("예치금이 충분하지 않습니다.");

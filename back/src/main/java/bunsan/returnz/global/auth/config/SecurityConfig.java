@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtFilter jwtFilter;
+	private final JwtExceptionFilter jwtExceptionFilter;
 	@Autowired
 	DataSource dataSource;
 
@@ -68,6 +70,7 @@ public class SecurityConfig {
 			 */
 			.addFilterBefore(new JwtFilter(jwtTokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtExceptionFilter, JwtFilter.class)
 			.csrf() // 추가
 			.ignoringAntMatchers("/h2-console/**").disable()
 			.build(); // 추가

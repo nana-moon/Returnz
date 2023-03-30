@@ -63,6 +63,11 @@ public class Gamer {
 			.mermberId(gamer.getMemberId())
 			.userName(gamer.getUsername())
 			.deposit(gamer.getDeposit())
+			.originDeposit(gamer.getOriginDeposit())
+			.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
+			.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
+			.totalEvaluationStock(gamer.getTotalEvaluationStock())
+			.totalProfitRate(gamer.getTotalProfitRate())
 			.build();
 	}
 
