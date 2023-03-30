@@ -180,4 +180,8 @@ public class Member implements UserDetails {
 	public void increaseGameCount() {
 		this.gameCount++;
 	}
+
+	public void changeNickname(String newNickname) {
+		this.nickname = newNickname;
+	}
 }

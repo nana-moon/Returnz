@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.enums.Theme;
@@ -44,6 +47,10 @@ public class GameRoom {
 	// 게임 정보를 조회할때 테마가 있으면 기간이 정해져 있다.
 	@Convert(converter = ThemeConverter.class)
 	private Theme theme;
+
+	@OneToOne
+	@JoinColumn(name = "NEWS_GROUP_ID")
+	private NewsGroup newsGroup;
 
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()

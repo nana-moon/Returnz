@@ -64,6 +64,7 @@ public class GamerStock {
 			.totalCount(gamerStock.getTotalCount())
 			.gamerId(gamerStock.getGamer().getId())
 			.totalAmount(gamerStock.getTotalAmount())
+			.gamerId(gamerStock.getGamer().getId())
 			.averagePrice(gamerStock.getAveragePrice())
 			.valuation(gamerStock.getValuation())
 			.profitRate(gamerStock.getProfitRate())
@@ -75,6 +76,7 @@ public class GamerStock {
 		this.averagePrice = gameGamerStockDto.getAveragePrice();
 		this.valuation = gameGamerStockDto.getValuation();
 		this.profitRate = gameGamerStockDto.getProfitRate();
+		this.totalCount = gameGamerStockDto.getTotalCount();
 		return true;
 	}
 

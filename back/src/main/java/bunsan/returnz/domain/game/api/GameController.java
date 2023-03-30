@@ -95,8 +95,12 @@ public class GameController {
 		}
 
 		GameSettings gameSettings = new GameSettings(requestSettingGame);
+		log.info("after constructor gameSetting" + gameSettings.getStartTime());
 		Map<String, Object> stringObjectMap = gameStartService.settingGame(gameSettings);
-		// 태마 게임일경우
+
+		//신문세팅
+
+		gameStartService.setNewsList(gameSettings);
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
 
