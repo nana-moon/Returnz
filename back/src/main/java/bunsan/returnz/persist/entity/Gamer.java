@@ -30,11 +30,15 @@ public class Gamer {
 	private String username;
 	private String userNickname;
 	private Integer deposit;
+	private Integer originDeposit;
 	@Builder.Default
-	private Integer totalBuyAmount = 0;
+	private Integer totalPurchaseAmount = 0;
 	@Builder.Default
-	private Integer totalEvaluationAmount = 0;
-
+	private Integer totalEvaluationAsset = 0;
+	@Builder.Default
+	private Integer totalEvaluationStock = 0;
+	@Builder.Default
+	private Double totalProfitRate = 0.0;
 	@Builder.Default
 	private Boolean readyState = false;
 
@@ -48,8 +52,11 @@ public class Gamer {
 			.mermberId(gamer.getMemberId())
 			.userName(gamer.getUsername())
 			.deposit(gamer.getDeposit())
-			.totalBuyAmount(gamer.getTotalBuyAmount())
-			.totalEvaluationAmount(gamer.getTotalBuyAmount())
+			.originDeposit(gamer.getOriginDeposit())
+			.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
+			.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
+			.totalEvaluationStock(gamer.getTotalEvaluationStock())
+			.totalProfitRate(gamer.getTotalProfitRate())
 			.build();
 	}
 
