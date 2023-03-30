@@ -17,6 +17,9 @@ public class GameGamerDto {
 	private String userName;
 	private String userProfileIcon;
 	private Integer deposit;
-	private Integer totalBuyAmount;
-	private Integer totalEvaluationAmount;
+	private Integer originDeposit;
+	private Integer totalPurchaseAmount;
+	private Integer totalEvaluationAsset;
+	private Integer totalEvaluationStock;
+	private Double totalProfitRate;
 }
