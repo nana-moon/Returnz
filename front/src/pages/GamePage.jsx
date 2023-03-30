@@ -10,7 +10,7 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleGetGameData, handleMoreGameData } from '../store/gamedata/GameData.reducer';
+import { handleGetGameData, handleMoreGameData, stockInformation } from '../store/gamedata/GameData.reducer';
 import { stockGraphList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
@@ -28,8 +28,8 @@ export default function GamePage() {
 
   const axiospost = () => {
     const datas = {
-      roomId: 'cb08d65a-8da3-4932-b84e-cc4d877eec5a',
-      gamerId: 975,
+      roomId: '8af70294-1c6b-449f-a284-63c7ace79704',
+      gamerId: 1095,
     };
 
     axios
@@ -38,6 +38,7 @@ export default function GamePage() {
         if (count === 0) {
           console.log(res.data, '데이터보냄');
           dispatch(handleGetGameData(res.data.Stocks));
+          dispatch(stockInformation(res.data.stockInformation));
         } else {
           console.log(res.data, '데이터보냄');
           dispatch(handleMoreGameData(res.data.Stocks));

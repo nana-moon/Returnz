@@ -92,7 +92,7 @@ export default function Signup({ changeMode }) {
 
   return (
     <Contanier>
-      <MainSection>회원가입</MainSection>
+      <MainSection>Sign up</MainSection>
       <form>
         <InputBox>
           <Input

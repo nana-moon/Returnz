@@ -53,7 +53,7 @@ export default function Login({ changeMode }) {
   };
   return (
     <Contanier>
-      <MainSection>로그인</MainSection>
+      <MainSection>Login</MainSection>
       <form>
         <InputBox>
           <EmailInput

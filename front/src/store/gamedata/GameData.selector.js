@@ -6,6 +6,7 @@ export const stockGraphList = (state) => state.gamedatas.stockGraphList;
 export const noWorkDay = (state) => state.gamedatas.noWorkDay;
 // 뉴스, 주가정보, 종목 내용
 export const stockDetailDataList = (state) => state.gamedatas.stockDetailDataList;
+export const stockInformation = (state) => state.gamedatas.stockInformation;
 // 보유 종목
 export const gamerStockList = (state) => state.gamedatas.gamerStockList;
 //  유저 데이터
