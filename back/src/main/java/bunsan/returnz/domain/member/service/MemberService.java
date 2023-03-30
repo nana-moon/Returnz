@@ -110,4 +110,13 @@ public class MemberService {
 		return memberRepository.findById(id)
 			.orElseThrow(() -> new NotFoundException("회원이 존재하지 않습니다."));
 	}
+
+	public void changeNickname(String token, String newNickname) {
+		Member member = jwtTokenProvider.getMember(token);
+		if (member.getNickname().equals(newNickname)) {
+			throw new ConflictException("기존 닉네임이랑 동일힙니다.");
+		}
+		member.changeNickname(newNickname);
+		memberRepository.save(member);
+	}
 }
