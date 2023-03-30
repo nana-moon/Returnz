@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import bunsan.returnz.domain.member.enums.MemberState;
+import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import bunsan.returnz.persist.entity.Member;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StompHandler implements ChannelInterceptor {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final MemberRepository memberRepository;
+	private SideBarService sideBarService;
 
 	@SneakyThrows
 	@Override
@@ -44,10 +46,10 @@ public class StompHandler implements ChannelInterceptor {
 			log.info("offline: " + username);
 			Member member = memberRepository.findByUsername(username)
 				.orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
+			// sideBarService.checkState(member, MemberState.OFFLINE.getCode()); // 소켓 연결이 끊기면 메세지를 보낼 수 없음
 			if (!member.getState().equals(MemberState.OFFLINE)) {
 				member.changeState(MemberState.OFFLINE);
 				memberRepository.save(member);
-				// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
 			}
 		}
 		return message;
