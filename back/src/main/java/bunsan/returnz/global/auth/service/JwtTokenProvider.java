@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.global.advice.exception.BadRequestException;
+import bunsan.returnz.global.advice.exception.ForbiddenException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.dto.TokenInfo;
 import bunsan.returnz.persist.entity.Member;
@@ -108,11 +110,14 @@ public class JwtTokenProvider {
 			return true;
 		} catch (ExpiredJwtException e) {   // Token이 만료된 경우 Exception이 발생한다.
 			log.error("Token Expired");
-
+			throw new JwtException("토큰 기한 만료");
+			// throw new BadRequestException("Token이 만료되었습니다.");
 		} catch (JwtException e) {        // Token이 변조된 경우 Exception이 발생한다.
 			log.error("Token Error");
+			throw new JwtException("토큰 변조");
+			// throw new BadRequestException("Token이 변조되었습니다.");
 		}
-		return false;
+		// return false;
 	}
 
 	public Member getMember(String token) {
