@@ -106,7 +106,7 @@ public class GameController {
 
 		//신문세팅
 
-		gameStartService.setNewsList(gameSettings);
+		gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
 
