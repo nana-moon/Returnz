@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class GameStockDto {
-
 	private String companyCode;
 	private String companyName;
 	private String gameRoomId;
