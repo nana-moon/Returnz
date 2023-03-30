@@ -14,7 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
+import bunsan.returnz.domain.game.dto.GameStockDto;
+import bunsan.returnz.domain.game.service.readonly.GameInfoService;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
 import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
@@ -54,7 +57,8 @@ public class GameStartService {
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
 	/**
-	 * 게임 시작전 디비 세팅을 해주는 서비스 함수
+	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @return
 	 */
@@ -100,6 +104,7 @@ public class GameStartService {
 	 * 테마 검사
 	 * 요청 받은 테마 구분해 실제 디비 데이터 검사진행
 	 * 지정한 턴수 에 비해 데이터가 있는지 검사하는 함수
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
@@ -116,6 +121,7 @@ public class GameStartService {
 	/**
 	 * 유저 모드 검사
 	 * 요청 받은 유져 모드 의 설정 (총턴수 시작일) 보고 데이터가 있는지 검사진행
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
@@ -140,6 +146,7 @@ public class GameStartService {
 	 * 달 단위 일때
 	 * 총 턴수에 해당되는 데이터가 있는지 검사
 	 * 안되면 BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
@@ -164,6 +171,7 @@ public class GameStartService {
 	 * 주 별 단위일때
 	 * 총 턴수에 해당되는 데이터가 있는지 검사
 	 * 안되면 BadRequestException("지정한 일 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
@@ -181,6 +189,7 @@ public class GameStartService {
 	 * 일단위 일때
 	 * checkWeek 주단위를 보았을때 데이터가 없다면
 	 * throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
+	 *
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
@@ -203,8 +212,9 @@ public class GameStartService {
 
 	/**
 	 * gameStock 데이터 INSERT
+	 *
 	 * @param companyList 회사객체를 가지고 있는 리스트
-	 * @param gamers 게이머 리스트
+	 * @param gamers      게이머 리스트
 	 */
 	private void buildGamerStock(List<Company> companyList, List<Gamer> gamers) {
 		// 게이머가 가진 주식 할당하기
@@ -220,9 +230,10 @@ public class GameStartService {
 
 	/**
 	 * 맴버 조회 해서 Gamer 데이터 INSERT
-	 * @param newGameRoom 생성된 게임룸 엔티티
-	 * @param getMemberId 입력받은 맴버 아이디를 조회하고 담고 있는 리스트
-	 * @param gamers 만들어진 게이머 리스트
+	 *
+	 * @param newGameRoom  생성된 게임룸 엔티티
+	 * @param getMemberId  입력받은 맴버 아이디를 조회하고 담고 있는 리스트
+	 * @param gamers       만들어진 게이머 리스트
 	 * @param gamersIdList 게임에 사용할 주식 아이디 리스트
 	 */
 	private void buildGamerFromMember(GameRoom newGameRoom, List<Member> getMemberId, List<Gamer> gamers,
@@ -231,7 +242,7 @@ public class GameStartService {
 			Gamer gamer = Gamer.builder()
 				.memberId(member.getId())
 				.gameRoom(newGameRoom)
-				.deposit(DEFAULT_DEPOSIT)
+				.originDeposit(DEFAULT_DEPOSIT)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
 				.build();
@@ -247,6 +258,7 @@ public class GameStartService {
 	/**
 	 * 랜덤 회사 가져와서
 	 * Company 테이블 INSERT
+	 *
 	 * @param newGameRoom
 	 * @param pageable
 	 * @return
@@ -267,6 +279,7 @@ public class GameStartService {
 
 	/**
 	 * 설정을 받고 gameRoom table 에 할당
+	 *
 	 * @param gameSettings
 	 * @return
 	 */
@@ -283,25 +296,53 @@ public class GameStartService {
 		return save;
 	}
 
-
-	public void setNewsList(GameSettings gameSettings){
+	@Transactional
+	public void setNewsList(GameSettings gameSettings, Long gameRoomId) {
 		// 턴당 시간에 따라 달라진다.
 		// gameSettings 은 방 빌드 이후 에는 정보가 다 기록 되어 있나?
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: "+gameSettings.getTurnPerTime().getTime());
-		log.info("게임 세팅 유지 되는지 확인 시작일: "+gameSettings.getStartTime());
-		log.info("게임 세팅 유지 되는지 확인 전체턴: "+gameSettings.getTotalTurn());
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: "+gameSettings.getTurnPerTime().getTime());
+		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
+		log.info("게임 세팅 유지 되는지 확인 시작일: " + gameSettings.getStartTime());
+		log.info("게임 세팅 유지 되는지 확인 전체턴: " + gameSettings.getTotalTurn());
+		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
 		// day month week 상관 없이 그냥 시작일 기준으로 토탈턴 만큼 기사 가져와서 넣는다
 		// 가지고 있다 기사가 없으면 없다고 주고 있으면 있다고 하고 기사를 준다
 		Pageable totalTurn = PageRequest.of(0, gameSettings.getTotalTurn());
-		List<FinancialNews> allUpTurn = financialNewsRepository.findAllUpTurn(gameSettings.getStartDateTime(),
-			totalTurn);
-		for (FinancialNews financialNews : allUpTurn) {
-			log.info("조회 된 날자 "+ financialNews.getDate());
+		List<GameStockDto> gameRoomStockList = gameInfoService.getGameRoomStockList(gameRoomId);
+		List<String> stockIdList = new ArrayList<>();
+		for (GameStockDto gameStockDto : gameRoomStockList) {
+			stockIdList.add(gameStockDto.getCompanyCode());
+		}
+
+		// 이걸 우리 데이터로 바꿔야한다.
+		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
+
+		List<LocalDateTime> uniqueDates = historicalPriceDayRepository.findDistinctDatesAfter(
+			gameSettings.getStartDateTime(), stockIdList, pageable);
+		List<HistoricalPriceDay> priceDays = new ArrayList<>();
+		// for (LocalDateTime date : uniqueDates) {
+		// 	List<HistoricalPriceDay> dayDataList = historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
+		// 	priceDays.addAll(dayDataList);
+		// }
+		// List<LocalDateTime> uniqueDates = financialNewsRepository.findDistinctDatesAfter(
+		// 	gameSettings.getStartDateTime(), pageable, stockIdList);
+		log.info("데이터가 존제하는 구간 :"+ uniqueDates.size());
+		List<FinancialNews> result = new ArrayList<>();
+		for (LocalDateTime date : uniqueDates) {
+			List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(date, stockIdList);
+			result.addAll(newsList);
+		}
+		for (FinancialNews financialNews : result) {
+			log.info( financialNews.getKoName() +" : "+ financialNews.getCode());
+		}
+
+		log.info("조회 해온 갯수 " + result.size());
+		for (FinancialNews financialNews : result) {
+			log.info( financialNews.getKoName()+"  조회 된 날자 " + financialNews.getDate());
 		}
 
 	}
-	private void getNewsList(LocalDateTime startDate, LocalDateTime endDate){
+
+	private void getNewsList(LocalDateTime startDate, LocalDateTime endDate) {
 		//여기서 해야하는것
 		//시작일 끝일을 잡고
 	}
