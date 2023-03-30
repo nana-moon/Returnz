@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import reactor.util.annotation.Nullable;
 
 @Builder
@@ -25,6 +26,7 @@ import reactor.util.annotation.Nullable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class RequestSettingGame {
 	@NotNull
 	private Theme theme;
@@ -68,13 +70,20 @@ public class RequestSettingGame {
 
 	public LocalDateTime convertThemeStartDateTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			return LocalDateTime.of(2019, 12, 31, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(2019, 12, 31, 0, 0, 0);
+			this.startTime = LocalDate.from(startDay);
+			log.info("check in gameSetting startTime in covid : " + this.startTime);
+			return startDay;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
-			return LocalDateTime.of(1997, 1, 1, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(1997, 1, 1, 0, 0, 0);
+			this.startTime = LocalDate.from(startDay);
+			return startDay;
 		}
 		if (this.theme.getTheme().equals("RIEMANN")) {
-			return LocalDateTime.of(2008, 1, 1, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(2008, 1, 1, 0, 0, 0);
+			this.startTime = LocalDate.from(startDay);
+			return startDay;
 		}
 		if (this.theme.getTheme().equals("LAST_YEAR")) {
 			LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
@@ -84,6 +93,7 @@ public class RequestSettingGame {
 			} else if (oneYearAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
 				oneYearAgo = oneYearAgo.minusDays(2);
 			}
+			this.startTime = LocalDate.from(oneYearAgo);
 			return oneYearAgo;
 		}
 		if (this.theme.getTheme().equals("LAST_MONTH")) {
@@ -93,6 +103,7 @@ public class RequestSettingGame {
 			} else if (oneMonthAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
 				oneMonthAgo = oneMonthAgo.minusDays(2);
 			}
+			this.startTime = LocalDate.from(oneMonthAgo);
 			return oneMonthAgo;
 		}
 		return this.startTime.atStartOfDay();
@@ -100,6 +111,7 @@ public class RequestSettingGame {
 
 	public TurnPerTime setThemTurnPerTime() {
 		if (this.theme != Theme.USER) {
+			this.turnPerTime = TurnPerTime.DAY;
 			return TurnPerTime.DAY;
 		}
 		return this.turnPerTime;
