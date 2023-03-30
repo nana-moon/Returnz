@@ -6,8 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
 import bunsan.returnz.domain.game.dto.GameCompanyDetailDto;
 import bunsan.returnz.domain.game.dto.GameExchangeInterestDto;
 import bunsan.returnz.domain.game.dto.GameGamerDto;
@@ -92,7 +95,7 @@ public class GameService {
 
 		// 4. 다음 턴 정보 업데이트
 		if (!updateTurnInformation(gameStockDtoList.get(0).getCompanyCode(), roomId,
-			gameRoomDto, gameStockDtoList)) {
+			gameRoomDto)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
 
@@ -154,12 +157,12 @@ public class GameService {
 						.historyDiff(
 							Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
-								- Double.parseDouble(String.format(".2f", Double.parseDouble(
+								- Double.parseDouble(String.format("%.2f", Double.parseDouble(
 								gameHistoricalPriceDayDtos.get(x + 1).getClose()))))
 						.historyUpAndDown(
 							Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
-								- Double.parseDouble(String.format(".2f", Double.parseDouble(
+								- Double.parseDouble(String.format("%.2f", Double.parseDouble(
 								gameHistoricalPriceDayDtos.get(x + 1).getClose()))) > 0
 								? (Double.parseDouble(
 								String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtos.get(x).getClose())))
@@ -170,7 +173,7 @@ public class GameService {
 						.volume(Long.parseLong(gameHistoricalPriceDayDtos.get(x).getVolume()))
 						.dateTime(gameHistoricalPriceDayDtos.get(x).getDateTime())
 						.build();
-					// 주가 정보 List에 추가
+					// 주가 정보 List에 추가3
 					gameStockPriceInformationDtos.add(gameStockPriceInformationDto);
 				}
 				// companyCode를 key로 list를 불러올 수 있게 설정
@@ -189,8 +192,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
 	 */
-	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto,
-		List<GameStockDto> gameStockDtoList) {
+	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto) {
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
@@ -199,24 +201,6 @@ public class GameService {
 
 		if (gameRoomDto.getCurTurn() == 0) {
 			return gameRoomService.updateGameTurn(nextDay, roomId);
-		}
-
-		// TODO : 다음 턴 정보를 주기 전, update된 유저 정보를 줘야 한다.
-		// 게임 방 정보 업데이트
-		gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
-		// gameHistoricalPriceDayDto.getDateTime()은 다음 날
-		// 다음날의 정보를 바탕으로
-		// "gamer_stock" Table의 정보를 update 해야 한다.
-		// "gamer" Table의 "total_evaluation_amount"를 update 해야 한다.
-
-		Integer totalEvaluationStock = 0;
-		for (int i = 0; i < gameStockDtoList.size(); ++i) {
-			Double stockPrice = getStockPrice(roomId, companyCode); // 업데이트 된 날짜 정보를 바탕으로 가격을 구한다.
-
-			// 가격이 0이 아닐때만 수행 (0인 경우, 주식 코드에 해당하는 데이터가 없음)
-			if (stockPrice != 0) {
-
-			}
 		}
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
@@ -359,7 +343,6 @@ public class GameService {
 	 */
 	public Double getStockPrice(String roomId, String companyCode) {
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
 			= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 			gameRoomDto.getCurDate(),
@@ -370,8 +353,7 @@ public class GameService {
 		}
 
 		Double stockClosePrice = Double.parseDouble(
-			String.format(".2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
-
+			String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
 		GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
 		// TODO : 환율 데이터 if (gameCompanyDetailDto.getCountryCode().equals("US"){ }
 
@@ -384,41 +366,88 @@ public class GameService {
 
 	/**
 	 * Description : 주식 매수. (현재 작성 중)
-	 * @param gamerId : 현재 사용자의 게임 id
-	 * @param companyCode : 종목 코드
-	 * @param roomId : 현재 방의 아이디
-	 * @return : 현재 작성 중
+	 * @param gameBuySellRequestBody : 요청 시 body, gamerId, 주문 수량 count, 종목코드 comapnyCode, 방 번호 roomId를 담고 있다.
+	 * @return : 매수가 성공할 경우 True를 리턴한다. 이외에는 Error를 발생시킨다.
 	 */
-	public boolean buyStock(Long gamerId, Integer amount, String companyCode, String roomId) {
+	@Transactional
+	public boolean buyStock(GameBuySellRequestBody gameBuySellRequestBody) {
+
+		Long gamerId = gameBuySellRequestBody.getGamerId();
+		Integer count = gameBuySellRequestBody.getCount();
+		String companyCode = gameBuySellRequestBody.getCompanyCode();
+		String roomId = gameBuySellRequestBody.getRoomId();
+
+		System.out.println(gameBuySellRequestBody.toString());
 
 		// 사용자의 자산확인
 		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
 		// stock 가격 확인
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-		Double stockClosePrice = getStockPrice(roomId, companyCode);
+		gameRoomDto = gameRoomService.findByRoomId(roomId);
+		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
+			= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+			gameRoomDto.getCurDate(),
+			companyCode);
+
+		Double stockClosePrice = 0.0;
+		if (gameHistoricalPriceDayDto != null) {
+			stockClosePrice = Double.parseDouble(
+				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
+		}
 
 		if (stockClosePrice == 0) {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
 
-		if (gameGamerDto.getDeposit() >= (stockClosePrice * amount)) {
+		// deposit이 총 매수 금액 보다 크거나 같을 때 구매할 수 있다.
+		if (gameGamerDto.getDeposit() >= (stockClosePrice * count)) {
 
+			// if() 외국 주식 인 경우 환율 적용하기
+
+			// 매수 요청 종목 불러오기
 			GameGamerStockDto gameGamerStockDto =
 				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 
+			System.out.println("=======================");
+			System.out.println(gameGamerStockDto.toString());
+
+			// 구매 가격
+			Integer purchasePrice = (int)(stockClosePrice * count);
+
 			// "gamer" Table update
-			// depostit 차감
-			Integer deposit = (int)(gameGamerDto.getDeposit() - stockClosePrice * amount);
-			//
-			gamerService.updateDeposit(gamerId, deposit);
+			// gamer - depostit 차감
+			Integer deposit = gameGamerDto.getDeposit() - purchasePrice;
+			// gamer - totalPurchateAmount 증가
+			Integer totalPurchateAmount = gameGamerDto.getTotalPurchaseAmount() + purchasePrice;
+			// gamer - totalEvaluationAsset은 변동 없음, profitRate 변동 없음
+			// gamer - totalEvaluationStock 증가
+			Integer totalEvaluationStock = gameGamerDto.getTotalEvaluationStock() + purchasePrice;
 
-			// TODO : Stock 수량 증가, Stock 관련 정보 업데이트
+			gameGamerDto.setDeposit(deposit);
+			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
+			gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
+			gamerService.updateDto(gameGamerDto);
 
-			// gamerStockService.findAllByGamer_Id(gamerId)
-			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+			// gamerStock - totalCount 증가
+			Integer totalCount = gameGamerStockDto.getTotalCount() + count;
+			// gamerStock - totalAmount 증가
+			Integer totalAmount = gameGamerStockDto.getTotalAmount() + purchasePrice;
+			// gamerStock - averagePrice 변동
+			Double averagePrice = (double)(totalAmount / totalCount);
+			// gamerStock - valuation 변동
+			Double valuation = (stockClosePrice * totalCount) - totalAmount;
 
+			gameGamerStockDto.setTotalCount(totalCount);
+			gameGamerStockDto.setTotalAmount(totalAmount);
+			gameGamerStockDto.setAveragePrice(averagePrice);
+			gameGamerStockDto.setValuation(valuation);
+			System.out.println("=======================");
+			System.out.println(gameGamerStockDto.toString());
+			return gamerStockService.updateDto(gameGamerStockDto);
+
+		} else {
+			throw new BadRequestException("예치금이 충분하지 않습니다.");
 		}
-		return false;
 	}
 
 	/**

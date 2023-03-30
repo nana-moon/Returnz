@@ -51,7 +51,7 @@ public class GameStartService {
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
 	/**
-	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
+	 * 게임 시작전 디비 세팅을 해주는 서비스 함수
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @return
 	 */
