@@ -12,6 +12,7 @@ export const gamedata = createSlice({
     noWorkDay: [],
     // 뉴스, 주가정보, 종목 내용
     stockDetailDataList: {},
+    stockInformation: {},
     // 보유종목
     gamerStockList: {},
     // 유저 데이터
@@ -99,8 +100,12 @@ export const gamedata = createSlice({
     },
     // 뉴스, 주가정보, 종목 내용
     handleGetGameDetailData(state, action) {},
+
+    stockInformation(state, action) {
+      state.stockInformation = action.payload;
+    },
   },
 });
 
-export const { handleGetGameData, handleGetGameDetailData, handleMoreGameData } = gamedata.actions;
+export const { handleGetGameData, handleGetGameDetailData, handleMoreGameData, stockInformation } = gamedata.actions;
 export default gamedata;
