@@ -20,6 +20,7 @@ import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
 import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Company;
+import bunsan.returnz.persist.entity.FinancialNews;
 import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.GameStock;
 import bunsan.returnz.persist.entity.Gamer;
@@ -27,6 +28,7 @@ import bunsan.returnz.persist.entity.GamerStock;
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.CompanyRepository;
+import bunsan.returnz.persist.repository.FinancialNewsRepository;
 import bunsan.returnz.persist.repository.GameRoomRepository;
 import bunsan.returnz.persist.repository.GameStockRepository;
 import bunsan.returnz.persist.repository.GamerRepository;
@@ -47,6 +49,7 @@ public class GameStartService {
 	private final MemberRepository memberRepository;
 	private final CompanyRepository companyRepository;
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
+	private final FinancialNewsRepository financialNewsRepository;
 
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
@@ -62,6 +65,7 @@ public class GameStartService {
 		GameRoom newGameRoom = buildGameRoom(gameSettings);
 		// 랜덤 주식 가져와서 할당하기
 		Pageable pageable = PageRequest.of(0, 10);
+		gameSettings.setStartTime(gameSettings.convertThemeStartDateTime().toLocalDate());
 		List<Company> companyList = buildCompanies(newGameRoom, pageable);
 		List<String> gameStockIds = new ArrayList<>();
 		// 아이디만 뽑아낸 리스트
@@ -277,6 +281,29 @@ public class GameStartService {
 			.build();
 		GameRoom save = gameRoomRepository.save(newGameRoom);
 		return save;
+	}
+
+
+	public void setNewsList(GameSettings gameSettings){
+		// 턴당 시간에 따라 달라진다.
+		// gameSettings 은 방 빌드 이후 에는 정보가 다 기록 되어 있나?
+		log.info("게임 세팅 유지 되는지 확인 턴당 시간: "+gameSettings.getTurnPerTime().getTime());
+		log.info("게임 세팅 유지 되는지 확인 시작일: "+gameSettings.getStartTime());
+		log.info("게임 세팅 유지 되는지 확인 전체턴: "+gameSettings.getTotalTurn());
+		log.info("게임 세팅 유지 되는지 확인 턴당 시간: "+gameSettings.getTurnPerTime().getTime());
+		// day month week 상관 없이 그냥 시작일 기준으로 토탈턴 만큼 기사 가져와서 넣는다
+		// 가지고 있다 기사가 없으면 없다고 주고 있으면 있다고 하고 기사를 준다
+		Pageable totalTurn = PageRequest.of(0, gameSettings.getTotalTurn());
+		List<FinancialNews> allUpTurn = financialNewsRepository.findAllUpTurn(gameSettings.getStartDateTime(),
+			totalTurn);
+		for (FinancialNews financialNews : allUpTurn) {
+			log.info("조회 된 날자 "+ financialNews.getDate());
+		}
+
+	}
+	private void getNewsList(LocalDateTime startDate, LocalDateTime endDate){
+		//여기서 해야하는것
+		//시작일 끝일을 잡고
 	}
 
 }
