@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +39,9 @@ public class GamerStock {
 
 	@Builder.Default
 	private Double valuation = 0.0;
-
+	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
 	private Double profitRate = 0.0;
 
 	@ManyToOne(fetch = FetchType.LAZY)
