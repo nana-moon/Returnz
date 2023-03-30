@@ -50,6 +50,13 @@ public class GameRoom {
 	@JoinColumn(name = "NEWS_GROUP_ID")
 	private NewsGroup newsGroup;
 
+	public void setNewsGroup(NewsGroup inputNewsGroup) {
+		if (inputNewsGroup == null) {
+			throw new NullPointerException("게임방에 뉴스 그룹 할당하기전에 뉴스그룹이 널인지 확인해주세요");
+		}
+		this.newsGroup = inputNewsGroup;
+	}
+
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()
 			.id(gameRoom.id)
