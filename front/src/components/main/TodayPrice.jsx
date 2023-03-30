@@ -41,6 +41,7 @@ export default function TodayPrice() {
     onSuccess: (res) => {
       // res['5. Exchange Rate'] = res['5. Exchange Rate'] * 100;
       console.log(res['5. Exchange Rate'], 'gg');
+      return res;
     },
     onError: (e) => {
       console.log(e);

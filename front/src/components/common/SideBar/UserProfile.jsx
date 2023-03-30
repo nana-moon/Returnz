@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { Card, CardHeader, Avatar } from '@material-tailwind/react';
 import Cookies from 'js-cookie';
+import { handleModalState } from '../../../store/profileeditmodal/ProfileEdit.reducer';
 
 export default function UserProfile() {
+  const dispatch = useDispatch();
+  // const modalStat = useSelector(modalState);
   const myPic = Cookies.get('profileIcon');
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
-
+  // const [modal, setModalOpen] = useState(false);
+  const handleModal = () => {
+    dispatch(handleModalState(true));
+  };
   return (
     <MyProfileCard>
       <Card color="transparent" shadow={false} className="w-full">
@@ -20,7 +27,7 @@ export default function UserProfile() {
           <Avatar size="lg" variant="circular" src={picPath} />
           <MyInfoBox>
             <UsernameContent>{myNick}</UsernameContent>
-            <ProfileChangeButton>프로필 수정하러 가기</ProfileChangeButton>
+            <ProfileChangeButton onClick={handleModal}>프로필 수정하러 가기</ProfileChangeButton>
           </MyInfoBox>
         </CardHeader>
       </Card>
