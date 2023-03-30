@@ -7,10 +7,12 @@ import Cookies from 'js-cookie';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import Stomp from 'webstomp-client';
-import { useQuery, QueryClient } from 'react-query';
+import { useQuery } from 'react-query';
+import { Input } from '@material-tailwind/react';
+import { AiOutlineSearch } from 'react-icons/ai';
 import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
-import FriendSearchInput from './SideBar/FriendSearchInput';
+// import FriendSearchInput from './SideBar/FriendSearchInput';
 import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
 import { getFriendRequests } from '../../apis/friendApi';
 
@@ -18,7 +20,6 @@ import { getFriendRequests } from '../../apis/friendApi';
 
 export default function SideBar() {
   const [friendList, setfriendList] = useState();
-
   const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
 
   const options = {
@@ -30,6 +31,27 @@ export default function SideBar() {
   // stomp로 감싸기
   const myToken = Cookies.get('access_token');
   const myMail = Cookies.get('email');
+  const onChange = (e) => setfriendNickname(e.target.value);
+  const [friendNickname, setfriendNickname] = useState('');
+  // const { data: friendList } = useQuery({
+  //   queryKey: ['friendRequests'],
+  //   queryFn: () => getFriendRequests(),
+  //   onError: (e) => {
+  //     console.log(e);
+  //   },
+  //   staleTime: 1000000,
+  // });
+  const handleFriendRequest = () => {
+    console.log(friendNickname);
+    const res = JSON.stringify({
+      type: 'FRIEND',
+      messageBody: {
+        username: `${friendNickname}`,
+      },
+    });
+    return res;
+  };
+
   useEffect(() => {
     const stompConnect = () => {
       try {
@@ -46,9 +68,8 @@ export default function SideBar() {
               `/user/sub/side-bar`,
               (data) => {
                 const newMessage = JSON.parse(data.body);
-
                 const newFriend = newMessage.messageBody.friendList;
-                console.log('친구리스트 불러옴', newFriend);
+                console.log(newFriend);
                 setfriendList(newFriend);
                 // 데이터 파싱
               },
@@ -69,6 +90,7 @@ export default function SideBar() {
                   username: `${myMail}`,
                 },
               }),
+              handleFriendRequest(),
             );
           },
         );
@@ -125,7 +147,7 @@ export default function SideBar() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 1000000,
+    // staleTime: 1000000,
   });
   return (
     <SideBarContainer>
@@ -136,7 +158,19 @@ export default function SideBar() {
           return <FriendListItems friend={friend} key={friend.username} />;
         })}
       </FriendListContainer>
-      <FriendSearchInput />
+      <FriendSearchContainer>
+        <Input
+          type="text"
+          label="닉네임을 검색하세요"
+          color="cyan"
+          value={friendNickname}
+          onChange={onChange}
+          className="bg-input"
+        />
+        <SearchButton onClick={handleFriendRequest}>
+          <AiOutlineSearch />
+        </SearchButton>
+      </FriendSearchContainer>
     </SideBarContainer>
   );
 }
@@ -147,4 +181,12 @@ const SideBarContainer = styled.div`
 
 const FriendListContainer = styled.div`
   ${tw``}
+`;
+const FriendSearchContainer = styled.div`
+  // position: fixed;
+  ${tw`flex border-t-2 border-negative px-2 pt-2 gap-2`}
+`;
+
+const SearchButton = styled.button`
+  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;

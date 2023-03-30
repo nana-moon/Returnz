@@ -4,11 +4,10 @@ const getFriendRequests = () => {
   return authApi
     .get('requests')
     .then((res) => {
-      console.log('친구리스트겟 성공', res);
-      return res;
+      console.log(res.data.friendRequestList);
+      return res.data.friendRequestList;
     })
     .catch((err) => {
-      console.log('친구리스트겟 실패', err);
       return err;
     });
 };
