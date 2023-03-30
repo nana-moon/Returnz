@@ -29,7 +29,7 @@ public class Gamer {
 	private Long memberId;
 	private String username;
 	private String userNickname;
-	private Integer deposit;
+	private Integer originDeposit;
 	@Builder.Default
 	private Integer totalBuyAmount = 0;
 	@Builder.Default
@@ -47,7 +47,7 @@ public class Gamer {
 			.gamerId(gamer.getId())
 			.mermberId(gamer.getMemberId())
 			.userName(gamer.getUsername())
-			.deposit(gamer.getDeposit())
+			.deposit(gamer.getOriginDeposit())
 			.totalBuyAmount(gamer.getTotalBuyAmount())
 			.totalEvaluationAmount(gamer.getTotalBuyAmount())
 			.build();
@@ -55,7 +55,7 @@ public class Gamer {
 
 	public boolean updateDeposit(Integer changeDeposit) {
 		if (changeDeposit >= 0) {
-			this.deposit = changeDeposit;
+			this.originDeposit = changeDeposit;
 			return true;
 		}
 		// TODO : else Error
