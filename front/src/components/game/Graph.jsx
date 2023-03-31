@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable import/extensions */
 import tw, { styled } from 'twin.macro';
@@ -14,6 +15,15 @@ export default function Graph() {
   let options = null;
   if (selectidx != null) {
     const companyName = Object.keys(stockGraphData[selectidx]);
+    const minprice = Math.min(
+      ...Object.values(stockGraphData[selectidx][companyName].candledata).map((x) => parseInt(x.y[2], 10)),
+    );
+    const maxprice = Math.max(
+      ...Object.values(stockGraphData[selectidx][companyName].candledata).map((x) => parseInt(x.y[1], 10)),
+    );
+
+    const categoriess = stockGraphData[selectidx][companyName].candledata.map((data) => data.x);
+
     options = {
       series: [
         {
@@ -40,32 +50,20 @@ export default function Graph() {
       stroke: {
         width: [1, 1],
       },
-      tooltip: {
-        style: {
-          padding: '8px',
-          left: '16px',
-          right: '16px',
-        },
-        custom: [
-          function idx({ seriesIndex, dataPointIndex, w }) {
-            return `거래량 : ${w.globals.series[seriesIndex][dataPointIndex]}`;
-          },
-          function cost({ seriesIndex, dataPointIndex, w }) {
-            const o = w.globals.seriesCandleO[seriesIndex][dataPointIndex];
-            const h = w.globals.seriesCandleH[seriesIndex][dataPointIndex];
-            const l = w.globals.seriesCandleL[seriesIndex][dataPointIndex];
-            const c = w.globals.seriesCandleC[seriesIndex][dataPointIndex];
-
-            // template literal로 문자열을 작성하고, \n을 이용해 줄바꿈을 적용합니다.
-            const tmp = `시가 : ${o}<br>고가 : ${h}<br>저가 : ${l}<br>종가 : ${c}`;
-            return tmp;
-          },
-        ],
-      },
       yaxis: [
         {
           title: {
             text: '주가',
+          },
+          min: minprice * 0.99,
+          max: maxprice * 1.01,
+          labels: {
+            formatter(value) {
+              return value.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              });
+            },
           },
         },
         {
@@ -73,10 +71,25 @@ export default function Graph() {
           title: {
             text: '거래량',
           },
+          labels: {
+            formatter(value) {
+              return value.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              });
+            },
+          },
         },
       ],
       xaxis: {
-        type: 'datetime',
+        type: 'category',
+        categories: categoriess,
+        labels: {
+          formatter(val) {
+            const index = categoriess.indexOf(val);
+            return `${index + 1}`;
+          },
+        },
       },
       plotOptions: {
         candlestick: {

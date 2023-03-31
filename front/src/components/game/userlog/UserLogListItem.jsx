@@ -4,14 +4,14 @@ import { Avatar } from '@material-tailwind/react';
 
 export default function UserLogListItem({ temp }) {
   // isHost 들어갈 정보 달라짐
-  const tempId = 'jiae';
+  const tempId = 'j';
   const infoId = { seed: 5000000, buy: 100000, eval: 10000000 };
   const profilePath = `profile_pics/${temp.profile}`;
   return (
     <UserLogItemContainer temp={temp} tempId={tempId}>
       <LeftSection>
         <UserBox>
-          <Avatar className="border-2 border-black" size="" variant="circular" src={profilePath} />
+          <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
           <div>{temp.nickname}</div>
         </UserBox>
         {temp.nickname === tempId && (
