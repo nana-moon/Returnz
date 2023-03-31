@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
@@ -243,6 +242,7 @@ public class GameStartService {
 			Gamer gamer = Gamer.builder()
 				.memberId(member.getId())
 				.gameRoom(newGameRoom)
+				.deposit(DEFAULT_DEPOSIT)
 				.originDeposit(DEFAULT_DEPOSIT)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
@@ -321,24 +321,25 @@ public class GameStartService {
 			gameSettings.getStartDateTime(), stockIdList, pageable);
 		List<HistoricalPriceDay> priceDays = new ArrayList<>();
 		// for (LocalDateTime date : uniqueDates) {
-		// 	List<HistoricalPriceDay> dayDataList = historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
+		// 	List<HistoricalPriceDay> dayDataList
+		// 	= historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
 		// 	priceDays.addAll(dayDataList);
 		// }
 		// List<LocalDateTime> uniqueDates = financialNewsRepository.findDistinctDatesAfter(
 		// 	gameSettings.getStartDateTime(), pageable, stockIdList);
-		log.info("데이터가 존제하는 구간 :"+ uniqueDates.size());
+		log.info("데이터가 존제하는 구간 :" + uniqueDates.size());
 		List<FinancialNews> result = new ArrayList<>();
 		for (LocalDateTime date : uniqueDates) {
 			List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(date, stockIdList);
 			result.addAll(newsList);
 		}
 		for (FinancialNews financialNews : result) {
-			log.info( financialNews.getKoName() +" : "+ financialNews.getCode());
+			log.info(financialNews.getKoName() + " : " + financialNews.getCode());
 		}
 
 		log.info("조회 해온 갯수 " + result.size());
 		for (FinancialNews financialNews : result) {
-			log.info( financialNews.getKoName()+"  조회 된 날자 " + financialNews.getDate());
+			log.info(financialNews.getKoName() + "  조회 된 날자 " + financialNews.getDate());
 		}
 
 	}
