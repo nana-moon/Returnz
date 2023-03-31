@@ -244,6 +244,7 @@ public class GameStartService {
 				.gameRoom(newGameRoom)
 				.deposit(DEFAULT_DEPOSIT)
 				.originDeposit(DEFAULT_DEPOSIT)
+				.totalEvaluationAsset(DEFAULT_DEPOSIT)
 				.userNickname(member.getNickname())
 				.username(member.getUsername())
 				.build();
