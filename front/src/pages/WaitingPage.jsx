@@ -5,9 +5,6 @@ import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import SockJs from 'sockjs-client';
-import Stomp from 'webstomp-client';
-import StompJs from 'stompjs';
 import { startGameApi, gameDataApi } from '../apis/gameApi';
 import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
@@ -22,6 +19,7 @@ import {
   handleGetStockDescription,
   handleGetStockInfomation,
 } from '../store/gamedata/GameData.reducer';
+import { getMessage, handleMessage, sendMessage, stomp, stompConnect, stompDisconnect } from '../hooks/useSocket';
 
 export default function WaitingPage() {
   // hooks
@@ -56,94 +54,33 @@ export default function WaitingPage() {
   // socket 연결 시 사용할 데이터 - 확인완료
   const ACCESS_TOKEN = Cookies.get('access_token');
   const waitRoomId = roomInfo.roomId;
-  console.log('roomId', waitRoomId);
-  const getAddress = `/sub/wait-room/${waitRoomId}`;
+  const subAddress = `/sub/wait-room/${waitRoomId}`;
   const sendAddress = '/pub/wait-room';
-  const myHeader = {
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyMjUyMH0.I7S5ewFqVfjPe7ljDQmFCM4PwB89djDCZ4z6oDUhDag',
+  const header = {
+    Authorization: ACCESS_TOKEN,
   };
 
   // -------------------------SOCKET action-----------------------------
-
-  // 받은 메세지 파싱
-  const handleMessage = (received) => {
-    console.log('handleMessage active');
-    const newMessage = JSON.parse(received.body);
-    console.log(newMessage);
-  };
-
-  // 메세지 받기 - Params 확인완료
-  const getMessage = (subAddress, handleData, header) => {
-    console.log('getMessage active');
-    stomp.subscribe(subAddress, handleData, header);
-  };
-
-  // 메세지 보내기
-  const sendMessage = (subAddress, header, type, messageBody, handleData) => {
-    console.log('sendMessage active');
-    const message = JSON.stringify({
-      type,
-      messageBody,
-    });
-    console.log(subAddress);
-    stomp.send(subAddress, header, message);
-  };
-
-  // -------------------------SOCKET connet-----------------------------
-
-  const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-  const options = {
-    debug: false,
-    protocols: Stomp.VERSIONS.supportedProtocols(),
-  };
-  const stomp = StompJs.over(sock, options);
-
-  const stompConnect = () => {
-    stomp.debug = null;
-    stomp.connect(
-      {
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
-      },
-      () => {
-        console.log('the connection is successful');
-        stomp.subscribe(
-          '/sub/wait-room/3b6b9f58-cea6-4372-874f-0f3da67c90e4',
-          (data) => {
-            console.log(data);
-            const newMessage = JSON.parse(data.body);
-            console.log(newMessage);
-          },
-          {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
-          },
-        );
-
-        stomp.send(
-          '/pub/wait-room',
-          {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
-          },
-          JSON.stringify({
-            type: 'ENTER',
-            messageBody: {
-              roomId: '3b6b9f58-cea6-4372-874f-0f3da67c90e4',
-            },
-          }),
-        );
-      },
-      (error) => {
-        console.log('Connection error:', error);
-      },
-    );
+  const socketAction = () => {
+    console.log('the connection is successful');
+    getMessage(subAddress, handleMessage, header);
+    sendMessage(sendAddress, header, 'ENTER', { roomId: waitRoomId });
+    sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: 'chatting...' });
   };
 
   useEffect(() => {
-    stompConnect();
+    stompConnect(header, socketAction);
   }, []);
+
+  // useEffect(() => {
+  //   stompDisconnect(subAddress, header);
+  // }, []);
+
+  // -------------------------채팅 데이터-----------------------------
+
+  const getChat = (chat) => {
+    console.log(chat);
+  };
 
   // -------------------------게임 데이터-----------------------------
 
@@ -215,6 +152,7 @@ export default function WaitingPage() {
   const handleBack = () => {
     dispatch(removeWaiterList());
   };
+
   return (
     <WaitingContainer>
       <WaitingListSection>
@@ -232,7 +170,7 @@ export default function WaitingPage() {
           <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
         )}
         <ChatSection>
-          <Chatting />
+          <Chatting getChat={getChat} />
           <BtnBox>
             {isHost && (
               <StartButton onClick={handleStart} disabled={!isValidSetting}>
