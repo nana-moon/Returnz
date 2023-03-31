@@ -44,4 +44,20 @@ const openApi = axios.create({
 // // client 객체 생성 및 서버주소 입력
 // const stomp = StompJs.over(sock, options);
 
+// 로그인 후 사용할 api (프사수정, 닉수정)
+const authApi = axios.create({
+  baseURL: BASE_URL,
+});
+
+authApi.interceptors.request.use(
+  (request) => {
+    const ACCESS_TOKEN = Cookies.get('access_token');
+    request.headers.Authorization = ACCESS_TOKEN || null;
+    return request;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 export { axios, openApi, authApi };

@@ -1,12 +1,18 @@
-import React, { useState, useRef } from 'react';
-import { Card, CardHeader, Avatar } from '@material-tailwind/react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
+import { handleModalState } from '../../store/profileeditmodal/ProfileEdit.reducer';
 
 export default function ProfileEditModal() {
+  const dispatch = useDispatch();
   const myPic = Cookies.get('profileIcon');
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
+  const handleModal = () => {
+    dispatch(handleModalState(false));
+  };
   return (
     <ProfileEditContainer>
       <BackgroundContainer>gg</BackgroundContainer>
@@ -21,7 +27,7 @@ export default function ProfileEditModal() {
         </PicturesContainer>
         <ButtonsSection>
           <CompleteButton>저장하기</CompleteButton>
-          <BackButton>나가기</BackButton>
+          <BackButton onClick={handleModal}>나가기</BackButton>
         </ButtonsSection>
       </ModalSection>
     </ProfileEditContainer>
