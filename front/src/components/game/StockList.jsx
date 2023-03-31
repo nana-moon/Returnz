@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
 import { receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
-import { modalState, sellNeedData, buyNeedData } from '../../store/buysellmodal/BuySell.selector';
+import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
+import { stockDataList, noWorkDay } from '../../store/gamedata/GameData.selector';
 import BuySellModal from './modals/BuySellModal';
-import { stockDataList } from '../../store/gamedata/GameData.selector';
 
 export default function StockList() {
   const dispatch = useDispatch();
@@ -14,6 +14,10 @@ export default function StockList() {
   const canBuy = useSelector(buyNeedData);
   const canSell = useSelector(sellNeedData);
   const stockDatas = useSelector(stockDataList);
+  const selectidx = useSelector(selectedIdx);
+  const noWorkidx = useSelector(noWorkDay);
+
+  const isThis = noWorkidx.includes(selectidx);
 
   // const [stockData, setStockData] = useState(StockData);
   const handleOpenModal = (data) => {
@@ -23,19 +27,24 @@ export default function StockList() {
   return (
     <StockListContanier>
       {modalStat.isOpen ? <BuySellModal /> : null}
-      <StockListSection>상장종목</StockListSection>
+      <StockListSection>상장 종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
-            return <StockListItem Stock={Stock} i={i} key={Stock.adjclose} />;
+            // eslint-disable-next-line react/no-array-index-key
+            return <StockListItem Stock={Stock} i={i} key={i} />;
           })}
         </div>
       </ListContanier>
       <OrderButton>
-        <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === ''}>
+        <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === '' || isThis}>
           매수
         </BuyButton>
-        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={canSell.companyName === ''}>
+        <SellButton
+          type="button"
+          onClick={() => handleOpenModal(false)}
+          disabled={canSell.companyName === '' || isThis}
+        >
           매도
         </SellButton>
       </OrderButton>
@@ -60,7 +69,7 @@ const ListContanier = styled.div`
   ${tw`border bg-white rounded-xl overflow-y-auto`}
 `;
 const StockListSection = styled.div`
-  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center border rounded-t-xl h-[10%]`}
+  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2`}
 `;
 const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}

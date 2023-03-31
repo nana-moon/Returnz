@@ -3,6 +3,7 @@ import tw, { styled } from 'twin.macro';
 import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from '@material-tailwind/react';
 import NewsTab from './tabs/NewsTab';
 import StockInfoTab from './tabs/StockInfoTab';
+import Description from './tabs/Description';
 
 export default function StockInfo() {
   const [view, setView] = useState('뉴스');
@@ -19,7 +20,7 @@ export default function StockInfo() {
     },
 
     {
-      label: '그 외 데이터',
+      label: '종목 소개',
       value: 'vue',
       desc: `datas`,
     },
@@ -46,7 +47,7 @@ export default function StockInfo() {
             <TabPanels key={value} value={value}>
               {desc === 'news' && <NewsTab />}
               {desc === 'info' && <StockInfoTab />}
-              {desc === 'datas' && <div />}
+              {desc === 'datas' && <Description />}
             </TabPanels>
           ))}
         </TabsBodys>
