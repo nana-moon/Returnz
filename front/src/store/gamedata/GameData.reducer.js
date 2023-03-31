@@ -10,8 +10,12 @@ export const gamedata = createSlice({
     stockGraphList: [],
     // 영업날이 아님
     noWorkDay: [],
-    // 뉴스, 주가정보, 종목 내용
-    stockDetailDataList: {},
+    // 뉴스,
+    stockNews: {},
+    // 주가정보
+    stockInfomation: {},
+    // 종목 내용
+    stockdescription: {},
     // 보유종목
     gamerStockList: {},
     // 유저 데이터
@@ -97,10 +101,19 @@ export const gamedata = createSlice({
 
       state.noWorkDay = noWorkIdx;
     },
-    // 뉴스, 주가정보, 종목 내용
-    handleGetGameDetailData(state, action) {},
+    // 뉴스,
+    handleGetStockNews(state, action) {},
+    // 주가정보,
+    handleGetStockInfomation(state, action) {
+      state.stockInfomation = action.payload;
+    },
+    // 종목 내용
+    handleGetStockDescription(state, action) {
+      state.stockdescription = action.payload;
+    },
   },
 });
 
-export const { handleGetGameData, handleGetGameDetailData, handleMoreGameData } = gamedata.actions;
+export const { handleGetGameData, handleGetStockDescription, handleMoreGameData, handleGetStockInfomation } =
+  gamedata.actions;
 export default gamedata;
