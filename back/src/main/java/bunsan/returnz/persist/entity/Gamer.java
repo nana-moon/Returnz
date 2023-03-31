@@ -42,7 +42,7 @@ public class Gamer {
 	@Column(nullable = false)
 	private Integer totalEvaluationAsset = 0;
 	@Builder.Default
-	@ColumnDefault("0.0")
+	@ColumnDefault("0")
 	@Column(nullable = false)
 	private Integer totalEvaluationStock = 0;
 	@Builder.Default
