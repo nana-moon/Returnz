@@ -7,7 +7,6 @@ export const BuySellData = createSlice({
     ifbuy: {
       companyName: '',
       orderPrice: '',
-      holdingCash: 10000000,
     },
     ifsell: {
       companyName: '',
