@@ -35,6 +35,7 @@ export default function GamePage() {
     axios
       .post('/games/game', datas)
       .then((res) => {
+        console.log(res.data, 'ddd');
         dispatch(handleMoreGameData(res.data.Stocks));
       })
       .catch((err) => {
