@@ -77,10 +77,7 @@ public class GameController {
 
 	@PostMapping("/sales")
 	public ResponseEntity<?> salesRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
-
-		gameService.buyStock(gameBuySellRequestBody);
-
-		return new ResponseEntity<>(gameService.buyStock(gameBuySellRequestBody), HttpStatus.OK);
+		return new ResponseEntity<>(gameService.sellStock(gameBuySellRequestBody), HttpStatus.OK);
 	}
 
 	@PostMapping("/init")
