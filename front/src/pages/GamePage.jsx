@@ -27,15 +27,14 @@ export default function GamePage() {
   const dispatch = useDispatch();
   const { state } = useLocation();
 
-  const readd = () => {
-    // const keys = testdata.map((item) => Object.keys(item)[0]);
+  const readd = () => {s
     console.log(testdata, 'test');
   };
 
   const axiospost = () => {
     const datas = {
-      roomId: 'dd417929-c7d8-4afa-add2-bfe9e4e4ce44',
-      gamerId: 1051,
+      roomId: '8af70294-1c6b-449f-a284-63c7ace79704',
+      gamerId: 1095,
     };
 
     axios
