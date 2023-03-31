@@ -65,6 +65,7 @@ export default function StockListItem({ Stock, i }) {
     <ItemContainer
       i={i}
       j={isSelect}
+      k={isThis}
       onClick={(e) => {
         createRipple(e);
         handleselectIdx(i);
@@ -126,8 +127,9 @@ const ItemContainer = styled.button`
       opacity: 0;
     }
   }
+  ${(props) => (props.k ? tw`bg-negative` : tw`bg-white`)}
   ${(props) => (props.i === props.j ? tw`ring-2 ring-negative drop-shadow-none` : tw``)}
-  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl overflow-hidden`}
+  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg rounded-xl overflow-hidden`}
 `;
 
 const ItemTitleSection = styled.div`

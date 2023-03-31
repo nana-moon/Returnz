@@ -1,27 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { keyframes } from 'styled-components';
 import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
+import { gameTurn } from '../../store/gamedata/GameData.selector';
 
 export default function Turn() {
   const [time, setTime] = useState(60);
-  const [turn, setTurn] = useState([0, 2, 15]);
-  setTimeout(() => {
-    const copy = time;
-    if (copy > 0) {
-      setTime(copy - 1);
-    }
-  }, 1000);
+  const turn = useSelector(gameTurn);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const copy = time;
+  //     if (copy > 0) {
+  //       setTime(copy - 1);
+  //     }
+  //   }, 1000);
+  //   return () => {
+  //     setTime(60);
+  //   };
+  // }, [turn]);
+
+  useEffect(() => {
+    setTime(60);
+    const interval = setInterval(() => {
+      setTime((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [turn]);
 
   const Icon = [];
 
-  for (let i = 0; i < turn[2]; i += 1) {
-    Icon.push(<TurnIcon index={i} num={turn[1]} />);
+  for (let i = 0; i < turn.maxTurn; i += 1) {
+    Icon.push(<TurnIcon index={i} num={turn.nowTurn} />);
   }
   return (
     <TurnContanier>
       <CountSection>{Icon}</CountSection>
-      <BarSection> </BarSection>
+      <BarSection turn={turn}> </BarSection>
       {time > 0 && <TimeSection> 🕒 {time} </TimeSection>}
       {/* <Progress label="남은시간" value={88} color="cyan" /> */}
     </TurnContanier>
@@ -100,6 +119,6 @@ const TimeSection = styled.div`
 
 const TurnIcon = styled(AiOutlineCheckCircle)`
   color: ${(props) => (props.index < props.num ? 'green' : 'black')};
-  font-size: ${(props) => (props.index === props.num ? '24px' : '20px')};
+  font-size: ${(props) => (props.index === props.num ? '32px' : '20px')};
   ${tw`mx-1`};
 `;
