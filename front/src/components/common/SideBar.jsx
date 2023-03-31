@@ -7,17 +7,28 @@ import Cookies from 'js-cookie';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import Stomp from 'webstomp-client';
-// import { useQuery, QueryClient } from 'react-query';
+import { useQuery } from 'react-query';
+import { Input } from '@material-tailwind/react';
+import { AiOutlineSearch } from 'react-icons/ai';
 import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
-import FriendSearchInput from './SideBar/FriendSearchInput';
+// import FriendSearchInput from './SideBar/FriendSearchInput';
+import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
+import { getFriendRequestsApi } from '../../apis/friendApi';
+
 // import { stomp } from '../../apis/axiosConfig';
 
 export default function SideBar() {
+  // 내정보
+  const myToken = Cookies.get('access_token');
+  const myMail = Cookies.get('email');
+  // 내 친구
   const [friendList, setfriendList] = useState();
-
+  // 내가 친구 추가하고싶은 사람
+  const [newFriendNickname, setNewFriendNickname] = useState('');
+  const onChange = (e) => setNewFriendNickname(e.target.value);
+  // 웹소켓
   const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-
   const options = {
     debug: false,
     protocols: Stomp.VERSIONS.supportedProtocols(),
@@ -25,8 +36,23 @@ export default function SideBar() {
   // client 객체 생성 및 서버주소 입력
   const stomp = StompJs.over(sock, options);
   // stomp로 감싸기
-  const myToken = Cookies.get('access_token');
-  const myMail = Cookies.get('email');
+  // const { data: friendList } = useQuery({
+  //   queryKey: ['friendRequests'],
+  //   queryFn: () => getFriendRequests(),
+  //   onError: (e) => {
+  //     console.log(e);
+  //   },
+  //   staleTime: 1000000,
+  // });
+  const handleFriendRequest = () => {
+    JSON.stringify({
+      type: 'FRIEND',
+      messageBody: {
+        username: `${newFriendNickname}`,
+      },
+    });
+  };
+
   useEffect(() => {
     const stompConnect = () => {
       try {
@@ -43,7 +69,9 @@ export default function SideBar() {
               `/user/sub/side-bar`,
               (data) => {
                 const newMessage = JSON.parse(data.body);
+                console.log(newMessage, '이게뭔데;');
                 const newFriend = newMessage.messageBody.friendList;
+                console.log(newFriend, '나의 칭구칭긔');
                 setfriendList(newFriend);
                 // 데이터 파싱
               },
@@ -64,6 +92,7 @@ export default function SideBar() {
                   username: `${myMail}`,
                 },
               }),
+              handleFriendRequest(),
             );
           },
         );
@@ -114,16 +143,42 @@ export default function SideBar() {
   //   );
   // };
   // sendMessage();
-
+  const { data: friendRequests } = useQuery({
+    queryKey: ['friendRequests'],
+    queryFn: () => getFriendRequestsApi(),
+    onError: (e) => {
+      console.log(e);
+    },
+    // staleTime: 1000000,
+  });
   return (
     <SideBarContainer>
       <UserProfile />
+      <FriendRequestsContainer>
+        {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
+        {friendRequests?.map((friendReq) => {
+          return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
+        })}
+      </FriendRequestsContainer>
       <FriendListContainer>
+        {friendList?.length > 0 ? <SectionTitle>내 친구들</SectionTitle> : null}
         {friendList?.map((friend) => {
           return <FriendListItems friend={friend} key={friend.username} />;
         })}
       </FriendListContainer>
-      <FriendSearchInput />
+      <FriendSearchContainer>
+        <Input
+          type="text"
+          label="닉네임을 검색하세요"
+          color="cyan"
+          value={newFriendNickname}
+          onChange={onChange}
+          className="bg-input"
+        />
+        <SearchButton onClick={handleFriendRequest}>
+          <AiOutlineSearch />
+        </SearchButton>
+      </FriendSearchContainer>
     </SideBarContainer>
   );
 }
@@ -132,6 +187,20 @@ const SideBarContainer = styled.div`
   ${tw`bg-white border-l-2 border-negative w-1/5`}
 `;
 
+const FriendRequestsContainer = styled.div`
+  ${tw`border-b-2`}
+`;
+const SectionTitle = styled.div`
+  ${tw`bg-dprimary text-white pl-4 font-bold `}
+`;
 const FriendListContainer = styled.div`
   ${tw``}
+`;
+const FriendSearchContainer = styled.div`
+  // position: fixed;
+  ${tw`flex border-t-2 border-negative px-2 pt-2 gap-2`}
+`;
+
+const SearchButton = styled.button`
+  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;

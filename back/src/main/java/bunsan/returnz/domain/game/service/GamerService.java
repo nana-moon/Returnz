@@ -41,10 +41,13 @@ public class GamerService {
 		return null;
 	}
 
-	public boolean updateDeposit(Integer changeDeposit) {
-		if (changeDeposit >= 0) {
-			Gamer gamer = new Gamer();
-			return gamer.updateDeposit(changeDeposit);
+	public boolean updateDeposit(Long gamerId, Integer changeDeposit) {
+		Optional<Gamer> gamerOptional = gamerRepository.findById(gamerId);
+		if (gamerOptional.isPresent()) {
+			if (changeDeposit >= 0) {
+				Gamer gamer = gamerOptional.get();
+				return gamer.updateDeposit(changeDeposit);
+			}
 		}
 		return false;
 	}

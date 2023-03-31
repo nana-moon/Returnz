@@ -1,16 +1,36 @@
-import { axios } from './axiosConfig';
+import { authApi } from './axiosConfig';
 
-const friendRequest = (payload) => {
-  return axios
-    .post('members/friends/request', payload)
+const getFriendRequestsApi = () => {
+  return authApi
+    .get('requests')
     .then((res) => {
-      console.log('친구신청 성공', res);
-      return res;
+      return res.data.friendRequestList;
     })
     .catch((err) => {
-      console.log('친구신청 실패', err);
       return err;
     });
 };
 
-export { friendRequest };
+const acceptFriendRequestApi = (payload) => {
+  return authApi
+    .post(`/friends/${payload}`)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+const declineFriendRequestApi = (payload) => {
+  return authApi
+    .delete(`/requests/${payload}`)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+export { getFriendRequestsApi, acceptFriendRequestApi, declineFriendRequestApi };

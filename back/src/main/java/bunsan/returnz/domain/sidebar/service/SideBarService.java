@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-// import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
@@ -130,8 +129,8 @@ public class SideBarService {
 		Member member = memberRepository.findByUsername(username)
 			.orElseThrow(() -> new NotFoundException("요청 맴버를 찾을 수 없습니다."));
 
-		// 상태 확인 후 변경
-		checkOnline(member);
+		// 온라인인지 상태 확인 후 변경
+		checkState(member, MemberState.ONLINE);
 
 		// 친구 조회 후 상태 전부 리턴
 		List<FriendInfo> friendInfoList = new ArrayList<>();
@@ -158,17 +157,16 @@ public class SideBarService {
 		// log.info("222");
 	}
 
-	public void checkOnline(Member member) {
-		if (!member.getState().equals(MemberState.ONLINE)) {
-			// log.info("222");
-			member.changeState(MemberState.ONLINE);
+	public void checkState(Member member, MemberState state) {
+		if (!member.getState().equals(state)) {
+			member.changeState(state);
 			memberRepository.save(member);
 			// 친구들에게 전송
 			for (Member friend : member.getFriends()) {
 				Map<String, Object> messageBody = new HashMap<>();
-				messageBody.put("state", MemberState.ONLINE.getCode());
-				messageBody.put("friendName", friend.getUsername());
-				messageBody.put("username", member.getUsername());
+				messageBody.put("state", state);
+				messageBody.put("friendName", member.getUsername());
+				messageBody.put("username", friend.getUsername());
 
 				SideMessageDto sideMessageDto = SideMessageDto.builder()
 					.type(SideMessageDto.MessageType.STATE)

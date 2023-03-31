@@ -10,7 +10,12 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleGetGameData, handleMoreGameData, stockInformation } from '../store/gamedata/GameData.reducer';
+import {
+  handleGetGameData,
+  handleMoreGameData,
+  handleGetStockInfomation,
+  handleGetStockDescription,
+} from '../store/gamedata/GameData.reducer';
 import { stockGraphList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
@@ -18,6 +23,7 @@ import Chatting from '../components/chatting/Chatting';
 export default function GamePage() {
   const [count, setCount] = useState(0);
   const testdata = useSelector(stockGraphList);
+
   const dispatch = useDispatch();
   const { state } = useLocation();
 
@@ -35,11 +41,13 @@ export default function GamePage() {
       .post('/games/game', datas)
       .then((res) => {
         if (count === 0) {
-          console.log(res.data, '데이터보냄');
+          console.log(res.data, '첫 턴 데이터');
           dispatch(handleGetGameData(res.data.Stocks));
-          dispatch(stockInformation(res.data.stockInformation));
+          dispatch(handleGetStockInfomation(res.data.stockInformation));
+          dispatch(handleGetStockDescription(res.data.companyDetail));
+          console.log('여기까지 실행이될까');
         } else {
-          console.log(res.data, '데이터보냄');
+          console.log(res.data, 'n 번째 데이터');
           dispatch(handleMoreGameData(res.data.Stocks));
         }
         const copy = count;
