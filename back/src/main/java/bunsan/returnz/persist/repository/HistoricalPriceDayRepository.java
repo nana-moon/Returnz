@@ -46,7 +46,8 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 
 	// 해당 날로부터 유니크한 날을 가젹온다
 	@Query(value =
-		"SELECT DISTINCT h.dateTime FROM HistoricalPriceDay h WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds"
+		"SELECT DISTINCT h.dateTime FROM HistoricalPriceDay h "
+			+ "WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds"
 			+ " ORDER BY h.dateTime ASC ")
 	Page<LocalDateTime> getDateEndDate(@Param("dateTime") LocalDateTime dateTime,
 		@Param("stockIds") List<String> stockIds, Pageable pageable);

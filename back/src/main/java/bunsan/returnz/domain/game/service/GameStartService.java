@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
-
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
@@ -155,16 +154,13 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkMonthRange(GameSettings gameSettings, List<String> gameStockIds) {
-		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(
-			gameSettings.getStartDateTime(),
+		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(gameSettings.getStartDateTime(),
 			gameSettings.getTotalTurn());
 		for (MonthRange monthRange : monthRanges) {
 			LocalDateTime monthStart = monthRange.getFirstDay();
 			LocalDateTime monthEnd = monthRange.getLastDay();
-			boolean checkDataInMonthTurn = historicalPriceDayRepository
-				.existsAtLeastOneRecordForEachCompany(
-					monthStart, monthEnd,
-					gameStockIds, 10L);
+			boolean checkDataInMonthTurn = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(monthStart,
+				monthEnd, gameStockIds, 10L);
 			if (!checkDataInMonthTurn) {
 				throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
@@ -199,16 +195,15 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkWeek(GameSettings gameSettings, List<String> gameStockIds) {
-		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(
-			gameSettings.getStartDateTime(),
+		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameSettings.getStartDateTime(),
 			gameSettings.getTotalTurn());
 		for (WeekRange weekRange : weekRanges) {
 			LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
 			LocalDateTime endDay = weekRange.getWeekLastDay();
 
-			boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository
-				.existsAtLeastOneRecordForEachCompany(
-					weekFirstDay, endDay, gameStockIds, 10L);
+			boolean checkAllStockIsThereMoreThenInWeek =
+				historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
+				weekFirstDay, endDay, gameStockIds, 10L);
 			if (!checkAllStockIsThereMoreThenInWeek) {
 				throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
@@ -322,17 +317,17 @@ public class GameStartService {
 
 		// 뉴스 찾을 찾아올 구간 확인
 		LocalDateTime startDate = gameSettings.getStartDateTime();
-		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(
-			startDate, stockIdList, pageable).getContent();
+		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList, pageable)
+			.getContent();
 		//있는 데이터 중에서
 		//가능한 구간의 마지막 하나만 가져온다 = endDate
-		LocalDateTime endDate = dateEndDate.get(dateEndDate.size()-1);
-		log.info("찾아올 기간 :" + startDate + " ~ "+ endDate) ;
+		LocalDateTime endDate = dateEndDate.get(dateEndDate.size() - 1);
+		log.info("찾아올 기간 :" + startDate + " ~ " + endDate);
 		// 기간 안에 뉴스 검색
-		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate,
-			endDate, stockIdList);
+		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
+			stockIdList);
 		for (FinancialNews financialNews : newsList) {
-			log.info(financialNews.getKoName() + " " + financialNews.getDate() );
+			log.info(financialNews.getKoName() + " " + financialNews.getDate());
 		}
 
 		// 뉴스
@@ -340,11 +335,7 @@ public class GameStartService {
 		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
 			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
 
-		NewsGroup newGroup = NewsGroup.builder()
-			.financialNews(newsList)
-			.endTime(endDate)
-			.startTime(startDate)
-			.build();
+		NewsGroup newGroup = NewsGroup.builder().financialNews(newsList).endTime(endDate).startTime(startDate).build();
 		gameRoom.setNewsGroup(newGroup);
 		gameRoomRepository.save(gameRoom);
 		newsGroupRepository.save(newGroup);
