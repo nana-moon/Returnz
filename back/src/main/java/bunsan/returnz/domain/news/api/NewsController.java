@@ -22,11 +22,7 @@ public class NewsController {
 	private final NewsService newsService;
 
 	@PostMapping
-	public ResponseEntity<?> turnNews(@RequestBody NewsRequestDto newsRequestDto) {
-		// 요청을 뭘 받아야하나??
-		// 필요한 턴,
-		// 입력 방 번호, 날자, 기업
-		log.info("hi");
+	public ResponseEntity<?> turnNews(@Valid @RequestBody NewsRequestDto newsRequestDto) {
 
 		NewsResponseDto news = newsService.getNews(newsRequestDto);
 		if (news.isValid()) {

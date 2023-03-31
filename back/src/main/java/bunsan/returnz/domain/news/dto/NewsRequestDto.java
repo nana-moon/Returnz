@@ -14,12 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewsRequestDto {
-
-
+	@NotNull
 	private Long id;
-
+	@NotNull
 	private String companyCode;
-
+	@NotNull
 	private LocalDateTime articleDateTime;
 
 
