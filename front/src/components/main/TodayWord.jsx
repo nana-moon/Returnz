@@ -53,7 +53,7 @@ const TodayWordTitle = styled.div`
 `;
 
 const TodayWordCarousel = styled.div`
-  ${tw`relative bg-white rounded-xl border-2 border-negative p-2`}
+  ${tw`relative bg-white w-[100%] h-[100%] rounded-xl border-2 border-negative p-2`}
 `;
 
 const WordTitle = styled.div`

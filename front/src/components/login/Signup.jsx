@@ -1,5 +1,6 @@
 import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import Swal from 'sweetalert2';
 import { Input, Button } from '@material-tailwind/react';
 import { userSignup } from '../../apis/signApi';
 
@@ -21,22 +22,20 @@ export default function Signup({ changeMode }) {
     const result = await userSignup(userSignupData);
     if (result === true) {
       changeMode();
-      alert('회원가입 성공');
+      Swal.fire({ title: '회원가입 성공', confirmButtonColor: '#1CD6C9' });
     } else {
-      alert(result);
+      Swal.fire({ title: result, confirmButtonColor: '#1CD6C9' });
     }
   };
   const handleCheckEmail = (e) => {
     // eslint-disable-next-line no-useless-escape
     const regex = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
     if (e.target.value === '' || regex.test(e.target.value)) {
-      console.log('이메일 유효성검사 성공', e.target.value);
       setemailCheck(true);
       const copy = { ...userSignupData };
       copy.username = e.target.value;
       setUserSignupData(copy);
     } else {
-      console.log('이메일 유효성검사 실패', e.target.value);
       setemailCheck(false);
       const copy = { ...userSignupData };
       copy.username = false;
@@ -46,13 +45,11 @@ export default function Signup({ changeMode }) {
   const handleCheckNickname = (e) => {
     const regex = /^[ㄱ-ㅎ가-힣a-zA-Z0-9]{3,10}$/;
     if (e.target.value === '' || regex.test(e.target.value)) {
-      console.log('닉네임 유효성 검사 성공', e.target.value);
       setnicknameCheck(true);
       const copy = { ...userSignupData };
       copy.nickname = e.target.value;
       setUserSignupData(copy);
     } else {
-      console.log('닉네임 유효성 검사 실패', e.target.value);
       setnicknameCheck(false);
       const copy = { ...userSignupData };
       copy.nickname = false;
@@ -62,14 +59,12 @@ export default function Signup({ changeMode }) {
   const handleCheckPassword = (e) => {
     const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
     if (e.target.value === '' || regex.test(e.target.value)) {
-      console.log('비밀번호 유효성 검사 성공', e.target.value);
       setpasswordCheck(true);
       setuserPassword(e.target.value);
       const copy = { ...userSignupData };
       copy.password = e.target.value;
       setUserSignupData(copy);
     } else {
-      console.log('비밀번호 유효성 검사 실패', e.target.value);
       setpasswordCheck(false);
       const copy = { ...userSignupData };
       copy.password = false;
