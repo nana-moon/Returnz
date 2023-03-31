@@ -321,7 +321,8 @@ public class GameStartService {
 			gameSettings.getStartDateTime(), stockIdList, pageable);
 		List<HistoricalPriceDay> priceDays = new ArrayList<>();
 		// for (LocalDateTime date : uniqueDates) {
-		// 	List<HistoricalPriceDay> dayDataList = historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
+		// 	List<HistoricalPriceDay> dayDataList
+		// 	= historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
 		// 	priceDays.addAll(dayDataList);
 		// }
 		// List<LocalDateTime> uniqueDates = financialNewsRepository.findDistinctDatesAfter(
