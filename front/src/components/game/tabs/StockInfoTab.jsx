@@ -1,6 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
+import { stockInfomation } from '../../../store/gamedata/GameData.selector';
 
 export default function StockInfoTab() {
   const data = [
@@ -19,10 +21,10 @@ export default function StockInfoTab() {
       <StyledTable>
         <thead>
           <tr>
-            <StyledHeader> 과거 날짜 </StyledHeader>
-            <StyledHeader> 과거 주가 </StyledHeader>
-            <StyledHeader> 과거 대비 </StyledHeader>
-            <StyledHeader> 과거 등락 </StyledHeader>
+            <StyledHeader> 날짜 </StyledHeader>
+            <StyledHeader> 주가 </StyledHeader>
+            <StyledHeader> 대비 </StyledHeader>
+            <StyledHeader> 등락 </StyledHeader>
             <StyledHeader> 거래량 </StyledHeader>
           </tr>
         </thead>
