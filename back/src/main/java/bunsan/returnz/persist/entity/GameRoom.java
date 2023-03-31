@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import bunsan.returnz.domain.game.dto.GameRoomDto;
@@ -59,13 +58,13 @@ public class GameRoom {
 
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()
-			.id(gameRoom.id)
-			.roomId(gameRoom.roomId)
-			.curTurn(gameRoom.curTurn)
-			.totalTurn(gameRoom.totalTurn)
-			.curDate(gameRoom.curDate)
-			.turnPerTime(gameRoom.turnPerTime)
-			.roomMemberCount(gameRoom.roomMemberCount)
+			.id(gameRoom.getId())
+			.roomId(gameRoom.getRoomId())
+			.curTurn(gameRoom.getCurTurn())
+			.totalTurn(gameRoom.getTotalTurn())
+			.curDate(gameRoom.getCurDate())
+			.turnPerTime(gameRoom.getTurnPerTime())
+			.roomMemberCount(gameRoom.getRoomMemberCount())
 			.build();
 	}
 

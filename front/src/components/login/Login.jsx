@@ -18,13 +18,11 @@ export default function Login({ changeMode }) {
     // 이메일 정규표현식
     if (e.target.value === '' || regex.test(e.target.value)) {
       // 입력란이 공백이거나 값이 입력되면 유효성검사 진행
-      console.log('이메일 유효성검사 성공', e.target.value);
       setEmailCheck(true);
       const copy = { ...userLoginData };
       copy.username = e.target.value;
       setUserLoginData(copy);
     } else {
-      console.log('이메일 유효성검사 실패', e.target.value);
       setEmailCheck(false);
       const copy = { ...userLoginData };
       copy.username = false;
@@ -53,7 +51,7 @@ export default function Login({ changeMode }) {
   };
   return (
     <Contanier>
-      <MainSection>로그인</MainSection>
+      <MainSection>Login</MainSection>
       <form>
         <InputBox>
           <EmailInput

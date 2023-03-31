@@ -1,24 +1,36 @@
-import { axios } from './axiosConfig';
+import { axios, authApi } from './axiosConfig';
 
-const makeRoomApi = () => {
-  console.log('---------------');
-  return axios.post('/wait-rooms');
+const makeRoomApi = async () => {
+  return authApi
+    .post('/wait-room')
+    .then((res) => {
+      console.log('방만들기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('방만들기 실패', err);
+      return err;
+    });
 };
 
 const startGameApi = async (payload) => {
-  console.log(payload, '코비드 전달값');
-  const res = await axios.post('/games/init', payload);
-  console.log(res);
-  return res;
+  const res = await authApi.post('/games/init', payload);
+  return res.data;
 };
 
 const gameDataApi = (payload) => {
-  const gameData = axios.post('/games/game', payload);
-  console.log(gameData);
-  // 데이터 넣어주기
-  return gameData;
+  console.log(payload);
+  return authApi
+    .post('/games/game', payload)
+    .then((res) => {
+      console.log('데이터 가져오기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('데이터 가져오기 실패', err);
+      return err;
+    });
 };
-
 const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
