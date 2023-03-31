@@ -35,7 +35,7 @@ public class MainPageService {
 			RankDto rankDto = RankDto.builder()
 				.username(member.getUsername())
 				.nickname(member.getNickname())
-				.profileIcon(member.getProfileIcon().getCode())
+				.profileIcon(member.getProfileIcon())
 				.avgProfit(member.getAvgProfit())
 				.build();
 			rankList.add(rankDto);

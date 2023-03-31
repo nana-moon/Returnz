@@ -49,11 +49,11 @@ public class WaitController {
 			waitService.sendGameSetting((SettingDto)waitRequest.getMessageBody());
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.GAME_INFO)) {
 			waitService.sendGameInfo(waitRequest);
-		}
-		else { // 예외 처리 메세지 소켓으로 send?
+		} else { // 예외 처리 메세지 소켓으로 send?
 			throw new BadRequestException("메세지 타입이 올바르지 않습니다.");
 		}
 	}
+
 	//----------------------------------대기방 인원 조정------------------------------------
 	@PatchMapping("/api/wait-room")
 	public ResponseEntity minusWaitMemberCnt(@RequestHeader(value = "Authorization") String bearerToken,
