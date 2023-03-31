@@ -9,14 +9,18 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleMoreGameData } from '../store/gamedata/GameData.reducer';
-import { stockGraphList } from '../store/gamedata/GameData.selector';
+import {
+  handleMoreGameData,
+  handleUpdateHoldingData,
+  handleGetStockInformation,
+} from '../store/gamedata/GameData.reducer';
+import { gamerStockList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 
 export default function GamePage() {
-  const testdata = useSelector(stockGraphList);
+  const testdata = useSelector(gamerStockList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
 
@@ -37,6 +41,8 @@ export default function GamePage() {
       .then((res) => {
         console.log(res.data, 'ddd');
         dispatch(handleMoreGameData(res.data.Stocks));
+        dispatch(handleUpdateHoldingData(res.data.gamerStock));
+        dispatch(handleGetStockInformation(res.data.stockInformation));
       })
       .catch((err) => {
         console.log(err);
@@ -73,7 +79,7 @@ export default function GamePage() {
   );
 }
 const GameContainer = styled.div`
-  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq`}
+  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq mt-14`}
 `;
 const LeftSection = styled.div`
   max-height: 88vh;
