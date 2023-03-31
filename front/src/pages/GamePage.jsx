@@ -10,7 +10,12 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleGetGameData, handleMoreGameData } from '../store/gamedata/GameData.reducer';
+import {
+  handleGetGameData,
+  handleMoreGameData,
+  handleGetStockInfomation,
+  handleGetStockDescription,
+} from '../store/gamedata/GameData.reducer';
 import { stockGraphList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
@@ -18,6 +23,7 @@ import Chatting from '../components/chatting/Chatting';
 export default function GamePage() {
   const [count, setCount] = useState(0);
   const testdata = useSelector(stockGraphList);
+
   const dispatch = useDispatch();
   const { state } = useLocation();
 
@@ -28,18 +34,21 @@ export default function GamePage() {
 
   const axiospost = () => {
     const datas = {
-      roomId: 'cb08d65a-8da3-4932-b84e-cc4d877eec5a',
-      gamerId: 975,
+      roomId: 'dd417929-c7d8-4afa-add2-bfe9e4e4ce44',
+      gamerId: 1051,
     };
 
     axios
       .post('/games/game', datas)
       .then((res) => {
         if (count === 0) {
-          console.log(res.data, '데이터보냄');
+          console.log(res.data, '첫 턴 데이터');
           dispatch(handleGetGameData(res.data.Stocks));
+          dispatch(handleGetStockInfomation(res.data.stockInformation));
+          dispatch(handleGetStockDescription(res.data.companyDetail));
+          console.log('여기까지 실행이될까');
         } else {
-          console.log(res.data, '데이터보냄');
+          console.log(res.data, 'n 번째 데이터');
           dispatch(handleMoreGameData(res.data.Stocks));
         }
         const copy = count;
