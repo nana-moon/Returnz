@@ -1,19 +1,37 @@
 package bunsan.returnz.domain.news.api;
 
+import javax.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.news.dto.NewsRequestDto;
+import bunsan.returnz.domain.news.dto.NewsResponseDto;
+import bunsan.returnz.domain.news.service.NewsService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
-@RequestMapping("/news")
+@RequestMapping("/api/news")
+@AllArgsConstructor
+@Slf4j
 public class NewsController {
-	@GetMapping
-	public ResponseEntity<?> turnNews() {
-		// 요청 모든 구성원이 같은 뉴스를 줘야합니다
-		// 1. 뉴스를 그룹을 테이블로 관리한다 n:M
-		// 2. 조회 했을대 맨앞 인덱스 뉴스를 가져온다.
-		// 2번방법은 편한데 테이블 없이 할수 있는데 같은기간에 다른 게임에서 같은 뉴스가 나온다...
-		return null;
+	private final NewsService newsService;
+
+	@PostMapping
+	public ResponseEntity<?> turnNews(@RequestBody NewsRequestDto newsRequestDto) {
+		// 요청을 뭘 받아야하나??
+		// 필요한 턴,
+		// 입력 방 번호, 날자, 기업
+		log.info("hi");
+
+		NewsResponseDto news = newsService.getNews(newsRequestDto);
+		if (news.isValid()) {
+			return ResponseEntity.ok().body(news);
+		}
+		return ResponseEntity.badRequest().body("정상출력 안됨");
 	}
 }
