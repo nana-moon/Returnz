@@ -3,7 +3,9 @@ package bunsan.returnz.persist.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -25,7 +27,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.member.enums.MemberStateConverter;
 import bunsan.returnz.domain.member.enums.ProfileIcon;
-import bunsan.returnz.domain.member.enums.ProfileIconConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,14 +85,15 @@ public class Member implements UserDetails {
 	private List<Member> friends = new ArrayList<>();
 
 	// @ManyToMany
-	// @Builder.Default
-	// @Convert(converter =  ProfileIconConverter.class)
-	// private List<ProfileIcon> permittedProfileList = new ArrayList<ProfileIcon>(){{
-	// 	add(ProfileIcon.ONE);
-	// }};
+	@ElementCollection
 	@Builder.Default
-	@Convert(converter = ProfileIconConverter.class)
-	private ProfileIcon profileIcon = ProfileIcon.ONE;
+	private Set<String> permittedProfiles = new HashSet<>() {
+		{
+			add(ProfileIcon.ONE.getCode());
+		}
+	};
+	@Builder.Default
+	private String profileIcon = ProfileIcon.ONE.getCode();
 
 	// roles
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -183,5 +185,13 @@ public class Member implements UserDetails {
 
 	public void changeNickname(String newNickname) {
 		this.nickname = newNickname;
+	}
+
+	public void changeProfile(String newProfile) {
+		this.profileIcon = newProfile;
+	}
+
+	public void addProfile(String newProfile) {
+		this.permittedProfiles.add(newProfile);
 	}
 }

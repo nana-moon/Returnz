@@ -49,7 +49,7 @@ public class FriendController {
 	//-----------------------------------친구 요청 수락----------------------------------------
 	@PostMapping("/api/friends/{id}")
 	public ResponseEntity addFriend(@RequestHeader(value = "Authorization") String bearerToken,
-									@PathVariable Long id) {
+		@PathVariable Long id) {
 		String token = bearerToken.substring(7);
 		friendService.addFriend(id, token);
 		return new ResponseEntity<>(HttpStatus.CREATED);
@@ -71,6 +71,7 @@ public class FriendController {
 		friendService.deleteFriend(username, token);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+
 	//-----------------------------------친구 요청 생성-------------------------------------
 	@PostMapping("/api/requests")
 	public ResponseEntity sendFriendRequest(@RequestHeader(value = "Authorization") String bearerToken,
