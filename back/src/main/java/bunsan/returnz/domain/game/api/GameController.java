@@ -12,13 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
-import bunsan.returnz.domain.game.dto.GameGamerDto;
-import bunsan.returnz.domain.game.dto.GameGamerStockDto;
-import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRequestBody;
-import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
-import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.dto.RequestSettingGame;
 import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.service.GameCompanyDetailService;
@@ -55,8 +50,8 @@ public class GameController {
 	 * ex) 0번 째 턴 -> 시작 화면 구성
 	 * ex) X번 째 턴 -> 진행 정보 전달
 	 *
-	 * @param gameRequestBody
-	 * @return
+	 * @param gameRequestBody : 게임 시작, 진행을 위해 전달해야하는 정보. (roomId, gamerId)
+	 * @return : 게임 진행에 필요한 정보를 key : value 형태로 반환한다.
 	 */
 	@PostMapping("/game")
 	public ResponseEntity<?> gameStart(@RequestBody GameRequestBody gameRequestBody) {
@@ -75,18 +70,17 @@ public class GameController {
 
 	}
 
-	@PostMapping("/buy-sell")
-	public ResponseEntity<?> buySellRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
+	@PostMapping("/purchases")
+	public ResponseEntity<?> purchasesRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
+		return new ResponseEntity<>(gameService.buyStock(gameBuySellRequestBody), HttpStatus.OK);
+	}
 
-		// gameService.getExchangeInterest(gameBuySellRequestBody.get);
+	@PostMapping("/sales")
+	public ResponseEntity<?> salesRequest(@RequestBody GameBuySellRequestBody gameBuySellRequestBody) {
 
-		// if (gameBuySellRequestBody == null) {
-		// 	throw new BadRequestException("잘못된 매수/ 매도 요청입니다.");
-		// }
-		//
-		// gameService.buyStock()
-		// return null;
-		return null;
+		gameService.buyStock(gameBuySellRequestBody);
+
+		return new ResponseEntity<>(gameService.buyStock(gameBuySellRequestBody), HttpStatus.OK);
 	}
 
 	@PostMapping("/init")
