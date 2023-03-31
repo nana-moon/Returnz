@@ -53,7 +53,7 @@ const getOilPrice = async () => {
       apikey: `"${API_KEY}"`,
     },
   });
-  return response.data.data;
+  return response.data.data[0];
 };
 
 export { getExchangeKrUs, getExchangeKrJp, getExchangeKrEu, getExchangeKrBit, getOilPrice };

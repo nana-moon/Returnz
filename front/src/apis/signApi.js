@@ -7,7 +7,6 @@ const userLogin = (payload) => {
   return axios
     .post('members/login', payload)
     .then((res) => {
-      console.log('로그인 성공', res.data);
       const token = res.data.accessToken;
       const refreshToken = res.data.refreshToken;
 
@@ -26,7 +25,6 @@ const userLogin = (payload) => {
       return true;
     })
     .catch((err) => {
-      console.log('로그인 실패', err);
       return err.response.data.message;
     });
 };
@@ -35,11 +33,9 @@ const userSignup = (payload) => {
   return axios
     .post('members/signup', payload)
     .then((res) => {
-      console.log('회원가입 성공', res);
       return true;
     })
     .catch((err) => {
-      console.log('회원가입 실패', err);
       return err.response.data.message;
     });
 };

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Header from '../components/common/Header';
 import SideBar from '../components/common/SideBar';
 import ProfileEditModal from '../components/common/ProfileEditModal';
+import { editModalState } from '../store/profileeditmodal/ProfileEdit.selector';
 
 export default function UsePage() {
-  const [modal, setModal] = useState(false);
-  // const handleModal = (data) => {
-  //   setModal(data);
-  // };
+  const modal = useSelector(editModalState);
   return (
     <div>
       {modal === true ? <ProfileEditModal /> : null}
@@ -17,7 +16,6 @@ export default function UsePage() {
         <div className="w-[100%] flex justify-center">
           <Outlet />
         </div>
-        {/* <SideBar onModal={handleModal} /> */}
         <SideBar />
       </div>
     </div>
