@@ -41,7 +41,14 @@ public class StompHandler implements ChannelInterceptor {
 			Authentication authentication = jwtTokenProvider.getAuthentication(authToken);
 			headerAccessor.setUser(authentication);
 			log.info("online: " + authentication.getName());
-		} else if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())) {
+		}
+		// else if (StompCommand.SEND.equals(headerAccessor.getCommand())) {
+		// 	String authToken = headerAccessor.getFirstNativeHeader("Authorization").substring(7);
+		// 	Authentication authentication = jwtTokenProvider.getAuthentication(authToken);
+		// 	headerAccessor.setUser(authentication);
+		// 	log.info("online: " + authentication.getName());
+		// }
+		else if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())) {
 			String username = headerAccessor.getUser().getName();
 			log.info("offline: " + username);
 			Member member = memberRepository.findByUsername(username)

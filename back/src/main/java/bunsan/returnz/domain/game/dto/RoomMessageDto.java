@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import reactor.util.annotation.Nullable;
 
 @Getter
 @Builder
@@ -20,6 +21,6 @@ public class RoomMessageDto {
 	private String roomId;
 	private Map<String, Object> messageBody;
 	public enum MessageType {
-		MAKE_GAME, READY, TURN, CHAT, END, @JsonEnumDefaultValue UNKNOWN;
+		ENTER, READY, TURN, CHAT, END, @JsonEnumDefaultValue UNKNOWN;
 	}
 }
