@@ -100,7 +100,7 @@ public class GameService {
 
 		// 4. 다음 턴 정보 업데이트
 		if (!updateTurnInformation(gameStockDtoList.get(0).getCompanyCode(), roomId,
-			gameRoomDto)) {
+			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
 
@@ -197,7 +197,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
 	 */
-	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto) {
+	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto, Long gamerId) {
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
@@ -213,6 +213,8 @@ public class GameService {
 		// gamerStockService.findAllByGamer_Id(gamerId)로 얻어온 리스트들을 순회하면서
 		// gameHistoricalPriceDayDto.getDateTime()에 해당하는 데이터를 가져온 후 갱신한다. (update)
 		// 갱신 목록은 buy 메서드 참고
+		// HashMap<String, GameGamerDto> gameGamerDtos = getAllGamer(gameRoomDto);
+		// List<GameGamerStockDto> gameStockDtoList = gamerStockService.findAllByGamer_Id(gamerId);
 
 		// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
 
