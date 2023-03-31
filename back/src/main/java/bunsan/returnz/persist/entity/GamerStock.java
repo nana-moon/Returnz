@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,16 +34,36 @@ public class GamerStock {
 	@Builder.Default
 	private Integer totalAmount = 0;
 
+	@Builder.Default
+	private Double averagePrice = 0.0;
+
+	@Builder.Default
+	private Double valuation = 0.0;
+	@Builder.Default
+	@ColumnDefault("0")
+	@Column(nullable = false)
+	private Double profitRate = 0.0;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "GAMER_ID")
 	private Gamer gamer;
 
 	public GameGamerStockDto toDto(GamerStock gamerStock) {
 		return GameGamerStockDto.builder()
+			.id(gamerStock.getId())
 			.companyCode(gamerStock.getCompanyCode())
 			.totalCount(gamerStock.getTotalCount())
 			.totalAmount(gamerStock.getTotalAmount())
 			.gamerId(gamerStock.getGamer().getId())
+			.averagePrice(gamerStock.getAveragePrice())
+			.valuation(gamerStock.getValuation())
+			.profitRate(gamerStock.getProfitRate())
 			.build();
+	}
+
+	public boolean updateBuyStockCount(Integer count, Double price) {
+		this.totalCount += count;
+		this.totalAmount = Math.toIntExact(Math.round(this.totalCount * price));
+		return true;
 	}
 }

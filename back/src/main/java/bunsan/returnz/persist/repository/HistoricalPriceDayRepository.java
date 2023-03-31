@@ -8,27 +8,52 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 
 public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPriceDay, Long> {
 	@Query(value = "SELECT * FROM historical_price_day h\n"
-		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n" + "ORDER BY h.date_time DESC\n"
+		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 20", nativeQuery = true)
-	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit20(LocalDateTime dateTime, String companyCode);
+	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit20(LocalDateTime dateTime,
+		String companyCode);
 
 	@Query(value = "SELECT * FROM historical_price_day h\n"
-		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n" + "ORDER BY h.date_time DESC\n"
+		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 1", nativeQuery = true)
-	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit1(LocalDateTime dateTime, String companyCode);
+	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit1(LocalDateTime dateTime,
+		String companyCode);
 
 	@Query(value = "SELECT * FROM historical_price_day h\n"
-		+ "WHERE h.date_time > :dateTime AND h.company_code = :companyCode\n" + "ORDER BY h.date_time ASC\n"
+		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time DESC\n"
+		+ "LIMIT 6", nativeQuery = true)
+	List<HistoricalPriceDay> findAllByDateTimeIsBeforeWithCodeLimit6(LocalDateTime dateTime,
+		String companyCode);
+
+	@Query(value = "SELECT * FROM historical_price_day h\n"
+		+ "WHERE h.date_time > :dateTime AND h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time ASC\n"
 		+ "LIMIT 1", nativeQuery = true)
-	Optional<HistoricalPriceDay> findByDateTimeIsAfterWithCodeLimit1(LocalDateTime dateTime, String companyCode);
+	Optional<HistoricalPriceDay> findByDateTimeIsAfterWithCodeLimit1(LocalDateTime dateTime,
+		String companyCode);
 
 	Optional<HistoricalPriceDay> findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode);
+
+
+	// 유니크한 날을 가져온다
+	@Query(value =
+		"SELECT DISTINCT h.dateTime FROM HistoricalPriceDay h WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds"
+			+ " ORDER BY h.dateTime ASC")
+	List<LocalDateTime> findDistinctDatesAfter(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds, Pageable pageable);
+	// 날을 기반으로 데이터를 가져온다.
+	@Query(value = "SELECT h FROM HistoricalPriceDay h WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds"
+		+ " ORDER BY h.dateTime ASC")
+	List<HistoricalPriceDay> findAllByDateAndStockIds(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds);
 
 	// day
 	// week
@@ -47,8 +72,5 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 	boolean existsAtLeastOneRecordForEachCompany(@Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate, @Param("stockIds") List<String> stockIds,
 		@Param("stockCount") Long stockCount);
-
-
-
 
 }

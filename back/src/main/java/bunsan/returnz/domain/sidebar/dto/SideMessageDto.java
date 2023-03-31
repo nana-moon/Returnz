@@ -3,6 +3,8 @@ package bunsan.returnz.domain.sidebar.dto;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +21,6 @@ public class SideMessageDto implements Serializable {
 	private Map<String, Object> messageBody;
 
 	public enum MessageType {
-		INVITE, STATE, FRIEND, ENTER, EXIT
+		INVITE, STATE, FRIEND, ENTER, EXIT, @JsonEnumDefaultValue UNKNOWN;
 	}
 }
