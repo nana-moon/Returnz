@@ -25,8 +25,10 @@ public class SideBarController {
 		// SimpMessageHeaderAccessor accessor
 		String token = bearerToken.substring(7);
 
+
 		if (sideRequest.getType().equals(SideMessageDto.MessageType.FRIEND)) {
 			sideBarService.sendFriendRequest(sideRequest, token);
+			log.info("token" + token);
 		} else if (sideRequest.getType().equals(SideMessageDto.MessageType.ENTER)) {
 			sideBarService.sendEnterMessage((String)sideRequest.getMessageBody().get("username"));
 		} else if (sideRequest.getType().equals(SideMessageDto.MessageType.INVITE)) {

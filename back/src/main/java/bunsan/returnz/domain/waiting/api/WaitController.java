@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import bunsan.returnz.domain.waiting.dto.SettingDto;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
 import bunsan.returnz.domain.waiting.service.WaitService;
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.WaitRoom;
 import lombok.RequiredArgsConstructor;
 
@@ -39,8 +41,13 @@ public class WaitController {
 			waitService.sendChatMessage(waitRequest, token);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.EXIT)) {
 			waitService.sendExitMessage(waitRequest, token);
-		} else {
-			waitService.sendGameSetting(waitRequest);
+		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.SETTING)) {
+			waitService.sendGameSetting((SettingDto)waitRequest.getMessageBody());
+		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.GAME_INFO)) {
+			waitService.sendGameInfo(waitRequest);
+		}
+		else { // 예외 처리 메세지 소켓으로 send?
+			throw new BadRequestException("메세지 타입이 올바르지 않습니다.");
 		}
 	}
 }
