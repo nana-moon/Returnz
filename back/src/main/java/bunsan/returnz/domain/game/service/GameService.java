@@ -203,6 +203,19 @@ public class GameService {
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, companyCode);
 
+		if (gameRoomDto.getCurTurn() == 0) {
+			return gameRoomService.updateGameTurn(curTime, roomId);
+		}
+
+		// stockInformation.put("gamer", getAllGamer(gameRoomDto));
+		// stockInformation.put("gamerStock", gamerStockService.findAllByGamer_Id(gamerId));
+
+		// gamerStockService.findAllByGamer_Id(gamerId)로 얻어온 리스트들을 순회하면서
+		// gameHistoricalPriceDayDto.getDateTime()에 해당하는 데이터를 가져온 후 갱신한다. (update)
+		// 갱신 목록은 buy 메서드 참고
+
+		// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
+
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
 
@@ -373,13 +386,12 @@ public class GameService {
 		String companyCode = gameBuySellRequestBody.getCompanyCode();
 		String roomId = gameBuySellRequestBody.getRoomId();
 
-		System.out.println(gameBuySellRequestBody.toString());
-
 		// 사용자의 자산확인
 		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
 		// stock 가격 확인
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 		gameRoomDto = gameRoomService.findByRoomId(roomId);
+
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
 			= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 			gameRoomDto.getCurDate(),
@@ -387,12 +399,10 @@ public class GameService {
 
 		log.info(gameHistoricalPriceDayDto.toString());
 
-		Double stockClosePrice = 0.0;
-		if (gameHistoricalPriceDayDto != null) {
-			stockClosePrice = Double.parseDouble(
-				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
-		}
-
+		Double stockClosePrice = Double.parseDouble(
+			String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
+		log.info("" + stockClosePrice);
+		log.info(gameGamerDto.toString());
 		if (stockClosePrice == 0) {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
@@ -403,6 +413,7 @@ public class GameService {
 			// if() 외국 주식 인 경우 환율 적용하기
 
 			// 매수 요청 종목 불러오기
+			log.info("========================");
 			GameGamerStockDto gameGamerStockDto =
 				gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 			log.info(gameGamerStockDto.toString());
