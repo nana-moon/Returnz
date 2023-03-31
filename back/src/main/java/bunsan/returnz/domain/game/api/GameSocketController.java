@@ -19,12 +19,17 @@ public class GameSocketController {
 	private final GameSocketService gameSocketService;
 
 	@MessageMapping("/game-room")
-	public void sendToGameRoom(RoomMessageDto gameRequest, @Header("Authorization") String bearerToken) {
-		// String token = bearerToken.substring(7);
-		if (gameRequest.getType().equals(RoomMessageDto.MessageType.READY)
-			|| gameRequest.getType().equals(RoomMessageDto.MessageType.TURN)
-			|| gameRequest.getType().equals(RoomMessageDto.MessageType.CHAT)) {
-			gameSocketService.sendPublicMessage(gameRequest);
+	public void sendToGameRoom(RoomMessageDto roomMessageDto, @Header("Authorization") String bearerToken) {
+		String token = bearerToken.substring(7);
+		// log.info("tokendd"+token);
+		if (roomMessageDto.getType().equals(RoomMessageDto.MessageType.ENTER)) {
+			gameSocketService.sendEnterMessage(roomMessageDto, token);
+		} else if (roomMessageDto.getType().equals(RoomMessageDto.MessageType.READY)) {
+			gameSocketService.sendReadyMessage(roomMessageDto, token);
+		} else if (roomMessageDto.getType().equals(RoomMessageDto.MessageType.CHAT)) {
+			gameSocketService.sendChatMessage(roomMessageDto, token);
+		} else if (roomMessageDto.getType().equals(RoomMessageDto.MessageType.END)) {
+			gameSocketService.sendEndMessage(roomMessageDto);
 		} else {
 			throw new BadRequestException("요청 타입이 올바르지 않습니다.");
 		}
