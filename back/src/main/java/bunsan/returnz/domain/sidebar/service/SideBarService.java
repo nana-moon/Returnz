@@ -38,50 +38,50 @@ public class SideBarService {
 
 	@Transactional
 	public void sendFriendRequest(SideMessageDto sideRequest, String token) {
-		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
-		// Map<String, Object> requestBody = sideRequest.getMessageBody();
-		//
-		// // token에 저장된 Member > 요청한 사람
-		// Member requester = jwtTokenProvider.getMember(token);
-		// if (requester.getFriends().size() >= 20) {
-		// 	throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
-		// }
-		// String requestUsername = requester.getUsername();
-		// String targetUsername = (String)requestBody.get("username");
-		//
-		// checkValidRequest(requestUsername, targetUsername);
-		//
-		// // 친구 요청 존재 여부 확인
-		// if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
-		// 	targetUsername)) {
-		// 	throw new ConflictException("이미 요청을 보낸 유저입니다.");
-		// }
-		// FriendRequest friendRequest = FriendRequest.builder()
-		// 	.requestUsername(requestUsername)
-		// 	.targetUsername(targetUsername)
-		// 	.build();
-		// // DB에 저장
-		// FriendRequest savedRequest = friendRequestRepository.save(friendRequest);
-		//
-		// // 새로운 사이드 메세지 생성
-		// Map<String, Object> messageBody = new HashMap<>();
-		// messageBody.put("requestId", savedRequest.getId());
-		// messageBody.put("username", targetUsername);
-		// messageBody.put("requestUsername", requester.getUsername());
-		// messageBody.put("nickname", requester.getNickname());
-		// messageBody.put("profileIcon", requester.getProfileIcon().getCode());
-		//
-		// SideMessageDto sideMessageDto = SideMessageDto.builder()
-		// 	.type(SideMessageDto.MessageType.FRIEND)
-		// 	.messageBody(messageBody)
-		// 	.build();
-		//
-		// log.info(sideMessageDto.toString());
-		//
-		// // 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		// // simpMessagingTemplate.convertAndSendToUser(targetUsername,
-		// // 	"/sub/side-bar", sideMessageDto);
-		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
+		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
+		Map<String, Object> requestBody = sideRequest.getMessageBody();
+
+		// token에 저장된 Member > 요청한 사람
+		Member requester = jwtTokenProvider.getMember(token);
+		if (requester.getFriends().size() >= 20) {
+			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
+		}
+		String requestUsername = requester.getUsername();
+		String targetUsername = (String)requestBody.get("username");
+
+		checkValidRequest(requestUsername, targetUsername);
+
+		// 친구 요청 존재 여부 확인
+		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
+			targetUsername)) {
+			throw new ConflictException("이미 요청을 보낸 유저입니다.");
+		}
+		FriendRequest friendRequest = FriendRequest.builder()
+			.requestUsername(requestUsername)
+			.targetUsername(targetUsername)
+			.build();
+		// DB에 저장
+		FriendRequest savedRequest = friendRequestRepository.save(friendRequest);
+
+		// 새로운 사이드 메세지 생성
+		Map<String, Object> messageBody = new HashMap<>();
+		messageBody.put("requestId", savedRequest.getId());
+		messageBody.put("username", targetUsername);
+		messageBody.put("requestUsername", requester.getUsername());
+		messageBody.put("nickname", requester.getNickname());
+		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+
+		SideMessageDto sideMessageDto = SideMessageDto.builder()
+			.type(SideMessageDto.MessageType.FRIEND)
+			.messageBody(messageBody)
+			.build();
+
+		log.info(sideMessageDto.toString());
+
+		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
+		// simpMessagingTemplate.convertAndSendToUser(targetUsername,
+		// 	"/sub/side-bar", sideMessageDto);
+		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
 	@Transactional
@@ -108,7 +108,7 @@ public class SideBarService {
 		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
-	private void checkValidRequest(String requestUsername, String targetUsername) {
+	public void checkValidRequest(String requestUsername, String targetUsername) {
 		// 우선 확인 사항
 		// Member 반환
 		Member requestMember = memberRepository.findByUsername(requestUsername)

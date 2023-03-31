@@ -56,8 +56,8 @@ public class WaitService {
 		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
 			.orElseThrow(() -> new NotFoundException("해당 대기방을 찾을 수 없습니다."));
 		// 인원 증가 후 에외처리 4명 이상이면 예외처리
-		waitRoom.plusPlayer();
-
+		waitRoom.plusMemberCount();
+		waitRoomRepository.save(waitRoom);
 		// 온라인인지 확인 후 변경
 		sideBarService.checkState(member, MemberState.ONLINE);
 
@@ -161,5 +161,16 @@ public class WaitService {
 		} else {
 			return (String)waitRequest.getMessageBody().get("roomId");
 		}
+	}
+
+	public WaitRoom minusWaitMemberCnt(String token, String roomId) {
+		Member captain = jwtTokenProvider.getMember(token);
+		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
+			.orElseThrow(() -> new NotFoundException("대기방을 찾을 수 없습니다."));
+		if (!waitRoom.getCaptainName().equals(captain.getUsername())) {
+			throw new BadRequestException("요청 유저가 방장이 아닙니다.");
+		}
+		waitRoom.minusMemberCount();
+		return waitRoomRepository.save(waitRoom);
 	}
 }
