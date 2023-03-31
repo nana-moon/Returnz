@@ -1,11 +1,18 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { getMessage } from '../../hooks/useSocket';
 
-export default function Chatting() {
+export default function Chatting({ getChat }) {
+  const handleMessage = (e) => {
+    if (e.keyCode === 13) {
+      const inputValue = e.target.value;
+      getChat(inputValue);
+    }
+  };
   return (
     <ChattingContainer>
       <ChattingBox>chatting...</ChattingBox>
-      <ChattingInput type="text" placeholder="메세지를 입력하세요" />
+      <ChattingInput type="text" placeholder="메세지를 입력하세요" onKeyUp={handleMessage} />
     </ChattingContainer>
   );
 }
