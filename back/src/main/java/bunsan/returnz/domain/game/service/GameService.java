@@ -201,6 +201,9 @@ public class GameService {
 	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
 		GameRoomDto gameRoomDto, Long gamerId) {
 		LocalDateTime curTime = gameRoomDto.getCurDate();
+		GameHistoricalPriceDayDto gameHistoricalPriceDayDtoBefore =
+			gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
+				curTime, gameGamerStockDtos.get(0).getCompanyCode()).get(0);
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, gameGamerStockDtos.get(0).getCompanyCode());
@@ -218,15 +221,46 @@ public class GameService {
 		// HashMap<String, GameGamerDto> gameGamerDtos = getAllGamer(gameRoomDto);
 		// List<GameGamerStockDto> gameStockDtoList = gamerStockService.findAllByGamer_Id(gamerId);
 
+		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
+
+		Integer totalEvaluationStock = 0;
+
 		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtos) {
 			Double stockPrice = getStockPrice(roomId, gameGamerStockDto.getCompanyCode());
+			Double stockPriceBefore = Double.parseDouble(
+				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtoBefore.getClose())));
+
+			// TODO : 환율 계산
 
 			if (stockPrice != 0) {
+				if (gameGamerStockDto.getTotalCount() != 0) {
+					Double valudation =
+						(gameGamerStockDto.getTotalCount() * stockPrice) - gameGamerStockDto.getTotalAmount();
+					Double profitRate = stockPrice / (gameGamerStockDto.getAveragePrice());
+					gameGamerStockDto.setValuation(valudation);
+					gameGamerStockDto.setProfitRate(profitRate);
+					log.info(gameGamerStockDto.toString());
+					gamerStockService.updateDto(gameGamerStockDto);
+				}
 
+				// 오늘 날짜에 대한 정보가 있을 경우
+				totalEvaluationStock += (int)(stockPrice * gameGamerStockDto.getTotalCount());
+			} else {
+				// 오늘 날짜에 대한 정보가 없을 경우, 전 데이터를 이용해서 계산
+				totalEvaluationStock += (int)(stockPriceBefore * gameGamerStockDto.getTotalCount());
 			}
 		}
 
 		// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
+		Integer totalEvaluationAsset = gameGamerDto.getDeposit() + totalEvaluationStock;
+		gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
+		gameGamerDto.setTotalEvaluationAsset(totalEvaluationAsset);
+		if (gameGamerDto.getTotalPurchaseAmount() != 0) {
+			gameGamerDto.setTotalProfitRate(
+				(double)((((totalEvaluationStock - gameGamerDto.getTotalPurchaseAmount()))
+					/ gameGamerDto.getTotalPurchaseAmount()) * 100));
+		}
+		gamerService.updateDto(gameGamerDto);
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
 	}
