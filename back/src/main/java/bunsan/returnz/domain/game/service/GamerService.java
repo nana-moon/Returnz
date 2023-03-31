@@ -41,13 +41,16 @@ public class GamerService {
 		return null;
 	}
 
-	public boolean updateDeposit(Long gamerId, Integer changeDeposit) {
-		Optional<Gamer> gamerOptional = gamerRepository.findById(gamerId);
+	public boolean updateDto(GameGamerDto gameGamerDto) {
+		Optional<Gamer> gamerOptional = gamerRepository.findById(gameGamerDto.getGamerId());
 		if (gamerOptional.isPresent()) {
-			if (changeDeposit >= 0) {
-				Gamer gamer = gamerOptional.get();
-				return gamer.updateDeposit(changeDeposit);
+			Gamer gamer = gamerOptional.get();
+			if (gamer.updateDto(gameGamerDto)) {
+				log.info("in updateDto : " + gameGamerDto.toString());
+				gamerRepository.save(gamer);
+				return true;
 			}
+			return false;
 		}
 		return false;
 	}
