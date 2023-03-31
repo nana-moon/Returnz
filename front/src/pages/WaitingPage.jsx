@@ -103,6 +103,8 @@ export default function WaitingPage() {
       const gameData = await gameDataApi(turnReq);
       console.log('gameData', gameData);
       dispatch(handleGetGameData(gameData.Stocks));
+      dispatch(handleGetStockInfomation(gameData.stockInformation));
+      dispatch(handleGetStockDescription(gameData.companyDetail));
       navigate('/game');
     }
   };
