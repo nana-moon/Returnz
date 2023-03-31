@@ -7,6 +7,7 @@ import Login from '../components/login/Login';
 import Signup from '../components/login/Signup';
 import Logo from '../components/common/logo.jpg';
 import Cookies from 'js-cookie';
+import Swal from 'sweetalert2';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ export default function LoginPage() {
   useEffect(() => {
     if (Cookies.get('access_token')) {
       setTimeout(() => {
-        alert('이미 로그인 되어있습니다.');
+        Swal.fire({ title: '이미 로그인 되어있습니다.', confirmButtonColor: '#1CD6C9' });
         navigate(-1);
-      }, 200);
+      }, 500);
     } else {
       console.log('비로그인 상태');
     }

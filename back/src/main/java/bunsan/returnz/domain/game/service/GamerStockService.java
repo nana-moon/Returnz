@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameGamerStockDto;
+import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.persist.entity.GamerStock;
 import bunsan.returnz.persist.repository.GamerStockRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,12 @@ public class GamerStockService {
 	private final GamerStockRepository gamerStockRepository;
 
 	public List<GameGamerStockDto> findAllByGamer_Id(Long gamerId) {
-		System.out.println(gamerId);
-		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamer_Id(25L);
+		List<GamerStock> gamerStocks = gamerStockRepository.findAllByGamer_Id(gamerId);
 
 		// TODO: gamerStocks empty 오류 발생
-		// if(gamerStocks.isEmpty())
+		if (gamerStocks.isEmpty()) {
+			throw new NotFoundException("해당 사용자의 주식 종목을 찾을 수 없습니다.");
+		}
 
 		GamerStock gamerStock = new GamerStock();
 		List<GameGamerStockDto> gameGamerStockDtos = new ArrayList<>();
@@ -34,15 +36,21 @@ public class GamerStockService {
 		return gameGamerStockDtos;
 	}
 
-	public GameGamerStockDto findByGamerIdAndCompanyCode(Long gmaerId, String companyCode) {
-		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gmaerId,
+	public GameGamerStockDto findByGamerIdAndCompanyCode(Long gamerId, String companyCode) {
+		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gamerId,
 			companyCode);
 		GamerStock gamerStock = new GamerStock();
 
 		return optionalGamerStock.map(gamerStock::toDto).orElse(null);
 	}
 
-	// public boolean createGamerStockService(GameGamerStockDto gameGamerStockDto) {
-	//
-	// }
+	public boolean updateGamerStock(String companyCode, Long gamerId, Integer count, Double stockClosePrice) {
+		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gamerId,
+			companyCode);
+
+		if (optionalGamerStock.isPresent()) {
+			return optionalGamerStock.get().updateBuyStockCount(count, stockClosePrice);
+		}
+		return false;
+	}
 }

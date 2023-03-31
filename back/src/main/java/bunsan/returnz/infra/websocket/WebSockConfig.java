@@ -10,6 +10,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 import lombok.RequiredArgsConstructor;
 
+// TODO: 2023-03-29 프론트 서버에 맞게 CrossOrigin 변경 또는 삭제
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSocketMessageBroker

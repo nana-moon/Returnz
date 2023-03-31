@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
@@ -27,11 +27,12 @@ export default function StockList() {
   return (
     <StockListContanier>
       {modalStat.isOpen ? <BuySellModal /> : null}
-      <StockListSection>상장종목</StockListSection>
+      <StockListSection>상장 종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
-            return <StockListItem Stock={Stock} i={i} key={Stock.adjclose} />;
+            // eslint-disable-next-line react/no-array-index-key
+            return <StockListItem Stock={Stock} i={i} key={i} />;
           })}
         </div>
       </ListContanier>
@@ -68,7 +69,7 @@ const ListContanier = styled.div`
   ${tw`border bg-white rounded-xl overflow-y-auto`}
 `;
 const StockListSection = styled.div`
-  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center border rounded-t-xl h-[10%]`}
+  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2`}
 `;
 const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}

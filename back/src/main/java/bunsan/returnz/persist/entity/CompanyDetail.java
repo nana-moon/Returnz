@@ -15,12 +15,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CompanyDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +46,16 @@ public class CompanyDetail {
 
 	public GameCompanyDetailDto toDto(CompanyDetail companyDetail) {
 		return GameCompanyDetailDto.builder()
-			.company(companyDetail.getCompany())
+			.companyCode(companyDetail.getCompany().getCode())
 			.countryCode(companyDetail.getCountryCode())
 			.koName(companyDetail.getKoName())
+			.description(companyDetail.getDescription())
+			.industry(companyDetail.getIndustry())
+			.sector(companyDetail.getSector())
+			.market(companyDetail.getMarket())
+			.phone(companyDetail.getPhone())
+			.website(companyDetail.getWebsite())
+			.logo(companyDetail.getLogo())
 			.build();
 	}
 }

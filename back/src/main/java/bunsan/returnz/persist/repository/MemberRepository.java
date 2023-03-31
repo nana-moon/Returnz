@@ -20,4 +20,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	List<Member> findAllById(Iterable<Long> ids);
 
 	List<Member> findByNicknameContaining(String nickname);
+
+	List<Member> findTop10ByOrderByAvgProfitDesc();
 }
