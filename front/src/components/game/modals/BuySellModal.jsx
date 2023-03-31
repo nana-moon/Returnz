@@ -4,11 +4,13 @@ import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
 import { createGlobalStyle } from 'styled-components';
+import { getGameRoomId, getGamerId } from '../../../store/roominfo/GameRoom.selector';
 
 import { buyNeedData, sellNeedData, modalState } from '../../../store/buysellmodal/BuySell.selector';
 import { receiveSetting } from '../../../store/buysellmodal/BuySell.reducer';
+import { buyStockApi } from '../../../apis/gameApi';
 
-export default function BuySellModal() {
+export default function BuySellModal({ code }) {
   const dispatch = useDispatch();
 
   const [orderCount, setOrderCount] = useState(0);
@@ -17,6 +19,9 @@ export default function BuySellModal() {
   const modalStat = useSelector(modalState);
   const buyData = useSelector(buyNeedData);
   const sellData = useSelector(sellNeedData);
+  const thisroomId = useSelector(getGameRoomId);
+  const thisgamerId = useSelector(getGamerId);
+
   const modalData = modalStat.isType ? buyData : sellData;
   const maxOrderCount = modalStat.isType
     ? Math.floor(modalData.holdingCash / modalData.orderPrice)
@@ -59,6 +64,21 @@ export default function BuySellModal() {
     }
   };
 
+  const handleBuyStock = (Type) => {
+    if (Type.isType === true) {
+      // 매수라면
+      const data = {
+        roomId: thisroomId,
+        gamerId: thisgamerId,
+        companyCode: code,
+        count: orderCount,
+      };
+      buyStockApi(data);
+      console.log(data);
+    }
+    // 호출 api
+  };
+
   return (
     <>
       <GlobalStyle />
@@ -74,7 +94,7 @@ export default function BuySellModal() {
         <StockSection>
           <CountBox>주문수량</CountBox>
           <StockCountFirstBox> 주문가능 </StockCountFirstBox>
-          <StockCountSecondBox>
+          <StockCountSecondBox mode={modalStat.isType ? 'gain' : 'lose'}>
             {modalStat.isType ? Math.floor(modalData.holdingCash / modalData.orderPrice) : modalData.holdingcount}
           </StockCountSecondBox>
           <StockCountThirdBox> 주 </StockCountThirdBox>
@@ -132,7 +152,11 @@ export default function BuySellModal() {
           <CloseButton onClick={() => handleCloseModal()} mode={modalStat.isType ? 'gain' : 'lose'}>
             취소
           </CloseButton>
-          <CorrectButton mode={modalStat.isType ? 'gain' : 'lose'} disabled={orderCount === 0}>
+          <CorrectButton
+            onClick={() => handleBuyStock(modalStat)}
+            mode={modalStat.isType ? 'gain' : 'lose'}
+            disabled={orderCount === 0}
+          >
             {modalStat.isType ? '매수' : '매도'}
           </CorrectButton>
         </SelectButtonSection>
@@ -188,7 +212,7 @@ const NameBox = styled.div`
 `;
 
 const StockNameBox = styled.div`
-  ${tw`w-[50%] text-right pr-2`}
+  ${tw`w-[47%] text-right pr-2`}
 `;
 
 const CountBox = styled.div`
@@ -196,10 +220,11 @@ const CountBox = styled.div`
 `;
 
 const StockCountFirstBox = styled.div`
-  ${tw`w-[40%] text-right pr-2`}
+  ${tw`w-[35%] text-right pr-2`}
 `;
 const StockCountSecondBox = styled.div`
-  ${tw`w-[10%] text-right pr-2`}
+  ${({ mode }) => (mode === 'gain' ? tw`text-gain` : tw`text-lose`)}
+  ${tw`w-[15%] text-right pr-2`}
 `;
 const StockCountThirdBox = styled.div`
   ${tw`w-[5%]`}
