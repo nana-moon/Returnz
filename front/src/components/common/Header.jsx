@@ -4,6 +4,7 @@ import tw from 'twin.macro';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 // import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import Swal from 'sweetalert2';
 
 export default function Header() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Header() {
     Cookies.remove('id');
     Cookies.remove('nickname');
     Cookies.remove('email');
-    alert('로그아웃 성공');
+    Swal.fire({ title: '로그아웃 성공', confirmButtonColor: '#1CD6C9' });
     navigate('/login');
   };
   return (

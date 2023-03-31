@@ -34,15 +34,14 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
 
   // theme action
   const handleClick = (e) => {
-    console.log(e.target.value, '값 무조건 나와야함');
-    setActiveTheme(e.target.value);
-    // createRipple(e);
+    setActiveTheme(e.currentTarget.value);
+    createRipple(e);
     handleTheme(e);
   };
 
   const handleTheme = (e) => {
-    e.target.value === 'USER' && getIsUserSetting();
-    getTheme(e.target.value);
+    e.currentTarget.value === 'USER' && getIsUserSetting();
+    getTheme(e.currentTarget.value);
   };
 
   const createRipple = (e) => {
@@ -96,7 +95,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   );
 }
 const ThemeContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-1`}
+  ${tw`bg-white rounded-xl w-[50%] grid grid-cols-2 grid-rows-3 gap-1`}
 `;
 
 const ThemeBox = styled.button`
