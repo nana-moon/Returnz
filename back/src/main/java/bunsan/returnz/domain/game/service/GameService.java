@@ -197,11 +197,12 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
 	 */
-	public boolean updateTurnInformation(String companyCode, String roomId, GameRoomDto gameRoomDto, Long gamerId) {
+	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
+		GameRoomDto gameRoomDto, Long gamerId) {
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-				curTime, companyCode);
+				curTime, gameGamerStockDtos.get(0).getCompanyCode());
 
 		if (gameRoomDto.getCurTurn() == 0) {
 			return gameRoomService.updateGameTurn(curTime, roomId);
@@ -215,6 +216,14 @@ public class GameService {
 		// 갱신 목록은 buy 메서드 참고
 		// HashMap<String, GameGamerDto> gameGamerDtos = getAllGamer(gameRoomDto);
 		// List<GameGamerStockDto> gameStockDtoList = gamerStockService.findAllByGamer_Id(gamerId);
+
+		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtos) {
+			Double stockPrice = getStockPrice(roomId, gameGamerStockDto.getCompanyCode());
+
+			if (stockPrice != 0) {
+
+			}
+		}
 
 		// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
 
