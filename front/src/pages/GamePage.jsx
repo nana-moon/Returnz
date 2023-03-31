@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -10,48 +9,33 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import {
-  handleGetGameData,
-  handleMoreGameData,
-  handleGetStockInfomation,
-  handleGetStockDescription,
-} from '../store/gamedata/GameData.reducer';
+import { handleMoreGameData } from '../store/gamedata/GameData.reducer';
 import { stockGraphList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
+import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 
 export default function GamePage() {
-  const [count, setCount] = useState(0);
   const testdata = useSelector(stockGraphList);
+  const roomNum = useSelector(getGameRoomId);
+  const gamerNum = useSelector(getGamerId);
 
   const dispatch = useDispatch();
-  const { state } = useLocation();
 
-  const readd = () => {s
+  const readd = () => {
     console.log(testdata, 'test');
   };
 
   const axiospost = () => {
     const datas = {
-      roomId: '8af70294-1c6b-449f-a284-63c7ace79704',
-      gamerId: 1095,
+      roomId: roomNum,
+      gamerId: gamerNum,
     };
 
     axios
       .post('/games/game', datas)
       .then((res) => {
-        if (count === 0) {
-          console.log(res.data, '첫 턴 데이터');
-          dispatch(handleGetGameData(res.data.Stocks));
-          dispatch(handleGetStockInfomation(res.data.stockInformation));
-          dispatch(handleGetStockDescription(res.data.companyDetail));
-          console.log('여기까지 실행이될까');
-        } else {
-          console.log(res.data, 'n 번째 데이터');
-          dispatch(handleMoreGameData(res.data.Stocks));
-        }
-        const copy = count;
-        setCount(copy + 1);
+        dispatch(handleMoreGameData(res.data.Stocks));
       })
       .catch((err) => {
         console.log(err);

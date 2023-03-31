@@ -31,32 +31,12 @@ export default function Graph() {
           type: 'candlestick',
           color: '#FF5454',
           data: stockGraphData[selectidx][companyName].candledata,
-          // tooltip: {
-          //   custom: [
-          //     function cost({ seriesIndex, dataPointIndex, w }) {
-          //       const o = w.globals.seriesCandleO[seriesIndex][dataPointIndex];
-          //       const h = w.globals.seriesCandleH[seriesIndex][dataPointIndex];
-          //       const l = w.globals.seriesCandleL[seriesIndex][dataPointIndex];
-          //       const c = w.globals.seriesCandleC[seriesIndex][dataPointIndex];
-
-          //       const tmp = `시가 : ${o}<br>고가 : ${h}<br>저가 : ${l}<br>종가 : ${c}`;
-          //       return tmp;
-          //     },
-          //   ],
-          // },
         },
         {
           name: '거래량',
           type: 'line',
           color: '#D4D4D4',
           data: stockGraphData[selectidx][companyName].linedata,
-          // tooltip: {
-          //   custom: [
-          //     function idx({ seriesIndex, dataPointIndex, w }) {
-          //       return `거래량 : ${w.globals.series[seriesIndex][dataPointIndex]}`;
-          //     },
-          //   ],
-          // },
         },
       ],
       chart: {
@@ -82,7 +62,7 @@ export default function Graph() {
               return value.toLocaleString(undefined, {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
-              }); // 세 자리마다 쉼표 추가
+              });
             },
           },
         },
@@ -104,14 +84,6 @@ export default function Graph() {
       xaxis: {
         type: 'category',
         categories: categoriess,
-        // title: {
-        //   text: '날짜',
-        //   style: {
-        //     fontSize: '14px', // 원하는 폰트 크기를 지정하세요.
-        //     fontWeight: 'bold', // 원하는 폰트 스타일을 지정하세요.
-        //     color: '#333333', // 원하는 텍스트 색상을 지정하세요.
-        //   },
-        // },
         labels: {
           formatter(val) {
             const index = categoriess.indexOf(val);
