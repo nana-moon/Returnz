@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
@@ -300,13 +301,6 @@ public class GameStartService {
 	@Transactional
 	public void setNewsList(GameSettings gameSettings, Long gameRoomId) {
 		// 턴당 시간에 따라 달라진다.
-		// gameSettings 은 방 빌드 이후 에는 정보가 다 기록 되어 있나?
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
-		log.info("게임 세팅 유지 되는지 확인 시작일: " + gameSettings.getStartTime());
-		log.info("게임 세팅 유지 되는지 확인 전체턴: " + gameSettings.getTotalTurn());
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
-		// day month week 상관 없이 그냥 시작일 기준으로 토탈턴 만큼 기사 가져와서 넣는다
-		// 가지고 있다 기사가 없으면 없다고 주고 있으면 있다고 하고 기사를 준다
 		List<GameStockDto> gameRoomStockList = gameInfoService.getGameRoomStockList(gameRoomId);
 		List<String> stockIdList = new ArrayList<>();
 		for (GameStockDto gameStockDto : gameRoomStockList) {

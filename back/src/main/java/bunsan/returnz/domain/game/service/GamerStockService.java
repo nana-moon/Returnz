@@ -44,12 +44,17 @@ public class GamerStockService {
 		return optionalGamerStock.map(gamerStock::toDto).orElse(null);
 	}
 
-	public boolean updateGamerStock(String companyCode, Long gamerId, Integer count, Double stockClosePrice) {
-		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(gamerId,
-			companyCode);
+	public boolean updateDto(GameGamerStockDto gameGamerStockDto) {
 
+		Optional<GamerStock> optionalGamerStock = gamerStockRepository.findByGamerIdAndCompanyCode(
+			gameGamerStockDto.getGamerId(), gameGamerStockDto.getCompanyCode());
 		if (optionalGamerStock.isPresent()) {
-			return optionalGamerStock.get().updateBuyStockCount(count, stockClosePrice);
+			GamerStock gamerStock = optionalGamerStock.get();
+			if (gamerStock.updateDto(gameGamerStockDto)) {
+				gamerStockRepository.save(gamerStock);
+				return true;
+			}
+			return false;
 		}
 		return false;
 	}

@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, Component } from 'react';
 import tw, { styled } from 'twin.macro';
 import TodayTopUserItem from './Items/TodayTopUserItem';
 import wordDummy from './todayWordDummy';
@@ -23,7 +23,7 @@ const TopUserContainer = styled.div`
 `;
 
 const TopUserBox = styled.div`
-  ${tw``}
+  ${tw`w-[100%] h-[100%]`}
 `;
 
 const TopUserTitle = styled.div`
