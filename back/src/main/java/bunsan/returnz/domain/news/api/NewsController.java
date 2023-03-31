@@ -23,11 +23,10 @@ public class NewsController {
 
 	@PostMapping
 	public ResponseEntity<?> turnNews(@Valid @RequestBody NewsRequestDto newsRequestDto) {
-
 		NewsResponseDto news = newsService.getNews(newsRequestDto);
 		if (news.isValid()) {
 			return ResponseEntity.ok().body(news);
 		}
-		return ResponseEntity.badRequest().body("정상출력 안됨");
+		return ResponseEntity.internalServerError().body("내부 애러 입니다.");
 	}
 }
