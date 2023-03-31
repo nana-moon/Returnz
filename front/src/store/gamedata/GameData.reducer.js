@@ -13,7 +13,7 @@ export const gamedata = createSlice({
     // 뉴스,
     stockNews: {},
     // 주가정보
-    stockInfomation: {},
+    stockInformation: {},
     // 종목 내용
     stockdescription: {},
     // 보유종목
@@ -104,8 +104,8 @@ export const gamedata = createSlice({
     // 뉴스,
     handleGetStockNews(state, action) {},
     // 주가정보,
-    handleGetStockInfomation(state, action) {
-      state.stockInfomation = action.payload;
+    handleGetStockInformation(state, action) {
+      state.stockInformation = action.payload;
     },
     // 종목 내용
     handleGetStockDescription(state, action) {
@@ -114,6 +114,6 @@ export const gamedata = createSlice({
   },
 });
 
-export const { handleGetGameData, handleGetStockDescription, handleMoreGameData, handleGetStockInfomation } =
+export const { handleGetGameData, handleGetStockDescription, handleMoreGameData, handleGetStockInformation } =
   gamedata.actions;
 export default gamedata;
