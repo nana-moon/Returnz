@@ -16,11 +16,6 @@ public class SignupRequest {
 	@Email(message = "아이디가 이메일 형식에 맞지 않습니다.")
 	private String username;
 
-	// @NotBlank(message = "아이디를 입력해주세요.")
-	// @Pattern(regexp = "[a-zA-Z0-9]{2,11}",
-	// 	message = "아이디는 영문, 숫자만 가능하며 2 ~ 12자리까지 가능합니다.")
-	// private String username;
-
 	@NotBlank(message = "비밀번호를 입력해주세요.")
 	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{6,20}$",
 		message = "비밀번호는 영문, 숫자, 특수문자(@$!%*#?&) 포함, 6자 이상 20자 이하여야 합니다.")
