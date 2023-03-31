@@ -27,7 +27,7 @@ public class NewsService {
 	public NewsResponseDto getNews(NewsRequestDto newsRequestDto) {
 
 		GameRoom gameRoom = gameRoomRepository.findById(newsRequestDto.getId())
-			.orElseThrow(() -> new BusinessException("게임이 업습닏다."));
+			.orElseThrow(() -> new BusinessException("게임이 없습니다."));
 		NewsGroup newsGroup = gameRoom.getNewsGroup();
 		List<FinancialNews> financialNewsList = newsGroup.getFinancialNews();
 		for (FinancialNews financialNews : financialNewsList) {
