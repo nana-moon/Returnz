@@ -49,7 +49,7 @@ const TodayWordContainer = styled.div`
   ${tw`text-center p-2`}
 `;
 const TodayWordTitle = styled.div`
-  ${tw`flex text-2xl gap-2 justify-center`}
+  ${tw`flex text-2xl gap-2 justify-center mb-2`}
 `;
 
 const TodayWordCarousel = styled.div`
@@ -57,17 +57,17 @@ const TodayWordCarousel = styled.div`
 `;
 
 const WordTitle = styled.div`
-  ${tw`text-lg`}
+  ${tw`text-2xl font-bold text-left mx-10 border-b-2 pb-2 mt-2`}
 `;
 
 const WordContent = styled.div`
-  ${tw`text-sm mx-10 bg-yellow-200`}
+  ${tw`text-sm ml-11 mr-10 mt-5 text-left indent-4`}
 `;
 
 const LeftArrow = styled.div`
-  ${tw`absolute top-[50%] -translate-x-0 translate-y-[50%] left-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-10 translate-y-[50%] left-1 text-2xl cursor-pointer`}
 `;
 
 const RightArrow = styled.div`
-  ${tw`absolute top-[50%] -translate-x-0 translate-y-[50%] right-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-10 translate-y-[50%] right-1 text-2xl cursor-pointer`}
 `;

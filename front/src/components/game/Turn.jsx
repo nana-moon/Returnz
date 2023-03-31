@@ -13,7 +13,9 @@ export default function Turn() {
   }, 1000);
   return (
     <TurnContanier>
-      <CountSection>턴 1/12</CountSection>
+      <CountSection>
+        <div className="w-[60%] text-center text-xl font-bold">Round 1</div> <div className="ml-">12</div>
+      </CountSection>
       <BarSection> </BarSection>
       {time > 0 && <TimeSection> 남은시간 : {time}초 </TimeSection>}
       {/* <Progress label="남은시간" value={88} color="cyan" /> */}
@@ -98,7 +100,7 @@ const TurnContanier = styled.div`
 `;
 
 const CountSection = styled.div`
-  ${tw`text-center`}
+  ${tw`flex`}
 `;
 
 const TimeSection = styled.div`
