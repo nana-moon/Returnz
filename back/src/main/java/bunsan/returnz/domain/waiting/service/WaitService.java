@@ -5,13 +5,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.sidebar.service.SideBarService;
+import bunsan.returnz.domain.waiting.dto.SettingDto;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
 import bunsan.returnz.infra.redis.service.RedisPublisher;
@@ -48,10 +51,13 @@ public class WaitService {
 	@Transactional
 	public void sendEnterMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		String roomId = checkWaitRoomId(waitRequest);
 		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
 			.orElseThrow(() -> new NotFoundException("해당 대기방을 찾을 수 없습니다."));
-
+		// 인원 증가 후 에외처리 4명 이상이면 예외처리
+		waitRoom.plusMemberCount();
+		waitRoomRepository.save(waitRoom);
 		// 온라인인지 확인 후 변경
 		sideBarService.checkState(member, MemberState.ONLINE);
 
@@ -90,7 +96,8 @@ public class WaitService {
 	@Transactional
 	public void sendChatMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		String roomId = checkWaitRoomId(waitRequest);
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("nickname", member.getNickname());
@@ -109,7 +116,8 @@ public class WaitService {
 	@Transactional
 	public void sendExitMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		String roomId = checkWaitRoomId(waitRequest);
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("roomId", roomId);
@@ -125,18 +133,44 @@ public class WaitService {
 	}
 
 	@Transactional
-	public void sendGameSetting(WaitMessageDto waitRequest) {
+	public void sendGameSetting(@Valid SettingDto settingDto) {
 		// 새로운 대기방 메세지 바디생성
-		Map<String, Object> returnBody = waitRequest.getMessageBody();
-		returnBody.remove("roomId");
+		// Map<String, Object> messageBody = new HashMap<>();
 
 		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
 			.type(WaitMessageDto.MessageType.SETTING)
-			.messageBody(returnBody)
+			.messageBody((Map<String, Object>)settingDto)
 			.build();
 
-		String roomId = (String)waitRequest.getMessageBody().get("roomId");
+		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
+	}
+
+	public void sendGameInfo(WaitMessageDto waitRequest) {
+		if (waitRequest.getMessageBody().get("gameRoomId") != null) {
+			throw new BadRequestException("게임룸 정보가 없습니다.");
+		}
+		checkWaitRoomId(waitRequest);
+		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitRequest);
+	}
+
+	public String checkWaitRoomId(WaitMessageDto waitRequest) {
+		if (waitRequest.getMessageBody().get("roomId") == null) {
+			throw new BadRequestException("대기방 정보가 없습니다.");
+		} else {
+			return (String)waitRequest.getMessageBody().get("roomId");
+		}
+	}
+
+	public WaitRoom minusWaitMemberCnt(String token, String roomId) {
+		Member captain = jwtTokenProvider.getMember(token);
+		WaitRoom waitRoom = waitRoomRepository.findByRoomId(roomId)
+			.orElseThrow(() -> new NotFoundException("대기방을 찾을 수 없습니다."));
+		if (!waitRoom.getCaptainName().equals(captain.getUsername())) {
+			throw new BadRequestException("요청 유저가 방장이 아닙니다.");
+		}
+		waitRoom.minusMemberCount();
+		return waitRoomRepository.save(waitRoom);
 	}
 }
