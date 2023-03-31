@@ -14,9 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
+
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
@@ -181,6 +181,7 @@ public class GameStartService {
 	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
+		// TODO: 2023-03-31 유니크 한 날을 가져와야함을 잊지마십쇼 명진
 		List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
 			gameSettings.getStartDateTime(), gameStockIds, pageable);
 		Integer countInDB = dayDataAfterStartDay.size();
@@ -317,36 +318,36 @@ public class GameStartService {
 			stockIdList.add(gameStockDto.getCompanyCode());
 		}
 
-		// 이걸 우리 데이터로 바꿔야한다.
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
 
-		List<LocalDateTime> uniqueDates = historicalPriceDayRepository.findDistinctDatesAfter(
-			gameSettings.getStartDateTime(), stockIdList, pageable);
-		log.info("데이터가 존제하는 구간 :" + uniqueDates.size());
-		List<FinancialNews> result = new ArrayList<>();
-		for (LocalDateTime date : uniqueDates) {
-			List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(date, stockIdList);
-			result.addAll(newsList);
+		// 뉴스 찾을 찾아올 구간 확인
+		LocalDateTime startDate = gameSettings.getStartDateTime();
+		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(
+			startDate, stockIdList, pageable).getContent();
+		//있는 데이터 중에서
+		//가능한 구간의 마지막 하나만 가져온다 = endDate
+		LocalDateTime endDate = dateEndDate.get(dateEndDate.size()-1);
+		log.info("찾아올 기간 :" + startDate + " ~ "+ endDate) ;
+		// 기간 안에 뉴스 검색
+		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate,
+			endDate, stockIdList);
+		for (FinancialNews financialNews : newsList) {
+			log.info(financialNews.getKoName() + " " + financialNews.getDate() );
 		}
 
-		log.info("조회 해온 갯수 " + result.size());
-		for (FinancialNews financialNews : result) {
-			log.info(financialNews.getKoName() + "  조회 된 날자 " + financialNews.getDate());
-		}
+		// 뉴스
+
 		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
 			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
-		// result 를 저장해야한다 피요한것, 게임룸 아이디
-		LocalDateTime startDate = result.get(0).getDate();
-		LocalDateTime endDate = result.get(result.size() - 1).getDate();
+
 		NewsGroup newGroup = NewsGroup.builder()
-			.financialNews(result)
+			.financialNews(newsList)
 			.endTime(endDate)
 			.startTime(startDate)
 			.build();
 		gameRoom.setNewsGroup(newGroup);
 		gameRoomRepository.save(gameRoom);
 		newsGroupRepository.save(newGroup);
-
 	}
 
 }
