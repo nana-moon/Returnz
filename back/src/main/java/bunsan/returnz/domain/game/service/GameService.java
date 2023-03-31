@@ -192,7 +192,7 @@ public class GameService {
 
 	/**
 	 * Description : roomId에 해당하는 게임방의 정보를 다음 턴으로 update 한다.
-	 * @param companyCode : 주식 종목 코드
+	 * @param gameGamerStockDtos : 주식 종목 리스트
 	 * @param roomId : 게임방 uuid
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
