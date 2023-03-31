@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -10,16 +9,18 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleGetGameData, handleMoreGameData } from '../store/gamedata/GameData.reducer';
+import { handleMoreGameData } from '../store/gamedata/GameData.reducer';
 import { stockGraphList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
+import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 
 export default function GamePage() {
-  const [count, setCount] = useState(0);
   const testdata = useSelector(stockGraphList);
+  const roomNum = useSelector(getGameRoomId);
+  const gamerNum = useSelector(getGamerId);
+
   const dispatch = useDispatch();
-  const { state } = useLocation();
 
   const readd = () => {
     console.log(testdata, 'test');
@@ -27,22 +28,14 @@ export default function GamePage() {
 
   const axiospost = () => {
     const datas = {
-      roomId: 'fe9a9cd5-61f1-4a43-a7b6-e45dfd1b3ab1',
-      gamerId: 149,
+      roomId: roomNum,
+      gamerId: gamerNum,
     };
 
     axios
       .post('/games/game', datas)
       .then((res) => {
-        if (count === 0) {
-          console.log(res.data, '데이터보냄');
-          dispatch(handleGetGameData(res.data.Stocks));
-        } else {
-          console.log(res.data, '데이터보냄');
-          dispatch(handleMoreGameData(res.data.Stocks));
-        }
-        const copy = count;
-        setCount(copy + 1);
+        dispatch(handleMoreGameData(res.data.Stocks));
       })
       .catch((err) => {
         console.log(err);
