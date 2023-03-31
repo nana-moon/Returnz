@@ -19,6 +19,8 @@ export default function StockList() {
 
   const isThis = noWorkidx.includes(selectidx);
 
+  console.log('stocklist', Object.keys(stockDatas)[selectidx]);
+
   // const [stockData, setStockData] = useState(StockData);
   const handleOpenModal = (data) => {
     const value = { isOpen: true, isType: data };
@@ -26,7 +28,7 @@ export default function StockList() {
   };
   return (
     <StockListContanier>
-      {modalStat.isOpen ? <BuySellModal /> : null}
+      {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} /> : null}
       <StockListSection>상장 종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
