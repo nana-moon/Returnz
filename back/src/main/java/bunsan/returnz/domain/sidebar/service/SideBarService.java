@@ -69,7 +69,7 @@ public class SideBarService {
 		messageBody.put("username", targetUsername);
 		messageBody.put("requestUsername", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+		messageBody.put("profileIcon", requester.getProfileIcon());
 
 		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.FRIEND)
@@ -95,7 +95,7 @@ public class SideBarService {
 		messageBody.put("roomId", requestBody.get("roomId"));
 		messageBody.put("username", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+		messageBody.put("profileIcon", requester.getProfileIcon());
 
 		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.INVITE)
