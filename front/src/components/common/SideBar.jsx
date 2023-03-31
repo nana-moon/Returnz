@@ -69,9 +69,9 @@ export default function SideBar() {
               `/user/sub/side-bar`,
               (data) => {
                 const newMessage = JSON.parse(data.body);
-                console.log(newMessage, '이게뭔데;');
+                // console.log(newMessage, '이게뭔데;');
                 const newFriend = newMessage.messageBody.friendList;
-                console.log(newFriend, '나의 칭구칭긔');
+                // console.log(newFriend, '나의 칭구칭긔');
                 setfriendList(newFriend);
                 // 데이터 파싱
               },

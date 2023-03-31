@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import SockJs from 'sockjs-client';
+import Stomp from 'webstomp-client';
+import StompJs from 'stompjs';
 import { startGameApi, gameDataApi } from '../apis/gameApi';
 import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
@@ -14,8 +17,11 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList, setRoomInfo } from '../store/roominfo/GameRoom.reducer';
-import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
-import { handleGetGameData } from '../store/gamedata/GameData.reducer';
+import {
+  handleGetGameData,
+  handleGetStockDescription,
+  handleGetStockInfomation,
+} from '../store/gamedata/GameData.reducer';
 
 export default function WaitingPage() {
   // hooks
@@ -23,14 +29,10 @@ export default function WaitingPage() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // 대기자 state
-  const waiterList = useSelector(getWaiterList);
-  const gameRoomId = useSelector(getGameRoomId);
-  const gamerId = useSelector(getGamerId);
+  // -------------------------대기방 데이터-----------------------------
 
-  // 대기방 state
+  // 대기방 state - 확인완료
   const roomInfo = location.state;
-  console.log(roomInfo, '웨이팅페이지에서 출력중');
 
   // 방장 state
   const myEmail = Cookies.get('email');
@@ -45,6 +47,105 @@ export default function WaitingPage() {
       setInitialDispatch(true);
     }
   }, [dispatch, initialDispatch]);
+
+  // 대기자 state
+  const waiterList = useSelector(getWaiterList);
+
+  // -------------------------SOCKET state-----------------------------
+
+  // socket 연결 시 사용할 데이터 - 확인완료
+  const ACCESS_TOKEN = Cookies.get('access_token');
+  const waitRoomId = roomInfo.roomId;
+  console.log('roomId', waitRoomId);
+  const getAddress = `/sub/wait-room/${waitRoomId}`;
+  const sendAddress = '/pub/wait-room';
+  const myHeader = {
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyMjUyMH0.I7S5ewFqVfjPe7ljDQmFCM4PwB89djDCZ4z6oDUhDag',
+  };
+
+  // -------------------------SOCKET action-----------------------------
+
+  // 받은 메세지 파싱
+  const handleMessage = (received) => {
+    console.log('handleMessage active');
+    const newMessage = JSON.parse(received.body);
+    console.log(newMessage);
+  };
+
+  // 메세지 받기 - Params 확인완료
+  const getMessage = (subAddress, handleData, header) => {
+    console.log('getMessage active');
+    stomp.subscribe(subAddress, handleData, header);
+  };
+
+  // 메세지 보내기
+  const sendMessage = (subAddress, header, type, messageBody, handleData) => {
+    console.log('sendMessage active');
+    const message = JSON.stringify({
+      type,
+      messageBody,
+    });
+    console.log(subAddress);
+    stomp.send(subAddress, header, message);
+  };
+
+  // -------------------------SOCKET connet-----------------------------
+
+  const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+  const options = {
+    debug: false,
+    protocols: Stomp.VERSIONS.supportedProtocols(),
+  };
+  const stomp = StompJs.over(sock, options);
+
+  const stompConnect = () => {
+    stomp.debug = null;
+    stomp.connect(
+      {
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
+      },
+      () => {
+        console.log('the connection is successful');
+        stomp.subscribe(
+          '/sub/wait-room/3b6b9f58-cea6-4372-874f-0f3da67c90e4',
+          (data) => {
+            console.log(data);
+            const newMessage = JSON.parse(data.body);
+            console.log(newMessage);
+          },
+          {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
+          },
+        );
+
+        stomp.send(
+          '/pub/wait-room',
+          {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc2FmeTJAbmF2ZXIuY29tIiwiYXV0aCI6IlJPTEVfVVNFUiIsInVzZXJuYW1lIjoic3NhZnkyQG5hdmVyLmNvbSIsImlkIjoyLCJuaWNrbmFtZSI6InNzYWZ5MiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY4MDUyNzk1MH0.3knaqR376NNVMSq8hdAbJzKrjcNwRG8nI6VzeZvsLkA',
+          },
+          JSON.stringify({
+            type: 'ENTER',
+            messageBody: {
+              roomId: '3b6b9f58-cea6-4372-874f-0f3da67c90e4',
+            },
+          }),
+        );
+      },
+      (error) => {
+        console.log('Connection error:', error);
+      },
+    );
+  };
+
+  useEffect(() => {
+    stompConnect();
+  }, []);
+
+  // -------------------------게임 데이터-----------------------------
 
   // 게임 설정 state
   const initial = {
@@ -86,8 +187,6 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  // useEffect(() => {}, [isValidSetting]);
-
   // 게임 시작 action
   const handleStart = async (e) => {
     if (isValidSetting) {
@@ -102,10 +201,13 @@ export default function WaitingPage() {
       };
       const gameData = await gameDataApi(turnReq);
       console.log('gameData', gameData);
-      dispatch(handleGetGameData(gameData.Stocks));
-      dispatch(handleGetStockInfomation(gameData.stockInformation));
-      dispatch(handleGetStockDescription(gameData.companyDetail));
-      navigate('/game');
+      await Promise.all([
+        dispatch(handleGetGameData(gameData.Stocks)),
+        dispatch(handleGetStockInfomation(gameData.stockInformation)),
+        dispatch(handleGetStockDescription(gameData.companyDetail)),
+      ]);
+      // 데이터 있는지 확인하고 네비게이트
+      await navigate('/game');
     }
   };
 
@@ -118,7 +220,6 @@ export default function WaitingPage() {
       <WaitingListSection>
         {Array.from({ length: 4 }).map((_, i) => {
           if (i < waiterList.length) {
-            console.log(i, waiterList[i]);
             return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
           }
           // eslint-disable-next-line react/no-array-index-key
@@ -141,6 +242,7 @@ export default function WaitingPage() {
             <BackButton to="/" onClick={handleBack} className="bg-[#E19999] hover:bg-[#976161]">
               나가기
             </BackButton>
+            <button type="submit">SendMessage</button>
           </BtnBox>
         </ChatSection>
       </SettingSection>
