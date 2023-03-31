@@ -21,8 +21,7 @@ export default function GamePage() {
   const dispatch = useDispatch();
   const { state } = useLocation();
 
-  const readd = () => {
-    // const keys = testdata.map((item) => Object.keys(item)[0]);
+  const readd = () => {s
     console.log(testdata, 'test');
   };
 
