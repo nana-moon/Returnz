@@ -2,7 +2,6 @@ package bunsan.returnz.domain.news.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
