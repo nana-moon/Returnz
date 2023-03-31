@@ -230,7 +230,19 @@ public class GameService {
 			Double stockPriceBefore = Double.parseDouble(
 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDtoBefore.getClose())));
 
-			// TODO : 환율 계산
+			// if() 외국 주식 인 경우 환율 적용하기
+			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(
+				gameGamerStockDto.getCompanyCode());
+			if (gameCompanyDetailDto.getMarket().equals("nasdaq")) {
+				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
+					gameHistoricalPriceDayDto.getDateTime());
+				stockPrice = Double.parseDouble(
+					String.format("%.2f", stockPrice * gameExchangeInterestDto.getExchangeRate()));
+
+				gameExchangeInterestDto = getExchangeInterest(curTime);
+				stockPriceBefore = Double.parseDouble(
+					String.format("%.2f", stockPrice * gameExchangeInterestDto.getExchangeRate()));
+			}
 
 			if (stockPrice != 0) {
 				if (gameGamerStockDto.getTotalCount() != 0) {
@@ -242,7 +254,6 @@ public class GameService {
 					log.info(gameGamerStockDto.toString());
 					gamerStockService.updateDto(gameGamerStockDto);
 				}
-
 				// 오늘 날짜에 대한 정보가 있을 경우
 				totalEvaluationStock += (int)(stockPrice * gameGamerStockDto.getTotalCount());
 			} else {
@@ -457,6 +468,11 @@ public class GameService {
 		if (gameGamerDto.getDeposit() >= (stockClosePrice * count)) {
 
 			// if() 외국 주식 인 경우 환율 적용하기
+			if (gameHistoricalPriceDayDto.getMarket().equals("nasdaq")) {
+				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
+				stockClosePrice = Double.parseDouble(
+					String.format("%.2f", stockClosePrice * gameExchangeInterestDto.getExchangeRate()));
+			}
 
 			// 매수 요청 종목 불러오기
 			log.info("========================");
@@ -494,12 +510,15 @@ public class GameService {
 			gameGamerStockDto.setTotalAmount(totalAmount);
 			gameGamerStockDto.setAveragePrice(averagePrice);
 			gameGamerStockDto.setValuation(valuation);
+			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
+			gameGamerStockDto.setLogo(gameCompanyDetailDto.getLogo());
+			gameGamerStockDto.setCompanyCode(gameCompanyDetailDto.getKoName());
 			gamerStockService.updateDto(gameGamerStockDto);
 			log.info(gameGamerStockDto.toString());
 			log.info(gameGamerDto.toString());
 
 			HashMap<String, Object> stockInformation = new HashMap<>();
-			stockInformation.put("gamer", getAllGamer(gameRoomDto));
+			stockInformation.put("gamer", getAllGamer(gameRoomDto).get(gameGamerDto.getUserName()));
 			stockInformation.put("gamerStock", gamerStockService.findAllByGamer_Id(gamerId));
 
 			return stockInformation;
