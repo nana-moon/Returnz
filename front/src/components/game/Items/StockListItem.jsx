@@ -1,18 +1,22 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
+import { Tooltip } from '@material-tailwind/react';
 import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buysellmodal/BuySell.reducer';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
+import { noWorkDay } from '../../../store/gamedata/GameData.selector';
 
 export default function StockListItem({ Stock, i }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
+  const isWork = useSelector(noWorkDay);
+  const isThis = isWork.includes(i);
   const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
     matched === '보통주' ? '' : ' (우)',
   );
 
   let isUp;
-  if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) === 0) {
+  if (Stock[Stock.length - 1].close - Stock[Stock.length - 2].close === 0) {
     isUp = 'STAY';
   } else if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) > 0) {
     isUp = 'UP';
@@ -21,7 +25,7 @@ export default function StockListItem({ Stock, i }) {
   }
 
   const diff = [
-    parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10),
+    Stock[Stock.length - 1].close - Stock[Stock.length - 2].close,
     (
       ((parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10)) /
         parseInt(Stock[Stock.length - 2].close, 10)) *
@@ -75,24 +79,28 @@ export default function StockListItem({ Stock, i }) {
         <ItemTitleImgBox>
           <img src={Stock[Stock.length - 1].logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{replacedName}</CompanyName>
+        <CompanyName>
+          {isThis && <Tooltip content="영업날이 아닙니다">⚠️</Tooltip>}
+          {replacedName}
+        </CompanyName>
         <ItemPriceSection isUp={isUp}>
-          {Stock[Stock.length - 1].close}
-          {isUp === 'UP' && ' ▲'}
-          {isUp === 'DOWN' && ' ▼'}
-          {isUp === 'STAY' && ' -'}
+          {Stock[Stock.length - 1].currencyType === '$'
+            ? `${Stock[Stock.length - 1].close} $`
+            : `${parseInt(Stock[Stock.length - 1].close, 10).toLocaleString()} 원`}
         </ItemPriceSection>
       </ItemTitleSection>
       <ItemInfoSection>
-        <IndustryBox>산업군</IndustryBox>
+        <IndustryBox>{Stock[Stock.length - 1].industry ? Stock[Stock.length - 1].industry : '알 수 없음'}</IndustryBox>
         <UpDownBox isUp={isUp}>
-          {diff[0]}
+          {Stock[Stock.length - 1].currencyType === '$'
+            ? `${diff[0].toFixed(2)}$`
+            : `${Math.abs(parseInt(diff[0], 10)).toLocaleString()}원`}
           {isUp === 'UP' && ' ▲'}
           {isUp === 'DOWN' && ' ▼'}
           {isUp === 'STAY' && ' -'}
         </UpDownBox>
         <UpDownBox isUp={isUp}>
-          {diff[1]}
+          {`${diff[1]}%`}
           {isUp === 'UP' && ' ▲'}
           {isUp === 'DOWN' && ' ▼'}
           {isUp === 'STAY' && ' -'}
@@ -123,16 +131,16 @@ const ItemContainer = styled.button`
 `;
 
 const ItemTitleSection = styled.div`
-  width: 10%;
   ${tw`flex absolute ml-2 mt-2 items-center w-full`}
 `;
 
 const ItemTitleImgBox = styled.div`
-  ${tw`border-2 h-10 w-10 mr-2 rounded-full overflow-hidden`}
+  width: 10%;
+  ${tw`border-2 h-full mr-2 rounded-full overflow-hidden`}
 `;
 
 const CompanyName = styled.div`
-  width: 53%;
+  width: 55%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -142,7 +150,8 @@ const CompanyName = styled.div`
 const ItemPriceSection = styled.p`
   ${(props) => props.isUp === 'UP' && tw`mr-6 text-gain`}
   ${(props) => props.isUp === 'DOWN' && tw`mr-6 text-lose`}
-  width: 22%;
+  width: 35%;
+  margin-right: 7.5%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -150,23 +159,24 @@ const ItemPriceSection = styled.p`
 `;
 
 const ItemInfoSection = styled.div`
-  ${tw`mt-14 ml-2 mb-2 flex w-full`}
+  ${tw`mt-14 ml-3 mb-2 flex w-full`}
 `;
 
 const IndustryBox = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 25%;
-  ${tw`text-left ml-4`}
+  width: 40%;
+  ${tw`text-left`}
 `;
 
 const UpDownBox = styled.div`
-  width: 27%;
+  width: 30%;
+  margin-right: 6.5%;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  ${(props) => props.isUp === 'UP' && tw`mr-6 text-gain`}
-  ${(props) => props.isUp === 'DOWN' && tw`mr-6 text-lose`}
-  ${tw`mr-6 text-right`}
+  ${(props) => props.isUp === 'UP' && tw`text-gain`}
+  ${(props) => props.isUp === 'DOWN' && tw`text-lose`}
+  ${tw`text-right`}
 `;
