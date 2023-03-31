@@ -12,7 +12,7 @@ export default function Description() {
     <DescriptionContainer>
       <DescriptionImgSection>
         <DescriptionImgBox>
-          <img src={description[key[idx]].logo} alt="" />
+          <img src={description[key[idx]]?.logo} alt="" />
         </DescriptionImgBox>
         <div className="flex flex-col">
           <DescriptionTitleSection>{description[key[idx]].koName}</DescriptionTitleSection>
