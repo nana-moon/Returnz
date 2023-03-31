@@ -50,8 +50,8 @@ public class GameController {
 	 * ex) 0번 째 턴 -> 시작 화면 구성
 	 * ex) X번 째 턴 -> 진행 정보 전달
 	 *
-	 * @param gameRequestBody
-	 * @return
+	 * @param gameRequestBody : 게임 시작, 진행을 위해 전달해야하는 정보. (roomId, gamerId)
+	 * @return : 게임 진행에 필요한 정보를 key : value 형태로 반환한다.
 	 */
 	@PostMapping("/game")
 	public ResponseEntity<?> gameStart(@RequestBody GameRequestBody gameRequestBody) {
