@@ -1,11 +1,20 @@
-import { React, useState } from 'react';
+import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import dummy from './Items/HoldingListData';
+import { gamerStockList } from '../../store/gamedata/GameData.selector';
 import HoldingListItem from './Items/HoldingListItem';
 
 export default function HoldingList() {
-  const [data] = useState(dummy);
+  const data = useSelector(gamerStockList);
+  const keys = Object.keys(data);
+  const holdingdata = [];
+
+  for (const key of keys) {
+    if (data[key].totalCount > 0) {
+      holdingdata.push(data[key]);
+    }
+  }
   return (
     <HoldingListContanier>
       <HoldingListName>
@@ -13,8 +22,8 @@ export default function HoldingList() {
         <AiOutlineQuestionCircle className="ml-2" />
       </HoldingListName>
       <ListContanier>
-        {data.map((holding, i) => {
-          return <HoldingListItem holding={holding} i={i} key={holding.name} />;
+        {holdingdata.map((holding, i) => {
+          return <HoldingListItem holding={holding} i={i} key={holding.id} />;
         })}
       </ListContanier>
     </HoldingListContanier>

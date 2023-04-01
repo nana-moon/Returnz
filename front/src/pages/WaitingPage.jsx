@@ -15,7 +15,11 @@ import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.redu
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList, setRoomInfo } from '../store/roominfo/GameRoom.reducer';
 import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
-import { handleGetGameData } from '../store/gamedata/GameData.reducer';
+import {
+  handleGetGameData,
+  handleGetStockDescription,
+  handleGetStockInformation,
+} from '../store/gamedata/GameData.reducer';
 
 export default function WaitingPage() {
   // hooks
@@ -103,7 +107,7 @@ export default function WaitingPage() {
       const gameData = await gameDataApi(turnReq);
       console.log('gameData', gameData);
       dispatch(handleGetGameData(gameData.Stocks));
-      dispatch(handleGetStockInfomation(gameData.stockInformation));
+      dispatch(handleGetStockInformation(gameData.stockInformation));
       dispatch(handleGetStockDescription(gameData.companyDetail));
       navigate('/game');
     }
