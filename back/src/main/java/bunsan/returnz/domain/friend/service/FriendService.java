@@ -149,7 +149,7 @@ public class FriendService {
 		messageBody.put("username", targetUsername);
 		messageBody.put("requestUsername", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+		messageBody.put("profileIcon", requester.getProfileIcon());
 
 		return SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.FRIEND)
