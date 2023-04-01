@@ -21,7 +21,7 @@ export default function StockInfoTab() {
       viewInfo[4].historyPrice,
       viewInfo[4].historyPrice - viewInfo[3].historyPrice,
       (((viewInfo[4].historyPrice - viewInfo[3].historyPrice) / viewInfo[3].historyPrice) * 100).toFixed(2),
-      '?',
+      '',
     ],
     [
       '1일 전',
@@ -47,7 +47,15 @@ export default function StockInfoTab() {
   ];
   // ['4일 전', viewInfo[0].historyPrice, '-20', '-1.87%', viewInfo[1].volume],
 
-  const getColor = (value) => (parseInt(value, 10) < 0 ? 'text-lose' : 'text-gain');
+  const getColor = (value) => {
+    if (parseInt(value, 10) > 0) {
+      return 'text-gain';
+    }
+    if (parseInt(value, 10) < 0) {
+      return 'text-lose';
+    }
+    return 'text-black';
+  };
 
   return (
     <div className="">
@@ -64,11 +72,11 @@ export default function StockInfoTab() {
         <tbody>
           {data.map((row, rowIndex) => {
             const Row = rowIndex % 2 === 1 ? StyledRow : UnstyledRow;
-            const colorClass = getColor(row[2]);
+            const colorClass = getColor(parseInt(row[2], 10));
             return (
               <Row key={rowIndex}>
                 <StyledCell>{row[0]}</StyledCell>
-                <StyledCell className={colorClass}>{parseInt(row[1], 10).toLocaleString()}</StyledCell>
+                <StyledCell className={colorClass}>{row[1] ? parseInt(row[1], 10).toLocaleString() : null}</StyledCell>
                 <StyledCell className={colorClass}>{parseInt(row[2], 10)}</StyledCell>
                 <StyledCell className={colorClass}>{row[3]}%</StyledCell>
                 <StyledCell>{row[4].toLocaleString()}</StyledCell>
@@ -82,7 +90,7 @@ export default function StockInfoTab() {
 }
 
 const StyledTable = styled.table`
-  ${tw`table-auto w-full text-xs`}
+  ${tw`table-auto w-full text-sm`}
 `;
 
 const StyledHeader = styled.th`
