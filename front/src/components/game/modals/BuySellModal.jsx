@@ -11,7 +11,7 @@ import { buyStockApi } from '../../../apis/gameApi';
 import { handleBuySellTrade } from '../../../store/gamedata/GameData.reducer';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 
-export default function BuySellModal({ code }) {
+export default function BuySellModal({ code, checkCanSell }) {
   const dispatch = useDispatch();
 
   const [orderCount, setOrderCount] = useState(0);
@@ -23,6 +23,13 @@ export default function BuySellModal({ code }) {
   const thisroomId = useSelector(getGameRoomId);
   const thisgamerId = useSelector(getGamerId);
   const deposit = useSelector(gamerDataList);
+  const [tmp, setTmp] = useState(true);
+
+  useEffect(() => {
+    console.log('-------------------------------');
+    checkCanSell(code);
+    console.log('ㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇ');
+  }, [tmp]);
 
   const modalData = modalStat.isType ? buyData : sellData;
   const maxOrderCount = modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : modalData.holdingcount;
@@ -76,10 +83,13 @@ export default function BuySellModal({ code }) {
       const result = await buyStockApi(data);
 
       if (result) {
-        console.log('매수성공데이터', result);
+        console.log('매수성공데이터', result, code);
         dispatch(handleBuySellTrade(result));
         dispatch(getHoldingCount(result.gamerStock));
-        handleCloseModal();
+        setTmp(!tmp);
+        setTimeout(() => {
+          handleCloseModal();
+        }, 10);
       }
     }
     // ㅁㅐ도라면
@@ -87,7 +97,6 @@ export default function BuySellModal({ code }) {
       const data = {};
     }
   };
-
   console.log(modalData, 'ddddtest');
 
   return (

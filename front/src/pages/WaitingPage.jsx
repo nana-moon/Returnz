@@ -14,7 +14,6 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
-import { getCompanyCodeList } from '../store/buysellmodal/BuySell.reducer';
 import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
@@ -187,7 +186,7 @@ export default function WaitingPage() {
       setGameInfo(gameInfo);
       dispatch(setPlayerList(gameInit.gamerList));
       dispatch(setGameRoomId(gameInit.roomId));
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.userName === 'comet');
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId));
       const turnReq = {
         gamerId: myGameInfo.gamerId,
@@ -198,7 +197,6 @@ export default function WaitingPage() {
       dispatch(handleGetGameData(gameData.Stocks));
       dispatch(handleGetStockInformation(gameData.stockInformation));
       dispatch(handleGetStockDescription(gameData.companyDetail));
-      dispatch(getCompanyCodeList(gameData.Stocks));
       navigate('/game');
     }
   };

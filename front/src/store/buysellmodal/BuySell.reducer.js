@@ -12,7 +12,7 @@ export const BuySellData = createSlice({
       companyName: '',
       orderPrice: '',
       companyCode: '',
-      holdingcount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      holdingcount: {},
     },
     ifopen: {
       isOpen: false,
@@ -25,13 +25,13 @@ export const BuySellData = createSlice({
   },
   reducers: {
     getCompanyCodeList: (state, action) => {
-      const keys = Object.keys(action.payload);
       const count = [];
-      for (let i = 0; i < keys.length; i += 1) {
-        const tmp = { [keys[i]]: 0 };
+      for (let i = 0; i < action.payload.length; i += 1) {
+        const tmp = { [action.payload[i]]: 0 };
+        console.log(tmp, 'tmp');
         count.push(tmp);
       }
-      state.ifsell.holdingcount = keys;
+      state.ifsell.holdingcount = count;
     },
     receiveBuyData: (state, action) => {
       console.log('state', action.payload);
@@ -54,8 +54,12 @@ export const BuySellData = createSlice({
       state.holdingdata = action.payload;
     },
     getHoldingCount: (state, action) => {
+      console.log('여기옴?', action.payload);
+      state.ifsell.holdingcount = [];
       for (let i = 0; i < action.payload.length; i += 1) {
-        state.ifsell.holdingcount[i] = action.payload[i].totalCount;
+        console.log(action.payload[i].totalCount, '이게뭔데');
+        const tmp = { [action.payload[i].companyCode]: action.payload[i].totalCount };
+        state.ifsell.holdingcount.push(tmp);
       }
     },
   },
