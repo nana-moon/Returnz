@@ -24,13 +24,25 @@ export const BuySellData = createSlice({
     holdingdata: {},
   },
   reducers: {
+    getCompanyCodeList: (state, action) => {
+      const keys = Object.keys(action.payload);
+      const count = [];
+      for (let i = 0; i < keys.length; i += 1) {
+        const tmp = { [keys[i]]: 0 };
+        count.push(tmp);
+      }
+      state.ifsell.holdingcount = keys;
+    },
     receiveBuyData: (state, action) => {
+      console.log('state', action.payload);
       state.ifbuy.companyName = action.payload.companyName;
       state.ifbuy.orderPrice = action.payload.orderPrice;
+      state.ifsell.companyCode = action.payload.companyCode;
     },
     receiveSellData: (state, action) => {
       state.ifsell.companyName = action.payload.companyName;
       state.ifsell.orderPrice = action.payload.orderPrice;
+      state.ifsell.companyCode = action.payload.companyCode;
     },
     receiveSetting: (state, action) => {
       state.ifopen = action.payload;
@@ -49,5 +61,6 @@ export const BuySellData = createSlice({
   },
 });
 
-export const { receiveBuyData, receiveSellData, receiveSetting, selectIdx, getHoldingCount } = BuySellData.actions;
+export const { receiveBuyData, receiveSellData, receiveSetting, selectIdx, getHoldingCount, getCompanyCodeList } =
+  BuySellData.actions;
 export default BuySellData;
