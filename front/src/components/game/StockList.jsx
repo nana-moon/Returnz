@@ -45,7 +45,7 @@ export default function StockList() {
         <SellButton
           type="button"
           onClick={() => handleOpenModal(false)}
-          disabled={canSell.companyName === '' || isThis}
+          disabled={canSell.holdingcount === 0 || isThis}
         >
           매도
         </SellButton>

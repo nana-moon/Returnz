@@ -10,5 +10,7 @@ export const stockInformation = (state) => state.gamedatas.stockInformation;
 export const stockdescription = (state) => state.gamedatas.stockdescription;
 // 보유 종목
 export const gamerStockList = (state) => state.gamedatas.gamerStockList;
-//  유저 데이터
+// 유저 데이터
 export const gamerDataList = (state) => state.gamedatas.gamerDataList;
+// 턴 데이터
+export const gameTurn = (state) => state.gamedatas.gameTurn;
