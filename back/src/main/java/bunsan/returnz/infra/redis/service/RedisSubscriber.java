@@ -44,13 +44,6 @@ public class RedisSubscriber implements MessageListener {
 				RoomMessageDto roomMessageDto = objectMapper.readValue(publishMessage, RoomMessageDto.class);
 				messagingTemplate.convertAndSend("/sub/result-room/" + roomMessageDto.getRoomId(), roomMessageDto);
 			}
-			// else if (topic.equals("likes")){
-			// 	LikeResponse likeResponse = objectMapper.readValue(publishMessage, LikeResponse.class);
-			// 	messagingTemplate.convertAndSend("/sub/title-hakwon/comments/likes", likeResponse);
-			// }else{
-			// 	ChatMessageDto roomMessage = objectMapper.readValue(publishMessage, ChatMessageDto.class);
-			// 	messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), roomMessage);
-			// }
 
 		} catch (Exception e) {
 			log.error(e.getMessage());

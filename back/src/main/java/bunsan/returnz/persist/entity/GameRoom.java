@@ -9,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import bunsan.returnz.domain.game.dto.GameRoomDto;
@@ -50,15 +49,22 @@ public class GameRoom {
 	@JoinColumn(name = "NEWS_GROUP_ID")
 	private NewsGroup newsGroup;
 
+	public void setNewsGroup(NewsGroup inputNewsGroup) {
+		if (inputNewsGroup == null) {
+			throw new NullPointerException("게임방에 뉴스 그룹 할당하기전에 뉴스그룹이 널인지 확인해주세요");
+		}
+		this.newsGroup = inputNewsGroup;
+	}
+
 	public GameRoomDto toDto(GameRoom gameRoom) {
 		return GameRoomDto.builder()
-			.id(gameRoom.id)
-			.roomId(gameRoom.roomId)
-			.curTurn(gameRoom.curTurn)
-			.totalTurn(gameRoom.totalTurn)
-			.curDate(gameRoom.curDate)
-			.turnPerTime(gameRoom.turnPerTime)
-			.roomMemberCount(gameRoom.roomMemberCount)
+			.id(gameRoom.getId())
+			.roomId(gameRoom.getRoomId())
+			.curTurn(gameRoom.getCurTurn())
+			.totalTurn(gameRoom.getTotalTurn())
+			.curDate(gameRoom.getCurDate())
+			.turnPerTime(gameRoom.getTurnPerTime())
+			.roomMemberCount(gameRoom.getRoomMemberCount())
 			.build();
 	}
 

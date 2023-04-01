@@ -6,25 +6,56 @@ import { stockDataList } from '../../../store/gamedata/GameData.selector';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 
 export default function StockInfoTab() {
-  // const stockInfo = useSelector(stockInformation);
-  // const stockToday = useSelector(stockDataList);
-  // const Idx = useSelector(selectedIdx);
+  const stockInfo = useSelector(stockInformation);
+  const stockToday = useSelector(stockDataList);
+  const Idx = useSelector(selectedIdx);
 
-  // const keys = Object.keys(stockInfo);
-  // const viewInfo = stockInfo[keys[Idx]];
-  // const todayInfo = stockToday[keys[Idx]][stockToday[keys[Idx]].length - 1];
+  const keys = Object.keys(stockInfo);
+  const viewInfo = stockInfo[keys[Idx]];
+  const todayInfo = stockToday[keys[Idx]][stockToday[keys[Idx]].length - 1];
 
-  // console.log(stockInfo[keys[Idx]], todayInfo);
-  // const data = [
-  //   ['오늘', parseInt(todayInfo.close, 10).toLocaleString(), '+50', '5%', viewInfo[0].volume],
-  //   ['1일 전', viewInfo[0].historyPrice, '+25', '2.38%', viewInfo[0].volume],
-  //   ['2일 전', viewInfo[1].historyPrice, '-10', '-0.93%', viewInfo[1].volume],
-  //   ['3일 전', viewInfo[2].historyPrice, '+5', '0.47%', viewInfo[2].volume],
-  //   ['4일 전', viewInfo[3].historyPrice, '-20', '-1.87%', viewInfo[3].volume],
-  //   ['5일 전', viewInfo[4].historyPrice, '+30', '2.86%', viewInfo[4].volume],
-  // ];
+  console.log(stockInfo[keys[Idx]], todayInfo);
+  const data = [
+    [
+      '오늘',
+      viewInfo[4].historyPrice,
+      viewInfo[4].historyPrice - viewInfo[3].historyPrice,
+      (((viewInfo[4].historyPrice - viewInfo[3].historyPrice) / viewInfo[3].historyPrice) * 100).toFixed(2),
+      '',
+    ],
+    [
+      '1일 전',
+      viewInfo[3].historyPrice,
+      viewInfo[3].historyPrice - viewInfo[2].historyPrice,
+      (((viewInfo[3].historyPrice - viewInfo[2].historyPrice) / viewInfo[2].historyPrice) * 100).toFixed(2),
+      viewInfo[4].volume,
+    ],
+    [
+      '2일 전',
+      viewInfo[2].historyPrice,
+      viewInfo[2].historyPrice - viewInfo[1].historyPrice,
+      (((viewInfo[2].historyPrice - viewInfo[1].historyPrice) / viewInfo[1].historyPrice) * 100).toFixed(2),
+      viewInfo[3].volume,
+    ],
+    [
+      '3일 전',
+      viewInfo[1].historyPrice,
+      viewInfo[1].historyPrice - viewInfo[0].historyPrice,
+      (((viewInfo[1].historyPrice - viewInfo[0].historyPrice) / viewInfo[0].historyPrice) * 100).toFixed(2),
+      viewInfo[2].volume,
+    ],
+  ];
+  // ['4일 전', viewInfo[0].historyPrice, '-20', '-1.87%', viewInfo[1].volume],
 
-  // const getColor = (value) => (value.startsWith('-') ? 'text-lose' : 'text-gain');
+  const getColor = (value) => {
+    if (parseInt(value, 10) > 0) {
+      return 'text-gain';
+    }
+    if (parseInt(value, 10) < 0) {
+      return 'text-lose';
+    }
+    return 'text-black';
+  };
 
   return (
     <div className="">
@@ -39,19 +70,19 @@ export default function StockInfoTab() {
           </tr>
         </thead>
         <tbody>
-          {/* {data.map((row, rowIndex) => {
-            const Row = rowIndex % 2 === 0 ? StyledRow : UnstyledRow;
-            const colorClass = getColor(row[2]);
+          {data.map((row, rowIndex) => {
+            const Row = rowIndex % 2 === 1 ? StyledRow : UnstyledRow;
+            const colorClass = getColor(parseInt(row[2], 10));
             return (
               <Row key={rowIndex}>
                 <StyledCell>{row[0]}</StyledCell>
-                <StyledCell className={colorClass}>{row[1].toLocaleString()}</StyledCell>
-                <StyledCell className={colorClass}>{row[2]}</StyledCell>
-                <StyledCell className={colorClass}>{row[3]}</StyledCell>
+                <StyledCell className={colorClass}>{row[1] ? parseInt(row[1], 10).toLocaleString() : null}</StyledCell>
+                <StyledCell className={colorClass}>{parseInt(row[2], 10)}</StyledCell>
+                <StyledCell className={colorClass}>{row[3]}%</StyledCell>
                 <StyledCell>{row[4].toLocaleString()}</StyledCell>
               </Row>
             );
-          })} */}
+          })}
         </tbody>
       </StyledTable>
     </div>
@@ -59,15 +90,15 @@ export default function StockInfoTab() {
 }
 
 const StyledTable = styled.table`
-  ${tw`table-auto w-full text-xs`}
+  ${tw`table-auto w-full text-sm`}
 `;
 
 const StyledHeader = styled.th`
-  ${tw`border px-4 py-1`}
+  ${tw`border-b-2 border bg-negative px-4 py-2`}
 `;
 
 const StyledCell = styled.td`
-  ${tw`border px-4`}
+  ${tw`border px-4 py-1`}
 `;
 
 const StyledRow = styled.tr`
