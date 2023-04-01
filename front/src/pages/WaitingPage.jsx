@@ -14,6 +14,7 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList, setRoomInfo } from '../store/roominfo/GameRoom.reducer';
+import { getCompanyCodeList } from '../store/buysellmodal/BuySell.reducer';
 import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
@@ -109,6 +110,7 @@ export default function WaitingPage() {
       dispatch(handleGetGameData(gameData.Stocks));
       dispatch(handleGetStockInformation(gameData.stockInformation));
       dispatch(handleGetStockDescription(gameData.companyDetail));
+      dispatch(getCompanyCodeList(gameData.Stocks));
       navigate('/game');
     }
   };
