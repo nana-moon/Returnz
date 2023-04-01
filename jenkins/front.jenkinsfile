@@ -1,19 +1,32 @@
 node {  
 
     stage('checkout'){
+        mattermostSend color: '#86A3B8', 
+        message: "checkOut Start... - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)"
        checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'mandu', url: 'https://lab.ssafy.com/s08-bigdata-dist-sub2/S08P22C106.git']])
     }
 
     stage('FrontBuild') { 
         dir("front"){
-            withEnv(['CI=false']) {
-                nodejs('returnz') {
-                    sh 'npm i'
-                    sh 'npm run build'
-                    sh 'pwd'
-                    sh "rm -rf front"
-                    sh "mv build front"
+            try{
+                mattermostSend color: '#86A3B8', 
+                message: "Build Start... - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)"
+                withEnv(['CI=false']) {
+                    nodejs('returnz') {
+                        sh 'npm i'
+                        sh 'npm run build'
+                        sh 'pwd'
+                        sh "rm -rf front"
+                        sh "mv build front"
+                    }
+                mattermostSend color: '#86A3B8', 
+                message: "Build Success!! - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)" 
                 }
+            }catch(err){
+                mattermostSend color: '#F55050', failOnError: true, 
+                message: "벡엔드 빌드를 실패 했습니다 ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Fail>)\n See the (<${env.BUILD_URL}console|console>)"
+                echo "Exception=${err}"
+                currentBuild.result = 'FAILURE'
             }
         }
     }
@@ -24,24 +37,35 @@ node {
         
     }
     stage('Deploy') { 
-        dir('front') {
-
-            sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
-            ,transfers: 
-            [sshTransfer(cleanRemote: false, 
-            excludes: '', execCommand: 'ls -al', 
-            execTimeout: 120000, 
-            flatten: false, 
-            makeEmptyDirs: false, 
-            noDefaultExcludes: false, 
-            patternSeparator: '[, ]+', 
-            remoteDirectory: 'retrunz/', 
-            remoteDirectorySDF: false, 
-            removePrefix: '', 
-            sourceFiles: 'front/')], 
-            usePromotionTimestamp: false, 
-            useWorkspaceInPromotion: false, 
-            verbose: false)])
+        try{
+            mattermostSend color: '#61876E',
+            message: "Deploy start... ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)."
+            dir('front') {
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
+                ,transfers: 
+                [sshTransfer(cleanRemote: false, 
+                excludes: '', execCommand: 'ls -al', 
+                execTimeout: 120000, 
+                flatten: false, 
+                makeEmptyDirs: false, 
+                noDefaultExcludes: false, 
+                patternSeparator: '[, ]+', 
+                remoteDirectory: 'retrunz/', 
+                remoteDirectorySDF: false, 
+                removePrefix: '', 
+                sourceFiles: 'front/')], 
+                usePromotionTimestamp: false, 
+                useWorkspaceInPromotion: false, 
+                verbose: false)])
+            }
+            mattermostSend color: '#61876E', 
+            message: "Deploy end!! ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>). http://returnz.online"
+        }
+        catch(err){
+            mattermostSend color: '#F55050',failOnError: true, 
+            message: "배포를 실패 했습니다 ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Fail>) \nSee the (<${env.BUILD_URL}console|console>)"
+            echo "Exception=${err}"
+            currentBuild.result = 'FAILURE'
         }
     
     }
