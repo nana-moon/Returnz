@@ -175,7 +175,6 @@ export default function WaitingPage() {
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
-    dispatch(getCompanyCodeList(gameData.Stocks));
     sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
     navigate('/game');
   };
