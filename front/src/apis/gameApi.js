@@ -33,8 +33,22 @@ const gameDataApi = (payload) => {
       return err;
     });
 };
+
+const buyStockApi = (payload) => {
+  return axios
+    .post('/games/purchases', payload)
+    .then((res) => {
+      console.log('매수 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('매수 실패', err);
+      return false;
+    });
+};
+
 const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, resultApi };
+export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi };

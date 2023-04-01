@@ -65,7 +65,7 @@ public class JwtTokenProvider {
 			.claim("username", authentication.getName())
 			.claim("id", member.getId())
 			.claim("nickname", member.getNickname())
-			.claim("profileIcon", member.getProfileIcon().getCode())
+			.claim("profileIcon", member.getProfileIcon())
 			.setExpiration(accessTokenExpiresIn)
 			.signWith(key, SignatureAlgorithm.HS256) // 암호화 방식
 			.compact();

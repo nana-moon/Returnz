@@ -1,46 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { keyframes } from 'styled-components';
 import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import { gameTurn } from '../../store/gamedata/GameData.selector';
 
 export default function Turn() {
   const [time, setTime] = useState(60);
+  const turn = useSelector(gameTurn);
 
-  setTimeout(() => {
-    const copy = time;
-    if (copy > 0) {
-      setTime(copy - 1);
-    }
-  }, 1000);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const copy = time;
+  //     if (copy > 0) {
+  //       setTime(copy - 1);
+  //     }
+  //   }, 1000);
+  //   return () => {
+  //     setTime(60);
+  //   };
+  // }, [turn]);
+
+  useEffect(() => {
+    setTime(60);
+    const interval = setInterval(() => {
+      setTime((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [turn]);
+
+  const Icon = [];
+
+  for (let i = 0; i < turn.maxTurn; i += 1) {
+    Icon.push(<TurnIcon index={i} num={turn.nowTurn} />);
+  }
   return (
     <TurnContanier>
-      <CountSection>
-        <div className="w-[60%] text-center text-xl font-bold">Round 1</div> <div className="ml-">12</div>
-      </CountSection>
-      <BarSection> </BarSection>
-      {time > 0 && <TimeSection> 남은시간 : {time}초 </TimeSection>}
+      <CountSection>{Icon}</CountSection>
+      <BarSection turn={turn}> </BarSection>
+      {time > 0 && <TimeSection> 🕒 {time} </TimeSection>}
       {/* <Progress label="남은시간" value={88} color="cyan" /> */}
     </TurnContanier>
   );
 }
 
 const shake = keyframes`
-  0% {
-    transform: translateY(0px);
-  }
-  25% {
-    transform: translateY(-4px);
-  }
-  50% {
-    transform: translateY(0px);
-  }
-  75% {
-    transform: translateY(-4px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-`;
-const moreshake = keyframes`
   0% {
     transform: translateY(0px);
   }
@@ -100,7 +107,7 @@ const TurnContanier = styled.div`
 `;
 
 const CountSection = styled.div`
-  ${tw`flex`}
+  ${tw`flex w-[90%] items-center h-[70%] mx-10 justify-center`}
 `;
 
 const TimeSection = styled.div`
@@ -108,4 +115,10 @@ const TimeSection = styled.div`
   animation-fill-mode: forwards;
   animation-timing-function: linear;
   ${tw`absolute bottom-0 text-center w-[100%] bg-transparent`}
+`;
+
+const TurnIcon = styled(AiOutlineCheckCircle)`
+  color: ${(props) => (props.index < props.num ? 'green' : 'black')};
+  font-size: ${(props) => (props.index === props.num ? '32px' : '20px')};
+  ${tw`mx-1`};
 `;
