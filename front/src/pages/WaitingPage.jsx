@@ -91,26 +91,11 @@ export default function WaitingPage() {
     }
   };
 
-  // -------------------------SOCKET ACTION----------------------------- 꼭 connect()안에 없어도 되는거였나욤?
+  // -------------------------SOCKET ACTION-----------------------------
   const socketAction = () => {
     console.log('the connection is successful');
     getMessage(subAddress, handleMessage, header);
     sendMessage(sendAddress, header, 'ENTER', { roomId: waitRoomId });
-    // sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
-    // sendMessage(sendAddress, header, 'SETTING', {
-    //   roomId: waitRoomId,
-    //   theme: '',
-    //   turnPerTime: '',
-    //   startTime: '',
-    //   totalTurn: '',
-    // });
-    // sendMessage(sendAddress, header, 'GAME_INFO', {
-    //   roomId: waitRoomId,
-    //   id: 0, // gameId
-    //   gamerList: [{ username: '', gamerId: '' }],
-    //   gameRoomId: waitRoomId,
-    // });
-    // sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
   };
 
   // -------------------------MANAGE CONNECT-----------------------------
@@ -120,9 +105,9 @@ export default function WaitingPage() {
   }, []);
 
   // DISCONNECT
-  // useEffect(() => {
-  //   stompDisconnect(subAddress, header);
-  // }, []);
+  useEffect(() => {
+    stompDisconnect(subAddress, header);
+  }, []);
 
   // -------------------------| CHAT |-----------------------------
 
@@ -155,10 +140,25 @@ export default function WaitingPage() {
   };
   const getTheme = (data) => {
     const newData = { ...setting, theme: data };
+    sendMessage(sendAddress, header, 'SETTING', {
+      roomId: waitRoomId,
+      theme: data,
+      turnPerTime: setting.turnPerTime,
+      startTime: setting.startTime,
+      totalTurn: setting.totalTurn,
+    });
     setSetting(newData);
   };
   const getUserSetting = (newData) => {
+    console.log(newData);
     setSetting(newData);
+    sendMessage(sendAddress, header, 'SETTING', {
+      roomId: waitRoomId,
+      theme: newData.theme,
+      turnPerTime: newData.turnPerTime,
+      startTime: newData.startTime,
+      totalTurn: newData.totalTurn,
+    });
   };
 
   useEffect(() => {
@@ -182,23 +182,31 @@ export default function WaitingPage() {
   // 게임 시작 action
   const handleStart = async (e) => {
     if (isValidSetting) {
+      // game roomInfo api
       const gameInit = await startGameApi(setting);
-      console.log(gameInit);
+      sendMessage(sendAddress, header, 'GAME_INFO', {
+        roomId: waitRoomId,
+        id: gameInit.Id,
+        gamerList: gameInit.gamerList,
+        gameRoomId: gameInit.roomId,
+      });
       setGameInfo(gameInfo);
       dispatch(setPlayerList(gameInit.gamerList));
       dispatch(setGameRoomId(gameInit.roomId));
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.userName === 'comet');
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId));
       const turnReq = {
         gamerId: myGameInfo.gamerId,
         roomId: gameInit.roomId,
       };
+      // game turnInfo api
       const gameData = await gameDataApi(turnReq);
       console.log('gameData', gameData);
       dispatch(handleGetGameData(gameData.Stocks));
       dispatch(handleGetStockInformation(gameData.stockInformation));
       dispatch(handleGetStockDescription(gameData.companyDetail));
       dispatch(getCompanyCodeList(gameData.Stocks));
+      sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
       navigate('/game');
     }
   };
