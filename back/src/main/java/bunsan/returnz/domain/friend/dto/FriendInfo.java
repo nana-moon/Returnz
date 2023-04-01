@@ -17,7 +17,7 @@ public class FriendInfo {
 		this.username = member.getUsername();
 		this.nickname = member.getNickname();
 		this.state = member.getState();
-		this.profileIcon = member.getProfileIcon().getCode();
+		this.profileIcon = member.getProfileIcon();
 	}
 
 }
