@@ -1,7 +1,7 @@
 node {  
 
     stage('checkout'){
-        mattermostSend color: '#86A3B8', 
+        mattermostSend color: '#49d19f', 
         message: "checkOut Start... - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)"
        checkout scmGit(branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[credentialsId: 'mandu', url: 'https://lab.ssafy.com/s08-bigdata-dist-sub2/S08P22C106.git']])
     }
@@ -9,7 +9,7 @@ node {
     stage('FrontBuild') { 
         dir("front"){
             try{
-                mattermostSend color: '#86A3B8', 
+                mattermostSend color: '#49d19f', 
                 message: "Build Start... - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)"
                 withEnv(['CI=false']) {
                     nodejs('returnz') {
@@ -19,7 +19,7 @@ node {
                         sh "rm -rf front"
                         sh "mv build front"
                     }
-                mattermostSend color: '#86A3B8', 
+                mattermostSend color: '#49d19f', 
                 message: "Build Success!! - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)" 
                 }
             }catch(err){
@@ -38,7 +38,7 @@ node {
     }
     stage('Deploy') { 
         try{
-            mattermostSend color: '#61876E',
+            mattermostSend color: '#49d19f',
             message: "Deploy start... ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>)."
             dir('front') {
                 sshPublisher(publishers: [sshPublisherDesc(configName: 'returnz'
@@ -58,7 +58,7 @@ node {
                 useWorkspaceInPromotion: false, 
                 verbose: false)])
             }
-            mattermostSend color: '#61876E', 
+            mattermostSend color: '#49d19f', 
             message: "Deploy end!! ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>). http://returnz.online"
         }
         catch(err){
