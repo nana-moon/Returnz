@@ -52,7 +52,7 @@ const ChattingBox = styled.div`
   }
 `;
 const ChattingDiv = styled.div`
-  ${tw`w-[100%] max-h-8 p-2`}
+  ${tw`w-[100%] max-h-[80%] p-2`}
 `;
 const ChattingInput = styled.input`
   ${tw`border bg-[#EDEEFF] rounded-xl w-[100%] max-h-8 p-2`}
