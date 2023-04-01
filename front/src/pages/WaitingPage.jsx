@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -15,7 +15,6 @@ import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.redu
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 import { getCompanyCodeList } from '../store/buysellmodal/BuySell.reducer';
-import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
   handleGetStockDescription,
@@ -29,7 +28,7 @@ export default function WaitingPage() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // -------------------------| WAITROOM |-----------------------------
+  // -------------------------| WAITROOM |------------------------------------------------------------------
 
   // 대기방 STATE
   const roomInfo = location.state;
@@ -47,9 +46,9 @@ export default function WaitingPage() {
   // 대기자 추가하기
   useEffect(() => {
     dispatch(setWaiterList(newWaiter));
-  }, [dispatch]);
+  }, []);
 
-  // -------------------------| SOCKET |-----------------------------
+  // -------------------------| SOCKET |------------------------------------------------------------------
 
   // -------------------------SOCKET STATE-----------------------------
   const ACCESS_TOKEN = Cookies.get('access_token');
@@ -60,7 +59,7 @@ export default function WaitingPage() {
     Authorization: ACCESS_TOKEN,
   };
 
-  // -------------------------HANDLE RECEIVED MESSAGE-----------------------------
+  // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
   const handleMessage = (received) => {
     console.log('handleMessage active');
     const newMessage = JSON.parse(received.body);
@@ -91,37 +90,29 @@ export default function WaitingPage() {
     }
   };
 
-  // -------------------------SOCKET ACTION-----------------------------
+  // -------------------------SOCKET CONNECT-----------------------------
   const socketAction = () => {
     console.log('the connection is successful');
     getMessage(subAddress, handleMessage, header);
     sendMessage(sendAddress, header, 'ENTER', { roomId: waitRoomId });
   };
 
-  // -------------------------MANAGE CONNECT-----------------------------
-  // CONNECT
   useEffect(() => {
+    // SOCKET CONNECT
     stompConnect(header, socketAction);
   }, []);
 
-  // DISCONNECT
-  useEffect(() => {
-    stompDisconnect(subAddress, header);
-  }, []);
-
-  // -------------------------| CHAT |-----------------------------
+  // -------------------------| CHAT |------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
-  // const [inputMessage, setInputMessage] = useState('');
   const getInputMessage = (inputMessage) => {
     console.log('inputMessage in waitingPage', inputMessage);
     sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
-    // setInputMessage(message);
   };
 
-  // -------------------------| GAME SETTING |-----------------------------
+  // -------------------------| SETTING GAME |------------------------------------------------------------------
 
-  // 게임 설정 state
+  // 게임 설정 STATE
   const initial = {
     theme: null,
     turnPerTime: 'NO',
@@ -132,9 +123,8 @@ export default function WaitingPage() {
   const [setting, setSetting] = useState(initial);
   const [isUserSetting, setIsUserSetting] = useState(false); // 사용자 설정 확인
   const [isValidSetting, setIsValidSetting] = useState(false); // 설정 유효성 검사
-  const [gameInfo, setGameInfo] = useState('');
 
-  // 게임 설정 action
+  // 게임 설정 ACTION
   const getIsUserSetting = () => {
     setIsUserSetting(!isUserSetting);
   };
@@ -177,12 +167,22 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  // -------------------------| GAME START/EXIT |-----------------------------
+  // -------------------------| START/EXIT GAME |------------------------------------------------------------------
+  // 첫턴정보 ACTION
+  const handleTurn = async (turnReq) => {
+    const gameData = await gameDataApi(turnReq);
+    console.log('gameData', gameData);
+    dispatch(handleGetGameData(gameData.Stocks));
+    dispatch(handleGetStockInformation(gameData.stockInformation));
+    dispatch(handleGetStockDescription(gameData.companyDetail));
+    dispatch(getCompanyCodeList(gameData.Stocks));
+    sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
+    navigate('/game');
+  };
 
-  // 게임 시작 action
+  // 게임방정보 ACTION
   const handleStart = async (e) => {
     if (isValidSetting) {
-      // game roomInfo api
       const gameInit = await startGameApi(setting);
       sendMessage(sendAddress, header, 'GAME_INFO', {
         roomId: waitRoomId,
@@ -190,7 +190,6 @@ export default function WaitingPage() {
         gamerList: gameInit.gamerList,
         gameRoomId: gameInit.roomId,
       });
-      setGameInfo(gameInfo);
       dispatch(setPlayerList(gameInit.gamerList));
       dispatch(setGameRoomId(gameInit.roomId));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
@@ -199,23 +198,24 @@ export default function WaitingPage() {
         gamerId: myGameInfo.gamerId,
         roomId: gameInit.roomId,
       };
-      // game turnInfo api
-      const gameData = await gameDataApi(turnReq);
-      console.log('gameData', gameData);
-      dispatch(handleGetGameData(gameData.Stocks));
-      dispatch(handleGetStockInformation(gameData.stockInformation));
-      dispatch(handleGetStockDescription(gameData.companyDetail));
-      dispatch(getCompanyCodeList(gameData.Stocks));
-      sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
-      navigate('/game');
+      handleTurn(turnReq);
     }
   };
 
-  // 게임 나가기 action
+  // 방나가기 ACTION
   const handleExit = () => {
+    // SOCKET DISCONNECT
+    stompDisconnect(subAddress, header);
     dispatch(removeWaiterList());
   };
 
+  useEffect(() => {
+    return () => {
+      handleExit();
+    };
+  }, []);
+
+  // -------------------------| RETURN HTML |------------------------------------------------------------------
   return (
     <WaitingContainer>
       <TopSection>
