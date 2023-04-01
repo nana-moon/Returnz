@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
-import { useSelector } from 'react-redux';
-import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectedIdx, sellNeedData } from '../../../store/buysellmodal/BuySell.selector';
+import { getCompanyCodeList } from '../../../store/buysellmodal/BuySell.reducer';
 import { stockdescription } from '../../../store/gamedata/GameData.selector';
 
 export default function Description() {
+  const dispatch = useDispatch();
   const description = useSelector(stockdescription);
   const idx = useSelector(selectedIdx);
+  const data = useSelector(sellNeedData);
   const key = Object.keys(description);
   console.log('종목 소개', description, idx, key);
+
+  useEffect(() => {
+    if (data !== []) {
+      dispatch(getCompanyCodeList(key));
+    }
+  }, []);
   return (
     <DescriptionContainer>
       <DescriptionImgSection>
