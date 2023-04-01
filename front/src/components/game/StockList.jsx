@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
@@ -16,6 +16,7 @@ export default function StockList() {
   const stockDatas = useSelector(stockDataList);
   const selectidx = useSelector(selectedIdx);
   const noWorkidx = useSelector(noWorkDay);
+  const [result, setResult] = useState(0);
 
   const isThis = noWorkidx.includes(selectidx);
 
@@ -26,15 +27,22 @@ export default function StockList() {
     const value = { isOpen: true, isType: data };
     dispatch(receiveSetting(value));
   };
+
+  const checkCanSell = (data) => {
+    const foundObj = canSell.holdingcount.find((obj) => Object.keys(obj)[0] === data);
+    console.log('부모컴포넌트', data, canSell, '개수:', foundObj);
+    setResult(foundObj[data]);
+  };
+
   return (
     <StockListContanier>
-      {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} /> : null}
+      {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} checkCanSell={checkCanSell} /> : null}
       <StockListSection>상장 종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
             // eslint-disable-next-line react/no-array-index-key
-            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={i} />;
+            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={i} checkCanSell={checkCanSell} />;
           })}
         </div>
       </ListContanier>
@@ -42,11 +50,7 @@ export default function StockList() {
         <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === '' || isThis}>
           매수
         </BuyButton>
-        <SellButton
-          type="button"
-          onClick={() => handleOpenModal(false)}
-          disabled={canSell.holdingcount === 0 || isThis}
-        >
+        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={result <= 0 || isThis}>
           매도
         </SellButton>
       </OrderButton>

@@ -14,7 +14,7 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
-import { getCompanyCodeList } from '../store/buysellmodal/BuySell.reducer';
+import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
   handleGetStockDescription,
