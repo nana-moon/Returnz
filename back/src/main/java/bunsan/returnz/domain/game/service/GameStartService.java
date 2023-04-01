@@ -254,8 +254,8 @@ public class GameStartService {
 			Map<String, Object> userNameAndGameId = new HashMap<>();
 			userNameAndGameId.put("nickname", gamer.getUserNickname());
 			userNameAndGameId.put("gamerId", gamer.getId());
-			userNameAndGameId.put("username",member.getUsername());
-			userNameAndGameId.put("profileIcon",member.getProfileIcon());
+			userNameAndGameId.put("username", member.getUsername());
+			userNameAndGameId.put("profileIcon", member.getProfileIcon());
 			gamersIdList.add(userNameAndGameId);
 		}
 	}
