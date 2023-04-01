@@ -33,14 +33,15 @@ const gameDataApi = (payload) => {
 };
 
 const buyStockApi = (payload) => {
-  console.log(payload, '대박');
   return axios
     .post('/games/purchases', payload)
     .then((res) => {
-      console.log('매수 성공', res.data);
+      console.log('매수 성공', res);
+      return res.data;
     })
     .catch((err) => {
       console.log('매수 실패', err);
+      return false;
     });
 };
 
