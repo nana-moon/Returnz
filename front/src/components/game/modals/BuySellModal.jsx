@@ -6,7 +6,7 @@ import { Button, Input } from '@material-tailwind/react';
 import { createGlobalStyle } from 'styled-components';
 import { getGameRoomId, getGamerId } from '../../../store/roominfo/GameRoom.selector';
 import { buyNeedData, sellNeedData, modalState } from '../../../store/buysellmodal/BuySell.selector';
-import { receiveSetting } from '../../../store/buysellmodal/BuySell.reducer';
+import { receiveSetting, getHoldingCount } from '../../../store/buysellmodal/BuySell.reducer';
 import { buyStockApi } from '../../../apis/gameApi';
 import { handleBuySellTrade } from '../../../store/gamedata/GameData.reducer';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
@@ -76,7 +76,9 @@ export default function BuySellModal({ code }) {
       const result = await buyStockApi(data);
 
       if (result) {
+        console.log('매수성공데이터', result);
         dispatch(handleBuySellTrade(result));
+        dispatch(getHoldingCount(result.gamerStock));
         handleCloseModal();
       }
     }
@@ -85,6 +87,8 @@ export default function BuySellModal({ code }) {
       const data = {};
     }
   };
+
+  console.log(modalData, 'ddddtest');
 
   return (
     <>
@@ -142,8 +146,8 @@ export default function BuySellModal({ code }) {
         </StockSection>
 
         <StockSection>
-          <CountBox>총주문금액</CountBox>
-          <StockCountSecond> {(modalData.orderPrice * orderCount).toLocaleString()} </StockCountSecond>
+          <CountBox>총 주문금액</CountBox>
+          <StockCountSecond> {parseInt(modalData.orderPrice * orderCount).toLocaleString()} </StockCountSecond>
           <StockCountThirdBox> 원 </StockCountThirdBox>
         </StockSection>
 

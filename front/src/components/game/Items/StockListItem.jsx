@@ -69,7 +69,10 @@ export default function StockListItem({ Stock, i }) {
       onClick={(e) => {
         createRipple(e);
         handleselectIdx(i);
-        const value = { companyName: Stock[Stock.length - 1].companyName, orderPrice: Stock[Stock.length - 1].close };
+        const value = {
+          companyName: Stock[Stock.length - 1].companyName,
+          orderPrice: Stock[Stock.length - 1].close,
+        };
         dispatch(receiveBuyData(value));
         // 보유수량 확인 가능하면 수정해야됨
         dispatch(receiveSellData(value));
