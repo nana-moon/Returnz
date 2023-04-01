@@ -38,6 +38,7 @@ public class SideBarService {
 
 	@Transactional
 	public void sendFriendRequest(SideMessageDto sideRequest, String token) {
+		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
 		Map<String, Object> requestBody = sideRequest.getMessageBody();
 
 		// token에 저장된 Member > 요청한 사람
@@ -68,7 +69,7 @@ public class SideBarService {
 		messageBody.put("username", targetUsername);
 		messageBody.put("requestUsername", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+		messageBody.put("profileIcon", requester.getProfileIcon());
 
 		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.FRIEND)
@@ -94,7 +95,7 @@ public class SideBarService {
 		messageBody.put("roomId", requestBody.get("roomId"));
 		messageBody.put("username", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon().getCode());
+		messageBody.put("profileIcon", requester.getProfileIcon());
 
 		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.INVITE)
@@ -107,7 +108,7 @@ public class SideBarService {
 		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
-	private void checkValidRequest(String requestUsername, String targetUsername) {
+	public void checkValidRequest(String requestUsername, String targetUsername) {
 		// 우선 확인 사항
 		// Member 반환
 		Member requestMember = memberRepository.findByUsername(requestUsername)
@@ -147,14 +148,7 @@ public class SideBarService {
 			.messageBody(messageBody)
 			.build();
 
-		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		// simpMessagingTemplate.convertAndSendToUser(username,
-		// 	"/sub/side-bar", sideMessageDto);
-
 		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
-
-		// 친구들 모두에게 소켓으로 쏴줌 ..ㅋㅋ
-		// log.info("222");
 	}
 
 	public void checkState(Member member, MemberState state) {
@@ -173,7 +167,7 @@ public class SideBarService {
 					.messageBody(messageBody)
 					.build();
 				// simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
-				// 	"/sub/side-bar", sideMessageDto);
+				// "/sub/side-bar", sideMessageDto);
 				redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 			}
 		}

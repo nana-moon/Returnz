@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +32,16 @@ public class WaitRoom {
 	String captainName;
 
 	public void plusMemberCount() {
+		if (this.memberCount >= 4) {
+			throw new BadRequestException("대기방 인원이 4명 이상입니다.");
+		}
 		this.memberCount++;
+	}
+
+	public void minusMemberCount() {
+		this.memberCount--;
+		if (this.memberCount < 0) {
+			throw new BadRequestException("대기방 인원이 음수 값입니다.");
+		}
 	}
 }
