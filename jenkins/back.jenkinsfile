@@ -57,8 +57,7 @@ node {
                             useWorkspaceInPromotion: false, 
                             verbose: false)])
                             mattermostSend color: '#61876E', 
-                            message: "Deploy end!! ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \n
-                            See the (<${env.BUILD_URL}console|console>). http://returnz.online"
+                            message: "Deploy end!! ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|close>) ${currentBuild.durationString} \nSee the (<${env.BUILD_URL}console|console>). http://returnz.online"
             }
             catch(err){
                 mattermostSend color: '#F55050',failOnError: true, 
