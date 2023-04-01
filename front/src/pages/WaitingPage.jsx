@@ -14,10 +14,12 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
+import { getCompanyCodeList } from '../store/buysellmodal/BuySell.reducer';
+import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
   handleGetStockDescription,
-  handleGetStockInfomation,
+  handleGetStockInformation,
 } from '../store/gamedata/GameData.reducer';
 import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
 
@@ -193,13 +195,11 @@ export default function WaitingPage() {
       };
       const gameData = await gameDataApi(turnReq);
       console.log('gameData', gameData);
-      await Promise.all([
-        dispatch(handleGetGameData(gameData.Stocks)),
-        dispatch(handleGetStockInfomation(gameData.stockInformation)),
-        dispatch(handleGetStockDescription(gameData.companyDetail)),
-      ]);
-      // 데이터 있는지 확인하고 네비게이트
-      await navigate('/game');
+      dispatch(handleGetGameData(gameData.Stocks));
+      dispatch(handleGetStockInformation(gameData.stockInformation));
+      dispatch(handleGetStockDescription(gameData.companyDetail));
+      dispatch(getCompanyCodeList(gameData.Stocks));
+      navigate('/game');
     }
   };
 
