@@ -2,7 +2,7 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
-import { stockDataList } from '../../../store/gamedata/GameData.selector';
+import { stockDataList, stockInformation } from '../../../store/gamedata/GameData.selector';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 
 export default function StockInfoTab() {
