@@ -3,7 +3,6 @@ import tw, { styled } from 'twin.macro';
 import { Avatar } from '@material-tailwind/react';
 
 export default function WaitingListItem({ waiter }) {
-  console.log(waiter);
   const { profile, nickname, avgProfit } = waiter;
   const profilePath = `profile_pics/${profile}.jpg`;
   return (

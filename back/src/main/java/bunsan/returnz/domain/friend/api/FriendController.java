@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.friend.dto.FriendRequestDto;
 import bunsan.returnz.domain.friend.service.FriendService;
+import bunsan.returnz.domain.sidebar.dto.SideMessageDto;
 import lombok.RequiredArgsConstructor;
 
 // TODO: 2023-03-29 프론트 서버에 맞게 CrossOrigin 변경
@@ -47,7 +49,7 @@ public class FriendController {
 	//-----------------------------------친구 요청 수락----------------------------------------
 	@PostMapping("/api/friends/{id}")
 	public ResponseEntity addFriend(@RequestHeader(value = "Authorization") String bearerToken,
-									@PathVariable Long id) {
+		@PathVariable Long id) {
 		String token = bearerToken.substring(7);
 		friendService.addFriend(id, token);
 		return new ResponseEntity<>(HttpStatus.CREATED);
@@ -68,5 +70,14 @@ public class FriendController {
 		String token = bearerToken.substring(7);
 		friendService.deleteFriend(username, token);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	//-----------------------------------친구 요청 생성-------------------------------------
+	@PostMapping("/api/requests")
+	public ResponseEntity sendFriendRequest(@RequestHeader(value = "Authorization") String bearerToken,
+		@RequestBody SideMessageDto sideRequest) {
+		String token = bearerToken.substring(7);
+		SideMessageDto sideResponse = friendService.sendFriendRequest(sideRequest, token);
+		return ResponseEntity.ok(sideResponse);
 	}
 }
