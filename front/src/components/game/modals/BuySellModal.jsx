@@ -28,7 +28,6 @@ export default function BuySellModal({ code, checkCanSell }) {
   useEffect(() => {
     console.log('-------------------------------');
     checkCanSell(code);
-    console.log('ㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇㅁㄴㅇㅁㄴㅇㄴㅁㅇㄴㅁㅇ');
   }, [tmp]);
 
   const modalData = modalStat.isType ? buyData : sellData;
