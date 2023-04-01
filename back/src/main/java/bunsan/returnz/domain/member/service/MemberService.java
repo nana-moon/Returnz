@@ -2,6 +2,7 @@ package bunsan.returnz.domain.member.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -118,5 +119,28 @@ public class MemberService {
 		}
 		member.changeNickname(newNickname);
 		memberRepository.save(member);
+	}
+
+	public void changeProfile(String token, String newProfile) {
+		Member member = jwtTokenProvider.getMember(token);
+		if (member.getProfileIcon().equals(newProfile)) {
+			throw new ConflictException("기존 프로필이랑 동일합니다.");
+		}
+		if (!member.getPermittedProfiles().contains(newProfile)) {
+			throw new BadRequestException("해금된 프로필이 아닙니다.");
+		}
+		member.changeProfile(newProfile);
+		memberRepository.save(member);
+	}
+
+	public void changePlus(String token, String newProfile) {
+		Member member = jwtTokenProvider.getMember(token);
+		member.addProfile(newProfile);
+		memberRepository.save(member);
+	}
+
+	public Set<String> getPermittedProfiles(String token) {
+		Member member = jwtTokenProvider.getMember(token);
+		return member.getPermittedProfiles();
 	}
 }
