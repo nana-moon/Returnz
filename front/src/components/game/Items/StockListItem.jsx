@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { Tooltip } from '@material-tailwind/react';
@@ -6,7 +6,7 @@ import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buyse
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 import { noWorkDay } from '../../../store/gamedata/GameData.selector';
 
-export default function StockListItem({ Stock, i, Code }) {
+export default function StockListItem({ Stock, i, Code, checkCanSell }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
   const isWork = useSelector(noWorkDay);
@@ -75,7 +75,8 @@ export default function StockListItem({ Stock, i, Code }) {
           orderPrice: Stock[Stock.length - 1].close,
           companyCode: keys[i],
         };
-        console.log(['데이터소개', value]);
+        console.log(['데이터소개', value], keys[i]);
+        checkCanSell(keys[i]);
         dispatch(receiveBuyData(value));
         // 보유수량 확인 가능하면 수정해야됨
         dispatch(receiveSellData(value));
