@@ -1,11 +1,16 @@
 import React from 'react';
-import tw, { styled } from 'twin.macro';
 import { Avatar } from '@material-tailwind/react';
+import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
+import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 
 export default function UserLogListItem({ temp }) {
   // isHost 들어갈 정보 달라짐
   const tempId = 'j';
   const infoId = { seed: 5000000, buy: 100000, eval: 10000000 };
+
+  const myInfo = useSelector(gamerDataList);
+
   const profilePath = `profile_pics/${temp.profile}`;
   return (
     <UserLogItemContainer temp={temp} tempId={tempId}>
@@ -25,8 +30,8 @@ export default function UserLogListItem({ temp }) {
         <div>평가손익 : {temp.profit}%</div>
         {temp.nickname === tempId && (
           <MyBox>
-            <div>예수금 {infoId.seed}</div>
-            <div>총매입금액 {infoId.buy}</div>
+            <div>예수금 {myInfo.deposit.toLocaleString()}</div>
+            <div>총매입금액 {myInfo.ammountOfBuy.toLocaleString()}</div>
             <div>총평가금액 {infoId.eval}</div>
           </MyBox>
         )}

@@ -9,21 +9,29 @@ import Turn from '../components/game/Turn';
 import Graph from '../components/game/Graph';
 import StockInfo from '../components/game/StockInfo';
 import Header from '../components/common/Header';
-import { handleMoreGameData } from '../store/gamedata/GameData.reducer';
-import { stockGraphList } from '../store/gamedata/GameData.selector';
+import {
+  handleMoreGameData,
+  handleUpdateHoldingData,
+  handleGetStockInformation,
+} from '../store/gamedata/GameData.reducer';
+import { gamerStockList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
+import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 
 export default function GamePage() {
-  const testdata = useSelector(stockGraphList);
+  const testdata = useSelector(gamerStockList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
+  const holdingdata = useSelector(sellNeedData);
+  const selectIdx = useSelector(selectedIdx);
 
   const dispatch = useDispatch();
 
   const readd = () => {
-    console.log(testdata, 'test');
+    console.log(testdata, 'testdata');
+    console.log(holdingdata, 'se', selectIdx, 'testdata2');
   };
 
   const axiospost = () => {
@@ -37,6 +45,8 @@ export default function GamePage() {
       .then((res) => {
         console.log(res.data, 'ddd');
         dispatch(handleMoreGameData(res.data.Stocks));
+        dispatch(handleUpdateHoldingData(res.data.gamerStock));
+        dispatch(handleGetStockInformation(res.data.stockInformation));
       })
       .catch((err) => {
         console.log(err);
@@ -48,7 +58,7 @@ export default function GamePage() {
       <GameContainer>
         <LeftSection>
           <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            Redux 데이터 테스트
+            Redux 데이터 확인용 버튼
           </div>
           <div onClick={axiospost} onKeyDown={axiospost} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
             시작 테스트
@@ -73,7 +83,7 @@ export default function GamePage() {
   );
 }
 const GameContainer = styled.div`
-  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq`}
+  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq mt-14`}
 `;
 const LeftSection = styled.div`
   max-height: 88vh;
