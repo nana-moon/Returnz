@@ -8,6 +8,7 @@ export default function Description() {
   const description = useSelector(stockdescription);
   const idx = useSelector(selectedIdx);
   const key = Object.keys(description);
+  console.log('종목 소개', description, idx, key);
   return (
     <DescriptionContainer>
       <DescriptionImgSection>
@@ -20,7 +21,9 @@ export default function Description() {
         </div>
       </DescriptionImgSection>
       <DescriptionSection>
-        <div>{idx ? description[key[idx]].description : '등록된 종목 소개가 없습니다.'}</div>
+        <div>
+          {description[key[idx]].description ? description[key[idx]].description : '등록된 종목 소개가 없습니다.'}
+        </div>
       </DescriptionSection>
     </DescriptionContainer>
   );

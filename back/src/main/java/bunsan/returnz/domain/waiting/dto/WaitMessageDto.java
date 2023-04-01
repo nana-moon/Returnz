@@ -17,7 +17,7 @@ import lombok.ToString;
 @ToString
 public class WaitMessageDto {
 	public enum MessageType {
-		ENTER, CHAT, EXIT, SETTING, @JsonEnumDefaultValue UNKNOWN;
+		ENTER, CHAT, EXIT, SETTING, GAME_INFO, @JsonEnumDefaultValue UNKNOWN;
 	}
 	private MessageType type;
 	private Map<String, Object> messageBody;

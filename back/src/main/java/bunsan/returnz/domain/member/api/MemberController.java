@@ -3,6 +3,7 @@ package bunsan.returnz.domain.member.api;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.member.dto.LoginRequest;
 import bunsan.returnz.domain.member.dto.NewNicknameDto;
+import bunsan.returnz.domain.member.dto.NewProfileDto;
 import bunsan.returnz.domain.member.dto.SignupRequest;
 import bunsan.returnz.domain.member.service.MemberService;
 import bunsan.returnz.global.auth.dto.TokenInfo;
@@ -60,12 +61,38 @@ public class MemberController {
 	}
 
 	//---------------------------------------닉네임 변경-----------------------------------------
-	@PatchMapping
+	@PatchMapping("/nickname")
 	public ResponseEntity changeNickname(@RequestHeader("Authorization") String bearerToken,
 		@RequestBody @Valid NewNicknameDto newNicknameDto) {
 		String token = bearerToken.substring(7);
 		memberService.changeNickname(token, newNicknameDto.getNewNickname());
 		return ResponseEntity.ok().body(Map.of("result", "success"));
+	}
+
+	//---------------------------------------닉네임 변경-----------------------------------------
+	@PatchMapping("/profile")
+	public ResponseEntity changeProfile(@RequestHeader("Authorization") String bearerToken,
+		@RequestBody @Valid NewProfileDto newProfileDto) {
+		String token = bearerToken.substring(7);
+		memberService.changeProfile(token, newProfileDto.getNewProfile());
+		return ResponseEntity.ok().body(Map.of("result", "success"));
+	}
+
+	//------------------------------------프로필 추가 임시 api-------------------------------------
+	@PatchMapping("/plus")
+	public ResponseEntity changePlus(@RequestHeader("Authorization") String bearerToken,
+		@RequestBody @Valid NewProfileDto newProfileDto) {
+		String token = bearerToken.substring(7);
+		memberService.changePlus(token, newProfileDto.getNewProfile());
+		return ResponseEntity.ok().body(Map.of("result", "success"));
+	}
+
+	//-----------------------------------해금된 프로필 조회-------------------------------------
+	@GetMapping("/profiles")
+	public ResponseEntity getPermittedProfiles(@RequestHeader("Authorization") String bearerToken) {
+		String token = bearerToken.substring(7);
+		Set<String> permittedProfiles = memberService.getPermittedProfiles(token);
+		return ResponseEntity.ok().body(Map.of("permittedProfiles", permittedProfiles));
 	}
 
 }

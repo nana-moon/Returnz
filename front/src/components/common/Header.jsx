@@ -47,11 +47,12 @@ export default function Header() {
 }
 
 const NavHeader = styled.div`
-  // position: fixed;
-  // top: 0;
-  // left: 0;
-  // right: 0;
-  // height: 56px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 2;
   ${tw`bg-primary flex justify-between py-2 w-[100%]`}
 `;
 
