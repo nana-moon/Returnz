@@ -13,45 +13,43 @@ import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
-import { setGamerId, setGameRoomId, setPlayerList, setRoomInfo } from '../store/roominfo/GameRoom.reducer';
+import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 import {
   handleGetGameData,
   handleGetStockDescription,
   handleGetStockInfomation,
 } from '../store/gamedata/GameData.reducer';
-import { getMessage, handleMessage, sendMessage, stomp, stompConnect, stompDisconnect } from '../hooks/useSocket';
+import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
 
 export default function WaitingPage() {
-  // hooks
+  // HOOKS
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // -------------------------대기방 데이터-----------------------------
+  // -------------------------| WAITROOM |-----------------------------
 
-  // 대기방 state - 확인완료
+  // 대기방 STATE
   const roomInfo = location.state;
 
-  // 방장 state
+  // 방장 STATE
   const myEmail = Cookies.get('email');
   const myProfile = Cookies.get('profileIcon');
   const myNickname = Cookies.get('nickname');
   const isHost = myEmail === roomInfo.captainName;
   const newWaiter = { id: 1, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
-  const [initialDispatch, setInitialDispatch] = useState(false);
-  useEffect(() => {
-    if (!initialDispatch) {
-      dispatch(setWaiterList(newWaiter));
-      setInitialDispatch(true);
-    }
-  }, [dispatch, initialDispatch]);
 
-  // 대기자 state
+  // 대기자 STATE
   const waiterList = useSelector(getWaiterList);
 
-  // -------------------------SOCKET state-----------------------------
+  // 대기자 추가하기
+  useEffect(() => {
+    dispatch(setWaiterList(newWaiter));
+  }, [dispatch]);
 
-  // socket 연결 시 사용할 데이터 - 확인완료
+  // -------------------------| SOCKET |-----------------------------
+
+  // -------------------------SOCKET STATE-----------------------------
   const ACCESS_TOKEN = Cookies.get('access_token');
   const waitRoomId = roomInfo.roomId;
   const subAddress = `/sub/wait-room/${waitRoomId}`;
@@ -60,29 +58,81 @@ export default function WaitingPage() {
     Authorization: ACCESS_TOKEN,
   };
 
-  // -------------------------SOCKET action-----------------------------
+  // -------------------------HANDLE RECEIVED MESSAGE-----------------------------
+  const handleMessage = (received) => {
+    console.log('handleMessage active');
+    const newMessage = JSON.parse(received.body);
+    // -------------------------handle ENTER-----------------------------
+    if (newMessage.type === 'ENTER') {
+      console.log('ENTER 메세지 도착', newMessage.messageBody);
+      const { roomId, id, username, nickname, profileIcon, avgProfit, captainName } = newMessage.messageBody;
+    }
+    // -------------------------handle CHAT-----------------------------
+    if (newMessage.type === 'CHAT') {
+      console.log('CHAT 메세지 도착', newMessage.messageBody);
+      const { roomId, nickname, contents } = newMessage.messageBody;
+      setReceivedMessage({ nickname, contents });
+    }
+    // -------------------------handle SETTING-----------------------------
+    if (newMessage.type === 'SETTING') {
+      console.log('SETTING 메세지 도착', newMessage.messageBody);
+      const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+    }
+    // -------------------------handle GAME_INFO-----------------------------
+    if (newMessage.type === 'GAME_INFO') {
+      console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
+      const { roomId, gameRoomId } = newMessage.messageBody;
+    }
+    // -------------------------handle EXIT-----------------------------
+    if (newMessage.type === 'EXIT') {
+      console.log('EXIT 메세지 도착', newMessage.messageBody);
+    }
+  };
+
+  // -------------------------SOCKET ACTION----------------------------- 꼭 connect()안에 없어도 되는거였나욤?
   const socketAction = () => {
     console.log('the connection is successful');
     getMessage(subAddress, handleMessage, header);
     sendMessage(sendAddress, header, 'ENTER', { roomId: waitRoomId });
-    sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: 'chatting...' });
+    // sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
+    // sendMessage(sendAddress, header, 'SETTING', {
+    //   roomId: waitRoomId,
+    //   theme: '',
+    //   turnPerTime: '',
+    //   startTime: '',
+    //   totalTurn: '',
+    // });
+    // sendMessage(sendAddress, header, 'GAME_INFO', {
+    //   roomId: waitRoomId,
+    //   id: 0, // gameId
+    //   gamerList: [{ username: '', gamerId: '' }],
+    //   gameRoomId: waitRoomId,
+    // });
+    // sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
   };
 
+  // -------------------------MANAGE CONNECT-----------------------------
+  // CONNECT
   useEffect(() => {
     stompConnect(header, socketAction);
   }, []);
 
+  // DISCONNECT
   // useEffect(() => {
   //   stompDisconnect(subAddress, header);
   // }, []);
 
-  // -------------------------채팅 데이터-----------------------------
+  // -------------------------| CHAT |-----------------------------
 
-  const getChat = (chat) => {
-    console.log(chat);
+  const [receivedMessage, setReceivedMessage] = useState('');
+  // const [inputMessage, setInputMessage] = useState('');
+  const getInputMessage = (inputMessage) => {
+    console.log('inputMessage in waitingPage', inputMessage);
+    sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
+    // setInputMessage(message);
   };
 
-  // -------------------------게임 데이터-----------------------------
+  // -------------------------| GAME SETTING |-----------------------------
 
   // 게임 설정 state
   const initial = {
@@ -95,6 +145,7 @@ export default function WaitingPage() {
   const [setting, setSetting] = useState(initial);
   const [isUserSetting, setIsUserSetting] = useState(false); // 사용자 설정 확인
   const [isValidSetting, setIsValidSetting] = useState(false); // 설정 유효성 검사
+  const [gameInfo, setGameInfo] = useState('');
 
   // 게임 설정 action
   const getIsUserSetting = () => {
@@ -124,13 +175,17 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
+  // -------------------------| GAME START/EXIT |-----------------------------
+
   // 게임 시작 action
   const handleStart = async (e) => {
     if (isValidSetting) {
       const gameInit = await startGameApi(setting);
+      console.log(gameInit);
+      setGameInfo(gameInfo);
       dispatch(setPlayerList(gameInit.gamerList));
       dispatch(setGameRoomId(gameInit.roomId));
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.userName === 'ssafy');
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.userName === 'comet');
       dispatch(setGamerId(myGameInfo.gamerId));
       const turnReq = {
         gamerId: myGameInfo.gamerId,
@@ -149,13 +204,13 @@ export default function WaitingPage() {
   };
 
   // 게임 나가기 action
-  const handleBack = () => {
+  const handleExit = () => {
     dispatch(removeWaiterList());
   };
 
   return (
     <WaitingContainer>
-      <WaitingListSection>
+      <TopSection>
         {Array.from({ length: 4 }).map((_, i) => {
           if (i < waiterList.length) {
             return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
@@ -163,27 +218,26 @@ export default function WaitingPage() {
           // eslint-disable-next-line react/no-array-index-key
           return <NullListItem key={i} />;
         })}
-      </WaitingListSection>
-      <SettingSection>
+      </TopSection>
+      <BottomSection>
         {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
         {isUserSetting && (
           <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
         )}
         <ChatSection>
-          <Chatting getChat={getChat} />
+          <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
           <BtnBox>
             {isHost && (
               <StartButton onClick={handleStart} disabled={!isValidSetting}>
                 시작하기
               </StartButton>
             )}
-            <BackButton to="/" onClick={handleBack} className="bg-[#E19999] hover:bg-[#976161]">
+            <ExitButton to="/" onClick={handleExit} className="bg-[#E19999] hover:bg-[#976161]">
               나가기
-            </BackButton>
-            <button type="submit">SendMessage</button>
+            </ExitButton>
           </BtnBox>
         </ChatSection>
-      </SettingSection>
+      </BottomSection>
     </WaitingContainer>
   );
 }
@@ -191,22 +245,22 @@ export default function WaitingPage() {
 const WaitingContainer = styled.div`
   ${tw`w-[75%]`}
 `;
-const WaitingListSection = styled.section`
+const TopSection = styled.section`
   ${tw`flex gap-5 mt-10 min-h-[250px]`}
 `;
-const SettingSection = styled.section`
+const BottomSection = styled.section`
   ${tw`flex gap-5 mt-10 min-h-[250px]`}
 `;
 const ChatSection = styled.section`
-  ${tw`w-[50%] `}
+  ${tw`w-[50%] min-h-[80%]`}
 `;
 const BtnBox = styled.div`
-  ${tw`flex gap-5 mt-5`}
+  ${tw`min-h-[20%] flex gap-5 mt-5`}
 `;
 const StartButton = styled.button`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
   ${({ disabled }) => (disabled ? tw`bg-primary hover:bg-none` : tw`bg-primary hover:bg-dprimary`)}
 `;
-const BackButton = styled(Link)`
+const ExitButton = styled(Link)`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
 `;
