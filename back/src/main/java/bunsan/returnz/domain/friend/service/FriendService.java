@@ -1,12 +1,18 @@
 package bunsan.returnz.domain.friend.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.friend.dto.FriendRequestDto;
+import bunsan.returnz.domain.sidebar.dto.SideMessageDto;
+import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
@@ -23,6 +29,7 @@ public class FriendService {
 	private final FriendRequestRepository friendRequestRepository;
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final SideBarService sideBarService;
 
 	public List<FriendRequestDto> getRequestList(String token) {
 		// token에 저장된 Member > 요청한 사람
@@ -107,5 +114,46 @@ public class FriendService {
 		if (!isPresent) {
 			throw new BadRequestException("해당 유저와 친구가 아닙니다.");
 		}
+	}
+
+	@Transactional
+	public SideMessageDto sendFriendRequest(SideMessageDto sideRequest, String token) {
+		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
+		Map<String, Object> requestBody = sideRequest.getMessageBody();
+
+		// token에 저장된 Member > 요청한 사람
+		Member requester = jwtTokenProvider.getMember(token);
+		if (requester.getFriends().size() >= 20) {
+			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
+		}
+		String requestUsername = requester.getUsername();
+		String targetUsername = (String)requestBody.get("username");
+
+		sideBarService.checkValidRequest(requestUsername, targetUsername);
+
+		// 친구 요청 존재 여부 확인
+		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
+			targetUsername)) {
+			throw new ConflictException("이미 요청을 보낸 유저입니다.");
+		}
+		FriendRequest friendRequest = FriendRequest.builder()
+			.requestUsername(requestUsername)
+			.targetUsername(targetUsername)
+			.build();
+		// DB에 저장
+		FriendRequest savedRequest = friendRequestRepository.save(friendRequest);
+
+		// 새로운 사이드 메세지 생성
+		Map<String, Object> messageBody = new HashMap<>();
+		messageBody.put("requestId", savedRequest.getId());
+		messageBody.put("username", targetUsername);
+		messageBody.put("requestUsername", requester.getUsername());
+		messageBody.put("nickname", requester.getNickname());
+		messageBody.put("profileIcon", requester.getProfileIcon());
+
+		return SideMessageDto.builder()
+			.type(SideMessageDto.MessageType.FRIEND)
+			.messageBody(messageBody)
+			.build();
 	}
 }
