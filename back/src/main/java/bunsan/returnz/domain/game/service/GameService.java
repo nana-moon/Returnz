@@ -290,7 +290,7 @@ public class GameService {
 				// TODO : uerProfilePath 추가하기 (member에서 조회한 후 직접 input)
 				gameGamerDtos.get(i)
 					.setUserProfileIcon(
-						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon().getCode());
+						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon());
 				mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
 			}
 		}

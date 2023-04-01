@@ -40,7 +40,7 @@ const ProfileEditContainer = styled.div`
 
 const BackgroundContainer = styled.div`
   position: fixed;
-  z-index: 1;
+  z-index: 3;
   ${tw`bg-black opacity-20 font-spoq h-screen w-[100%]`}
 `;
 
@@ -48,7 +48,7 @@ const ModalSection = styled.div`
   position: fixed;
   top: 10%;
   left: 20%;
-  z-index: 2;
+  z-index: 4;
   ${tw`bg-white h-[75%] w-[50%] justify-items-center rounded-xl border-2 border-negative grid grid-rows-5 p-20`}
 `;
 

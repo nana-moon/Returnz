@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
@@ -29,6 +30,7 @@ import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerStock;
 import bunsan.returnz.persist.entity.HistoricalPriceDay;
 import bunsan.returnz.persist.entity.Member;
+import bunsan.returnz.persist.entity.NewsGroup;
 import bunsan.returnz.persist.repository.CompanyRepository;
 import bunsan.returnz.persist.repository.FinancialNewsRepository;
 import bunsan.returnz.persist.repository.GameRoomRepository;
@@ -37,6 +39,7 @@ import bunsan.returnz.persist.repository.GamerRepository;
 import bunsan.returnz.persist.repository.GamerStockRepository;
 import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
+import bunsan.returnz.persist.repository.NewsGroupRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +56,7 @@ public class GameStartService {
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 	private final FinancialNewsRepository financialNewsRepository;
 	private final GameInfoService gameInfoService;
+	private final NewsGroupRepository newsGroupRepository;
 
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
@@ -151,16 +155,13 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkMonthRange(GameSettings gameSettings, List<String> gameStockIds) {
-		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(
-			gameSettings.getStartDateTime(),
+		List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(gameSettings.getStartDateTime(),
 			gameSettings.getTotalTurn());
 		for (MonthRange monthRange : monthRanges) {
 			LocalDateTime monthStart = monthRange.getFirstDay();
 			LocalDateTime monthEnd = monthRange.getLastDay();
-			boolean checkDataInMonthTurn = historicalPriceDayRepository
-				.existsAtLeastOneRecordForEachCompany(
-					monthStart, monthEnd,
-					gameStockIds, 10L);
+			boolean checkDataInMonthTurn = historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(monthStart,
+				monthEnd, gameStockIds, 10L);
 			if (!checkDataInMonthTurn) {
 				throw new BadRequestException("지정한 달 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
@@ -177,6 +178,7 @@ public class GameStartService {
 	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
+		// TODO: 2023-03-31 유니크 한 날을 가져와야함을 잊지마십쇼 명진
 		List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
 			gameSettings.getStartDateTime(), gameStockIds, pageable);
 		Integer countInDB = dayDataAfterStartDay.size();
@@ -194,16 +196,15 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkWeek(GameSettings gameSettings, List<String> gameStockIds) {
-		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(
-			gameSettings.getStartDateTime(),
+		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameSettings.getStartDateTime(),
 			gameSettings.getTotalTurn());
 		for (WeekRange weekRange : weekRanges) {
 			LocalDateTime weekFirstDay = weekRange.getWeekFirstDay();
 			LocalDateTime endDay = weekRange.getWeekLastDay();
 
-			boolean checkAllStockIsThereMoreThenInWeek = historicalPriceDayRepository
-				.existsAtLeastOneRecordForEachCompany(
-					weekFirstDay, endDay, gameStockIds, 10L);
+			boolean checkAllStockIsThereMoreThenInWeek =
+				historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
+				weekFirstDay, endDay, gameStockIds, 10L);
 			if (!checkAllStockIsThereMoreThenInWeek) {
 				throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
@@ -301,53 +302,38 @@ public class GameStartService {
 	@Transactional
 	public void setNewsList(GameSettings gameSettings, Long gameRoomId) {
 		// 턴당 시간에 따라 달라진다.
-		// gameSettings 은 방 빌드 이후 에는 정보가 다 기록 되어 있나?
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
-		log.info("게임 세팅 유지 되는지 확인 시작일: " + gameSettings.getStartTime());
-		log.info("게임 세팅 유지 되는지 확인 전체턴: " + gameSettings.getTotalTurn());
-		log.info("게임 세팅 유지 되는지 확인 턴당 시간: " + gameSettings.getTurnPerTime().getTime());
-		// day month week 상관 없이 그냥 시작일 기준으로 토탈턴 만큼 기사 가져와서 넣는다
-		// 가지고 있다 기사가 없으면 없다고 주고 있으면 있다고 하고 기사를 준다
-		Pageable totalTurn = PageRequest.of(0, gameSettings.getTotalTurn());
 		List<GameStockDto> gameRoomStockList = gameInfoService.getGameRoomStockList(gameRoomId);
 		List<String> stockIdList = new ArrayList<>();
 		for (GameStockDto gameStockDto : gameRoomStockList) {
 			stockIdList.add(gameStockDto.getCompanyCode());
 		}
 
-		// 이걸 우리 데이터로 바꿔야한다.
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
 
-		List<LocalDateTime> uniqueDates = historicalPriceDayRepository.findDistinctDatesAfter(
-			gameSettings.getStartDateTime(), stockIdList, pageable);
-		List<HistoricalPriceDay> priceDays = new ArrayList<>();
-		// for (LocalDateTime date : uniqueDates) {
-		// 	List<HistoricalPriceDay> dayDataList
-		// 	= historicalPriceDayRepository.findAllByDateAndStockIds(date, stockIdList);
-		// 	priceDays.addAll(dayDataList);
-		// }
-		// List<LocalDateTime> uniqueDates = financialNewsRepository.findDistinctDatesAfter(
-		// 	gameSettings.getStartDateTime(), pageable, stockIdList);
-		log.info("데이터가 존제하는 구간 :" + uniqueDates.size());
-		List<FinancialNews> result = new ArrayList<>();
-		for (LocalDateTime date : uniqueDates) {
-			List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(date, stockIdList);
-			result.addAll(newsList);
-		}
-		for (FinancialNews financialNews : result) {
-			log.info(financialNews.getKoName() + " : " + financialNews.getCode());
+		// 뉴스 찾을 찾아올 구간 확인
+		LocalDateTime startDate = gameSettings.getStartDateTime();
+		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList, pageable)
+			.getContent();
+		//있는 데이터 중에서
+		//가능한 구간의 마지막 하나만 가져온다 = endDate
+		LocalDateTime endDate = dateEndDate.get(dateEndDate.size() - 1);
+		log.info("찾아올 기간 :" + startDate + " ~ " + endDate);
+		// 기간 안에 뉴스 검색
+		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
+			stockIdList);
+		for (FinancialNews financialNews : newsList) {
+			log.info(financialNews.getKoName() + " " + financialNews.getDate());
 		}
 
-		log.info("조회 해온 갯수 " + result.size());
-		for (FinancialNews financialNews : result) {
-			log.info(financialNews.getKoName() + "  조회 된 날자 " + financialNews.getDate());
-		}
+		// 뉴스
 
-	}
+		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
+			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
 
-	private void getNewsList(LocalDateTime startDate, LocalDateTime endDate) {
-		//여기서 해야하는것
-		//시작일 끝일을 잡고
+		NewsGroup newGroup = NewsGroup.builder().financialNews(newsList).endTime(endDate).startTime(startDate).build();
+		gameRoom.setNewsGroup(newGroup);
+		gameRoomRepository.save(gameRoom);
+		newsGroupRepository.save(newGroup);
 	}
 
 }

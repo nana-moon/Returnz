@@ -7,11 +7,9 @@ import { handleModalState } from '../../../store/profileeditmodal/ProfileEdit.re
 
 export default function UserProfile() {
   const dispatch = useDispatch();
-  // const modalStat = useSelector(modalState);
   const myPic = Cookies.get('profileIcon');
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
-  // const [modal, setModalOpen] = useState(false);
   const handleModal = () => {
     dispatch(handleModalState(true));
   };
