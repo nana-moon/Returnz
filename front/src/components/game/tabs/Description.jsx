@@ -8,7 +8,7 @@ export default function Description() {
   const description = useSelector(stockdescription);
   const idx = useSelector(selectedIdx);
   const key = Object.keys(description);
-  console.log('자 이게 클릭이야', description, idx, key);
+  console.log('종목 소개', description, idx, key);
   return (
     <DescriptionContainer>
       <DescriptionImgSection>

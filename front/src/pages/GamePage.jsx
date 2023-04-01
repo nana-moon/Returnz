@@ -18,16 +18,20 @@ import { gamerStockList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
+import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 
 export default function GamePage() {
   const testdata = useSelector(gamerStockList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
+  const holdingdata = useSelector(sellNeedData);
+  const selectIdx = useSelector(selectedIdx);
 
   const dispatch = useDispatch();
 
   const readd = () => {
-    console.log(testdata, 'test');
+    console.log(testdata, 'testdata');
+    console.log(holdingdata, 'se', selectIdx, 'testdata2');
   };
 
   const axiospost = () => {
@@ -54,7 +58,7 @@ export default function GamePage() {
       <GameContainer>
         <LeftSection>
           <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            Redux 데이터 테스트
+            Redux 데이터 확인용 버튼
           </div>
           <div onClick={axiospost} onKeyDown={axiospost} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
             시작 테스트
