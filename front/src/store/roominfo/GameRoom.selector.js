@@ -1,6 +1,7 @@
+const getGameId = (state) => state.gameRoom.id;
 const getGameRoomId = (state) => state.gameRoom.roomId;
-const getCaptainName = (state) => state.gameRoom.captainName;
+const getHostNickname = (state) => state.gameRoom.hostNickname;
 const getGamerId = (state) => state.gameRoom.gamerId;
 const getPlayerList = (state) => state.gameRoom.playerList;
 
-export { getGameRoomId, getCaptainName, getGamerId, getPlayerList };
+export { getGameId, getGameRoomId, getHostNickname, getGamerId, getPlayerList };

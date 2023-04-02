@@ -6,20 +6,30 @@ export const gamedata = createSlice({
   initialState: {
     // 상장종목
     stockDataList: {},
+    // 오늘날짜
+    todayDate: null,
     // 그래프
     stockGraphList: [],
     // 영업날이 아님
     noWorkDay: [],
     // 뉴스,
-    stockNews: {},
+    stockNews: [],
     // 주가정보
     stockInformation: {},
     // 종목 내용
     stockdescription: {},
     // 보유종목
-    gamerStockList: {},
+    gamerStockList: [{}],
     // 유저 데이터
-    gamerDataList: {},
+    gamerDataList: {
+      deposit: 10000000,
+      ammountOfBuy: 0,
+    },
+    // 턴 데이터
+    gameTurn: {
+      nowTurn: 0,
+      maxTurn: 30,
+    },
   },
   reducers: {
     // 첫턴 데이터들
@@ -53,6 +63,10 @@ export const gamedata = createSlice({
         state.stockGraphList.push(tmp);
       }
     },
+    // 날짜받기
+    handleGetTodayDate(state, action) {
+      state.todayDate = action.payload;
+    },
     // 두번째 부터
     handleMoreGameData(state, action) {
       const keys = Object.keys(state.stockDataList);
@@ -85,7 +99,7 @@ export const gamedata = createSlice({
           const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[0] === name);
           const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[0];
           const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[0];
-          console.log('짤랐어', lastIndex, lastCandle, lastLine);
+          console.log('짤랐어', lastIndex, lastCandle, lastLine, action.payload[key][0]);
           noWorkIdx.push(lastIndex);
           tmpdata = { [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } } };
         } else {
@@ -100,20 +114,51 @@ export const gamedata = createSlice({
       }
 
       state.noWorkDay = noWorkIdx;
+      state.gameTurn.nowTurn += 1;
     },
-    // 뉴스,
-    handleGetStockNews(state, action) {},
+    handleUpdateHoldingData(state, action) {
+      const holdingdata = [];
+      for (let i = 0; i < action.payload.length; i += 1) {
+        if (action.payload[i].totalCount > 0) {
+          holdingdata.push(action.payload[i]);
+        }
+      }
+      state.gamerStockList = holdingdata;
+    },
+    // 뉴스 업데이트
+    handleGetStockNews(state, action) {
+      state.stockNews = action.payload;
+    },
     // 주가정보,
     handleGetStockInformation(state, action) {
       state.stockInformation = action.payload;
     },
     // 종목 내용
     handleGetStockDescription(state, action) {
+      console.log('action:', action.payload);
       state.stockdescription = action.payload;
+    },
+    // 매수매도 했음
+    handleBuySellTrade(state, action) {
+      const userInfo = {
+        deposit: action.payload.gamer.deposit,
+        ammountOfBuy: action.payload.gamer.totalEvaluationStock,
+      };
+      state.gamerDataList = userInfo;
+
+      state.gamerStockList = action.payload.gamerStock;
     },
   },
 });
 
-export const { handleGetGameData, handleGetStockDescription, handleMoreGameData, handleGetStockInformation } =
-  gamedata.actions;
+export const {
+  handleGetGameData,
+  handleGetTodayDate,
+  handleGetStockDescription,
+  handleMoreGameData,
+  handleGetStockInformation,
+  handleBuySellTrade,
+  handleUpdateHoldingData,
+  handleGetStockNews,
+} = gamedata.actions;
 export default gamedata;
