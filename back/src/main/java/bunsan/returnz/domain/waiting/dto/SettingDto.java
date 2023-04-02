@@ -3,10 +3,14 @@ package bunsan.returnz.domain.waiting.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
@@ -27,9 +31,9 @@ public class SettingDto {
 	private Theme theme;
 	@NotNull(message = "턴 단위를 입력해주세요.")
 	private TurnPerTime turnPerTime;
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
-	@NotNull(message = "턴 단위를 입력해주세요.")
+	@Nullable
+	@JsonDeserialize(using = LocalDateDeserializer.class)
 	private LocalDate startTime;
-	@NotNull(message = "총 턴 수를 입력해주세요.")
+	@Nullable
 	private Integer totalTurn;
 }

@@ -1,5 +1,12 @@
 package bunsan.returnz.domain.game.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -85,4 +92,25 @@ public class GameSocketService {
 			throw new BadRequestException("결과창 정보를 불러올 수 없습니다.");
 		}
 	}
+
+	// public Date sendServerTime(String gameRoomId) {
+	// 	gameRoomRepository.findByRoomId(gameRoomId)
+	// 		.orElseThrow(() -> new NotFoundException("해당 게임룸을 찾을 수 없습니다."));
+	// 	Calendar cal = Calendar.getInstance();
+	// 	cal.setTime(new Date());
+	// 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+	// 	System.out.println("current: " + df.format(cal.getTime()));
+	// 	cal.add(Calendar.MINUTE, 1);
+	// 	System.out.println("after: " + df.format(cal.getTime()));
+	// 	RoomMessageDto roomMessageDto = RoomMessageDto.builder()
+	// 		.type(RoomMessageDto.MessageType.TIME)
+	// 		.roomId(gameRoomId)
+	// 		.messageBody(new HashMap<>("returnTime", cal.getTime()))
+	// 		.build();
+	// 	roomMessageDto.
+	// 	return
+	//
+	// 	return cal.getTime();
+	//
+	// }
 }

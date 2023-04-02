@@ -10,6 +10,8 @@ import javax.validation.Valid;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.domain.waiting.dto.SettingDto;
@@ -136,10 +138,13 @@ public class WaitService {
 	public void sendGameSetting(@Valid SettingDto settingDto) {
 		// 새로운 대기방 메세지 바디생성
 		// Map<String, Object> messageBody = new HashMap<>();
+		ObjectMapper mapper = new ObjectMapper();
+
+		Map<String, Object> messageBody = mapper.convertValue(settingDto, Map.class);
 
 		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
 			.type(WaitMessageDto.MessageType.SETTING)
-			.messageBody((Map<String, Object>)settingDto)
+			.messageBody(messageBody)
 			.build();
 
 		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
