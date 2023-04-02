@@ -13,7 +13,7 @@ import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
-import { setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
+import { setGameId, setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
@@ -189,8 +189,9 @@ export default function WaitingPage() {
         gamerList: gameInit.gamerList,
         gameRoomId: gameInit.roomId,
       });
-      dispatch(setPlayerList(gameInit.gamerList));
+      dispatch(setGameId(gameInit.id));
       dispatch(setGameRoomId(gameInit.roomId));
+      dispatch(setPlayerList(gameInit.gamerList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId));
       const turnReq = {
