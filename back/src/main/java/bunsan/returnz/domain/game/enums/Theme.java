@@ -9,7 +9,8 @@ public enum Theme {
 	RIEMANN("RIEMANN"),
 	USER("USER"),
 	LAST_YEAR("LAST_YEAR"),
-	LAST_MONTH("LAST_MONTH");
+	LAST_MONTH("LAST_MONTH"),
+	UNKNOWN("UNKNOWN");
 
 	private final String theme;
 
