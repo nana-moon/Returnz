@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -40,14 +41,14 @@ public class GameSocketController {
 		}
 	}
 
-	// @GetMapping("/api/server-time")
-	// public ResponseEntity sendServerTime(Map request) {
-	// 	String gameRoomId = (String)request.get("roomId");
-	// 	if (gameRoomId == null) {
-	// 		throw new BadRequestException("게임룸 id를 입력해주세요.");
-	// 	} else {
-	// 		Date returnDate = gameSocketService.sendServerTime(gameRoomId);
-	// 		return ResponseEntity.ok(Map.of("returnTime", returnDate));
-	// 	}
-	// }
+	@GetMapping("/api/server-time")
+	public ResponseEntity sendServerTime(@RequestParam String roomId) {
+		if (roomId == null) {
+			throw new BadRequestException("게임룸 id를 입력해주세요.");
+		} else {
+
+			String returnTime = gameSocketService.sendServerTime(roomId);
+			return ResponseEntity.ok(Map.of("returnTime", returnTime));
+		}
+	}
 }

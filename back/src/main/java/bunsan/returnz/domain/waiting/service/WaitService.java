@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 public class WaitService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final WaitRoomRepository waitRoomRepository;
-	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final RedisPublisher redisPublisher;
 	private final RedisWaitRepository redisWaitRepository;
 	private final SideBarService sideBarService;
@@ -64,8 +63,6 @@ public class WaitService {
 		sideBarService.checkState(member, MemberState.ONLINE);
 
 		// 평균 수익률 계산
-		// double avgProfit = (double)member.getAccumulatedReturn() / member.getGameCount() * 100;
-		// avgProfit = Math.round(avgProfit * 100) / 100.0; // 둘째자리까지 반올림
 		double avgProfit = member.getAvgProfit();
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
@@ -85,12 +82,6 @@ public class WaitService {
 		log.info(waitMessageDto.toString());
 
 		// 메세지 보내기
-		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
-
-		// WaitRoom 정보 업데이트 (인원 등등)
-		// 맴버 수 +1 > 부정확할 거 같음
-		// waitRoom.plusMemberCount();
-		// waitRoomRepository.save(waitRoom);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 
 	}
@@ -98,8 +89,10 @@ public class WaitService {
 	@Transactional
 	public void sendChatMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		String roomId = checkWaitRoomId(waitRequest);
+		if (waitRequest.getMessageBody().get("contents") == null) {
+			throw new BadRequestException("대화 내용이 없습니다.");
+		}
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("nickname", member.getNickname());
@@ -111,14 +104,12 @@ public class WaitService {
 			.messageBody(messageBody)
 			.build();
 
-		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}
 
 	@Transactional
 	public void sendExitMessage(WaitMessageDto waitRequest, String token) {
 		Member member = jwtTokenProvider.getMember(token);
-		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
 		String roomId = checkWaitRoomId(waitRequest);
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
@@ -130,14 +121,12 @@ public class WaitService {
 			.type(WaitMessageDto.MessageType.EXIT)
 			.messageBody(messageBody)
 			.build();
-		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}
 
 	@Transactional
 	public void sendGameSetting(@Valid SettingDto settingDto) {
 		// 새로운 대기방 메세지 바디생성
-		// Map<String, Object> messageBody = new HashMap<>();
 		ObjectMapper mapper = new ObjectMapper();
 
 		Map<String, Object> messageBody = mapper.convertValue(settingDto, Map.class);
@@ -147,8 +136,6 @@ public class WaitService {
 			.messageBody(messageBody)
 			.build();
 
-		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
-		// simpMessagingTemplate.convertAndSend("/sub/wait-room/" + roomId, waitMessageDto);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}
 

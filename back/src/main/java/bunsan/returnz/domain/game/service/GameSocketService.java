@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -48,9 +47,14 @@ public class GameSocketService {
 	private Member checkUsername(RoomMessageDto roomMessageDto, String token) {
 
 		if (roomMessageDto.getMessageBody().get("username") != null) {
+			Member tokenMember = jwtTokenProvider.getMember(token);
 			String username = (String)roomMessageDto.getMessageBody().get("username");
-			return memberRepository.findByUsername(username)
-				.orElseThrow(()-> new NotFoundException("해당 회원이 존재하지 않습니다."));
+			Member member = memberRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
+			if (!tokenMember.equals(member)) {
+				throw new BadRequestException("token 맴버와 일치하지 않습니다.");
+			}
+			return member;
 		} else {
 			throw new BadRequestException("username을 입력해주세요.");
 		}
@@ -93,24 +97,28 @@ public class GameSocketService {
 		}
 	}
 
-	// public Date sendServerTime(String gameRoomId) {
-	// 	gameRoomRepository.findByRoomId(gameRoomId)
-	// 		.orElseThrow(() -> new NotFoundException("해당 게임룸을 찾을 수 없습니다."));
-	// 	Calendar cal = Calendar.getInstance();
-	// 	cal.setTime(new Date());
-	// 	DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-	// 	System.out.println("current: " + df.format(cal.getTime()));
-	// 	cal.add(Calendar.MINUTE, 1);
-	// 	System.out.println("after: " + df.format(cal.getTime()));
-	// 	RoomMessageDto roomMessageDto = RoomMessageDto.builder()
-	// 		.type(RoomMessageDto.MessageType.TIME)
-	// 		.roomId(gameRoomId)
-	// 		.messageBody(new HashMap<>("returnTime", cal.getTime()))
-	// 		.build();
-	// 	roomMessageDto.
-	// 	return
-	//
-	// 	return cal.getTime();
-	//
-	// }
+	public String sendServerTime(String roomId) {
+		// log.info("111");
+		gameRoomRepository.findByRoomId(roomId)
+			.orElseThrow(() -> new NotFoundException("해당 게임룸을 찾을 수 없습니다."));
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
+
+		cal.add(Calendar.MINUTE, 1);
+
+		RoomMessageDto roomMessageDto = RoomMessageDto.builder()
+			.type(RoomMessageDto.MessageType.TIME)
+			.roomId(roomId)
+			.messageBody(new HashMap<>() {
+				{
+					put("returnTime", df.format(cal.getTime()));
+				}
+			})
+			.build();
+		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
+		return df.format(cal.getTime());
+
+	}
 }
