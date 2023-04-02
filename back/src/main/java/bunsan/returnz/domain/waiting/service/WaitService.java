@@ -153,7 +153,7 @@ public class WaitService {
 	}
 
 	public void sendGameInfo(WaitMessageDto waitRequest) {
-		if (waitRequest.getMessageBody().get("gameRoomId") != null) {
+		if (waitRequest.getMessageBody().get("gameRoomId") == null) {
 			throw new BadRequestException("게임룸 정보가 없습니다.");
 		}
 		checkWaitRoomId(waitRequest);
