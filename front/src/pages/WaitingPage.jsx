@@ -26,6 +26,7 @@ import {
   handleGetTodayDate,
   handleGetStockInformation,
   handleGetStockNews,
+  handleGetchangeInterest,
 } from '../store/gamedata/GameData.reducer';
 import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
 
@@ -206,6 +207,7 @@ export default function WaitingPage() {
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
+    dispatch(handleGetchangeInterest(gameData.exchangeInterest));
     const keys = Object.keys(gameData.Stocks);
     const Date = gameData.currentDate;
     const gameId = id;
