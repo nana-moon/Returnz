@@ -13,8 +13,13 @@ import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
-import { setGameId, setGamerId, setGameRoomId, setPlayerList } from '../store/roominfo/GameRoom.reducer';
-import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
+import {
+  setGameId,
+  setGamerId,
+  setGameRoomId,
+  setHostNickname,
+  setPlayerList,
+} from '../store/roominfo/GameRoom.reducer';
 import {
   handleGetGameData,
   handleGetStockDescription,
@@ -32,20 +37,21 @@ export default function WaitingPage() {
 
   // -------------------------| WAITROOM |------------------------------------------------------------------
 
-  // 대기방 STATE
+  // ROOM STATE
   const roomInfo = location.state;
 
-  // 방장 STATE
+  // HOST STATE
+  const myId = Cookies.get('id');
   const myEmail = Cookies.get('email');
   const myProfile = Cookies.get('profileIcon');
   const myNickname = Cookies.get('nickname');
   const isHost = myEmail === roomInfo.captainName;
-  const newWaiter = { id: 1, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
+  const newWaiter = { id: myId, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
 
-  // 대기자 STATE
+  // WAITER STATE
   const waiterList = useSelector(getWaiterList);
 
-  // 대기자 추가하기
+  // ADD WAITER ACTION
   useEffect(() => {
     dispatch(setWaiterList(newWaiter));
   }, []);
@@ -114,19 +120,19 @@ export default function WaitingPage() {
 
   // -------------------------| SETTING GAME |------------------------------------------------------------------
 
-  // 게임 설정 STATE
+  // SETTING GAME STATE
   const initial = {
     theme: null,
     turnPerTime: 'NO',
     startTime: null,
     totalTurn: null,
-    memberIdList: [1, 2, 3, 4],
+    memberIdList: [],
   };
   const [setting, setSetting] = useState(initial);
   const [isUserSetting, setIsUserSetting] = useState(false); // 사용자 설정 확인
   const [isValidSetting, setIsValidSetting] = useState(false); // 설정 유효성 검사
 
-  // 게임 설정 ACTION
+  // SETTING GAME ACTION
   const getIsUserSetting = () => {
     setIsUserSetting(!isUserSetting);
   };
@@ -213,6 +219,7 @@ export default function WaitingPage() {
       });
       dispatch(setGameId(gameInit.id));
       dispatch(setGameRoomId(gameInit.roomId));
+      dispatch(setHostNickname(roomInfo.captainName));
       dispatch(setPlayerList(gameInit.gamerList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId));
@@ -222,6 +229,29 @@ export default function WaitingPage() {
       };
       handleTurn(turnReq, gameInit.id);
     }
+  };
+
+  // FIRST TURN INFO ACTION
+  const handleTurn = async (turnReq) => {
+    const gameData = await gameDataApi(turnReq);
+    console.log('gameData', gameData);
+    dispatch(handleGetGameData(gameData.Stocks));
+    dispatch(handleGetStockInformation(gameData.stockInformation));
+    dispatch(handleGetStockDescription(gameData.companyDetail));
+    sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
+    navigate('/game');
+  };
+
+  // START GAME ACTION
+  const handleStart = async (e) => {
+    // update memberlist and setting
+    console.log('waiterList-----setting--', waiterList);
+    const memberIdList = waiterList.map((waiter) => {
+      return waiter.id;
+    });
+    const newSetting = { ...setting, memberIdList };
+    setSetting(newSetting);
+    handleGameInfo();
   };
 
   // 방나가기 ACTION

@@ -1,34 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 
-export default function UserLogListItem({ temp }) {
-  // isHost 들어갈 정보 달라짐
-  const tempId = 'j';
+export default function UserLogListItem({ player }) {
+  console.log('player', player);
+  // MY LOG
+  const myNicmname = Cookies.get('nickname');
+  const isMe = myNicmname === player.nickname;
   const infoId = { seed: 5000000, buy: 100000, eval: 10000000 };
-
   const myInfo = useSelector(gamerDataList);
 
-  const profilePath = `profile_pics/${temp.profile}`;
+  // USER LOG
+  const profilePath = `profile_pics/${player.profileIcon}.jpg`;
+
+  // READY
+  const [isReady, setIsReady] = useState(false);
+  const handleReady = () => {
+    setIsReady(true);
+  };
   return (
-    <UserLogItemContainer temp={temp} tempId={tempId}>
+    <UserLogItemContainer isMe={isMe}>
       <LeftSection>
         <UserBox>
           <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{temp.nickname}</div>
+          <div>{player.nickname}</div>
         </UserBox>
-        {temp.nickname === tempId && (
-          <ReadyBtn type="submit" className="w-[100%]">
+        {isMe && (
+          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" disabled={isReady} isReady={isReady}>
             ready
           </ReadyBtn>
         )}
       </LeftSection>
       <RightSection>
-        <div className="mb-0">총 평가 자산 : {temp.total}</div>
-        <div>평가손익 : {temp.profit}%</div>
-        {temp.nickname === tempId && (
+        <div className="mb-0">총 평가 자산 : {player.total}</div>
+        <div>평가손익 : {player.profit}%</div>
+        {isMe && (
           <MyBox>
             <div>예수금 {myInfo.deposit.toLocaleString()}</div>
             <div>총매입금액 {myInfo.ammountOfBuy.toLocaleString()}</div>
@@ -42,7 +51,7 @@ export default function UserLogListItem({ temp }) {
 
 const UserLogItemContainer = styled.div`
   ${tw`border-2 bg-white rounded-xl flex p-5 gap-5`}
-  ${(props) => (props.tempId === props.temp.nickname ? tw`h-[40%]` : tw`h-[20%]`)}
+  ${(props) => (props.isMe ? tw`h-[40%]` : tw`h-[20%]`)}
 `;
 
 const LeftSection = styled.div`
@@ -59,6 +68,7 @@ const UserBox = styled.div`
 
 const ReadyBtn = styled.button`
   ${tw`border-2 rounded-lg text-center bg-primary`};
+  ${(props) => (props.isReady ? tw`bg-dprimary` : tw`bg-primary`)}
 `;
 
 const MyBox = styled.div`
