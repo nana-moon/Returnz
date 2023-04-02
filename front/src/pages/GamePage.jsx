@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -13,13 +13,16 @@ import Header from '../components/common/Header';
 import {
   handleMoreGameData,
   handleUpdateHoldingData,
+  handleGetTodayDate,
   handleGetStockInformation,
+  handleGetStockNews,
 } from '../store/gamedata/GameData.reducer';
-import { gamerStockList } from '../store/gamedata/GameData.selector';
+import { stockDataList, todayDate } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
-import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
+import { getGameId, getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
+import { getNewsApi } from '../apis/gameApi';
 
 export default function GamePage() {
   // -------------------------| GAMEROOM |------------------------------------------------------------------
@@ -29,31 +32,54 @@ export default function GamePage() {
   const gamerNum = useSelector(getGamerId);
   const holdingdata = useSelector(sellNeedData);
   const selectIdx = useSelector(selectedIdx);
+  // 뉴스가져올떄 필요한 데이터
+  const gameId = useSelector(getGameId);
+  const keys = Object.keys(testdata);
+  const Date = useSelector(todayDate);
 
   const dispatch = useDispatch();
 
   const readd = () => {
     console.log(testdata, 'testdata');
     console.log(holdingdata, 'se', selectIdx, 'testdata2');
+    console.log('뉴스가져올데이터', gameId, keys, Date);
   };
 
-  const axiospost = () => {
+  const axiospost = async () => {
+    // 뉴스
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
     };
 
-    axios
+    await axios
       .post('/games/game', datas)
       .then((res) => {
         console.log(res.data, 'ddd');
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
+        dispatch(handleGetTodayDate(res.data.currentDate));
       })
       .catch((err) => {
         console.log(err);
       });
+
+    const getNews = [];
+
+    for (let i = 0; i < keys.length; i += 1) {
+      const data = {
+        id: gameId,
+        companyCode: keys[i],
+        articleDateTime: Date,
+      };
+      // eslint-disable-next-line no-await-in-loop
+      const newsTmp = await getNewsApi(data);
+      getNews.push({ [keys[i]]: newsTmp });
+      console.log('중간점검', newsTmp, getNews);
+    }
+
+    dispatch(handleGetStockNews(getNews));
   };
 
   return (

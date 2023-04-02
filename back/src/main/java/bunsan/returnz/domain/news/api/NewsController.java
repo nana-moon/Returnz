@@ -3,6 +3,7 @@ package bunsan.returnz.domain.news.api;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/news")
 @AllArgsConstructor
 @Slf4j
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class NewsController {
 	private final NewsService newsService;
 
