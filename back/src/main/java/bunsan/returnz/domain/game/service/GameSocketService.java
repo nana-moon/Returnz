@@ -101,13 +101,13 @@ public class GameSocketService {
 		// log.info("111");
 		gameRoomRepository.findByRoomId(roomId)
 			.orElseThrow(() -> new NotFoundException("해당 게임룸을 찾을 수 없습니다."));
-		log.info("111");
+
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
 		DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
-		System.out.println("current: " + df.format(cal.getTime()));
+
 		cal.add(Calendar.MINUTE, 1);
-		System.out.println("after: " + df.format(cal.getTime()));
+
 		RoomMessageDto roomMessageDto = RoomMessageDto.builder()
 			.type(RoomMessageDto.MessageType.TIME)
 			.roomId(roomId)
