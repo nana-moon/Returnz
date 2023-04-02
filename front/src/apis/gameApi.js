@@ -14,14 +14,11 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
-  console.log('테마설정 보냄', payload);
   const res = await authApi.post('/games/init', payload);
-  console.log('방정보 받아옴', res.data);
   return res.data;
 };
 
 const gameDataApi = (payload) => {
-  console.log('게임방 정보 보냄', payload);
   return authApi
     .post('/games/game', payload)
     .then((res) => {
