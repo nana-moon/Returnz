@@ -53,4 +53,15 @@ const sendMessage = (sendAddress, header, type, messageBody) => {
   stomp.send(sendAddress, header, message);
 };
 
-export { stomp, stompConnect, stompDisconnect, getMessage, sendMessage };
+// 메세지 보내기
+const sendMessageResult = (sendAddress, header, type, roomId, messageBody) => {
+  console.log('sendMessageResult active');
+  const message = JSON.stringify({
+    type,
+    roomId,
+    messageBody,
+  });
+  stomp.send(sendAddress, header, message);
+};
+
+export { stomp, stompConnect, stompDisconnect, getMessage, sendMessage, sendMessageResult };

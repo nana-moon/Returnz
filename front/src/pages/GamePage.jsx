@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -22,6 +23,7 @@ import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
+import { getMessage, sendMessageResult, stompConnect } from '../utils/Socket';
 
 export default function GamePage() {
   const testdata = useSelector(stockDataList);
@@ -78,6 +80,73 @@ export default function GamePage() {
 
     dispatch(handleGetStockNews(getNews));
   };
+
+  // -------------------------| SOCKET |------------------------------------------------------------------
+
+  // -------------------------SOCKET STATE-----------------------------
+  const ACCESS_TOKEN = Cookies.get('access_token');
+  const gameRoomId = useSelector(getGameRoomId);
+  const subAddress = `/sub/game-room/${gameRoomId}`;
+  const sendAddress = '/pub/game-room';
+  const header = {
+    Authorization: ACCESS_TOKEN,
+  };
+
+  // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
+  const handleMessage = (received) => {
+    console.log('handleMessage active');
+    const newMessage = JSON.parse(received.body);
+    // -------------------------handle ENTER-----------------------------
+    if (newMessage.type === 'ENTER') {
+      console.log('ENTER 메세지 도착', newMessage.messageBody);
+      const { username } = newMessage.messageBody;
+    }
+    // -------------------------handle READY-----------------------------
+    if (newMessage.type === 'READY') {
+      console.log('READY 메세지 도착', newMessage.messageBody);
+      const { username } = newMessage.messageBody;
+    }
+    // -------------------------handle TURN-----------------------------
+    if (newMessage.type === 'TURN') {
+      console.log('TURN 메세지 도착', newMessage.messageBody);
+    }
+    // -------------------------handle CHAT-----------------------------
+    if (newMessage.type === 'CHAT') {
+      console.log('CHAT 메세지 도착', newMessage.messageBody);
+      const { roomId, nickname, contents } = newMessage.messageBody;
+      setReceivedMessage({ nickname, contents });
+    }
+    // -------------------------handle END-----------------------------
+    if (newMessage.type === 'END') {
+      console.log('END 메세지 도착', newMessage.messageBody);
+      const { roomId, resultRoomId } = newMessage.messageBody;
+    }
+  };
+
+  // -------------------------SOCKET CONNECT-----------------------------
+  const socketAction = () => {
+    console.log('the connection is successful');
+    getMessage(subAddress, handleMessage, header);
+    sendMessageResult(sendAddress, header, 'ENTER', gameRoomId, {});
+    sendMessageResult(sendAddress, header, 'TURN', gameRoomId, {});
+    sendMessageResult(sendAddress, header, 'END', gameRoomId, { resultRoomId: 'resultRoomId' });
+  };
+
+  useEffect(() => {
+    // SOCKET CONNECT
+    stompConnect(header, socketAction);
+  }, [subAddress, sendAddress]);
+
+  // -------------------------| CHAT |------------------------------------------------------------------
+
+  const [receivedMessage, setReceivedMessage] = useState('');
+  const getInputMessage = (inputMessage) => {
+    console.log('inputMessage in waitingPage', inputMessage);
+    sendMessageResult(sendAddress, header, 'CHAT', gameRoomId, { contents: inputMessage });
+  };
+
+  // -------------------------| RETURN HTML |------------------------------------------------------------------
+
   return (
     <>
       <Header />
@@ -101,7 +170,7 @@ export default function GamePage() {
         <RightSection>
           <UserLogList />
           <div className="h-[50%]">
-            <Chatting />
+            <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
           </div>
         </RightSection>
       </GameContainer>
