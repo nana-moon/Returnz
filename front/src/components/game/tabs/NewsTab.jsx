@@ -10,6 +10,7 @@ export default function NewsTab() {
   const newsData = { news: Object.assign({}, ...news) };
   const idx = useSelector(selectedIdx);
   const keys = Object.keys(newsData.news);
+  console.log('asdasdasdasdasdasdasdasdasda', newsData, idx, news);
   const thisNews = newsData.news[keys[idx]];
   const { title } = thisNews;
   const content = thisNews.summary;

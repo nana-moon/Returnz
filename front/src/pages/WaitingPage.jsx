@@ -176,7 +176,30 @@ export default function WaitingPage() {
   }, [setting]);
 
   // -------------------------| START/EXIT GAME |------------------------------------------------------------------
-  // 첫턴정보 ACTION
+  // FIRST TURN INFO ACTION
+  const handleGameInfo = async () => {
+    if (isValidSetting) {
+      const gameInit = await startGameApi(setting);
+      sendMessage(sendAddress, header, 'GAME_INFO', {
+        roomId: waitRoomId,
+        id: gameInit.Id,
+        gamerList: gameInit.gamerList,
+        gameRoomId: gameInit.roomId,
+      });
+      dispatch(setGameId(gameInit.id));
+      dispatch(setGameRoomId(gameInit.roomId));
+      dispatch(setHostNickname(roomInfo.captainName));
+      dispatch(setPlayerList(gameInit.gamerList));
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+      dispatch(setGamerId(myGameInfo.gamerId));
+      const turnReq = {
+        gamerId: myGameInfo.gamerId,
+        roomId: gameInit.roomId,
+      };
+      handleTurn(turnReq, gameInit.id);
+    }
+  };
+
   const handleTurn = async (turnReq, id) => {
     const gameData = await gameDataApi(turnReq);
     console.log('gameData', gameData);
@@ -207,45 +230,9 @@ export default function WaitingPage() {
     navigate('/game');
   };
 
-  // 게임방정보 ACTION
-  const handleStart = async (e) => {
-    if (isValidSetting) {
-      const gameInit = await startGameApi(setting);
-      sendMessage(sendAddress, header, 'GAME_INFO', {
-        roomId: waitRoomId,
-        id: gameInit.Id,
-        gamerList: gameInit.gamerList,
-        gameRoomId: gameInit.roomId,
-      });
-      dispatch(setGameId(gameInit.id));
-      dispatch(setGameRoomId(gameInit.roomId));
-      dispatch(setHostNickname(roomInfo.captainName));
-      dispatch(setPlayerList(gameInit.gamerList));
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
-      dispatch(setGamerId(myGameInfo.gamerId));
-      const turnReq = {
-        gamerId: myGameInfo.gamerId,
-        roomId: gameInit.roomId,
-      };
-      handleTurn(turnReq, gameInit.id);
-    }
-  };
-
-  // FIRST TURN INFO ACTION
-  const handleTurn = async (turnReq) => {
-    const gameData = await gameDataApi(turnReq);
-    console.log('gameData', gameData);
-    dispatch(handleGetGameData(gameData.Stocks));
-    dispatch(handleGetStockInformation(gameData.stockInformation));
-    dispatch(handleGetStockDescription(gameData.companyDetail));
-    sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
-    navigate('/game');
-  };
-
   // START GAME ACTION
   const handleStart = async (e) => {
     // update memberlist and setting
-    console.log('waiterList-----setting--', waiterList);
     const memberIdList = waiterList.map((waiter) => {
       return waiter.id;
     });
