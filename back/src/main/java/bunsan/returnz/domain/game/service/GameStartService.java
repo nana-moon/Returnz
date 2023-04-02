@@ -177,9 +177,15 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
-		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
-		// TODO: 2023-03-31 유니크 한 날을 가져와야함을 잊지마십쇼 명진
-		List<HistoricalPriceDay> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
+		// 기업별로 시작일 데이터가 있는지 검사하는 래포
+		Boolean startDayIsValid = historicalPriceDayRepository
+			.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
+				(long)gameStockIds.size());
+		if (!startDayIsValid) {
+			throw new BadRequestException("요청한 날은 영업일이 아닙니다.");
+		}
+		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn().intValue());
+		List<LocalDateTime> dayDataAfterStartDay = historicalPriceDayRepository.getDayDataAfterStartDay(
 			gameSettings.getStartDateTime(), gameStockIds, pageable);
 		Integer countInDB = dayDataAfterStartDay.size();
 		if (!countInDB.equals(gameSettings.getTotalTurn())) {
@@ -204,7 +210,7 @@ public class GameStartService {
 
 			boolean checkAllStockIsThereMoreThenInWeek =
 				historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
-				weekFirstDay, endDay, gameStockIds, 10L);
+					weekFirstDay, endDay, gameStockIds, 10L);
 			if (!checkAllStockIsThereMoreThenInWeek) {
 				throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
@@ -319,13 +325,9 @@ public class GameStartService {
 		//있는 데이터 중에서
 		//가능한 구간의 마지막 하나만 가져온다 = endDate
 		LocalDateTime endDate = dateEndDate.get(dateEndDate.size() - 1);
-		log.info("찾아올 기간 :" + startDate + " ~ " + endDate);
 		// 기간 안에 뉴스 검색
 		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
 			stockIdList);
-		for (FinancialNews financialNews : newsList) {
-			log.info(financialNews.getKoName() + " " + financialNews.getDate());
-		}
 
 		// 뉴스
 
