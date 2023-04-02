@@ -4,9 +4,10 @@ import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
+import { sendMessageResult } from '../../../utils/Socket';
+import { getGameRoomId } from '../../../store/roominfo/GameRoom.selector';
 
 export default function UserLogListItem({ player }) {
-  console.log('player', player);
   // MY LOG
   const myNicmname = Cookies.get('nickname');
   const isMe = myNicmname === player.nickname;
@@ -16,10 +17,18 @@ export default function UserLogListItem({ player }) {
   // USER LOG
   const profilePath = `profile_pics/${player.profileIcon}.jpg`;
 
+  // -------------------------SOCKET STATE-----------------------------
+  const ACCESS_TOKEN = Cookies.get('access_token');
+  const gameRoomId = useSelector(getGameRoomId);
+  const sendAddress = '/pub/game-room';
+  const header = {
+    Authorization: ACCESS_TOKEN,
+  };
   // READY
   const [isReady, setIsReady] = useState(false);
   const handleReady = () => {
-    setIsReady(true);
+    setIsReady(!isReady);
+    sendMessageResult(sendAddress, header, 'READY', gameRoomId, {});
   };
   return (
     <UserLogItemContainer isMe={isMe}>
@@ -29,7 +38,7 @@ export default function UserLogListItem({ player }) {
           <div>{player.nickname}</div>
         </UserBox>
         {isMe && (
-          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" disabled={isReady} isReady={isReady}>
+          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" isReady={isReady}>
             ready
           </ReadyBtn>
         )}
