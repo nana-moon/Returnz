@@ -44,8 +44,8 @@ export default function StockInfoTab() {
       (((viewInfo[1].historyPrice - viewInfo[0].historyPrice) / viewInfo[0].historyPrice) * 100).toFixed(2),
       viewInfo[2].volume,
     ],
+    ['4일 전', viewInfo[0].historyPrice, viewInfo[0].historyDiff, '', viewInfo[0].volume],
   ];
-  // ['4일 전', viewInfo[0].historyPrice, '-20', '-1.87%', viewInfo[1].volume],
 
   const getColor = (value) => {
     if (parseInt(value, 10) > 0) {
@@ -98,7 +98,7 @@ const StyledHeader = styled.th`
 `;
 
 const StyledCell = styled.td`
-  ${tw`border px-4 py-1`}
+  ${tw`border px-4`}
 `;
 
 const StyledRow = styled.tr`

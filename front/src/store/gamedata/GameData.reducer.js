@@ -6,12 +6,14 @@ export const gamedata = createSlice({
   initialState: {
     // 상장종목
     stockDataList: {},
+    // 오늘날짜
+    todayDate: null,
     // 그래프
     stockGraphList: [],
     // 영업날이 아님
     noWorkDay: [],
     // 뉴스,
-    stockNews: {},
+    stockNews: [],
     // 주가정보
     stockInformation: {},
     // 종목 내용
@@ -60,6 +62,10 @@ export const gamedata = createSlice({
         const tmp = { [companyname]: { candledata: candle, linedata: line } };
         state.stockGraphList.push(tmp);
       }
+    },
+    // 날짜받기
+    handleGetTodayDate(state, action) {
+      state.todayDate = action.payload;
     },
     // 두번째 부터
     handleMoreGameData(state, action) {
@@ -119,14 +125,17 @@ export const gamedata = createSlice({
       }
       state.gamerStockList = holdingdata;
     },
-    // 뉴스,
-    handleGetStockNews(state, action) {},
+    // 뉴스 업데이트
+    handleGetStockNews(state, action) {
+      state.stockNews = action.payload;
+    },
     // 주가정보,
     handleGetStockInformation(state, action) {
       state.stockInformation = action.payload;
     },
     // 종목 내용
     handleGetStockDescription(state, action) {
+      console.log('action:', action.payload);
       state.stockdescription = action.payload;
     },
     // 매수매도 했음
@@ -144,10 +153,12 @@ export const gamedata = createSlice({
 
 export const {
   handleGetGameData,
+  handleGetTodayDate,
   handleGetStockDescription,
   handleMoreGameData,
   handleGetStockInformation,
   handleBuySellTrade,
   handleUpdateHoldingData,
+  handleGetStockNews,
 } = gamedata.actions;
 export default gamedata;

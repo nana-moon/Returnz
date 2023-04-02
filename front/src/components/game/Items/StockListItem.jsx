@@ -88,7 +88,7 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
           <img src={Stock[Stock.length - 1]?.logo} alt="dd" />
         </ItemTitleImgBox>
         <CompanyName>
-          {isThis && <Tooltip content="영업날이 아닙니다">⚠️</Tooltip>}
+          {isThis && <Tooltip content="영업일이 아닙니다">⚠️ </Tooltip>}
           {replacedName}
         </CompanyName>
         <ItemPriceSection isUp={isUp}>
