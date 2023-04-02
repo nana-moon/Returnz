@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { Tooltip } from '@material-tailwind/react';
@@ -6,7 +6,7 @@ import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buyse
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 import { noWorkDay } from '../../../store/gamedata/GameData.selector';
 
-export default function StockListItem({ Stock, i }) {
+export default function StockListItem({ Stock, i, Code, checkCanSell }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
   const isWork = useSelector(noWorkDay);
@@ -14,6 +14,7 @@ export default function StockListItem({ Stock, i }) {
   const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
     matched === '보통주' ? '' : ' (우)',
   );
+  const keys = Object.keys(Code);
 
   let isUp;
   if (Stock[Stock.length - 1].close - Stock[Stock.length - 2].close === 0) {
@@ -65,10 +66,17 @@ export default function StockListItem({ Stock, i }) {
     <ItemContainer
       i={i}
       j={isSelect}
+      k={isThis}
       onClick={(e) => {
         createRipple(e);
         handleselectIdx(i);
-        const value = { companyName: Stock[Stock.length - 1].companyName, orderPrice: Stock[Stock.length - 1].close };
+        const value = {
+          companyName: Stock[Stock.length - 1].companyName,
+          orderPrice: Stock[Stock.length - 1].close,
+          companyCode: keys[i],
+        };
+        console.log(['데이터소개', value], keys[i]);
+        checkCanSell(keys[i]);
         dispatch(receiveBuyData(value));
         // 보유수량 확인 가능하면 수정해야됨
         dispatch(receiveSellData(value));
@@ -77,10 +85,10 @@ export default function StockListItem({ Stock, i }) {
       <span className="ripple" />
       <ItemTitleSection>
         <ItemTitleImgBox>
-          <img src={Stock[Stock.length - 1].logo} alt="dd" />
+          <img src={Stock[Stock.length - 1]?.logo} alt="dd" />
         </ItemTitleImgBox>
         <CompanyName>
-          {isThis && <Tooltip content="영업날이 아닙니다">⚠️</Tooltip>}
+          {isThis && <Tooltip content="영업일이 아닙니다">⚠️ </Tooltip>}
           {replacedName}
         </CompanyName>
         <ItemPriceSection isUp={isUp}>
@@ -126,8 +134,9 @@ const ItemContainer = styled.button`
       opacity: 0;
     }
   }
+  ${(props) => (props.k ? tw`bg-negative` : tw`bg-white`)}
   ${(props) => (props.i === props.j ? tw`ring-2 ring-negative drop-shadow-none` : tw``)}
-  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg bg-white rounded-xl overflow-hidden`}
+  ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg rounded-xl overflow-hidden`}
 `;
 
 const ItemTitleSection = styled.div`

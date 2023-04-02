@@ -48,6 +48,7 @@ public class SecurityConfig {
 			.authorizeRequests()
 			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			.antMatchers("/api/game").authenticated()
+			.antMatchers("/api/news").authenticated()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/boards/gif/{boardId}").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/boards/{boardId}").authenticated()

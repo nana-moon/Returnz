@@ -14,12 +14,14 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
+  console.log('테마설정 보냄', payload);
   const res = await authApi.post('/games/init', payload);
+  console.log('방정보 받아옴', res.data);
   return res.data;
 };
 
 const gameDataApi = (payload) => {
-  console.log(payload);
+  console.log('게임방 정보 보냄', payload);
   return authApi
     .post('/games/game', payload)
     .then((res) => {
@@ -33,14 +35,28 @@ const gameDataApi = (payload) => {
 };
 
 const buyStockApi = (payload) => {
-  console.log(payload, '대박');
   return axios
     .post('/games/purchases', payload)
     .then((res) => {
-      console.log('매수 성공', res.data);
+      console.log('매수 성공', res);
+      return res.data;
     })
     .catch((err) => {
       console.log('매수 실패', err);
+      return false;
+    });
+};
+
+const getNewsApi = (payload) => {
+  return authApi
+    .post('/news', payload)
+    .then((res) => {
+      console.log('뉴스가져오기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('뉴스가져오기 실패', err);
+      return false;
     });
 };
 
@@ -48,4 +64,4 @@ const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi };
+export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi, getNewsApi };
