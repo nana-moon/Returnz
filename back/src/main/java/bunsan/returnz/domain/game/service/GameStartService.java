@@ -178,9 +178,10 @@ public class GameStartService {
 	 */
 	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		// 기업별로 시작일 데이터가 있는지 검사하는 래포
-		Boolean startDayIsValid = historicalPriceDayRepository.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
-			(long)gameStockIds.size());
-		if(!startDayIsValid){
+		Boolean startDayIsValid = historicalPriceDayRepository
+			.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
+				(long)gameStockIds.size());
+		if (!startDayIsValid) {
 			throw new BadRequestException("요청한 날은 영업일이 아닙니다.");
 		}
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn().intValue());
@@ -209,7 +210,7 @@ public class GameStartService {
 
 			boolean checkAllStockIsThereMoreThenInWeek =
 				historicalPriceDayRepository.existsAtLeastOneRecordForEachCompany(
-				weekFirstDay, endDay, gameStockIds, 10L);
+					weekFirstDay, endDay, gameStockIds, 10L);
 			if (!checkAllStockIsThereMoreThenInWeek) {
 				throw new BadRequestException("지정한 주 수에 비해 세팅한 턴에 맞는 데이터가 적습니다.");
 			}
