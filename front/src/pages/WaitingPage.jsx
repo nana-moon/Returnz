@@ -5,7 +5,7 @@ import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { startGameApi, gameDataApi } from '../apis/gameApi';
+import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
 import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
@@ -18,7 +18,9 @@ import { getGamerId, getGameRoomId } from '../store/roominfo/GameRoom.selector';
 import {
   handleGetGameData,
   handleGetStockDescription,
+  handleGetTodayDate,
   handleGetStockInformation,
+  handleGetStockNews,
 } from '../store/gamedata/GameData.reducer';
 import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
 
@@ -169,12 +171,32 @@ export default function WaitingPage() {
 
   // -------------------------| START/EXIT GAME |------------------------------------------------------------------
   // 첫턴정보 ACTION
-  const handleTurn = async (turnReq) => {
+  const handleTurn = async (turnReq, id) => {
     const gameData = await gameDataApi(turnReq);
     console.log('gameData', gameData);
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
+    const keys = Object.keys(gameData.Stocks);
+    const Date = gameData.currentDate;
+    const gameId = id;
+    console.log(keys, Date, gameId, '가능');
+    const getNews = [];
+
+    for (let i = 0; i < keys.length; i += 1) {
+      const data = {
+        id: gameId,
+        companyCode: keys[i],
+        articleDateTime: Date,
+      };
+      // eslint-disable-next-line no-await-in-loop
+      const newsTmp = await getNewsApi(data);
+      getNews.push({ [keys[i]]: newsTmp });
+    }
+
+    dispatch(handleGetStockNews(getNews));
+
+    dispatch(handleGetTodayDate(gameData.currentDate));
     sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
     navigate('/game');
   };
@@ -198,7 +220,7 @@ export default function WaitingPage() {
         gamerId: myGameInfo.gamerId,
         roomId: gameInit.roomId,
       };
-      handleTurn(turnReq);
+      handleTurn(turnReq, gameInit.id);
     }
   };
 

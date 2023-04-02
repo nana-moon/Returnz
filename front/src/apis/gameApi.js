@@ -47,8 +47,21 @@ const buyStockApi = (payload) => {
     });
 };
 
+const getNewsApi = (payload) => {
+  return authApi
+    .post('/news', payload)
+    .then((res) => {
+      console.log('뉴스가져오기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('뉴스가져오기 실패', err);
+      return false;
+    });
+};
+
 const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi };
+export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi, getNewsApi };
