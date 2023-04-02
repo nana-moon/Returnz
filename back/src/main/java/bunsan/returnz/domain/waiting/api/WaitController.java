@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import bunsan.returnz.domain.waiting.dto.SettingDto;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
 import bunsan.returnz.domain.waiting.service.WaitService;
@@ -46,7 +48,9 @@ public class WaitController {
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.EXIT)) {
 			waitService.sendExitMessage(waitRequest, token);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.SETTING)) {
-			waitService.sendGameSetting((SettingDto)waitRequest.getMessageBody());
+			ObjectMapper mapper = new ObjectMapper();
+			SettingDto settingDto = mapper.convertValue(waitRequest.getMessageBody(), SettingDto.class);
+			waitService.sendGameSetting(settingDto);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.GAME_INFO)) {
 			waitService.sendGameInfo(waitRequest);
 		} else { // 예외 처리 메세지 소켓으로 send?
