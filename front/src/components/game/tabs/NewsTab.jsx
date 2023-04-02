@@ -1,23 +1,45 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
 import imgPath from '../Items/news.png';
+import { stockNews } from '../../../store/gamedata/GameData.selector';
+import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 
 export default function NewsTab() {
+  const news = useSelector(stockNews);
+  const newsData = { news: Object.assign({}, ...news) };
+  const idx = useSelector(selectedIdx);
+  const keys = Object.keys(newsData.news);
+  console.log('asdasdasdasdasdasdasdasdasda', newsData, idx, news);
+  const thisNews = newsData.news[keys[idx]];
+  const { title } = thisNews;
+  const content = thisNews.summary;
+  const Url = thisNews.articleUrl;
+
+  console.log('뉴스 소개', thisNews);
   return (
     <TabContanier>
-      <ImageBox>
-        <a href="http://naver.com" target="_blank" rel="noopener noreferrer">
+      {thisNews.isExist ? (
+        <ImageBox>
+          <a href={Url} target="_blank" rel="noopener noreferrer">
+            <img className="w-[90%]" src={imgPath} alt="" />
+          </a>
+          <HelpText>이미지 클릭시 원문으로 이동</HelpText>
+        </ImageBox>
+      ) : (
+        <ImageBox>
           <img className="w-[90%]" src={imgPath} alt="" />
-        </a>
-        <HelpText>이미지 클릭시 원문으로 이동</HelpText>
-      </ImageBox>
-      <ContentSection>
-        <ContentTitle>충격! 공포! 기괴!</ContentTitle>
-        <ContentBox>
-          뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스
-          요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용 뉴스 요약내용
-        </ContentBox>
-      </ContentSection>
+          <HelpText>해당 날짜의 뉴스가 없습니다</HelpText>
+        </ImageBox>
+      )}
+
+      {/*  */}
+      {thisNews.isExist ? (
+        <ContentSection>
+          <ContentTitle>{title.replace(/\[|\]|'/g, '')}</ContentTitle>
+          <ContentBox>{content.replace(/['\[\]]/g, '')}</ContentBox>
+        </ContentSection>
+      ) : null}
     </TabContanier>
   );
 }
@@ -41,6 +63,11 @@ const ContentSection = styled.div`
 `;
 
 const ContentTitle = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   ${tw`text-2xl font-bold mb-4`}
 `;
 
