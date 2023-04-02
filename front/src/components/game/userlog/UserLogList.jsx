@@ -7,19 +7,11 @@ import UserLogListItem from './UserLogListItem';
 
 export default function UserLogList() {
   const playerList = useSelector(getPlayerList);
-  console.log(playerList);
-  const temp = [
-    { nickname: 'j', profile: '/A.jpg', total: 100000, profit: 15 },
-    { nickname: 'i', profile: '/B.jpg', total: 100000, profit: 15 },
-    { nickname: 'e', profile: '/C.jpg', total: 100000, profit: 15 },
-    { nickname: 'a', profile: '/D.jpg', total: 100000, profit: 15 },
-  ];
   return (
     <UserLogContainer>
       {Array.from({ length: 4 }).map((_, i) => {
-        if (i < 4) {
-          console.log(i, playerList[i]);
-          return <UserLogListItem key={temp[i].nickname} temp={temp[i]} />;
+        if (i < playerList.length) {
+          return <UserLogListItem key={playerList[i].nickname} player={playerList[i]} />;
         }
         // eslint-disable-next-line react/no-array-index-key
         return <NullListItem key={i} />;

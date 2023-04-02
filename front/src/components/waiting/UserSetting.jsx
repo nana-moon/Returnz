@@ -17,8 +17,8 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
 
   // 테마로 돌아가기 위해 구현
   const handleIsUserSetting = () => {
-    const newData = { ...setting, theme: null, turnPerTime: 'NO', startTime: null, totalTurn: null };
-    getUserSetting(newData);
+    const newSetting = { ...setting, theme: null, turnPerTime: 'NO', startTime: null, totalTurn: null };
+    getUserSetting(newSetting);
     getIsUserSetting();
   };
 
