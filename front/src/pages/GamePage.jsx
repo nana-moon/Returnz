@@ -2,6 +2,7 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -21,6 +22,8 @@ import { getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 
 export default function GamePage() {
+  // -------------------------| GAMEROOM |------------------------------------------------------------------
+  // ROOM STATE
   const testdata = useSelector(gamerStockList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
@@ -52,6 +55,7 @@ export default function GamePage() {
         console.log(err);
       });
   };
+
   return (
     <>
       <Header />

@@ -6,7 +6,7 @@ export const gameRoom = createSlice({
   initialState: {
     id: null,
     roomId: null,
-    captainName: null,
+    hostNickname: null,
     gamerId: null,
     playerList: [],
   },
@@ -17,8 +17,8 @@ export const gameRoom = createSlice({
     setGameRoomId(state, action) {
       state.roomId = action.payload;
     },
-    setCaptainName(state, action) {
-      state.captainName = action.payload;
+    setHostNickname(state, action) {
+      state.hostNickname = action.payload;
     },
     setGamerId(state, action) {
       state.gamerId = action.payload;
@@ -32,6 +32,6 @@ export const gameRoom = createSlice({
   },
 });
 
-export const { setGameId, setGameRoomId, setCaptainName, setGamerId, setPlayerList, removePlayerList } =
+export const { setGameId, setGameRoomId, setHostNickname, setGamerId, setPlayerList, removePlayerList } =
   gameRoom.actions;
 export default gameRoom;
