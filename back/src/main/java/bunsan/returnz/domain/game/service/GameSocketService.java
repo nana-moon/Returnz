@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -51,7 +50,7 @@ public class GameSocketService {
 			Member tokenMember = jwtTokenProvider.getMember(token);
 			String username = (String)roomMessageDto.getMessageBody().get("username");
 			Member member = memberRepository.findByUsername(username)
-				.orElseThrow(()-> new NotFoundException("해당 회원이 존재하지 않습니다."));
+				.orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
 			if (!tokenMember.equals(member)) {
 				throw new BadRequestException("token 맴버와 일치하지 않습니다.");
 			}
@@ -112,9 +111,11 @@ public class GameSocketService {
 		RoomMessageDto roomMessageDto = RoomMessageDto.builder()
 			.type(RoomMessageDto.MessageType.TIME)
 			.roomId(roomId)
-			.messageBody(new HashMap<>(){{
-				put("returnTime", df.format(cal.getTime()));
-			}})
+			.messageBody(new HashMap<>() {
+				{
+					put("returnTime", df.format(cal.getTime()));
+				}
+			})
 			.build();
 		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
 		return df.format(cal.getTime());
