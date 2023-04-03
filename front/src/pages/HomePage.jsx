@@ -10,9 +10,7 @@ import TodayWord from '../components/main/TodayWord';
 export default function HomePage() {
   return (
     <MainContainer>
-      <PriceSection>
-        <TodayPrice />
-      </PriceSection>
+      <PriceSection>{/* <TodayPrice /> */}</PriceSection>
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>

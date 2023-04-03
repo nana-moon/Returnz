@@ -25,6 +25,9 @@ export default function Graph() {
     const categoriess = stockGraphData[selectidx][companyName].candledata.map((data) => data.x);
 
     options = {
+      title: {
+        text: '제목',
+      },
       series: [
         {
           name: '주가',
