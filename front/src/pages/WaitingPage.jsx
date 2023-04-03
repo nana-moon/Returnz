@@ -18,6 +18,7 @@ import {
   setGamerId,
   setGameRoomId,
   setHostNickname,
+  setIsReadyList,
   setPlayerList,
 } from '../store/roominfo/GameRoom.reducer';
 import {
@@ -27,6 +28,7 @@ import {
   handleGetStockInformation,
   handleGetStockNews,
   handleGetchangeInterest,
+  setMaxTurn,
 } from '../store/gamedata/GameData.reducer';
 import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
 
@@ -183,8 +185,8 @@ export default function WaitingPage() {
     navigate('/game');
   };
 
-  const handleTurn = async (turnReq, id) => {
-    const gameData = await gameDataApi(turnReq);
+  const handleTurn = async (turnApiReq, id) => {
+    const gameData = await gameDataApi(turnApiReq);
     console.log('gameData', gameData);
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
@@ -214,32 +216,33 @@ export default function WaitingPage() {
     handlePage();
   };
 
-  const handleGameInfo = async () => {
+  const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
-      const gameInit = await startGameApi(setting);
-      console.log('GAME_INFO_SEND', {
-        roomId: waitRoomId,
-        id: gameInit.id,
-        gamerList: gameInit.gamerList,
-        gameRoomId: gameInit.roomId,
-      });
+      console.log('maxturn', setting.totalTurn);
+      dispatch(setMaxTurn(setting.totalTurn));
+      const gameInit = await startGameApi(newSetting);
+      console.log('gameInit', gameInit);
       sendMessage(sendAddress, header, 'GAME_INFO', {
         roomId: waitRoomId,
         id: gameInit.Id,
         gamerList: gameInit.gamerList,
         gameRoomId: gameInit.roomId,
       });
-      dispatch(setGameId(gameInit.id));
-      dispatch(setGameRoomId(gameInit.roomId));
-      dispatch(setHostNickname(roomInfo.captainName));
-      dispatch(setPlayerList(gameInit.gamerList));
+      dispatch(setGameId(gameInit.id)); // gameId
+      dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
+      dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
+      dispatch(setPlayerList(gameInit.gamerList)); // gamePlayerList
+      const readyList = gameInit.gamerList.map((gamer) => {
+        return { [gamer.username]: false };
+      });
+      dispatch(setIsReadyList(readyList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
-      dispatch(setGamerId(myGameInfo.gamerId));
-      const turnReq = {
+      dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
+      const turnApiReq = {
         gamerId: myGameInfo.gamerId,
         roomId: gameInit.roomId,
       };
-      handleTurn(turnReq, gameInit.id);
+      handleTurn(turnApiReq, gameInit.id);
     }
   };
 
@@ -250,7 +253,8 @@ export default function WaitingPage() {
     });
     const newSetting = { ...setting, memberIdList };
     setSetting(newSetting);
-    handleGameInfo();
+    console.log('!!!!!!!!!!!!!!!!', newSetting);
+    handleGameInfo(newSetting);
   };
 
   // 방나가기 ACTION

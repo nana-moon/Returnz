@@ -160,6 +160,9 @@ export const gamedata = createSlice({
     handleGetchangeInterest(state, action) {
       state.changeInterest = action.payload;
     },
+    setMaxTurn(state, action) {
+      state.gameTurn.maxTurn = action.payload;
+    },
   },
 });
 
@@ -173,5 +176,6 @@ export const {
   handleUpdateHoldingData,
   handleGetStockNews,
   handleGetchangeInterest,
+  setMaxTurn,
 } = gamedata.actions;
 export default gamedata;
