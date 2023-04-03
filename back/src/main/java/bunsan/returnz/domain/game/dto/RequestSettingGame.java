@@ -115,11 +115,16 @@ public class RequestSettingGame {
 	}
 
 	public TurnPerTime setThemTurnPerTime() {
-		if (this.theme != Theme.USER) {
+
+		if (this.theme.equals(Theme.LAST_MONTH) || this.theme.equals(Theme.LAST_YEAR)) {
 			this.turnPerTime = TurnPerTime.DAY;
 			return TurnPerTime.DAY;
+		} else if (!this.theme.equals(Theme.USER)) {
+			this.turnPerTime = TurnPerTime.WEEK;
+			return TurnPerTime.WEEK;
+		} else {
+			return this.turnPerTime;
 		}
-		return this.turnPerTime;
 	}
 
 	public Integer setThemeTotalTurnTime() {

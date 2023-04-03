@@ -21,6 +21,25 @@ public class GameHistoricalPriceDayService {
 
 	private final HistoricalPriceDayRepository historicalPriceDayRepository;
 
+	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBetweenWithCode(
+		LocalDateTime startDate, LocalDateTime endDate, String companyCode) {
+		List<HistoricalPriceDay> historicalPriceDays =
+			historicalPriceDayRepository.findAllByDateTimeIsBetweenWithCode(
+				startDate, endDate, companyCode);
+
+		// TODO: historicalPriceDays 없을 경우 에러 발생 / 또는 개수가 적을 경우
+		// if(historicalPriceDays.isEmpty())
+
+		List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos = new LinkedList<>();
+		HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+		for (int i = 0; i < historicalPriceDays.size(); ++i) {
+			gameHistoricalPriceDayDtos.add(historicalPriceDay.toDto(historicalPriceDays.get(i)));
+		}
+		// 순서 뒤집기
+		Collections.reverse(gameHistoricalPriceDayDtos);
+		return gameHistoricalPriceDayDtos;
+	}
+
 	public List<GameHistoricalPriceDayDto> findAllByDateTimeIsBeforeWithCodeLimit20(
 		LocalDateTime date, String companyCode) {
 		List<HistoricalPriceDay> historicalPriceDays =
