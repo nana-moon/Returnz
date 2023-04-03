@@ -20,7 +20,7 @@ export default function UserProfile() {
           color="transparent"
           floated={false}
           shadow={false}
-          className="mx-2 flex items-center gap-4 pt-0 pb-4"
+          className="mx-2 flex items-center gap-3 pt-0 pb-4"
         >
           <Avatar size="xl" variant="circular" src={picPath} className="border-2 border-negative" />
           <MyInfoBox>
@@ -42,7 +42,7 @@ const MyInfoBox = styled.div`
 `;
 
 const UsernameContent = styled.div`
-  ${tw`text-lg py-1 font-bold`}
+  ${tw`py-1 font-bold`}
 `;
 
 const ProfileChangeButton = styled.button`
