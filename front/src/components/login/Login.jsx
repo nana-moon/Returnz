@@ -108,7 +108,7 @@ const InputBox = styled.div`
 
 const EmailInput = styled(Input)`
   min-width: 100px;
-  color: gray;
+  color: black;
   ${tw`border`};
 `;
 

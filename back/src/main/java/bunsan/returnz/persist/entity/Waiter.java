@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,14 +24,16 @@ public class Waiter {
 	@GeneratedValue
 	@Id
 	@Column(name = "WAIT_MEMBER_ID")
+	@JsonIgnore
 	private Long id;
-	private Long profit;
-	private Long deposit;
-	private Boolean isCaptain;
-	private String userName;
+	private Long memberId;
+	private String profileIcon;
+	private Double avgProfit;
+	private String nickname;
+	private String username;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "WAIT_ROOM_ID")
+	@JoinColumn(name = "ROOM_ID", referencedColumnName = "ROOM_ID")
+	@JsonIgnore
 	private WaitRoom waitRoom;
-
 
 }

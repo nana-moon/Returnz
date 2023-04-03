@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
-import { receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
+import { change, receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
 import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
 import { stockDataList, noWorkDay } from '../../store/gamedata/GameData.selector';
 import BuySellModal from './modals/BuySellModal';
@@ -16,6 +16,7 @@ export default function StockList() {
   const stockDatas = useSelector(stockDataList);
   const selectidx = useSelector(selectedIdx);
   const noWorkidx = useSelector(noWorkDay);
+  const [result, setResult] = useState(0);
 
   const isThis = noWorkidx.includes(selectidx);
 
@@ -25,16 +26,24 @@ export default function StockList() {
   const handleOpenModal = (data) => {
     const value = { isOpen: true, isType: data };
     dispatch(receiveSetting(value));
+    dispatch(change(result));
   };
+
+  const checkCanSell = (data) => {
+    const foundObj = canSell.holdingcount.find((obj) => Object.keys(obj)[0] === data);
+    console.log('부모컴포넌트', data, canSell, '개수:', foundObj[data]);
+    setResult(foundObj[data]);
+  };
+
   return (
     <StockListContanier>
-      {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} /> : null}
+      {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} checkCanSell={checkCanSell} /> : null}
       <StockListSection>상장 종목</StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
             // eslint-disable-next-line react/no-array-index-key
-            return <StockListItem Stock={Stock} i={i} key={i} />;
+            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={i} checkCanSell={checkCanSell} />;
           })}
         </div>
       </ListContanier>
@@ -42,11 +51,7 @@ export default function StockList() {
         <BuyButton type="button" onClick={() => handleOpenModal(true)} disabled={canBuy.companyName === '' || isThis}>
           매수
         </BuyButton>
-        <SellButton
-          type="button"
-          onClick={() => handleOpenModal(false)}
-          disabled={canSell.holdingcount === 0 || isThis}
-        >
+        <SellButton type="button" onClick={() => handleOpenModal(false)} disabled={result <= 0 || isThis}>
           매도
         </SellButton>
       </OrderButton>

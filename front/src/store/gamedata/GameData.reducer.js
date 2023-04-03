@@ -6,18 +6,27 @@ export const gamedata = createSlice({
   initialState: {
     // 상장종목
     stockDataList: {},
+    // 오늘날짜
+    todayDate: null,
     // 그래프
     stockGraphList: [],
     // 영업날이 아님
     noWorkDay: [],
     // 뉴스,
-    stockNews: {},
+    stockNews: [],
     // 주가정보
     stockInformation: {},
     // 종목 내용
     stockdescription: {},
     // 보유종목
     gamerStockList: [{}],
+    // 환율 한국금리 미국금리
+    changeInterest: {
+      date: null,
+      exchageRate: 0,
+      korea: 0,
+      usa: 0,
+    },
     // 유저 데이터
     gamerDataList: {
       deposit: 10000000,
@@ -60,6 +69,10 @@ export const gamedata = createSlice({
         const tmp = { [companyname]: { candledata: candle, linedata: line } };
         state.stockGraphList.push(tmp);
       }
+    },
+    // 날짜받기
+    handleGetTodayDate(state, action) {
+      state.todayDate = action.payload;
     },
     // 두번째 부터
     handleMoreGameData(state, action) {
@@ -119,14 +132,17 @@ export const gamedata = createSlice({
       }
       state.gamerStockList = holdingdata;
     },
-    // 뉴스,
-    handleGetStockNews(state, action) {},
+    // 뉴스 업데이트
+    handleGetStockNews(state, action) {
+      state.stockNews = action.payload;
+    },
     // 주가정보,
     handleGetStockInformation(state, action) {
       state.stockInformation = action.payload;
     },
     // 종목 내용
     handleGetStockDescription(state, action) {
+      console.log('action:', action.payload);
       state.stockdescription = action.payload;
     },
     // 매수매도 했음
@@ -139,15 +155,22 @@ export const gamedata = createSlice({
 
       state.gamerStockList = action.payload.gamerStock;
     },
+    // 한국금리 미국금리 환율
+    handleGetchangeInterest(state, action) {
+      state.changeInterest = action.payload;
+    },
   },
 });
 
 export const {
   handleGetGameData,
+  handleGetTodayDate,
   handleGetStockDescription,
   handleMoreGameData,
   handleGetStockInformation,
   handleBuySellTrade,
   handleUpdateHoldingData,
+  handleGetStockNews,
+  handleGetchangeInterest,
 } = gamedata.actions;
 export default gamedata;

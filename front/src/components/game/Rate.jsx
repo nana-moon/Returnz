@@ -1,12 +1,23 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import { useSelector } from 'react-redux';
+import { changeInterest } from '../../store/gamedata/GameData.selector';
 
-export default function rate() {
+export default function Rate() {
+  const rateData = useSelector(changeInterest);
+  console.log(rateData);
   return (
     <RateContanier>
-      <div> 금리 </div>
-      <div> 환율 </div>
-      <div> 유가 </div>
+      <div>
+        <div> 환율 </div>
+        <div> 한국 금리 </div>
+        <div> 미국 금리 </div>
+      </div>
+      <div>
+        <div> {rateData.exchangeRate}</div>
+        <div> {rateData.korea}</div>
+        <div> {rateData.usa}</div>
+      </div>
     </RateContanier>
   );
 }

@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.game.dto;
+package bunsan.returnz.domain.waiting.dto;
 
 import java.util.Map;
 
@@ -9,18 +9,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import reactor.util.annotation.Nullable;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class RoomMessageDto {
-	private MessageType type;
-	private String roomId;
-	private Map<String, Object> messageBody;
+public class NewWaitMessageDto {
 	public enum MessageType {
-		ENTER, READY, TURN, CHAT, END, TIME, @JsonEnumDefaultValue UNKNOWN;
+		ENTER, CHAT, EXIT, SETTING, GAME_INFO, @JsonEnumDefaultValue UNKNOWN;
 	}
+	private MessageType type;
+	private Object messageBody;
 }
