@@ -92,4 +92,15 @@ public class GameHistoricalPriceDayService {
 		return gameHistoricalPriceDayDtos;
 	}
 
+	public GameHistoricalPriceDayDto findByDateTimeIsBeforeWithCodeLimit1(LocalDateTime date, String companyCode) {
+		Optional<HistoricalPriceDay> historicalPriceDayOptional = historicalPriceDayRepository.findByDateTimeIsBeforeWithCodeLimit1(
+			date, companyCode);
+
+		if (historicalPriceDayOptional.isPresent()) {
+			HistoricalPriceDay historicalPriceDay = new HistoricalPriceDay();
+			return historicalPriceDay.toDto(historicalPriceDayOptional.get());
+		}
+		return null;
+	}
+
 }

@@ -19,10 +19,10 @@ public class GameGamerStockDto {
 	private Long gamerId;
 	private String companyCode;
 	private Integer totalCount; // 보유 수
-	private Integer totalAmount; // 주식 총 가격
-	private Double averagePrice; // 평균 단가
+	private Integer totalAmount; // 총 주식 구매 가격
+	private Double averagePrice; // 구매 평균 단가
 	private Double valuation; // 평가손익
-	private Double profitRate; // 손익비율
+	private Double profitRate; // 수익률
 	private String logo;
 	private String companyName;
 
