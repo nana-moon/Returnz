@@ -47,22 +47,6 @@ public class GameSocketService {
 		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
 	}
 
-	// private Member checkUsername(RoomMessageDto roomMessageDto, String token) {
-	//
-	// 	if (roomMessageDto.getMessageBody().get("username") != null) {
-	// 		Member tokenMember = jwtTokenProvider.getMember(token);
-	// 		String username = (String)roomMessageDto.getMessageBody().get("username");
-	// 		Member member = memberRepository.findByUsername(username)
-	// 			.orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
-	// 		if (!tokenMember.equals(member)) {
-	// 			throw new BadRequestException("token 맴버와 일치하지 않습니다.");
-	// 		}
-	// 		return member;
-	// 	} else {
-	// 		throw new BadRequestException("username을 입력해주세요.");
-	// 	}
-	// }
-
 	private void checkGameRoomId(RoomMessageDto roomMessageDto) {
 		if (roomMessageDto.getRoomId() == null) {
 			throw new BadRequestException("게임방 정보를 입력해주세요.");

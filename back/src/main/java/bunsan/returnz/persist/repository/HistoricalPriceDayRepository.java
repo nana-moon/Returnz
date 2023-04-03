@@ -14,6 +14,12 @@ import bunsan.returnz.persist.entity.HistoricalPriceDay;
 
 public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPriceDay, Long> {
 	@Query(value = "SELECT * FROM historical_price_day h\n"
+		+ "WHERE h.date_time >= :startDate AND h.date_time <= :endDate AND  h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time DESC", nativeQuery = true)
+	List<HistoricalPriceDay> findAllByDateTimeIsBetweenWithCode(LocalDateTime startDate,
+		LocalDateTime endDate, String companyCode);
+
+	@Query(value = "SELECT * FROM historical_price_day h\n"
 		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
 		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 20", nativeQuery = true)
@@ -64,7 +70,6 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 			+ "WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds")
 	Boolean getDayStock(@Param("dateTime") LocalDateTime dateTime,
 		@Param("stockIds") List<String> stockIds, @Param("size") Long size);
-
 
 	@Query(value = "SELECT h FROM HistoricalPriceDay h WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds"
 		+ " ORDER BY h.dateTime ASC")
