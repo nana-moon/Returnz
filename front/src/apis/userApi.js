@@ -2,10 +2,10 @@ import { authApi } from './axiosConfig';
 
 const getPossibleProfile = () => {
   return authApi
-    .get('/members/profile')
+    .get('/members/profiles')
     .then((res) => {
-      console.log(res, '내프사들후보여');
-      return res;
+      console.log(res.data);
+      return res.data.permittedProfiles;
     })
     .catch((error) => {
       console.log(error, '프사들후보...에러');

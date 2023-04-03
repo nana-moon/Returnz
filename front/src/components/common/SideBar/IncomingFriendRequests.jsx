@@ -45,10 +45,10 @@ const ButtonsContainer = styled.div`
   ${tw`flex ml-5 gap-4 mt-1`}
 `;
 
-const AcceptButton = styled.div`
+const AcceptButton = styled.button`
   ${tw`text-white bg-primary hover:bg-dprimary focus:ring-4 focus:outline-none focus:ring-cyan-100 font-bold rounded-lg px-2 py-1 text-center my-auto`}
 `;
 
-const DeclineButton = styled.div`
+const DeclineButton = styled.button`
   ${tw`text-white bg-negative hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-gray-100 font-bold rounded-lg px-2 py-1 text-center my-auto`}
 `;
