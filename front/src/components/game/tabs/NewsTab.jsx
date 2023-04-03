@@ -1,7 +1,7 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
-import imgPath from '../Items/news.png';
+import imgPath from '../assets/news.png';
 import { stockNews } from '../../../store/gamedata/GameData.selector';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
 

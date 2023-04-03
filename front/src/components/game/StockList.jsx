@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
 import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
-import imgpath from './Items/bear.jpg';
+import imgpath from './assets/stockListHelp.png';
 import StockListItem from './Items/StockListItem';
 import { change, receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
 import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
@@ -56,7 +56,7 @@ export default function StockList() {
                 ?
               </Button>
             </PopoverHandler>
-            <PopoverContent className="z-20">
+            <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
               <img src={imgpath} alt="" />
             </PopoverContent>
           </Popover>
