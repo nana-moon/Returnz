@@ -573,15 +573,22 @@ public class GameService {
 			gameGamerStockDto.setTotalAmount(totalAmount);
 			gameGamerStockDto.setAveragePrice(averagePrice);
 
-			// logo, companyName 추가
-			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
+			// Dto Update
 			gamerStockService.updateDto(gameGamerStockDto);
-			gameGamerStockDto.setLogo(gameCompanyDetailDto.getLogo());
-			gameGamerStockDto.setCompanyName(gameCompanyDetailDto.getKoName());
+
+			// update한 정보를 바탕으로 다시 불러오기
+			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+			for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+				// companyName과 logo 불러오기
+				GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+					gamerStockDto.getCompanyCode());
+				gamerStockDto.setLogo(companyDetailDto.getLogo());
+				gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			}
 
 			HashMap<String, Object> stockInformation = new HashMap<>();
 			stockInformation.put("gamer", gameGamerDto);
-			stockInformation.put("gamerStock", gameGamerStockDto);
+			stockInformation.put("gamerStock", gameGamerStockDtos);
 
 			return stockInformation;
 
@@ -638,7 +645,7 @@ public class GameService {
 			gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 
 		// 보유한 종목 수가 매도할 종목 수 보다 많아야 가능하다.
-		if (gameGamerStockDto.getTotalCount() >= (stockClosePrice * count)) {
+		if (gameGamerStockDto.getTotalCount() >= count) {
 
 			// 구매 가격
 			Integer salesPrice = (int)(stockClosePrice * count);
@@ -646,11 +653,15 @@ public class GameService {
 			// "gamer_stock" Table update
 			// 기존에 사용자가 사놨던 해당 주식 수에 현재 파는 주식 수 빼기 (totalCount) : 총 보유 주식 수
 			// 기존에 사용자가 사놨던 해당 주식 가격에 현재 사는 주식 가격 빼기 (totalAmount) : 총 보유 주식의 가격
-			// 평균 단가 : 변경 없음
+			// 평균 단가 : totalCount가 0이 되는 경우 0으로 변경, 이외에는 변경 없음
 			// 평가 손익 변경(valuation), 손익 비율은 바뀌지 않음 -> 턴 정보가 끝날 때 변경
 			Integer totalCount = gameGamerStockDto.getTotalCount() - count;
 			Integer totalAmount =
 				gameGamerStockDto.getTotalAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
+			Double averagePrice = gameGamerStockDto.getAveragePrice();
+			if (totalCount == 0) {
+				averagePrice = 0.0;
+			}
 
 			// "gamer" Table update
 			// 기존에 사용자가 가지고 있던 deposit을 판매 가격 만큼 증감 (deposit)
@@ -661,7 +672,7 @@ public class GameService {
 			Integer totalPurchateAmount =
 				gameGamerDto.getTotalPurchaseAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
 			Integer totalEvaluationStock =
-				gameGamerDto.getTotalEvaluationStock() + (int)(gameGamerStockDto.getAveragePrice() * count);
+				gameGamerDto.getTotalEvaluationStock() - (int)(gameGamerStockDto.getAveragePrice() * count);
 
 			gameGamerDto.setDeposit(deposit);
 			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
@@ -670,21 +681,29 @@ public class GameService {
 
 			gameGamerStockDto.setTotalCount(totalCount);
 			gameGamerStockDto.setTotalAmount(totalAmount);
+			gameGamerStockDto.setAveragePrice(averagePrice);
 
-			// logo, companyName 추가
-			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
+			// Dto 업데이트
 			gamerStockService.updateDto(gameGamerStockDto);
-			gameGamerStockDto.setLogo(gameCompanyDetailDto.getLogo());
-			gameGamerStockDto.setCompanyName(gameCompanyDetailDto.getKoName());
+
+			// update한 정보를 바탕으로 다시 불러오기
+			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+			for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+				// companyName과 logo 불러오기
+				GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+					gamerStockDto.getCompanyCode());
+				gamerStockDto.setLogo(companyDetailDto.getLogo());
+				gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			}
 
 			HashMap<String, Object> stockInformation = new HashMap<>();
 			stockInformation.put("gamer", gameGamerDto);
-			stockInformation.put("gamerStock", gameGamerStockDto);
+			stockInformation.put("gamerStock", gameGamerStockDtos);
 
 			return stockInformation;
 
 		} else {
-			throw new BadRequestException("예치금이 충분하지 않습니다.");
+			throw new BadRequestException("보유한 종목의 수가 적습니다.");
 		}
 
 	}
