@@ -237,7 +237,10 @@ public class GameService {
 		// 수익률 : profitRate : ((int)(Double.parseDouble(stockPriceDataBefoer.getClose())
 		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice)
 		// 					/ (totalCount * averagePrice) * 100
-		Integer totalEvaluationStock = gameGamerDto.getTotalEvaluationStock();
+
+		// totalEvaluationStock 총 주식 평가 금액은 해당 턴 정보로 업데이트 되야한다.
+		// totalEvaluationStock += 각 주식 보유 수 * 각 주식의 현재 가격
+		Integer totalEvaluationStock = 0;
 		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
 
 			// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
@@ -245,7 +248,7 @@ public class GameService {
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
 			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
 			// : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
-			GameHistoricalPriceDayDto stockPriceDataBefoer
+			GameHistoricalPriceDayDto stockPriceDataBefore
 				= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
 
@@ -256,18 +259,27 @@ public class GameService {
 			}
 
 			// 외국 주식인 경우 환율 적용
-			if (stockPriceData.getMarket().equals("nasdaq")) {
+			if (stockPriceData != null && stockPriceData.getMarket().equals("nasdaq")) {
 				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(stockPriceData.getDateTime());
 				stockClosePrice = Double.parseDouble(
 					String.format("%.2f",
 						Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
+			} else if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
+				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
+					stockPriceDataBefore.getDateTime());
+				stockClosePrice = Double.parseDouble(
+					String.format("%.2f",
+						Double.parseDouble(stockPriceDataBefore.getClose())
+							* gameExchangeInterestDto.getExchangeRate()));
 			}
 
 			// 다음 턴 날짜에 해당하는 주식 가격을 가져올 수 없을 경우, 전 영업일을 기준으로 계산한다.
 			if (stockClosePrice == 0) {
-				double totalPrice = (Double.parseDouble(stockPriceDataBefoer.getClose())
-					* gameGamerStockDto.getTotalCount());
+				// throw new BadRequestException(gameGamerStockDto.getCompanyCode() + " 해당 주식 가격을 찾을 수 없습니다.");
+				log.info("stockClosePrice = 0 : " + stockPriceDataBefore.toString());
+				double totalPrice = 0;
 				totalEvaluationStock += (int)(totalPrice);
+				log.info(String.valueOf(totalEvaluationStock));
 				// 평가 손익 계산
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
@@ -282,9 +294,11 @@ public class GameService {
 				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
 			} else {
+				log.info("stockClosePrice != 0 : " + stockClosePrice);
 				double totalPrice = stockClosePrice * gameGamerStockDto.getTotalCount();
 				// 총 주식 평가 자산을 계산한다.
 				totalEvaluationStock += (int)(totalPrice);
+				log.info(String.valueOf(totalEvaluationStock));
 				// 평가 손익 계산
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
@@ -559,15 +573,22 @@ public class GameService {
 			gameGamerStockDto.setTotalAmount(totalAmount);
 			gameGamerStockDto.setAveragePrice(averagePrice);
 
-			// logo, companyName 추가
-			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
+			// Dto Update
 			gamerStockService.updateDto(gameGamerStockDto);
-			gameGamerStockDto.setLogo(gameCompanyDetailDto.getLogo());
-			gameGamerStockDto.setCompanyName(gameCompanyDetailDto.getKoName());
+
+			// update한 정보를 바탕으로 다시 불러오기
+			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+			for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+				// companyName과 logo 불러오기
+				GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+					gamerStockDto.getCompanyCode());
+				gamerStockDto.setLogo(companyDetailDto.getLogo());
+				gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			}
 
 			HashMap<String, Object> stockInformation = new HashMap<>();
 			stockInformation.put("gamer", gameGamerDto);
-			stockInformation.put("gamerStock", gameGamerStockDto);
+			stockInformation.put("gamerStock", gameGamerStockDtos);
 
 			return stockInformation;
 
@@ -624,7 +645,7 @@ public class GameService {
 			gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
 
 		// 보유한 종목 수가 매도할 종목 수 보다 많아야 가능하다.
-		if (gameGamerStockDto.getTotalCount() >= (stockClosePrice * count)) {
+		if (gameGamerStockDto.getTotalCount() >= count) {
 
 			// 구매 가격
 			Integer salesPrice = (int)(stockClosePrice * count);
@@ -632,11 +653,15 @@ public class GameService {
 			// "gamer_stock" Table update
 			// 기존에 사용자가 사놨던 해당 주식 수에 현재 파는 주식 수 빼기 (totalCount) : 총 보유 주식 수
 			// 기존에 사용자가 사놨던 해당 주식 가격에 현재 사는 주식 가격 빼기 (totalAmount) : 총 보유 주식의 가격
-			// 평균 단가 : 변경 없음
+			// 평균 단가 : totalCount가 0이 되는 경우 0으로 변경, 이외에는 변경 없음
 			// 평가 손익 변경(valuation), 손익 비율은 바뀌지 않음 -> 턴 정보가 끝날 때 변경
 			Integer totalCount = gameGamerStockDto.getTotalCount() - count;
 			Integer totalAmount =
 				gameGamerStockDto.getTotalAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
+			Double averagePrice = gameGamerStockDto.getAveragePrice();
+			if (totalCount == 0) {
+				averagePrice = 0.0;
+			}
 
 			// "gamer" Table update
 			// 기존에 사용자가 가지고 있던 deposit을 판매 가격 만큼 증감 (deposit)
@@ -647,7 +672,7 @@ public class GameService {
 			Integer totalPurchateAmount =
 				gameGamerDto.getTotalPurchaseAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
 			Integer totalEvaluationStock =
-				gameGamerDto.getTotalEvaluationStock() + (int)(gameGamerStockDto.getAveragePrice() * count);
+				gameGamerDto.getTotalEvaluationStock() - (int)(gameGamerStockDto.getAveragePrice() * count);
 
 			gameGamerDto.setDeposit(deposit);
 			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
@@ -656,21 +681,29 @@ public class GameService {
 
 			gameGamerStockDto.setTotalCount(totalCount);
 			gameGamerStockDto.setTotalAmount(totalAmount);
+			gameGamerStockDto.setAveragePrice(averagePrice);
 
-			// logo, companyName 추가
-			GameCompanyDetailDto gameCompanyDetailDto = gameCompanyDetailService.findByCompanyCode(companyCode);
+			// Dto 업데이트
 			gamerStockService.updateDto(gameGamerStockDto);
-			gameGamerStockDto.setLogo(gameCompanyDetailDto.getLogo());
-			gameGamerStockDto.setCompanyName(gameCompanyDetailDto.getKoName());
+
+			// update한 정보를 바탕으로 다시 불러오기
+			List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+			for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+				// companyName과 logo 불러오기
+				GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+					gamerStockDto.getCompanyCode());
+				gamerStockDto.setLogo(companyDetailDto.getLogo());
+				gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			}
 
 			HashMap<String, Object> stockInformation = new HashMap<>();
 			stockInformation.put("gamer", gameGamerDto);
-			stockInformation.put("gamerStock", gameGamerStockDto);
+			stockInformation.put("gamerStock", gameGamerStockDtos);
 
 			return stockInformation;
 
 		} else {
-			throw new BadRequestException("예치금이 충분하지 않습니다.");
+			throw new BadRequestException("보유한 종목의 수가 적습니다.");
 		}
 
 	}
