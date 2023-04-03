@@ -17,10 +17,12 @@ import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
 import bunsan.returnz.global.auth.service.JwtTokenProvider;
+import bunsan.returnz.infra.redis.service.RedisPublisher;
 import bunsan.returnz.persist.entity.FriendRequest;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.repository.FriendRequestRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
+import bunsan.returnz.persist.repository.RedisSideBarRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +32,9 @@ public class FriendService {
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final SideBarService sideBarService;
+	private final RedisPublisher redisPublisher;
+	private final RedisSideBarRepository redisSideBarRepository;
+
 
 	public List<FriendRequestDto> getRequestList(String token) {
 		// token에 저장된 Member > 요청한 사람
@@ -150,10 +155,11 @@ public class FriendService {
 		messageBody.put("requestUsername", requester.getUsername());
 		messageBody.put("nickname", requester.getNickname());
 		messageBody.put("profileIcon", requester.getProfileIcon());
-
-		return SideMessageDto.builder()
+		SideMessageDto sideMessageDto = SideMessageDto.builder()
 			.type(SideMessageDto.MessageType.FRIEND)
 			.messageBody(messageBody)
 			.build();
+		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
+		return sideMessageDto;
 	}
 }
