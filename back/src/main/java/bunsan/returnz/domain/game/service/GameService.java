@@ -246,10 +246,10 @@ public class GameService {
 
 			if (stockPrice != 0) {
 				if (gameGamerStockDto.getTotalCount() != 0) {
-					Double valudation =
+					Double valuation =
 						(gameGamerStockDto.getTotalCount() * stockPrice) - gameGamerStockDto.getTotalAmount();
 					Double profitRate = stockPrice / (gameGamerStockDto.getAveragePrice());
-					gameGamerStockDto.setValuation(valudation);
+					gameGamerStockDto.setValuation(valuation);
 					gameGamerStockDto.setProfitRate(profitRate);
 					log.info(gameGamerStockDto.toString());
 					gamerStockService.updateDto(gameGamerStockDto);
@@ -598,7 +598,13 @@ public class GameService {
 			Integer totalAmount = (int)(gameGamerStockDto.getTotalAmount() - (gameGamerStockDto.getAveragePrice()
 				* count));
 			// gamerStock - averagePrice 변동
-			Double averagePrice = (double)(totalAmount / totalCount);
+			Double averagePrice;
+			if (totalCount != 0) {
+				averagePrice = (double)(totalAmount / totalCount);
+			} else {
+				averagePrice = 0.0;
+			}
+
 			// gamerStock - valuation 변동
 			Double valuation = (stockClosePrice * totalCount) - totalAmount;
 

@@ -1,10 +1,18 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 import imgpath from './bear.jpg';
 
 export default function HoldingListItem({ holding }) {
+  let profit = 'black';
+  if (holding.profitRate < 1) {
+    profit = 'lose';
+  }
+  if (holding.profitRate > 1) {
+    profit = 'gain';
+  }
   return (
-    <ItemContainer>
+    <ItemContainer state={profit}>
       <ItemTitleSection>
         <ItemTitleImgBox>
           <img src={imgpath} alt="dd" />
@@ -15,37 +23,41 @@ export default function HoldingListItem({ holding }) {
         <LeftScetion>
           <p>평가손익</p>
           <p>손익률 </p>
-          <p>매입금 </p>
+          <p>평가금</p>
         </LeftScetion>
-        <LeftBox>
+        <LeftBox state={profit}>
           <p>{parseInt(holding.valuation, 10)} 원</p>
           <p>
             {holding.profitRate < 1
-              ? `-${((1 - holding.profitRate) * 100).toFixed(2)} `
-              : `${((1 - holding.profitRate) * 100).toFixed(2)} `}
-            %
+              ? holding.profitRate === 0
+                ? '0.00 %'
+                : `${((1 - holding.profitRate) * 100).toFixed(2)} %`
+              : `${Math.abs((1 - holding.profitRate) * 100).toFixed(2)} %`}
           </p>
-          <p>{(holding.totalCount * holding.averagePrice).toLocaleString()} 원</p>
+          <p>{holding.totalAmount.toLocaleString()} 원</p>
         </LeftBox>
         <RightSection>
           <p>매도가능</p>
           <p>평균단가</p>
-          <p>평가금</p>
+          <p>매입금 </p>
         </RightSection>
         <RightBox>
           <p>{holding.totalCount.toLocaleString()} 주</p>
           <p>{holding.averagePrice.toLocaleString()} 원</p>
-          <p>{holding.totalAmount.toLocaleString()} 원</p>
+          <p>{(holding.totalCount * holding.averagePrice).toLocaleString()} 원</p>
         </RightBox>
       </ContentContainer>
     </ItemContainer>
   );
 }
 const ItemContainer = styled.div`
+  ${(props) => (props.state === 'gain' ? tw`bg-red-100` : null)}
+  ${(props) => (props.state === 'lose' ? tw`bg-lose` : null)} 
+  ${(props) => (props.state === 'stay' ? tw`bg-negative` : null)}
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  ${tw`bg-negative rounded-xl mx-2 mb-4`}
+  ${tw`rounded-xl mx-2 mb-4`}
 `;
 
 const ItemTitleSection = styled.div`
@@ -67,6 +79,8 @@ const LeftScetion = styled.div`
 `;
 
 const LeftBox = styled.div`
+  ${(props) => (props.state === 'gain' ? tw`text-gain` : null)}
+  ${(props) => (props.state === 'lose' ? tw`text-lose` : null)}  
   ${tw`flex-col w-[25%]  text-right pr-2 text-sm`}
 `;
 

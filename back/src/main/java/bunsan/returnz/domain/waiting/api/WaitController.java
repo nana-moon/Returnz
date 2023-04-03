@@ -45,8 +45,6 @@ public class WaitController {
 			waitService.sendEnterMessage(waitRequest, token);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.CHAT)) {
 			waitService.sendChatMessage(waitRequest, token);
-		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.EXIT)) {
-			waitService.sendExitMessage(waitRequest, token);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.SETTING)) {
 			ObjectMapper mapper = new ObjectMapper();
 			SettingDto settingDto = mapper.convertValue(waitRequest.getMessageBody(), SettingDto.class);
@@ -59,11 +57,19 @@ public class WaitController {
 	}
 
 	//----------------------------------대기방 인원 조정------------------------------------
-	@PatchMapping("/api/wait-room")
-	public ResponseEntity minusWaitMemberCnt(@RequestHeader(value = "Authorization") String bearerToken,
+	@PatchMapping("/api/wait-room/exit")
+	public ResponseEntity deleteWaiter(@RequestHeader(value = "Authorization") String bearerToken,
 		@RequestParam String roomId) {
 		String token = bearerToken.substring(7);
-		WaitRoom waitRoom = waitService.minusWaitMemberCnt(token, roomId);
-		return ResponseEntity.ok().body(Map.of("memberCount", waitRoom.getMemberCount()));
+		waitService.deleteWaiter(token, roomId);
+		return ResponseEntity.ok().body(Map.of("result", "success"));
+	}
+
+	@PatchMapping("/api/wait-room/enter")
+	public ResponseEntity createWaiter(@RequestHeader(value = "Authorization") String bearerToken,
+		@RequestParam String roomId) {
+		String token = bearerToken.substring(7);
+		WaitRoom waitRoom = waitService.createWaiter(token, roomId);
+		return ResponseEntity.ok().body(waitRoom);
 	}
 }

@@ -4,15 +4,13 @@ import { Avatar } from '@material-tailwind/react';
 
 export default function TodayTopUserItem({ person }) {
   // const rankIcon = ['🥇', '🥈', '🥉', '💸'];
-  const myPic = 'C';
-  const picPath = `profile_pics/${myPic}.jpg`;
   return (
     <TodayNewsContainer>
       <SubTitleText>🥇</SubTitleText>
-      <Avatar size="lg" variant="circular" src={picPath} className="my-auto" />
+      <Avatar size="lg" variant="circular" src={`profile_pics/${person.profileIcon}.jpg`} className="my-auto" />
       <UserInfoBox>
-        <TitleText>닉네임이제일긴사람임</TitleText>
-        <ContentText>수익률: 300000%</ContentText>
+        <TitleText>{person.nickname}</TitleText>
+        <ContentText>{person.avgProfit}</ContentText>
       </UserInfoBox>
     </TodayNewsContainer>
   );
