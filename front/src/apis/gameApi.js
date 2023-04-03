@@ -14,6 +14,7 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
+  console.log(payload, 'payload');
   const res = await authApi.post('/games/init', payload);
   return res.data;
 };
