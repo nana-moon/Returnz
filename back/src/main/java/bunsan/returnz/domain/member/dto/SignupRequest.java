@@ -19,19 +19,19 @@ public class SignupRequest {
 	@NotBlank(message = "비밀번호를 입력해주세요.")
 	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{6,20}$",
 		message = "비밀번호는 영문, 숫자, 특수문자(@$!%*#?&) 포함, 6자 이상 20자 이하여야 합니다.")
-	@Size(min = 8, max = 20, message = "비밀번호는 8자 이상 20자 이하여야 합니다.")
+	@Size(min = 6, max = 20, message = "비밀번호는 6자 이상 20자 이하여야 합니다.")
 	private String password;
 
 	@NotBlank(message = "비밀번호 확인을 입력해주세요.")
-	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$",
-		message = "비밀번호 확인은 영문, 숫자, 특수문자(@$!%*#?&) 포함, 8자 이상 20자 이하여야 합니다.")
-	@Size(min = 8, max = 20, message = "비밀번호 확인은 8자 이상 20자 이하여야 합니다.")
+	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{6,20}$",
+		message = "비밀번호 확인은 영문, 숫자, 특수문자(@$!%*#?&) 포함, 6자 이상 20자 이하여야 합니다.")
+	@Size(min = 6, max = 20, message = "비밀번호 확인은 6자 이상 20자 이하여야 합니다.")
 	private String passwordConfirmation;
 
 	@NotBlank(message = "닉네임을 입력해주세요.")
-	@Pattern(regexp = "^(?=.*[A-Za-z0-9가-힣])[A-Za-z0-9가-힣]{2,16}$",
-		message = "닉네임은 2자 이상 16자 이하, 영어 또는 숫자 또는 한글이어야 합니다.")
-	@Size(min = 1, max = 10, message = "닉네임는 1자 이상 10자 이하여야 합니다.")
+	@Pattern(regexp = "^(?=.*[A-Za-z0-9가-힣])[A-Za-z0-9가-힣]{2,10}$",
+		message = "닉네임은 2자 이상 10자 이하, 영어 또는 숫자 또는 한글이어야 합니다.")
+	@Size(min = 2, max = 10, message = "닉네임는 2자 이상 10자 이하여야 합니다.")
 	private String nickname;
 
 	public Member toEntity() {
