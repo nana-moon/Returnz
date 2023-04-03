@@ -21,14 +21,13 @@ export const BuySellData = createSlice({
     isSelect: {
       idx: 0,
     },
-    holdingdata: {},
+    holdingdata: 0,
   },
   reducers: {
     getCompanyCodeList: (state, action) => {
       const count = [];
       for (let i = 0; i < action.payload.length; i += 1) {
         const tmp = { [action.payload[i]]: 0 };
-        console.log(tmp, 'tmp');
         count.push(tmp);
       }
       state.ifsell.holdingcount = count;
@@ -65,6 +64,13 @@ export const BuySellData = createSlice({
   },
 });
 
-export const { receiveBuyData, receiveSellData, receiveSetting, selectIdx, getHoldingCount, getCompanyCodeList } =
-  BuySellData.actions;
+export const {
+  receiveBuyData,
+  receiveSellData,
+  receiveSetting,
+  selectIdx,
+  getHoldingCount,
+  getCompanyCodeList,
+  change,
+} = BuySellData.actions;
 export default BuySellData;
