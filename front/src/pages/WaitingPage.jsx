@@ -96,7 +96,7 @@ export default function WaitingPage() {
     // -------------------------handle EXIT-----------------------------
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
-      setGameRoomId
+      // setGameRoomId
       navigate('/game', { state: newMessage.messageBody });
     }
   };
