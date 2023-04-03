@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import React from 'react';
 import Chart from 'react-apexcharts';
 import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
-import imgpath from './Items/bear.jpg';
+import imgpath from './assets/graphHelp.png';
 import { stockGraphList } from '../../store/gamedata/GameData.selector';
 import { selectedIdx } from '../../store/buysellmodal/BuySell.selector';
 
@@ -117,14 +117,14 @@ export default function Graph() {
             mount: { scale: 1, y: 0 },
             unmount: { scale: 0, y: 25 },
           }}
-          placement="right-end"
+          placement="right-start"
         >
           <PopoverHandler>
             <Button variant="gradient" color="white" size="sm" className="border border-negative">
               ?
             </Button>
           </PopoverHandler>
-          <PopoverContent>
+          <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
             <img src={imgpath} alt="" />
           </PopoverContent>
         </Popover>
