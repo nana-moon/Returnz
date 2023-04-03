@@ -32,7 +32,7 @@ export default function StockList() {
   };
 
   const checkCanSell = (data) => {
-    console.log(canSell, canSell.holdingcount);
+    console.log(canSell, 'test');
     const foundObj = canSell.holdingcount.find((obj) => Object.keys(obj)[0] === data);
     console.log('부모컴포넌트', data, canSell, '개수:', foundObj[data]);
     setResult(foundObj[data]);

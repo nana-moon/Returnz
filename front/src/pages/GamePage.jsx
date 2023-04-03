@@ -55,6 +55,7 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
+        console.log('턴 넘어감', res.data);
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
