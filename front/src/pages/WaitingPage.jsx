@@ -86,7 +86,7 @@ export default function WaitingPage() {
     // -------------------------handle SETTING-----------------------------
     if (newMessage.type === 'SETTING') {
       console.log('SETTING 메세지 도착', newMessage.messageBody);
-      const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+      // const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
@@ -96,6 +96,8 @@ export default function WaitingPage() {
     // -------------------------handle EXIT-----------------------------
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
+      setGameRoomId
+      navigate('/game', { state: newMessage.messageBody });
     }
   };
 
@@ -109,7 +111,7 @@ export default function WaitingPage() {
   useEffect(() => {
     // SOCKET CONNECT
     stompConnect(header, socketAction);
-  }, []);
+  }, [subAddress, sendAddress]);
 
   // -------------------------| CHAT |------------------------------------------------------------------
 
@@ -119,7 +121,7 @@ export default function WaitingPage() {
     sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
   };
 
-  // -------------------------| SETTING GAME |------------------------------------------------------------------
+  // -------------------------| SETTING |------------------------------------------------------------------
 
   // SETTING GAME STATE
   const initial = {
@@ -137,19 +139,18 @@ export default function WaitingPage() {
   const getIsUserSetting = () => {
     setIsUserSetting(!isUserSetting);
   };
-  const getTheme = (data) => {
-    const newData = { ...setting, theme: data };
+  const getTheme = (selectedTheme) => {
+    const newData = { ...setting, theme: selectedTheme };
     sendMessage(sendAddress, header, 'SETTING', {
       roomId: waitRoomId,
-      theme: data,
-      turnPerTime: setting.turnPerTime,
-      startTime: setting.startTime,
-      totalTurn: setting.totalTurn,
+      theme: selectedTheme,
+      turnPerTime: 'NO',
+      startTime: null,
+      totalTurn: null,
     });
     setSetting(newData);
   };
   const getUserSetting = (newData) => {
-    console.log(newData);
     setSetting(newData);
     sendMessage(sendAddress, header, 'SETTING', {
       roomId: waitRoomId,
@@ -177,29 +178,10 @@ export default function WaitingPage() {
   }, [setting]);
 
   // -------------------------| START/EXIT GAME |------------------------------------------------------------------
-  // FIRST TURN INFO ACTION
-  const handleGameInfo = async () => {
-    if (isValidSetting) {
-      const gameInit = await startGameApi(setting);
-      sendMessage(sendAddress, header, 'GAME_INFO', {
-        roomId: waitRoomId,
-        id: gameInit.Id,
-        gamerList: gameInit.gamerList,
-        gameRoomId: gameInit.roomId,
-      });
-      dispatch(setGameId(gameInit.id));
-      dispatch(setGameRoomId(gameInit.roomId));
-      dispatch(setHostNickname(roomInfo.captainName));
-      dispatch(setPlayerList(gameInit.gamerList));
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
-      dispatch(setGamerId(myGameInfo.gamerId));
-      const turnReq = {
-        gamerId: myGameInfo.gamerId,
-        roomId: gameInit.roomId,
-      };
-      handleTurn(turnReq, gameInit.id);
-    }
-  };
+
+  // const handlePage = () => {
+  //   navigate('/game');
+  // };
 
   const handleTurn = async (turnReq, id) => {
     const gameData = await gameDataApi(turnReq);
@@ -229,10 +211,38 @@ export default function WaitingPage() {
 
     dispatch(handleGetTodayDate(gameData.currentDate));
     sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
-    navigate('/game');
+    // handlePage();
   };
 
-  // START GAME ACTION
+  const handleGameInfo = async () => {
+    if (isValidSetting) {
+      const gameInit = await startGameApi(setting);
+      console.log('GAME_INFO_SEND', {
+        roomId: waitRoomId,
+        id: gameInit.id,
+        gamerList: gameInit.gamerList,
+        gameRoomId: gameInit.roomId,
+      });
+      sendMessage(sendAddress, header, 'GAME_INFO', {
+        roomId: waitRoomId,
+        id: gameInit.Id,
+        gamerList: gameInit.gamerList,
+        gameRoomId: gameInit.roomId,
+      });
+      dispatch(setGameId(gameInit.id));
+      dispatch(setGameRoomId(gameInit.roomId));
+      dispatch(setHostNickname(roomInfo.captainName));
+      dispatch(setPlayerList(gameInit.gamerList));
+      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+      dispatch(setGamerId(myGameInfo.gamerId));
+      const turnReq = {
+        gamerId: myGameInfo.gamerId,
+        roomId: gameInit.roomId,
+      };
+      handleTurn(turnReq, gameInit.id);
+    }
+  };
+
   const handleStart = async (e) => {
     // update memberlist and setting
     const memberIdList = waiterList.map((waiter) => {
@@ -273,9 +283,11 @@ export default function WaitingPage() {
         {isUserSetting && (
           <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
         )}
-        <ChatSection>
-          <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
-          <BtnBox>
+        <BottomRightSection>
+          <ChattingBox>
+            <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+          </ChattingBox>
+          <ButtonBox>
             {isHost && (
               <StartButton onClick={handleStart} disabled={!isValidSetting}>
                 시작하기
@@ -284,8 +296,8 @@ export default function WaitingPage() {
             <ExitButton to="/" onClick={handleExit} className="bg-[#E19999] hover:bg-[#976161]">
               나가기
             </ExitButton>
-          </BtnBox>
-        </ChatSection>
+          </ButtonBox>
+        </BottomRightSection>
       </BottomSection>
     </WaitingContainer>
   );
@@ -295,16 +307,19 @@ const WaitingContainer = styled.div`
   ${tw`w-[75%]`}
 `;
 const TopSection = styled.section`
-  ${tw`flex gap-5 mt-10 min-h-[250px]`}
+  ${tw`flex gap-5 mt-10 min-h-[200px]`}
 `;
 const BottomSection = styled.section`
-  ${tw`flex gap-5 mt-10 min-h-[250px]`}
+  ${tw`flex gap-5 mt-10 h-[300px]`}
 `;
-const ChatSection = styled.section`
-  ${tw`w-[50%] min-h-[80%]`}
+const BottomRightSection = styled.section`
+  ${tw`w-[50%] h-[100%]`}
 `;
-const BtnBox = styled.div`
-  ${tw`min-h-[20%] flex gap-5 mt-5`}
+const ChattingBox = styled.section`
+  ${tw`w-[100%] h-[90%]`}
+`;
+const ButtonBox = styled.div`
+  ${tw`h-[10%] flex gap-5 mt-5`}
 `;
 const StartButton = styled.button`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
