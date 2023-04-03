@@ -20,10 +20,11 @@ import {
 import { gamerStockList, todayDate } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
-import { getGameId, getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
+import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
 import { getMessage, sendMessageResult, stompConnect } from '../utils/Socket';
+import { setIsReadyList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
   const testdata = useSelector(gamerStockList);
@@ -86,6 +87,7 @@ export default function GamePage() {
   // -------------------------SOCKET STATE-----------------------------
   const ACCESS_TOKEN = Cookies.get('access_token');
   const gameRoomId = useSelector(getGameRoomId);
+  const isReadyList = useSelector(getIsReadyList);
   const subAddress = `/sub/game-room/${gameRoomId}`;
   const sendAddress = '/pub/game-room';
   const header = {
@@ -105,6 +107,14 @@ export default function GamePage() {
     if (newMessage.type === 'READY') {
       console.log('READY 메세지 도착', newMessage.messageBody);
       const { username } = newMessage.messageBody;
+      // ready한 user의 ready 상태 바꾸기
+      const newIsReadyList = isReadyList.map((isReady) => {
+        if (Object.prototype.hasOwnProperty.call(isReady, username)) {
+          return { ...isReady, [username]: true };
+        }
+        return isReady;
+      });
+      dispatch(setIsReadyList(newIsReadyList));
     }
     // -------------------------handle TURN-----------------------------
     if (newMessage.type === 'TURN') {
