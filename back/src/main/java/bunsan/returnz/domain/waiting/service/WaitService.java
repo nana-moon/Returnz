@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import bunsan.returnz.domain.member.enums.MemberState;
+import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.domain.waiting.dto.SettingDto;
 import bunsan.returnz.domain.waiting.dto.WaitMessageDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
@@ -36,6 +38,7 @@ public class WaitService {
 	private final RedisPublisher redisPublisher;
 	private final RedisWaitRepository redisWaitRepository;
 	private final WaiterRepository waiterRepository;
+	private final SideBarService sideBarService;
 
 	public WaitRoom createWaitRoom(String token) {
 		// 엔티티 생성
@@ -142,6 +145,8 @@ public class WaitService {
 		if (isCaptain.equals(true)) {
 			waitRoomRepository.delete(waitRoom);
 		}
+		// 오프라인으로 만든 후 친구들에게 STATE 메세지 쏴줌
+		// sideBarService.checkState(member, MemberState.OFFLINE);
 	}
 
 	@Transactional
