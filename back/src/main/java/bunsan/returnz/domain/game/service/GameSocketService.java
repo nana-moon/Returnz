@@ -1,5 +1,11 @@
 package bunsan.returnz.domain.game.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -41,9 +47,14 @@ public class GameSocketService {
 	private Member checkUsername(RoomMessageDto roomMessageDto, String token) {
 
 		if (roomMessageDto.getMessageBody().get("username") != null) {
+			Member tokenMember = jwtTokenProvider.getMember(token);
 			String username = (String)roomMessageDto.getMessageBody().get("username");
-			return memberRepository.findByUsername(username)
-				.orElseThrow(()-> new NotFoundException("해당 회원이 존재하지 않습니다."));
+			Member member = memberRepository.findByUsername(username)
+				.orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
+			if (!tokenMember.equals(member)) {
+				throw new BadRequestException("token 맴버와 일치하지 않습니다.");
+			}
+			return member;
 		} else {
 			throw new BadRequestException("username을 입력해주세요.");
 		}
@@ -84,5 +95,30 @@ public class GameSocketService {
 		if (roomMessageDto.getMessageBody().get("resultRoomId") == null) {
 			throw new BadRequestException("결과창 정보를 불러올 수 없습니다.");
 		}
+	}
+
+	public String sendServerTime(String roomId) {
+		// log.info("111");
+		gameRoomRepository.findByRoomId(roomId)
+			.orElseThrow(() -> new NotFoundException("해당 게임룸을 찾을 수 없습니다."));
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
+
+		cal.add(Calendar.MINUTE, 1);
+
+		RoomMessageDto roomMessageDto = RoomMessageDto.builder()
+			.type(RoomMessageDto.MessageType.TIME)
+			.roomId(roomId)
+			.messageBody(new HashMap<>() {
+				{
+					put("returnTime", df.format(cal.getTime()));
+				}
+			})
+			.build();
+		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
+		return df.format(cal.getTime());
+
 	}
 }

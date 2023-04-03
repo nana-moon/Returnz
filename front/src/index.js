@@ -34,9 +34,9 @@ const router = createBrowserRouter([
       },
       { path: '/tutorial', element: <TutorialPage /> },
       { path: '/game', element: <GamePage /> },
-      { path: '/login', element: <LoginPage /> },
     ],
   },
+  { path: '/login', element: <LoginPage /> },
 ]);
 
 const container = document.getElementById('root');

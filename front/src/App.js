@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { Provider } from 'react-redux';
 import LoadPage from './components/loading/LoadPage';
 import { store } from './store/Store';
+import PrivateRoute from './utils/PrivateRoute';
 
 function App() {
   const queryClient = new QueryClient({
@@ -21,7 +21,7 @@ function App() {
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
           <div className="bg-base h-screen">
-            <Outlet />
+            <PrivateRoute />
           </div>
           <ReactQueryDevtools initialIsOpen />
         </QueryClientProvider>

@@ -1,4 +1,4 @@
-import { React, useState, useMemo } from 'react';
+import { React } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useQuery } from 'react-query';
 import {
@@ -16,7 +16,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 10000000,
+    staleTime: 600000,
   });
   const { data: exchangeKrJp } = useQuery({
     queryKey: ['exchangeKrJp'],
@@ -24,7 +24,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 10000000,
+    staleTime: 600000,
   });
   const { data: exchangeKrEu } = useQuery({
     queryKey: ['exchangeKrEu'],
@@ -32,21 +32,20 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 10000000,
+    staleTime: 600000,
   });
 
   const { data: exchangeKrBit } = useQuery({
     queryKey: ['getExchangeKrBit'],
     queryFn: () => getExchangeKrBit(),
     onSuccess: (res) => {
-      // res['5. Exchange Rate'] = res['5. Exchange Rate'] * 100;
       console.log(res['5. Exchange Rate'], 'gg');
       return res;
     },
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 10000000,
+    staleTime: 600000,
   });
   const { data: oilPrice } = useQuery({
     queryKey: ['getOilPrice'],
@@ -54,7 +53,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 6000000,
+    staleTime: 600000,
   });
   return (
     <TodayPriceContainer>

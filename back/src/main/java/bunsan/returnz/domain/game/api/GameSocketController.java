@@ -1,8 +1,14 @@
 package bunsan.returnz.domain.game.api;
 
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -32,6 +38,17 @@ public class GameSocketController {
 			gameSocketService.sendEndMessage(roomMessageDto);
 		} else {
 			throw new BadRequestException("요청 타입이 올바르지 않습니다.");
+		}
+	}
+
+	@GetMapping("/api/server-time")
+	public ResponseEntity sendServerTime(@RequestParam String roomId) {
+		if (roomId == null) {
+			throw new BadRequestException("게임룸 id를 입력해주세요.");
+		} else {
+
+			String returnTime = gameSocketService.sendServerTime(roomId);
+			return ResponseEntity.ok(Map.of("returnTime", returnTime));
 		}
 	}
 }
