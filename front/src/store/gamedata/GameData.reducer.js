@@ -134,6 +134,7 @@ export const gamedata = createSlice({
     },
     // 뉴스 업데이트
     handleGetStockNews(state, action) {
+      console.log('업데이트된 뉴스: ', action.payload);
       state.stockNews = action.payload;
     },
     // 주가정보,
