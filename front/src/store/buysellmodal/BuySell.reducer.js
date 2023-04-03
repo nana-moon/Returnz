@@ -7,11 +7,13 @@ export const BuySellData = createSlice({
     ifbuy: {
       companyName: '',
       orderPrice: '',
+      country: 'ko',
     },
     ifsell: {
       companyName: '',
       orderPrice: '',
       companyCode: '',
+      country: 'ko',
       holdingcount: {},
     },
     ifopen: {
@@ -37,11 +39,25 @@ export const BuySellData = createSlice({
       state.ifbuy.companyName = action.payload.companyName;
       state.ifbuy.orderPrice = action.payload.orderPrice;
       state.ifsell.companyCode = action.payload.companyCode;
+      if (action.payload.country === '\\') {
+        state.ifbuy.country = 'ko';
+        state.ifsell.country = 'ko';
+      } else {
+        state.ifbuy.country = 'us';
+        state.ifsell.country = 'us';
+      }
     },
     receiveSellData: (state, action) => {
       state.ifsell.companyName = action.payload.companyName;
       state.ifsell.orderPrice = action.payload.orderPrice;
       state.ifsell.companyCode = action.payload.companyCode;
+      if (action.payload.country === '\\') {
+        state.ifbuy.country = 'ko';
+        state.ifsell.country = 'ko';
+      } else {
+        state.ifbuy.country = 'us';
+        state.ifsell.country = 'us';
+      }
     },
     receiveSetting: (state, action) => {
       state.ifopen = action.payload;
