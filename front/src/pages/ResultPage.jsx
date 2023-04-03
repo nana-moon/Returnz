@@ -1,13 +1,98 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { useSelector } from 'react-redux';
+import SockJs from 'sockjs-client';
+import Stomp from 'webstomp-client';
+import StompJs from 'stompjs';
 import ResultRank from '../components/result/rank/ResultRank';
 import ResultInfo from '../components/result/info/ResultInfo';
 import UnlockResult from '../components/result/UnlockResult';
 import Chatting from '../components/chatting/Chatting';
 
 export default function ResultPage() {
-  // api 요청하기
+  // -------------------------| SOCKET |------------------------------------------------------------------
+
+  // -------------------------SOCKET MANAGER-----------------------------
+
+  const stompRef = useRef(null);
+  if (!stompRef.current) {
+    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+    const options = {
+      debug: false,
+      protocols: Stomp.VERSIONS.supportedProtocols(),
+    };
+    stompRef.current = StompJs.over(sock, options);
+  }
+
+  // -------------------------SOCKET STATE-----------------------------
+
+  const ACCESS_TOKEN = Cookies.get('access_token');
+  // const resultRoomId = useSelector(getResultRoomId);
+  const resultRoomId = 'temp';
+  const subAddress = `/sub/game-room/${resultRoomId}`;
+  const sendAddress = '/pub/result-room';
+  const header = {
+    Authorization: ACCESS_TOKEN,
+  };
+
+  // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
+
+  const handleMessage = (received) => {
+    const newMessage = JSON.parse(received.body);
+    // -------------------------handle CHAT-----------------------------
+    if (newMessage.type === 'CHAT') {
+      console.log('CHAT 메세지 도착', newMessage.messageBody);
+      const { roomId, nickname, contents } = newMessage.messageBody;
+      setReceivedMessage({ nickname, contents });
+    }
+  };
+
+  // -------------------------SOCKET CONNECT-----------------------------
+
+  useEffect(() => {
+    const stompConnect = () => {
+      stompRef.current.debug = null;
+      stompRef.current.connect(
+        header,
+        () => {
+          stompRef.current.subscribe(subAddress, handleMessage, header);
+        },
+        (error) => {
+          console.log('WebSocket connection error:', error);
+        },
+      );
+    };
+
+    stompConnect();
+
+    // Clean up when the component unmounts
+    return () => {
+      stompRef.current.disconnect();
+    };
+  }, [resultRoomId, ACCESS_TOKEN]);
+
+  // -------------------------| CHAT |------------------------------------------------------------------
+
+  const [receivedMessage, setReceivedMessage] = useState('');
+  const getInputMessage = (inputMessage) => {
+    // Check WebSocket connection status
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'CHAT',
+        roomId: resultRoomId,
+        messageBody: { contents: inputMessage },
+      });
+
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
+  };
+
+  // -------------------------| RETURN HTML |------------------------------------------------------------------
+
   return (
     <ResultContainer>
       <ResultRank />
@@ -16,7 +101,7 @@ export default function ResultPage() {
         <UnlockResult />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
-      <Chatting />
+      <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
     </ResultContainer>
   );
 }
