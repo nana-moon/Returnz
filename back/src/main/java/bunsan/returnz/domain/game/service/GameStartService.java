@@ -177,7 +177,6 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	public void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
-
 		Boolean startDayIsValid = historicalPriceDayRepository
 			.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
 				(long)gameStockIds.size());

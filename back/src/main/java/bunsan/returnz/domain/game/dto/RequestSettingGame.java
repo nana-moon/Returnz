@@ -133,10 +133,10 @@ public class RequestSettingGame {
 			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("LAST_YEAR")) {
-			this.totalTurn = 10;
+			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("LAST_MONTH")) {
-			this.totalTurn = 5;
+			this.totalTurn = 10;
 		}
 		return this.totalTurn;
 	}
