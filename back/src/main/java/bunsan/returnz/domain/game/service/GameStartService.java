@@ -177,7 +177,6 @@ public class GameStartService {
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
 	public void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
-		// 기업별로 시작일 데이터가 있는지 검사하는 래포
 		Boolean startDayIsValid = historicalPriceDayRepository
 			.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
 				(long)gameStockIds.size());
@@ -320,7 +319,8 @@ public class GameStartService {
 
 		// 뉴스 찾을 찾아올 구간 확인
 		LocalDateTime startDate = gameSettings.getStartDateTime();
-		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList, pageable)
+		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList,
+				pageable)
 			.getContent();
 		//있는 데이터 중에서
 		//가능한 구간의 마지막 하나만 가져온다 = endDate
@@ -334,7 +334,11 @@ public class GameStartService {
 		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
 			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
 
-		NewsGroup newGroup = NewsGroup.builder().financialNews(newsList).endTime(endDate).startTime(startDate).build();
+		NewsGroup newGroup = NewsGroup.builder()
+			.financialNews(newsList)
+			.endTime(endDate)
+			.startTime(startDate)
+			.build();
 		gameRoom.setNewsGroup(newGroup);
 		gameRoomRepository.save(gameRoom);
 		newsGroupRepository.save(newGroup);
