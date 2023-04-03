@@ -27,10 +27,6 @@ export default function TodayWord() {
   }, []);
   return (
     <TodayWordContainer>
-      <TodayWordTitle>
-        오늘의 단어
-        <FaBook className="my-auto" />
-      </TodayWordTitle>
       <TodayWordCarousel>
         <WordTitle>{word[currentIndex]?.keyWord}</WordTitle>
         <WordContent>{word[currentIndex]?.description}</WordContent>
@@ -48,9 +44,6 @@ export default function TodayWord() {
 const TodayWordContainer = styled.div`
   ${tw`text-center p-2`}
 `;
-const TodayWordTitle = styled.div`
-  ${tw`flex text-2xl gap-2 justify-center mb-2`}
-`;
 
 const TodayWordCarousel = styled.div`
   ${tw`relative bg-white w-[100%] h-[100%] rounded-xl border-2 border-negative p-2`}
@@ -65,9 +58,9 @@ const WordContent = styled.div`
 `;
 
 const LeftArrow = styled.div`
-  ${tw`absolute top-10 translate-y-[50%] left-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-[50%] translate-y-[50%] left-1 text-2xl cursor-pointer`}
 `;
 
 const RightArrow = styled.div`
-  ${tw`absolute top-10 translate-y-[50%] right-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-[50%] translate-y-[50%] right-1 text-2xl cursor-pointer`}
 `;
