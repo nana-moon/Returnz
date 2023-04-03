@@ -176,7 +176,7 @@ public class GameStartService {
 	 * @param gameSettings 리퀘스트를 전달하는 DTO startDate 를 localdateTime 으로 하나 더추가
 	 * @param gameStockIds 게임에 사용할 주식 아이디 리스트
 	 */
-	private void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
+	public void checkDayRange(GameSettings gameSettings, List<String> gameStockIds) {
 		// 기업별로 시작일 데이터가 있는지 검사하는 래포
 		Boolean startDayIsValid = historicalPriceDayRepository
 			.getDayStock(gameSettings.getStartDateTime(), gameStockIds,
