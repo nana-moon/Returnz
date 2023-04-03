@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
 import StockListItem from './Items/StockListItem';
-import { receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
+import { change, receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
 import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
 import { stockDataList, noWorkDay } from '../../store/gamedata/GameData.selector';
 import BuySellModal from './modals/BuySellModal';
@@ -26,11 +26,12 @@ export default function StockList() {
   const handleOpenModal = (data) => {
     const value = { isOpen: true, isType: data };
     dispatch(receiveSetting(value));
+    dispatch(change(result));
   };
 
   const checkCanSell = (data) => {
     const foundObj = canSell.holdingcount.find((obj) => Object.keys(obj)[0] === data);
-    console.log('부모컴포넌트', data, canSell, '개수:', foundObj);
+    console.log('부모컴포넌트', data, canSell, '개수:', foundObj[data]);
     setResult(foundObj[data]);
   };
 

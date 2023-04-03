@@ -16,7 +16,7 @@ import {
   handleGetStockInformation,
   handleGetStockNews,
 } from '../store/gamedata/GameData.reducer';
-import { stockDataList, todayDate } from '../store/gamedata/GameData.selector';
+import { gamerStockList, todayDate } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
@@ -24,7 +24,7 @@ import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selecto
 import { getNewsApi } from '../apis/gameApi';
 
 export default function GamePage() {
-  const testdata = useSelector(stockDataList);
+  const testdata = useSelector(gamerStockList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
   const holdingdata = useSelector(sellNeedData);
@@ -37,9 +37,9 @@ export default function GamePage() {
   const dispatch = useDispatch();
 
   const readd = () => {
-    console.log(testdata, 'testdata');
-    console.log(holdingdata, 'se', selectIdx, 'testdata2');
-    console.log('뉴스가져올데이터', gameId, keys, Date);
+    console.log(testdata, '보유 종목상태');
+    // console.log(holdingdata, 'se', selectIdx, 'testdata2');
+    // console.log('뉴스가져올데이터', gameId, keys, Date);
   };
 
   const axiospost = async () => {
@@ -52,7 +52,7 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
-        console.log(res.data, 'ddd');
+        console.log(res.data, '턴 넘어갔어');
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
@@ -73,7 +73,7 @@ export default function GamePage() {
       // eslint-disable-next-line no-await-in-loop
       const newsTmp = await getNewsApi(data);
       getNews.push({ [keys[i]]: newsTmp });
-      console.log('중간점검', newsTmp, getNews);
+      // console.log('중간점검', newsTmp, getNews);
     }
 
     dispatch(handleGetStockNews(getNews));

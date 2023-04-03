@@ -20,6 +20,13 @@ export const gamedata = createSlice({
     stockdescription: {},
     // 보유종목
     gamerStockList: [{}],
+    // 환율 한국금리 미국금리
+    changeInterest: {
+      date: null,
+      exchageRate: 0,
+      korea: 0,
+      usa: 0,
+    },
     // 유저 데이터
     gamerDataList: {
       deposit: 10000000,
@@ -148,6 +155,10 @@ export const gamedata = createSlice({
 
       state.gamerStockList = action.payload.gamerStock;
     },
+    // 한국금리 미국금리 환율
+    handleGetchangeInterest(state, action) {
+      state.changeInterest = action.payload;
+    },
   },
 });
 
@@ -160,5 +171,6 @@ export const {
   handleBuySellTrade,
   handleUpdateHoldingData,
   handleGetStockNews,
+  handleGetchangeInterest,
 } = gamedata.actions;
 export default gamedata;
