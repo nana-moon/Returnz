@@ -2,6 +2,7 @@ package bunsan.returnz.domain.member.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -142,5 +143,10 @@ public class MemberService {
 	public Set<String> getPermittedProfiles(String token) {
 		Member member = jwtTokenProvider.getMember(token);
 		return member.getPermittedProfiles();
+	}
+
+	public Member findById(Long id) {
+		Optional<Member> optionalMember = memberRepository.findById(id);
+		return optionalMember.orElse(null);
 	}
 }
