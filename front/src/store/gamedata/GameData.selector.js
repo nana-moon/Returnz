@@ -10,6 +10,8 @@ export const noWorkDay = (state) => state.gamedatas.noWorkDay;
 export const stockNews = (state) => state.gamedatas.stockNews;
 export const stockInformation = (state) => state.gamedatas.stockInformation;
 export const stockdescription = (state) => state.gamedatas.stockdescription;
+// 환율
+export const changeInterest = (state) => state.gamedatas.changeInterest;
 // 보유 종목
 export const gamerStockList = (state) => state.gamedatas.gamerStockList;
 // 유저 데이터
