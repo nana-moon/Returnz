@@ -27,24 +27,23 @@ import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
-import { resetGameRoom, resetIsReadyList, setIsReadyList } from '../store/roominfo/GameRoom.reducer';
+import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
-  const testdata = useSelector(gamerStockList);
+  // HOOKS
+  const dispatch = useDispatch();
+
+  // 주식 정보 STATE
   const stockdata = useSelector(stockDataList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
-  const holdingdata = useSelector(sellNeedData);
-  const selectIdx = useSelector(selectedIdx);
-  // 뉴스가져올떄 필요한 데이터
+
+  // 뉴스 STATE
   const gameId = useSelector(getGameId);
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
 
-  const dispatch = useDispatch();
-
-  const readd = () => {};
-
+  // TURN API
   const axiospost = async () => {
     // 뉴스
     const datas = {
@@ -55,6 +54,7 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
+        // dispatch(setPlayerList(res.data.gamer));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
@@ -120,13 +120,7 @@ export default function GamePage() {
         return isReady;
       });
       await dispatch(setIsReadyList(newIsReadyList));
-      setTimeout(() => {
-        handleTurn(newIsReadyList);
-      }, 5000);
-    }
-    // -------------------------handle TURN-----------------------------
-    if (newMessage.type === 'TURN') {
-      console.log('TURN 메세지 도착', newMessage.messageBody);
+      handleTurn(newIsReadyList);
     }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
@@ -240,12 +234,6 @@ export default function GamePage() {
       <Header />
       <GameContainer>
         <LeftSection>
-          <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            Redux 데이터 확인용 버튼
-          </div>
-          <div onClick={axiospost} onKeyDown={axiospost} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            시작 테스트
-          </div>
           <Rate />
           <Stocks />
           <HoldingList />

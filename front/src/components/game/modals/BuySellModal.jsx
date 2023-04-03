@@ -27,7 +27,6 @@ export default function BuySellModal({ code, checkCanSell }) {
   const [tmp, setTmp] = useState(true);
 
   useEffect(() => {
-    console.log('-------------------------------');
     checkCanSell(code);
   }, [tmp]);
 

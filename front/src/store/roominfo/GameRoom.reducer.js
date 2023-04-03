@@ -7,6 +7,7 @@ const initialState = {
   hostNickname: null,
   gamerId: null,
   playerList: [], // profileIcon, nickname, gamerId, username
+  // deposit, gamerId, memberId, originDeposit, totalEvaluationAsset, totalEvaluationStock, totalProfitRate, totalPurchaseAmount, userName, userProfileIcon
   initIsReadyList: [],
   isReadyList: [], // username
 };

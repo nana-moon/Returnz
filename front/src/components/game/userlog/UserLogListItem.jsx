@@ -17,7 +17,6 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   const profilePath = `profile_pics/${player.profileIcon}.jpg`;
 
   // ready
-  console.log(isReady[myUsername], '------------------------');
   const handleIsReady = () => {
     getIsReady();
   };
