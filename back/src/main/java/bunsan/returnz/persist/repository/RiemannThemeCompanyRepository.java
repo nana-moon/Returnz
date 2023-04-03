@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import bunsan.returnz.persist.entity.RiemannThemeCompany;
 
 public interface RiemannThemeCompanyRepository extends JpaRepository<RiemannThemeCompany, String> {
-	@Query(value = "SELECT c FROM RiemannThemeCompany c ORDER BY RAND()")
-	Page<RiemannThemeCompany> findRandomCompaniesId(Pageable pageable);
+	@Query(value = "SELECT c.companyCode FROM RiemannThemeCompany c ORDER BY RAND()")
+	Page<String> findRandomCompaniesId(Pageable pageable);
 }

@@ -24,6 +24,8 @@ import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
 import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Company;
+import bunsan.returnz.persist.entity.CovidThemeCompany;
+import bunsan.returnz.persist.entity.DotcomThemeCompany;
 import bunsan.returnz.persist.entity.FinancialNews;
 import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.GameStock;
@@ -31,6 +33,7 @@ import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerStock;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.NewsGroup;
+import bunsan.returnz.persist.entity.RiemannThemeCompany;
 import bunsan.returnz.persist.repository.CompanyRepository;
 import bunsan.returnz.persist.repository.CovidThemeCompanyRepository;
 import bunsan.returnz.persist.repository.DotcomThemeCompanyRepository;
@@ -65,6 +68,7 @@ public class GameStartService {
 	private final DotcomThemeCompanyRepository dotcomThemeCompanyRepository;
 
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
+	private static final Integer DEFAULT_COMPANY_COUNT = 10;
 
 	/**
 	 * 게임 시작정 디비 세팅을 해주는 서비스 함수
@@ -278,27 +282,37 @@ public class GameStartService {
 	 * @return
 	 */
 	private List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
-		Page<?> randomCompaniesPage = null;
-		Pageable pageable = PageRequest.of(0, 10);
-		if (gameSettings.getTheme() == Theme.COVID) {
-			randomCompaniesPage = covidThemeCompanyRepository.findRandomCompaniesId(pageable);
-		} else if (gameSettings.getTheme() == Theme.RIEMANN) {
-			randomCompaniesPage = riemannThemeCompanyRepository.findRandomCompaniesId(pageable);
-		} else if (gameSettings.getTheme() == Theme.DOTCOM) {
-			randomCompaniesPage = dotcomThemeCompanyRepository.findRandomCompaniesId(pageable);
-		} else {
-			randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
-			List<Company> companyList = (List<Company>)randomCompaniesPage.getContent();
+		Pageable pageable = PageRequest.of(0, DEFAULT_COMPANY_COUNT);
+		Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
+		for (Company company : randomCompaniesPage) {
+			GameStock companyEntity = GameStock.builder()
+				.companyName(company.getCompanyName())
+				.companyCode(company.getCode())
+				.gameRoom(newGameRoom)
+				.build();
+			gameStockRepository.save(companyEntity);
 		}
-		// for (Company company : companyList) {
-		// 	GameStock companyEntity = GameStock.builder()
-		// 		.companyName(company.getCompanyName())
-		// 		.companyCode(company.getCode())
-		// 		.gameRoom(newGameRoom)
-		// 		.build();
-		// 	gameStockRepository.save(companyEntity);
-		// }
-		return null;
+		return randomCompaniesPage.getContent();
+	}
+
+	private Page<Company> getRandomCompaniesByTheme(Theme theme, Pageable pageable) {
+		switch (theme) {
+			case COVID:
+				List<String> companyIdList = covidThemeCompanyRepository.findRandomCompaniesId(pageable)
+					.getContent();
+				return companyRepository.findCompaniesByCodeList(companyIdList);
+
+			case RIEMANN:
+				List<String> rimanCompanyIdList = riemannThemeCompanyRepository.findRandomCompaniesId(pageable)
+					.getContent();
+				return companyRepository.findCompaniesByCodeList(rimanCompanyIdList);
+			case DOTCOM:
+				List<String> dotcomCompanyIdList = dotcomThemeCompanyRepository.findRandomCompaniesId(pageable)
+					.getContent();
+				return companyRepository.findCompaniesByCodeList(dotcomCompanyIdList);
+			default:
+				return companyRepository.findRandomCompanies(pageable);
+		}
 	}
 
 	/**
