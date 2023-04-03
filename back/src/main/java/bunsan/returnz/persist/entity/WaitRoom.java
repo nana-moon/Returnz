@@ -1,5 +1,6 @@
 package bunsan.returnz.persist.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -35,8 +36,9 @@ public class WaitRoom {
 	private Theme theme = Theme.UNKNOWN;
 
 	@OneToMany
+	@Builder.Default
 	@JoinColumn(name = "ROOM_ID")
-	private List<Waiter> waiterList;
+	private List<Waiter> waiterList = new ArrayList<>();
 
 	private String captainName;
 
