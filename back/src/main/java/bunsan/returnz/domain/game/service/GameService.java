@@ -204,6 +204,8 @@ public class GameService {
 	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
 		GameRoomDto gameRoomDto, Long gamerId) {
 
+		log.info("============================= updateTurnInformation");
+
 		// 현재 방의 날짜
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDtoBefore =
@@ -270,8 +272,12 @@ public class GameService {
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
 				// 수익률 계산
-				Double profitRate =
-					(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				Double profitRate = 0.0;
+				if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
+					&& gameGamerStockDto.getTotalCount() != 0) {
+					profitRate =
+						(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				}
 				// 해당 정보 반영
 				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
@@ -283,13 +289,18 @@ public class GameService {
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
 				// 수익률 계산
-				Double profitRate =
-					(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				Double profitRate = 0.0;
+				if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
+					&& gameGamerStockDto.getTotalCount() != 0) {
+					profitRate =
+						(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				}
 				// 해당 정보 반영
 				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
 			}
 			// "gamer_stock" Table update
+			log.info(gameGamerStockDto.toString());
 			gamerStockService.updateDto(gameGamerStockDto);
 		}
 
@@ -303,6 +314,7 @@ public class GameService {
 		gameGamerDto.setTotalProfitRate(
 			(double)(((totalEvaluationAsset - gameGamerDto.getOriginDeposit()) / gameGamerDto.getOriginDeposit())
 				* 100));
+		log.info(gameGamerDto.toString());
 		gamerService.updateDto(gameGamerDto);
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
