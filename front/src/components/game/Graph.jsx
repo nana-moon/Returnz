@@ -27,6 +27,9 @@ export default function Graph() {
     const categoriess = stockGraphData[selectidx][companyName].candledata.map((data) => data.x);
 
     options = {
+      title: {
+        text: '제목',
+      },
       series: [
         {
           name: '주가',
@@ -108,13 +111,13 @@ export default function Graph() {
   }
   return (
     <GraphContainer>
-      <div className="absolute top-6 right-0 z-10 ">
+      <div className="absolute top-2 left-4 z-10 ">
         <Popover
           animate={{
             mount: { scale: 1, y: 0 },
             unmount: { scale: 0, y: 25 },
           }}
-          placement="left-end"
+          placement="right-end"
         >
           <PopoverHandler>
             <Button variant="gradient" color="white" size="sm" className="border border-negative">
