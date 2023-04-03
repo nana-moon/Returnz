@@ -37,8 +37,8 @@ public class WaitService {
 	private final WaitRoomRepository waitRoomRepository;
 	private final RedisPublisher redisPublisher;
 	private final RedisWaitRepository redisWaitRepository;
-	private final SideBarService sideBarService;
 	private final WaiterRepository waiterRepository;
+	private final SideBarService sideBarService;
 
 	public WaitRoom createWaitRoom(String token) {
 		// 엔티티 생성
@@ -49,55 +49,12 @@ public class WaitService {
 			.captainName(captain.getUsername())
 			.build();
 		waitRoomRepository.save(waitRoom);
-
-		Waiter waiter = Waiter.builder()
-			.memberId(captain.getId())
-			.nickname(captain.getNickname())
-			.username(captain.getUsername())
-			.avgProfit(captain.getAvgProfit())
-			.profileIcon(captain.getProfileIcon())
-			.waitRoom(waitRoom).build();
+		Waiter waiter = convertMemberToWaiter(captain, waitRoom);
 
 		waiterRepository.save(waiter);
 		waitRoom.insertWaiter(waiter);
-		waitRoom.plusMemberCount();
 
 		return waitRoomRepository.save(waitRoom);
-	}
-
-	@Transactional
-	public void sendEnterMessage(WaitMessageDto waitRequest, String token) {
-		Member member = jwtTokenProvider.getMember(token);
-		// String roomId = (String)waitRequest.getMessageBody().get("roomId");
-		WaitRoom waitRoom = checkWaitRoomId(waitRequest);
-		// 인원 증가 후 에외처리 4명 이상이면 예외처리
-		waitRoom.plusMemberCount();
-		waitRoomRepository.save(waitRoom);
-		// 온라인인지 확인 후 변경
-		sideBarService.checkState(member, MemberState.ONLINE);
-
-		// 평균 수익률 계산
-		double avgProfit = member.getAvgProfit();
-		// 새로운 대기방 메세지 생성
-		Map<String, Object> messageBody = new HashMap<>();
-		messageBody.put("roomId", waitRoom.getRoomId());
-		messageBody.put("id", member.getId());
-		messageBody.put("username", member.getUsername());
-		messageBody.put("nickname", member.getNickname());
-		messageBody.put("profileIcon", member.getProfileIcon());
-		messageBody.put("avgProfit", avgProfit);
-		messageBody.put("captainName", waitRoom.getCaptainName());
-
-		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
-			.type(WaitMessageDto.MessageType.ENTER)
-			.messageBody(messageBody)
-			.build();
-
-		log.info(waitMessageDto.toString());
-
-		// 메세지 보내기
-		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
-
 	}
 
 	@Transactional
@@ -121,25 +78,6 @@ public class WaitService {
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 	}
 
-	@Transactional
-	public void sendExitMessage(WaitMessageDto waitRequest, String token) {
-		Member member = jwtTokenProvider.getMember(token);
-		WaitRoom waitRoom = checkWaitRoomId(waitRequest);
-
-		waitRoom.minusMemberCount();
-		waitRoomRepository.save(waitRoom);
-
-		// 새로운 대기방 메세지 생성
-		Map<String, Object> messageBody = new HashMap<>();
-		messageBody.put("roomId", waitRoom.getRoomId());
-		messageBody.put("username", member.getUsername());
-
-		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
-			.type(WaitMessageDto.MessageType.EXIT)
-			.messageBody(messageBody)
-			.build();
-		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
-	}
 
 	@Transactional
 	public void sendGameSetting(@Valid SettingDto settingDto) {
@@ -164,7 +102,8 @@ public class WaitService {
 		if (waitRequest.getMessageBody().get("gameRoomId") == null) {
 			throw new BadRequestException("게임룸 정보가 없습니다.");
 		}
-		checkWaitRoomId(waitRequest);
+		WaitRoom waitRoom = checkWaitRoomId(waitRequest);
+		waitRoomRepository.delete(waitRoom);
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitRequest);
 	}
 
@@ -186,21 +125,28 @@ public class WaitService {
 		Waiter waiter = waiterRepository.findByWaitRoomAndMemberId(waitRoom, member.getId())
 			.orElseThrow(() -> new NotFoundException("해당 유저는 대기방에 없습니다."));
 		waitRoom.deleteWaiter(waiter);
-		waitRoom.minusMemberCount();
 		waiterRepository.delete(waiter);
 		waitRoomRepository.save(waitRoom);
+
+		Boolean isCaptain = waitRoom.isCaptain(member);
 
 		// 새로운 대기방 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("roomId", waitRoom.getRoomId());
 		messageBody.put("username", member.getUsername());
+		messageBody.put("isCaptain", isCaptain);
 
 		WaitMessageDto waitMessageDto = WaitMessageDto.builder()
 			.type(WaitMessageDto.MessageType.EXIT)
 			.messageBody(messageBody)
 			.build();
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
-
+		// 방장이 나갔을 때 대기방 삭제
+		if (isCaptain.equals(true)) {
+			waitRoomRepository.delete(waitRoom);
+		}
+		// 오프라인으로 만든 후 친구들에게 STATE 메세지 쏴줌
+		// sideBarService.checkState(member, MemberState.OFFLINE);
 	}
 
 	@Transactional
@@ -212,17 +158,9 @@ public class WaitService {
 		if (waiterRepository.existsByWaitRoomAndMemberId(waitRoom, member.getId())) {
 			throw new ConflictException("이미 대기방에 존재하는 유저입니다.");
 		}
-		Waiter waiter = Waiter.builder()
-			.memberId(member.getId())
-			.nickname(member.getNickname())
-			.username(member.getUsername())
-			.avgProfit(member.getAvgProfit())
-			.profileIcon(member.getProfileIcon())
-			.waitRoom(waitRoom).build();
-
+		Waiter waiter = convertMemberToWaiter(member, waitRoom);
 		waiterRepository.save(waiter);
 		waitRoom.insertWaiter(waiter);
-		waitRoom.plusMemberCount();
 		WaitRoom savedWaitRoom = waitRoomRepository.save(waitRoom);
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -236,5 +174,15 @@ public class WaitService {
 			.build();
 		redisPublisher.publishWaitRoom(redisWaitRepository.getTopic("wait-room"), waitMessageDto);
 		return savedWaitRoom;
+	}
+
+	public Waiter convertMemberToWaiter(Member member, WaitRoom waitRoom) {
+		return Waiter.builder()
+			.memberId(member.getId())
+			.nickname(member.getNickname())
+			.username(member.getUsername())
+			.avgProfit(member.getAvgProfit())
+			.profileIcon(member.getProfileIcon())
+			.waitRoom(waitRoom).build();
 	}
 }

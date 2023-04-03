@@ -5,6 +5,8 @@ import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
 import React from 'react';
 import Chart from 'react-apexcharts';
+import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
+import imgpath from './Items/bear.jpg';
 import { stockGraphList } from '../../store/gamedata/GameData.selector';
 import { selectedIdx } from '../../store/buysellmodal/BuySell.selector';
 
@@ -25,6 +27,9 @@ export default function Graph() {
     const categoriess = stockGraphData[selectidx][companyName].candledata.map((data) => data.x);
 
     options = {
+      title: {
+        text: '제목',
+      },
       series: [
         {
           name: '주가',
@@ -106,6 +111,24 @@ export default function Graph() {
   }
   return (
     <GraphContainer>
+      <div className="absolute top-2 left-4 z-10 ">
+        <Popover
+          animate={{
+            mount: { scale: 1, y: 0 },
+            unmount: { scale: 0, y: 25 },
+          }}
+          placement="right-end"
+        >
+          <PopoverHandler>
+            <Button variant="gradient" color="white" size="sm" className="border border-negative">
+              ?
+            </Button>
+          </PopoverHandler>
+          <PopoverContent>
+            <img src={imgpath} alt="" />
+          </PopoverContent>
+        </Popover>
+      </div>
       {selectidx != null && <Chart options={options} series={options.series} height="95%" />}
     </GraphContainer>
   );
@@ -114,5 +137,5 @@ export default function Graph() {
 const GraphContainer = styled.div`
   margin-top: 1.25rem;
   max-hegiht: 60%;
-  ${tw`border bg-white rounded-xl h-[60%]`}
+  ${tw`border bg-white rounded-xl h-[60%] relative`}
 `;
