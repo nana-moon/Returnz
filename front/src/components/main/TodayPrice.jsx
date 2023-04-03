@@ -16,7 +16,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: exchangeKrJp } = useQuery({
     queryKey: ['exchangeKrJp'],
@@ -24,7 +24,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: exchangeKrEu } = useQuery({
     queryKey: ['exchangeKrEu'],
@@ -32,7 +32,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
 
   const { data: exchangeKrBit } = useQuery({
@@ -45,7 +45,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: oilPrice } = useQuery({
     queryKey: ['getOilPrice'],
@@ -53,7 +53,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   return (
     <TodayPriceContainer>
