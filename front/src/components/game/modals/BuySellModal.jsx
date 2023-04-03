@@ -9,7 +9,7 @@ import { buyNeedData, sellNeedData, modalState, holdingdata } from '../../../sto
 import { receiveSetting, getHoldingCount } from '../../../store/buysellmodal/BuySell.reducer';
 import { buyStockApi, sellStockApi } from '../../../apis/gameApi';
 import { handleBuySellTrade } from '../../../store/gamedata/GameData.reducer';
-import { gamerDataList } from '../../../store/gamedata/GameData.selector';
+import { changeInterest, gamerDataList } from '../../../store/gamedata/GameData.selector';
 
 export default function BuySellModal({ code, checkCanSell }) {
   const dispatch = useDispatch();
@@ -24,6 +24,7 @@ export default function BuySellModal({ code, checkCanSell }) {
   const thisgamerId = useSelector(getGamerId);
   const deposit = useSelector(gamerDataList);
   const sellCount = useSelector(holdingdata);
+  const exchange = useSelector(changeInterest);
   const [tmp, setTmp] = useState(true);
 
   useEffect(() => {
@@ -32,7 +33,29 @@ export default function BuySellModal({ code, checkCanSell }) {
   }, [tmp]);
 
   const modalData = modalStat.isType ? buyData : sellData;
-  const maxOrderCount = modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : sellCount;
+
+  let maxOrderCount;
+  let cost;
+  if (modalStat.isType) {
+    if (modalData.country === 'ko') {
+      maxOrderCount = Math.floor(deposit.deposit / parseInt(modalData.orderPrice, 10));
+      cost = parseInt(modalData.orderPrice);
+    } else {
+      maxOrderCount = Math.floor(
+        deposit.deposit / Math.floor(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate),
+      );
+      cost = parseInt(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate, 10);
+    }
+  } else {
+    maxOrderCount = sellCount;
+    if (modalData.country === 'ko') {
+      cost = parseInt(modalData.orderPrice, 10);
+    } else {
+      cost = parseInt(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate, 10);
+    }
+  }
+
+  console.log(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate, cost, '몇개삼');
 
   useEffect(() => {
     if (orderCount > maxOrderCount || orderCount < 0) {
@@ -130,9 +153,7 @@ export default function BuySellModal({ code, checkCanSell }) {
         <StockSection>
           <CountBox>주문수량</CountBox>
           <StockCountFirstBox> 주문가능 </StockCountFirstBox>
-          <StockCountSecondBox mode={modalStat.isType ? 'gain' : 'lose'}>
-            {modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : sellCount}
-          </StockCountSecondBox>
+          <StockCountSecondBox mode={modalStat.isType ? 'gain' : 'lose'}>{maxOrderCount}</StockCountSecondBox>
           <StockCountThirdBox> 주 </StockCountThirdBox>
         </StockSection>
 
@@ -152,8 +173,8 @@ export default function BuySellModal({ code, checkCanSell }) {
             />
           </CountInputBox>
           <ButtonContainer>
-            <UpButton onClick={() => handleUpCount()}>▲</UpButton>
-            <DownButton onClick={() => handleDownCount()}>▼</DownButton>
+            <UpButton onClick={() => handleUpCount()}>🛆</UpButton>
+            <DownButton onClick={() => handleDownCount()}>🛆</DownButton>
           </ButtonContainer>
         </CountInputContainer>
 
@@ -166,13 +187,13 @@ export default function BuySellModal({ code, checkCanSell }) {
 
         <StockSection>
           <CountBox>주문단가</CountBox>
-          <StockCountSecond> {parseInt(modalData.orderPrice).toLocaleString()} </StockCountSecond>
+          <StockCountSecond> {cost.toLocaleString()} </StockCountSecond>
           <StockCountThirdBox> 원 </StockCountThirdBox>
         </StockSection>
 
         <StockSection>
           <CountBox>총 주문금액</CountBox>
-          <StockCountSecond> {parseInt(modalData.orderPrice * orderCount).toLocaleString()} </StockCountSecond>
+          <StockCountSecond> {(cost * orderCount).toLocaleString()} </StockCountSecond>
           <StockCountThirdBox> 원 </StockCountThirdBox>
         </StockSection>
 
@@ -244,7 +265,7 @@ const StockSection = styled.div`
 `;
 
 const NameBox = styled.div`
-  ${tw`w-[47%] text-negative`}
+  ${tw`w-[47%] text-gray-500`}
 `;
 
 const StockNameBox = styled.div`
@@ -252,7 +273,7 @@ const StockNameBox = styled.div`
 `;
 
 const CountBox = styled.div`
-  ${tw`w-[40%] text-negative`}
+  ${tw`w-[40%] text-gray-500`}
 `;
 
 const StockCountFirstBox = styled.div`
@@ -283,10 +304,11 @@ const CountInput = styled(Input)`
 `;
 
 const UpButton = styled.button`
-  ${tw`h-6`}
+  ${tw`h-4 mt-2`}
 `;
 
 const DownButton = styled.button`
+  transform: rotate(180deg);
   ${tw`h-6`}
 `;
 
@@ -296,7 +318,7 @@ const ButtonBox = styled.div`
 
 const RatioButton = styled(Button)`
   opacity: 0.7;
-  ${tw`h-6 w-[18%] mx-1 px-0 py-0 bg-negative shadow-none hover:shadow-none`}
+  ${tw`h-6 w-[18%] mx-1 px-0 py-0 bg-gray-500 shadow-none hover:shadow-none`}
 `;
 
 const StockCountSecond = styled.div`
