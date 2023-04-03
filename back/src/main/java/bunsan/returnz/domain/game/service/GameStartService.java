@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
+import bunsan.returnz.domain.game.enums.Theme;
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
@@ -28,10 +29,11 @@ import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.GameStock;
 import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerStock;
-import bunsan.returnz.persist.entity.HistoricalPriceDay;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.NewsGroup;
 import bunsan.returnz.persist.repository.CompanyRepository;
+import bunsan.returnz.persist.repository.CovidThemeCompanyRepository;
+import bunsan.returnz.persist.repository.DotcomThemeCompanyRepository;
 import bunsan.returnz.persist.repository.FinancialNewsRepository;
 import bunsan.returnz.persist.repository.GameRoomRepository;
 import bunsan.returnz.persist.repository.GameStockRepository;
@@ -40,6 +42,7 @@ import bunsan.returnz.persist.repository.GamerStockRepository;
 import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.NewsGroupRepository;
+import bunsan.returnz.persist.repository.RiemannThemeCompanyRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,6 +60,9 @@ public class GameStartService {
 	private final FinancialNewsRepository financialNewsRepository;
 	private final GameInfoService gameInfoService;
 	private final NewsGroupRepository newsGroupRepository;
+	private final RiemannThemeCompanyRepository riemannThemeCompanyRepository;
+	private final CovidThemeCompanyRepository covidThemeCompanyRepository;
+	private final DotcomThemeCompanyRepository dotcomThemeCompanyRepository;
 
 	private static final Integer DEFAULT_DEPOSIT = 10000000;
 
@@ -72,9 +78,8 @@ public class GameStartService {
 		gameSettings.setThemeTotalTurnTime();
 		GameRoom newGameRoom = buildGameRoom(gameSettings);
 		// 랜덤 주식 가져와서 할당하기
-		Pageable pageable = PageRequest.of(0, 10);
 		gameSettings.setStartTime(gameSettings.convertThemeStartDateTime().toLocalDate());
-		List<Company> companyList = buildCompanies(newGameRoom, pageable);
+		List<Company> companyList = buildCompanies(newGameRoom, gameSettings);
 		List<String> gameStockIds = new ArrayList<>();
 		// 아이디만 뽑아낸 리스트
 		for (Company stock : companyList) {
@@ -270,21 +275,30 @@ public class GameStartService {
 	 * Company 테이블 INSERT
 	 *
 	 * @param newGameRoom
-	 * @param pageable
 	 * @return
 	 */
-	private List<Company> buildCompanies(GameRoom newGameRoom, Pageable pageable) {
-		Page<Company> randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
-		List<Company> companyList = randomCompaniesPage.getContent();
-		for (Company company : companyList) {
-			GameStock companyEntity = GameStock.builder()
-				.companyName(company.getCompanyName())
-				.companyCode(company.getCode())
-				.gameRoom(newGameRoom)
-				.build();
-			gameStockRepository.save(companyEntity);
+	private List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
+		Page<?> randomCompaniesPage = null;
+		Pageable pageable = PageRequest.of(0, 10);
+		if (gameSettings.getTheme() == Theme.COVID) {
+			randomCompaniesPage = covidThemeCompanyRepository.findRandomCompaniesId(pageable);
+		} else if (gameSettings.getTheme() == Theme.RIEMANN) {
+			randomCompaniesPage = riemannThemeCompanyRepository.findRandomCompaniesId(pageable);
+		} else if (gameSettings.getTheme() == Theme.DOTCOM) {
+			randomCompaniesPage = dotcomThemeCompanyRepository.findRandomCompaniesId(pageable);
+		} else {
+			randomCompaniesPage = companyRepository.findRandomCompanies(pageable);
+			List<Company> companyList = (List<Company>)randomCompaniesPage.getContent();
 		}
-		return companyList;
+		// for (Company company : companyList) {
+		// 	GameStock companyEntity = GameStock.builder()
+		// 		.companyName(company.getCompanyName())
+		// 		.companyCode(company.getCode())
+		// 		.gameRoom(newGameRoom)
+		// 		.build();
+		// 	gameStockRepository.save(companyEntity);
+		// }
+		return null;
 	}
 
 	/**
