@@ -48,6 +48,19 @@ public class WaitService {
 			.roomId(UUID.randomUUID().toString())
 			.captainName(captain.getUsername())
 			.build();
+		waitRoomRepository.save(waitRoom);
+
+		Waiter waiter = Waiter.builder()
+			.memberId(captain.getId())
+			.nickname(captain.getNickname())
+			.username(captain.getUsername())
+			.avgProfit(captain.getAvgProfit())
+			.profileIcon(captain.getProfileIcon())
+			.waitRoom(waitRoom).build();
+
+		waiterRepository.save(waiter);
+		waitRoom.insertWaiter(waiter);
+		waitRoom.plusMemberCount();
 
 		return waitRoomRepository.save(waitRoom);
 	}
