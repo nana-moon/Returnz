@@ -116,8 +116,8 @@ public class RequestSettingGame {
 
 	public TurnPerTime setThemTurnPerTime() {
 		if (this.theme != Theme.USER) {
-			this.turnPerTime = TurnPerTime.DAY;
-			return TurnPerTime.DAY;
+			this.turnPerTime = TurnPerTime.WEEK;
+			return TurnPerTime.WEEK;
 		}
 		return this.turnPerTime;
 	}
