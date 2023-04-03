@@ -10,16 +10,12 @@ import TodayWord from '../components/main/TodayWord';
 export default function HomePage() {
   return (
     <MainContainer>
-      <PriceSection>
-        <TodayPrice />
-      </PriceSection>
+      <PriceSection>{/* <TodayPrice /> */}</PriceSection>
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>
       <div className="grid grid-cols-4 grid-rows-6 gap-8">
-        <TopUsersSection>
-          <TodayTopUser />
-        </TopUsersSection>
+        <TopUsersSection>{/* <TodayTopUser /> */}</TopUsersSection>
         <RecommendedSection>
           <TestBox>
             <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />

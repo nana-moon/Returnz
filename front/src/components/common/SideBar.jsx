@@ -88,7 +88,6 @@ export default function SideBar() {
                 if (newMessage.type === 'ENTER') {
                   console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
                   const newFriend = newMessage.messageBody.friendList;
-                  console.log(newFriend, '나의 칭구칭긔');
                   setfriendList(newFriend);
                 }
                 // -------------------------handle CHAT-----------------------------
