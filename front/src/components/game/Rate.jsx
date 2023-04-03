@@ -3,7 +3,7 @@ import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
 import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
 import { changeInterest } from '../../store/gamedata/GameData.selector';
-import imgpath from './Items/bear.jpg';
+import imgpath from './assets/rateHelp.png';
 
 export default function Rate() {
   const rateData = useSelector(changeInterest);
@@ -36,7 +36,7 @@ export default function Rate() {
               ?
             </Button>
           </PopoverHandler>
-          <PopoverContent className="z-20">
+          <PopoverContent className="z-20 shadow-xl shadow-gray-600">
             {' '}
             <img src={imgpath} alt="" />
           </PopoverContent>
