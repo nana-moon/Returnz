@@ -3,6 +3,7 @@ package bunsan.returnz.persist.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -35,41 +36,44 @@ public class WaitRoom {
 	@Builder.Default
 	private Theme theme = Theme.UNKNOWN;
 
-	@OneToMany
+	@OneToMany(cascade = CascadeType.REMOVE)
 	@Builder.Default
 	@JoinColumn(name = "ROOM_ID")
 	private List<Waiter> waiterList = new ArrayList<>();
 
 	private String captainName;
 
-	public void plusMemberCount() {
+	public void insertWaiter(Waiter waiter) {
 		if (this.memberCount >= 4) {
 			throw new BadRequestException("대기방 인원이 4명 이상입니다.");
 		}
-		this.memberCount++;
-	}
-
-	public void minusMemberCount() {
-		this.memberCount--;
-		if (this.memberCount < 0) {
-			throw new BadRequestException("대기방 인원이 음수 값입니다.");
-		}
-	}
-
-	public void insertWaiter(Waiter waiter) {
 		List<Waiter> waiters = this.waiterList;
 		if (waiters.contains(waiter)) {
 			throw new ConflictException("이미 대기방에 들어와 있는 유저입니다.");
 		}
 		this.waiterList.add(waiter);
+		this.memberCount++;
+
 	}
 
 	public void deleteWaiter(Waiter waiter) {
+		if (this.memberCount - 1 < 0) {
+			throw new BadRequestException("대기방 인원이 음수 값입니다.");
+		}
 		List<Waiter> waiters = this.waiterList;
 		waiters.remove(waiter);
+		this.memberCount--;
 	}
 
 	public void changeTheme(Theme theme) {
 		this.theme = theme;
+	}
+
+	public Boolean isCaptain(Member member) {
+		if (this.captainName.equals(member.getUsername())) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
