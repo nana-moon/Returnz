@@ -27,7 +27,7 @@ import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
-import { setIsReadyList } from '../store/roominfo/GameRoom.reducer';
+import { resetGameRoom, resetIsReadyList, setIsReadyList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
   const testdata = useSelector(gamerStockList);
@@ -106,7 +106,7 @@ export default function GamePage() {
   };
 
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
-  const handleMessage = (received) => {
+  const handleMessage = async (received) => {
     const newMessage = JSON.parse(received.body);
     // -------------------------handle READY-----------------------------
     if (newMessage.type === 'READY') {
@@ -119,7 +119,10 @@ export default function GamePage() {
         }
         return isReady;
       });
-      dispatch(setIsReadyList(newIsReadyList));
+      await dispatch(setIsReadyList(newIsReadyList));
+      setTimeout(() => {
+        handleTurn(newIsReadyList);
+      }, 5000);
     }
     // -------------------------handle TURN-----------------------------
     if (newMessage.type === 'TURN') {
@@ -189,7 +192,19 @@ export default function GamePage() {
       console.log('WebSocket connection is not active.');
     }
   };
-
+  // -------------------------| TURN |------------------------------------------------------------------
+  const handleTurn = (newIsReadyList) => {
+    console.log(newIsReadyList);
+    const allReady = newIsReadyList.every((isReady) => {
+      console.log(Object.values(isReady));
+      return Object.values(isReady).every((value) => value === true);
+    });
+    console.log('allReady', allReady);
+    if (allReady) {
+      dispatch(resetIsReadyList());
+      axiospost();
+    }
+  };
   // -------------------------| READY |------------------------------------------------------------------
 
   const getIsReady = () => {
@@ -207,6 +222,17 @@ export default function GamePage() {
     }
   };
 
+  // -------------------------| EXIT GAME |------------------------------------------------------------------
+
+  const handleExit = () => {
+    dispatch(resetGameRoom());
+  };
+
+  useEffect(() => {
+    return () => {
+      handleExit();
+    };
+  }, []);
   // -------------------------| RETURN HTML |------------------------------------------------------------------
 
   return (

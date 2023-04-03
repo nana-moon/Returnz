@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
 import { useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { getIsReadyList, getPlayerList } from '../../../store/roominfo/GameRoom.selector';
@@ -8,6 +9,7 @@ import UserLogListItem from './UserLogListItem';
 export default function UserLogList({ getIsReady }) {
   const playerList = useSelector(getPlayerList);
   const isReadyList = useSelector(getIsReadyList);
+
   return (
     <UserLogContainer>
       {Array.from({ length: 4 }).map((_, i) => {

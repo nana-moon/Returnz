@@ -11,7 +11,6 @@ export default function Turn() {
   const [time, setTime] = useState(60);
   const turn = useSelector(gameTurn);
   const [animationClass, setAnimationClass] = useState('animate');
-  console.log('현재 턴은:', turn);
 
   useEffect(() => {
     setAnimationClass(''); // 애니메이션 클래스를 제거합니다.
