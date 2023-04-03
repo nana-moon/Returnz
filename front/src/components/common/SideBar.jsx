@@ -8,22 +8,18 @@ import styled from 'styled-components';
 import tw from 'twin.macro';
 import Stomp from 'webstomp-client';
 import { useQuery } from 'react-query';
-import { Input } from '@material-tailwind/react';
-import { AiOutlineSearch } from 'react-icons/ai';
 import FriendListItems from './Items/FriendListItems';
 import UserProfile from './SideBar/UserProfile';
-// import FriendSearchInput from './SideBar/FriendSearchInput';
+import FriendSearchInput from './SideBar/FriendSearchInput';
 import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
 import { getFriendRequestsApi } from '../../apis/friendApi';
-
-// import { stomp } from '../../apis/axiosConfig';
 
 export default function SideBar() {
   // 내정보
   const myToken = Cookies.get('access_token');
   const myMail = Cookies.get('email');
   // 내 친구
-  const [friendList, setfriendList] = useState();
+  const [friendList, setfriendList] = useState([]);
   // 내가 받은 친구요청 리스트
   const { data: friendRequests } = useQuery({
     queryKey: ['friendRequests'],
@@ -32,41 +28,18 @@ export default function SideBar() {
       console.log(e);
     },
   });
-  // 내가 친구 추가하고싶은 사람
-  const [newFriendNickname, setNewFriendNickname] = useState('');
-  const onChange = (e) => setNewFriendNickname(e.target.value);
   // 웹소켓
   const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
   const options = {
     debug: false,
     protocols: Stomp.VERSIONS.supportedProtocols(),
+    reconnectDelay: 1000, // 재시도 간격 1초로 설정
+    heartbeatIncoming: 4000, // 4초마다 서버로부터 heartbeat 메시지 받기
+    heartbeatOutgoing: 4000, // 4초마다 서버로 heartbeat 메시지 보내기
   };
   // client 객체 생성 및 서버주소 입력
   const stomp = StompJs.over(sock, options);
   // stomp로 감싸기
-  // const { data: friendList } = useQuery({
-  //   queryKey: ['friendRequests'],
-  //   queryFn: () => getFriendRequests(),
-  //   onError: (e) => {
-  //     console.log(e);
-  //   },
-  //   staleTime: 1000000,
-  // });
-  const handleFriendRequest = () => {
-    stomp.send(
-      '/pub/side-bar',
-      {
-        // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-        Authorization: `${myToken}`,
-      },
-      JSON.stringify({
-        type: 'FRIEND',
-        messageBody: {
-          username: newFriendNickname,
-        },
-      }),
-    );
-  };
 
   useEffect(() => {
     const stompConnect = () => {
@@ -88,16 +61,25 @@ export default function SideBar() {
                 if (newMessage.type === 'ENTER') {
                   console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
                   const newFriend = newMessage.messageBody.friendList;
-                  console.log(newFriend, '나의 칭구칭긔');
                   setfriendList(newFriend);
                 }
                 // -------------------------handle CHAT-----------------------------
                 if (newMessage.type === 'STATE') {
                   console.log('STATE 메세지 도착', newMessage.messageBody);
-                }
-                // -------------------------handle SETTING-----------------------------
-                if (newMessage.type === 'FRIEND') {
-                  console.log('FRIEND 메세지 도착', newMessage.messageBody);
+                  // setChangedFriend(newMessage.messageBody);
+                  const changedFriend = newMessage.messageBody;
+                  const updatedFriendList = friendList.map((friend) => {
+                    if (friend.username === changedFriend.friendName) {
+                      // 친구 정보가 일치하면 state 값 변경
+                      console.log(friend.username, 'd원래');
+                      console.log(changedFriend.friendName, '새로운');
+                      return { ...friend, state: changedFriend.state };
+                    }
+                    return friend;
+                  });
+
+                  // friendList 갱신
+                  setfriendList(updatedFriendList);
                 }
                 // -------------------------handle GAME_INFO-----------------------------
                 if (newMessage.type === 'INVITE') {
@@ -133,99 +115,53 @@ export default function SideBar() {
     stompConnect();
   }, []);
 
-  // const { data: friendlist } = useQuery('friendlist', async () => {
-  //   const response = await stompConnect();
-  //   console.log(response, '리액트쿼리');
-  //   return response;
-  // });
-
-  // const stompDisConnect = () => {
-  //   console.log('222');
-  //   try {
-  //     stomp.debug = null;
-  //     stomp.disconnect(
-  //       () => {
-  //         stomp.unsubscribe('sub-0');
-  //       },
-  //       {
-  //         // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-  //         Authorization:
-  //           'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb29uQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJ1c2VybmFtZSI6Im1vb25AbmF2ZXIuY29tIiwiaWQiOjgsIm5pY2tuYW1lIjoibW9vbiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY3OTc5NDMyMH0.CN8mcVj8BSqW49qHnwcbjMi8jZ8EMPBEvoIXxWai0M4',
-  //       },
-  //     );
-  //   } catch (err) {}
-  // };
-  // const sendMessage = () => {
-  //   stomp.send(
-  //     '/pub/side-bar',
-  //     JSON.stringify({
-  //       type: 'FRINED',
-  //       messageBody: {
-  //         requestUsername: 'moon@naver.com',
-  //         targetUsername: 'ssafy6@naver.com',
-  //       },
-  //     }),
-  //     {
-  //       // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-  //       Authorization:
-  //         'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb29uQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJ1c2VybmFtZSI6Im1vb25AbmF2ZXIuY29tIiwiaWQiOjgsIm5pY2tuYW1lIjoibW9vbiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY3OTgxNTQwNn0.fKPM4dJ45QhnUkAy9eOh2nNnsDbyef8RXT5zkthArhM',
-  //     },
-  //   );
-  // };
-  // sendMessage();
-
   return (
     <SideBarContainer>
-      <UserProfile />
-      <FriendRequestsContainer>
-        {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
-        {friendRequests?.map((friendReq) => {
-          return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
-        })}
-      </FriendRequestsContainer>
-      <FriendListContainer>
-        {friendList?.length > 0 ? <SectionTitle>내 친구들</SectionTitle> : null}
-        {friendList?.map((friend) => {
-          return <FriendListItems friend={friend} key={friend.username} />;
-        })}
-      </FriendListContainer>
-      <FriendSearchContainer>
-        <Input
-          type="text"
-          label="닉네임을 검색하세요"
-          color="cyan"
-          value={newFriendNickname}
-          onChange={onChange}
-          className="bg-input"
-        />
-        <SearchButton onClick={handleFriendRequest}>
-          <AiOutlineSearch />
-        </SearchButton>
-      </FriendSearchContainer>
+      <SideBarScrollEnabledSection>
+        <UserProfile />
+
+        <FriendRequestsContainer>
+          {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
+          {friendRequests?.map((friendReq) => {
+            return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
+          })}
+        </FriendRequestsContainer>
+        <FriendListContainer>
+          {friendList?.length > 0 ? <SectionTitle>내 친구들</SectionTitle> : null}
+          {friendList?.map((friend) => {
+            return <FriendListItems friend={friend} key={friend.username} />;
+          })}
+        </FriendListContainer>
+      </SideBarScrollEnabledSection>
+      <FriendSearchInput />
     </SideBarContainer>
   );
 }
 
 const SideBarContainer = styled.div`
   position: relative;
-  ${tw`bg-white border-l-2 border-negative w-1/5`}
+  ${tw`bg-white border-l-2 border-negative w-1/5 h-screen`}
 `;
 
 const FriendRequestsContainer = styled.div`
-  ${tw`border-b-2`}
+  ${tw`border-b-2`};
 `;
 const SectionTitle = styled.div`
   ${tw`bg-dprimary text-white pl-4 font-bold `}
 `;
+
+const SideBarScrollEnabledSection = styled.div`
+  &::-webkit-scrollbar {
+    width: 0px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+  ${tw`overflow-y-auto h-[calc(100%-26px)]`}
+`;
 const FriendListContainer = styled.div`
   ${tw``}
-`;
-const FriendSearchContainer = styled.div`
-  position: fixed;
-  bottom: 0px;
-  ${tw`flex border-t-2 border-negative p-2 gap-2 bg-white`}
-`;
-
-const SearchButton = styled.button`
-  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;

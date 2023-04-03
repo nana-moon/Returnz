@@ -36,7 +36,7 @@ export default function Rate() {
               ?
             </Button>
           </PopoverHandler>
-          <PopoverContent>
+          <PopoverContent className="z-20">
             {' '}
             <img src={imgpath} alt="" />
           </PopoverContent>
