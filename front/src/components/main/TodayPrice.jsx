@@ -1,6 +1,7 @@
 import { React } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useQuery } from 'react-query';
+import { AiFillDollarCircle } from 'react-icons/ai';
 import {
   getExchangeKrUs,
   getExchangeKrJp,
@@ -58,7 +59,10 @@ export default function TodayPrice() {
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
-        <StockTitle>미국 달러 환율</StockTitle>
+        <StockTitle>
+          <AiFillDollarCircle />
+          미국 달러 환율
+        </StockTitle>
         <StockPrice>{parseFloat(exchangeKrUs?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       {/* <TodayPriceItem>
@@ -96,7 +100,7 @@ const TodayPriceItem = styled.div`
 `;
 
 const StockTitle = styled.div`
-  ${tw`text-black`}
+  ${tw`text-black font-bold flex`}
 `;
 
 const StockPrice = styled.div`
