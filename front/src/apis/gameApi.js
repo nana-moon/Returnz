@@ -12,7 +12,6 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
-  console.log(payload, 'payload');
   const res = await authApi.post('/games/init', payload);
   return res.data;
 };
@@ -21,11 +20,9 @@ const gameDataApi = (payload) => {
   return authApi
     .post('/games/game', payload)
     .then((res) => {
-      console.log('데이터 가져오기 성공', res);
       return res.data;
     })
     .catch((err) => {
-      console.log('데이터 가져오기 실패', err);
       return err;
     });
 };

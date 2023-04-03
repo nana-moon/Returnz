@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
 import bunsan.returnz.domain.member.dto.SignupRequest;
+import bunsan.returnz.domain.member.enums.MemberState;
+import bunsan.returnz.domain.sidebar.service.SideBarService;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.ConflictException;
 import bunsan.returnz.global.advice.exception.NotFoundException;
@@ -30,6 +32,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authenticationManagerBuilder;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final SideBarService sideBarService;
 
 	public Member signup(SignupRequest signupRequest) {
 		// 아이디 중복
@@ -142,5 +145,10 @@ public class MemberService {
 	public Set<String> getPermittedProfiles(String token) {
 		Member member = jwtTokenProvider.getMember(token);
 		return member.getPermittedProfiles();
+	}
+
+	public void changeMemberState(String token) {
+		Member member = jwtTokenProvider.getMember(token);
+		sideBarService.checkState(member, MemberState.OFFLINE);
 	}
 }

@@ -168,6 +168,7 @@ public class SideBarService {
 					.build();
 				// simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
 				// "/sub/side-bar", sideMessageDto);
+
 				redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 			}
 		}
