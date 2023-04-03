@@ -1,35 +1,60 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
-import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from '@material-tailwind/react';
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Button,
+} from '@material-tailwind/react';
 import NewsTab from './tabs/NewsTab';
 import StockInfoTab from './tabs/StockInfoTab';
 import Description from './tabs/Description';
 
 export default function StockInfo() {
-  const [view, setView] = useState('뉴스');
+  const [view, setView] = useState('종목 소개');
   const data = [
     {
-      label: '뉴스',
-      value: 'html',
-      desc: `news`,
+      label: '종목 소개',
+      value: 'vue',
+      desc: `datas`,
     },
     {
       label: '주가정보',
       value: 'react',
       desc: `info`,
     },
-
     {
-      label: '종목 소개',
-      value: 'vue',
-      desc: `datas`,
+      label: '뉴스',
+      value: 'html',
+      desc: `news`,
     },
   ];
 
   return (
     <StockInfoContanier>
-      <TabContainer id="custom-animation" value="html">
+      <TabContainer id="custom-animation" value="vue">
         <TabsHeader>
+          <div className="absolute top-12 left-2 z-10">
+            <Popover
+              animate={{
+                mount: { scale: 1, y: 0 },
+                unmount: { scale: 0, y: 25 },
+              }}
+              placement="right-start"
+            >
+              <PopoverHandler>
+                <Button variant="gradient" color="white" size="sm" className="border border-negative">
+                  ?
+                </Button>
+              </PopoverHandler>
+              <PopoverContent className="z-20">?</PopoverContent>
+            </Popover>
+          </div>
           {data.map(({ label, value }) => (
             <Tab key={value} value={value} onClick={() => setView(label)}>
               {label}
@@ -45,9 +70,9 @@ export default function StockInfo() {
         >
           {data.map(({ value, desc }) => (
             <TabPanels key={value} value={value}>
-              {desc === 'news' && <NewsTab />}
-              {desc === 'info' && <StockInfoTab />}
               {desc === 'datas' && <Description />}
+              {desc === 'info' && <StockInfoTab />}
+              {desc === 'news' && <NewsTab />}
             </TabPanels>
           ))}
         </TabsBodys>

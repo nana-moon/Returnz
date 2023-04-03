@@ -4,16 +4,15 @@ const makeRoomApi = async () => {
   return authApi
     .post('/wait-room')
     .then((res) => {
-      console.log('방만들기 성공', res);
       return res.data;
     })
     .catch((err) => {
-      console.log('방만들기 실패', err);
       return err;
     });
 };
 
 const startGameApi = async (payload) => {
+  console.log(payload, 'payload');
   const res = await authApi.post('/games/init', payload);
   return res.data;
 };

@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -33,31 +35,16 @@ public class GameSocketService {
 	private final SideBarService sideBarService;
 	private final JwtTokenProvider jwtTokenProvider;
 
+	@Transactional
 	public void sendEnterMessage(RoomMessageDto roomMessageDto, String token) {
 		// 유효한 게임방 정보인지 체크
 		checkGameRoomId(roomMessageDto);
 		// username 유효한지 체크
-		Member member = checkUsername(roomMessageDto, token);
+		Member member = jwtTokenProvider.getMember(token);
 		// 상태 확인 후 다를 경우 change
 		sideBarService.checkState(member, MemberState.BUSY);
 		// 그대로 돌려주기
 		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
-	}
-
-	private Member checkUsername(RoomMessageDto roomMessageDto, String token) {
-
-		if (roomMessageDto.getMessageBody().get("username") != null) {
-			Member tokenMember = jwtTokenProvider.getMember(token);
-			String username = (String)roomMessageDto.getMessageBody().get("username");
-			Member member = memberRepository.findByUsername(username)
-				.orElseThrow(() -> new NotFoundException("해당 회원이 존재하지 않습니다."));
-			if (!tokenMember.equals(member)) {
-				throw new BadRequestException("token 맴버와 일치하지 않습니다.");
-			}
-			return member;
-		} else {
-			throw new BadRequestException("username을 입력해주세요.");
-		}
 	}
 
 	private void checkGameRoomId(RoomMessageDto roomMessageDto) {
