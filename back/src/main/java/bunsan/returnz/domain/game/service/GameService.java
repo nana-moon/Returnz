@@ -19,6 +19,7 @@ import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameStockDto;
+import bunsan.returnz.domain.game.dto.PurcahseSaleLogDto;
 import bunsan.returnz.domain.game.enums.StockState;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
@@ -43,6 +44,7 @@ public class GameService {
 	private final GameCompanyDetailService gameCompanyDetailService;
 	private final MemberService memberService;
 	private final GameExchangeInterestService gameExchangeInterestService;
+	private final PurchaseSaleLogService purchaseSaleLogService;
 
 	/**
 	 * Description : 턴이 시작할 때 필요한 정보를 반환한다.
@@ -379,13 +381,14 @@ public class GameService {
 				gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 					curTime, gameGamerStockDtos.get(0).getCompanyCode());
 
-			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), gameHistoricalPriceDayDto.getDateTime(),
+				roomId);
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
 			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 2);
-			return gameRoomService.updateGameTurn(weekRanges.get(1).getWeekLastDay(), roomId);
+			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), weekRanges.get(1).getWeekLastDay(), roomId);
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MONTH)) {
 			List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(gameRoomDto.getCurDate(), 2);
-			return gameRoomService.updateGameTurn(monthRanges.get(1).getLastDay(), roomId);
+			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), monthRanges.get(1).getLastDay(), roomId);
 		}
 
 		throw new BadRequestException("지정되지 않은 턴 입니다.");
@@ -551,6 +554,18 @@ public class GameService {
 
 				log.info("result : " + gameHistoricalPriceDayDtos.toString());
 
+				for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
+					gameHistoricalPriceDayDto.setOpen(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getOpen())));
+					gameHistoricalPriceDayDto.setHigh(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getHigh())));
+					gameHistoricalPriceDayDto.setLow(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getLow())));
+					gameHistoricalPriceDayDto.setClose(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
+					gameHistoricalPriceDayDto.setAdjclose(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getAdjclose())));
+				}
 				// for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
 				//
 				// 	if(gameHistoricalPriceDayDto.)
@@ -644,17 +659,16 @@ public class GameService {
 		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
 		// stock 가격 확인
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-		gameRoomDto = gameRoomService.findByRoomId(roomId);
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
 			= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
-			gameRoomDto.getCurDate(),
+			gameRoomDto.getPreDate(),
 			companyCode);
 
 		if (gameHistoricalPriceDayDto == null) {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
 
-		Double stockClosePrice = Double.parseDouble(
+		double stockClosePrice = Double.parseDouble(
 			String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
 
 		// 외국 주식인 경우 환율 적용
@@ -726,11 +740,28 @@ public class GameService {
 			stockInformation.put("gamer", gameGamerDto);
 			stockInformation.put("gamerStock", gameGamerStockDtos);
 
+			PurcahseSaleLogDto purcahseSaleLogDto = PurcahseSaleLogDto.builder()
+				.curTurn(gameRoomDto.getCurTurn())
+				.totalTurn(gameRoomDto.getTotalTurn())
+				.companyCode(companyCode)
+				.companyName(gameCompanyDetailService.findByCompanyCode(
+					companyCode).getKoName())
+				.date(gameRoomDto.getPreDate())
+				.category(0)
+				.count(count)
+				.price((int)stockClosePrice)
+				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
+				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.build();
+
+			purchaseSaleLogService.updateDto(purcahseSaleLogDto);
+
 			return stockInformation;
 
 		} else {
 			throw new BadRequestException("예치금이 충분하지 않습니다.");
 		}
+
 	}
 
 	/**
@@ -750,10 +781,9 @@ public class GameService {
 		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
 		// stock 가격 확인
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
-		gameRoomDto = gameRoomService.findByRoomId(roomId);
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto
 			= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
-			gameRoomDto.getCurDate(),
+			gameRoomDto.getPreDate(),
 			companyCode);
 
 		if (gameHistoricalPriceDayDto == null) {
@@ -783,7 +813,7 @@ public class GameService {
 		// 보유한 종목 수가 매도할 종목 수 보다 많아야 가능하다.
 		if (gameGamerStockDto.getTotalCount() >= count) {
 
-			// 구매 가격
+			// 판매 가격
 			Integer salesPrice = (int)(stockClosePrice * count);
 
 			// "gamer_stock" Table update
@@ -797,6 +827,7 @@ public class GameService {
 			Double averagePrice = gameGamerStockDto.getAveragePrice();
 			if (totalCount == 0) {
 				averagePrice = 0.0;
+				totalAmount = 0;
 			}
 
 			// "gamer" Table update
@@ -809,6 +840,11 @@ public class GameService {
 				gameGamerDto.getTotalPurchaseAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
 			Integer totalEvaluationStock =
 				gameGamerDto.getTotalEvaluationStock() - (int)(gameGamerStockDto.getAveragePrice() * count);
+
+			if (count == 0) {
+				totalPurchateAmount = 0;
+				totalEvaluationStock = 0;
+			}
 
 			gameGamerDto.setDeposit(deposit);
 			gameGamerDto.setTotalPurchaseAmount(totalPurchateAmount);
@@ -836,31 +872,28 @@ public class GameService {
 			stockInformation.put("gamer", gameGamerDto);
 			stockInformation.put("gamerStock", gameGamerStockDtos);
 
+			PurcahseSaleLogDto purcahseSaleLogDto = PurcahseSaleLogDto.builder()
+				.curTurn(gameRoomDto.getCurTurn())
+				.totalTurn(gameRoomDto.getTotalTurn())
+				.companyCode(companyCode)
+				.companyName(gameCompanyDetailService.findByCompanyCode(
+					companyCode).getKoName())
+				.date(gameRoomDto.getPreDate())
+				.category(1)
+				.count(count)
+				.price((int)salesPrice)
+				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
+				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.build();
+
+			purchaseSaleLogService.updateDto(purcahseSaleLogDto);
+
 			return stockInformation;
 
 		} else {
 			throw new BadRequestException("보유한 종목의 수가 적습니다.");
 		}
 
-	}
-
-	/**
-	 * Description : totalCount, totalAmount가 업데이트 될 경우 호출된다.
-	 *				totalCount, totalAmount를 이용하여 averagePrice, valuation, profitRate를 계산한다.
-	 * @param gamerId : 게이머 아이디
-	 * @param companyCode : 회상 종목 코드
-	 * @return : 업데이트 결과 반환. True/False
-	 */
-	public List<GameGamerStockDto> setGamerStock(Long gamerId, String companyCode) {
-
-		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
-
-		GameGamerStockDto gameGamerStockDto =
-			gamerStockService.findByGamerIdAndCompanyCode(gamerId, companyCode);
-
-		// gameGamerStockDto.setAveragePrice();
-
-		return null;
 	}
 
 }

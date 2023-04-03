@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bunsan.returnz.domain.game.dto.PurcahseSaleLogDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,4 +45,17 @@ public class PurchaseSaleLog {
 	@JoinColumn(name = "MEMBER_ID")
 	private Member member;    // 해당하는 게임 룸
 
+	public boolean updateDto(PurcahseSaleLogDto purcahseSaleLogDto) {
+		this.curTurn = purcahseSaleLogDto.getCurTurn();
+		this.totalTurn = purcahseSaleLogDto.getTotalTurn();
+		this.companyCode = purcahseSaleLogDto.getCompanyCode();
+		this.companyName = purcahseSaleLogDto.getCompanyName();
+		this.date = purcahseSaleLogDto.getDate();
+		this.category = purcahseSaleLogDto.getCategory();
+		this.count = purcahseSaleLogDto.getCount();
+		this.price = purcahseSaleLogDto.getPrice();
+		this.gameRoom = purcahseSaleLogDto.getGameRoom();
+		this.member = purcahseSaleLogDto.getMember();
+		return true;
+	}
 }
