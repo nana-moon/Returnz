@@ -18,6 +18,7 @@ import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameSettings;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.enums.Theme;
+import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.service.readonly.GameInfoService;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
 import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
@@ -300,16 +301,16 @@ public class GameStartService {
 			case COVID:
 				List<String> companyIdList = covidThemeCompanyRepository.findRandomCompaniesId(pageable)
 					.getContent();
-				return companyRepository.findCompaniesByCodeList(companyIdList);
+				return companyRepository.findCompaniesByCodeList(companyIdList, pageable);
 
 			case RIEMANN:
 				List<String> rimanCompanyIdList = riemannThemeCompanyRepository.findRandomCompaniesId(pageable)
 					.getContent();
-				return companyRepository.findCompaniesByCodeList(rimanCompanyIdList);
+				return companyRepository.findCompaniesByCodeList(rimanCompanyIdList, pageable);
 			case DOTCOM:
 				List<String> dotcomCompanyIdList = dotcomThemeCompanyRepository.findRandomCompaniesId(pageable)
 					.getContent();
-				return companyRepository.findCompaniesByCodeList(dotcomCompanyIdList);
+				return companyRepository.findCompaniesByCodeList(dotcomCompanyIdList, pageable);
 			default:
 				return companyRepository.findRandomCompanies(pageable);
 		}
@@ -344,24 +345,35 @@ public class GameStartService {
 		}
 
 		Pageable pageable = PageRequest.of(0, gameSettings.getTotalTurn());
-
-		// 뉴스 찾을 찾아올 구간 확인
-		LocalDateTime startDate = gameSettings.getStartDateTime();
-		List<LocalDateTime> dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList,
-				pageable)
-			.getContent();
-		//있는 데이터 중에서
-		//가능한 구간의 마지막 하나만 가져온다 = endDate
-		LocalDateTime endDate = dateEndDate.get(dateEndDate.size() - 1);
+		LocalDateTime startDate = null;
+		List<LocalDateTime> dateEndDate = null;
+		LocalDateTime endDate = null;
+		// 턴종류 따라서 다르게 가져와야함
+		startDate = gameSettings.getStartDateTime();
+		if (gameSettings.getTurnPerTime().equals(TurnPerTime.DAY)) {
+			// 뉴스 찾을 찾아올 구간 확인
+			dateEndDate = historicalPriceDayRepository.getDateEndDate(startDate, stockIdList,
+					pageable)
+				.getContent();
+			endDate = dateEndDate.get(dateEndDate.size() - 1);
+		} else if (gameSettings.getTurnPerTime().equals(TurnPerTime.MONTH)) {
+			//엔드데이트를 어떻게 가져오냐.. 유틸 써서 넓게 가져오자
+			List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(startDate, gameSettings.getTotalTurn());
+			endDate = monthRanges.get(monthRanges.size() - 1).getLastDay();
+		} else {
+			if (!gameSettings.getTurnPerTime().equals(TurnPerTime.WEEK)) {
+				throw new BadRequestException("잘못된 turn per time 입니다.");
+			}
+			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(startDate, gameSettings.getTotalTurn());
+			endDate = weekRanges.get(weekRanges.size() - 1).getWeekLastDay();
+		}
 		// 기간 안에 뉴스 검색
 		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
 			stockIdList);
 
 		// 뉴스
-
 		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
 			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
-
 		NewsGroup newGroup = NewsGroup.builder()
 			.financialNews(newsList)
 			.endTime(endDate)
