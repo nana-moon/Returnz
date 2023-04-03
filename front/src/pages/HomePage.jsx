@@ -15,9 +15,7 @@ export default function HomePage() {
         <TopButtons />
       </ButtonsSection>
       <div className="grid grid-cols-4 grid-rows-6 gap-8">
-        <TopUsersSection>
-          <TodayTopUser />
-        </TopUsersSection>
+        <TopUsersSection>{/* <TodayTopUser /> */}</TopUsersSection>
         <RecommendedSection>
           <TestBox>
             <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />
