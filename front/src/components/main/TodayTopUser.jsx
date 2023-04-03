@@ -21,6 +21,11 @@ export default function TodayTopUser() {
     <TopUserContainer>
       <TopUserTitle> 🏆 수익률 TOP 10</TopUserTitle>
       <TopUserBox>
+        <div className="flex ml-4 pt-4 font-bold border-b-2 mr-4 pb-2">
+          <div className="w-[15%] text-left pl-2">등수</div>
+          <div className="w-[70%] text-center">아이디</div>
+          <div className="w-[15%] ">수익률</div>
+        </div>
         {topTenUsers?.map((person, i) => {
           // eslint-disable-next-line react/no-array-index-key
           return <TodayTopUserItem person={person} key={person.username} img={rankIcon[i]} />;
