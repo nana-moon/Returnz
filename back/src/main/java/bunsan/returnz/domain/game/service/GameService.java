@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -20,6 +21,9 @@ import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameStockDto;
 import bunsan.returnz.domain.game.enums.StockState;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
+import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
+import bunsan.returnz.domain.game.util.calendarrange.MonthRange;
+import bunsan.returnz.domain.game.util.calendarrange.WeekRange;
 import bunsan.returnz.domain.member.service.MemberService;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.global.advice.exception.BusinessException;
@@ -46,6 +50,7 @@ public class GameService {
 	 * @param gamerId : 게이머 식별자
 	 * @return : HashMap<String, Object> 형태로 반환
 	 */
+	@Transactional
 	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId) {
 
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
@@ -81,9 +86,25 @@ public class GameService {
 		// 2. id로 멤버 불러오기
 		turnInformation.put("gamer", getAllGamer(gameRoomDto));
 
-		// 3. 나의 현재 보유 종목
+		// 3. 나의 현재 보유 종목, companyName과 logo 붙여서 return
+		log.info("================= turn progress - 나의 보유 종목");
 		List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
-		turnInformation.put("gamerStock", gameGamerStockDtos);
+		// 주식 평가 정보 update
+		updateStockInformation(gameGamerStockDtos, roomId,
+			gameRoomDto, gamerId);
+		gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+		List<GameGamerStockDto> gameGamerStockDtosResponse = new LinkedList<>();
+		for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+			// companyName과 logo 불러오기
+			GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+				gamerStockDto.getCompanyCode());
+			gamerStockDto.setLogo(companyDetailDto.getLogo());
+			gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			gameGamerStockDtosResponse.add(gamerStockDto);
+			log.info(gamerStockDto.toString());
+		}
+
+		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
 
 		// 6. 주가 정보
 		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
@@ -185,6 +206,7 @@ public class GameService {
 					// 주가 정보 List에 추가
 					gameStockPriceInformationDtos.add(gameStockPriceInformationDto);
 				}
+
 				// companyCode를 key로 list를 불러올 수 있게 설정
 				mapGameStockPriceInformationDto.put(companyCode,
 					gameStockPriceInformationDtos);
@@ -201,10 +223,11 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
 	 */
-	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
+	@Transactional
+	public boolean updateStockInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
 		GameRoomDto gameRoomDto, Long gamerId) {
 
-		log.info("============================= updateTurnInformation");
+		log.info("============================= updateStockInformation");
 
 		// 현재 방의 날짜
 		LocalDateTime curTime = gameRoomDto.getCurDate();
@@ -216,11 +239,6 @@ public class GameService {
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
 			gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
 				curTime, gameGamerStockDtos.get(0).getCompanyCode());
-
-		// 처음 턴일 경우, 정보 출력 후 현재 날짜를 다음 날짜로
-		if (gameRoomDto.getCurTurn() == 0) {
-			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
-		}
 
 		// 처음턴이 아닐 경우 아래 수행
 
@@ -242,15 +260,16 @@ public class GameService {
 		// totalEvaluationStock += 각 주식 보유 수 * 각 주식의 현재 가격
 		Integer totalEvaluationStock = 0;
 		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
-
+			log.info("gameGamerStockDto for 문 안 : " + gameGamerStockDto.toString());
 			// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
 			GameHistoricalPriceDayDto stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
+				curTime, gameGamerStockDto.getCompanyCode());
+
 			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
 			// : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
 			GameHistoricalPriceDayDto stockPriceDataBefore
 				= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
-				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
+				curTime, gameGamerStockDto.getCompanyCode());
 
 			Double stockClosePrice = 0.0;
 			if (stockPriceData != null) {
@@ -272,7 +291,6 @@ public class GameService {
 						Double.parseDouble(stockPriceDataBefore.getClose())
 							* gameExchangeInterestDto.getExchangeRate()));
 			}
-
 			// 다음 턴 날짜에 해당하는 주식 가격을 가져올 수 없을 경우, 전 영업일을 기준으로 계산한다.
 			if (stockClosePrice == 0) {
 				// throw new BadRequestException(gameGamerStockDto.getCompanyCode() + " 해당 주식 가격을 찾을 수 없습니다.");
@@ -314,6 +332,7 @@ public class GameService {
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
 			}
 			// "gamer_stock" Table update
+			log.info("===================== Before gamer_stock update");
 			log.info(gameGamerStockDto.toString());
 			gamerStockService.updateDto(gameGamerStockDto);
 		}
@@ -331,7 +350,45 @@ public class GameService {
 		log.info(gameGamerDto.toString());
 		gamerService.updateDto(gameGamerDto);
 
-		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+		return true;
+	}
+
+	/**
+	 * Description : roomId에 해당하는 게임방의 정보를 다음 턴으로 update 한다.
+	 * @param gameGamerStockDtos : 주식 종목 리스트
+	 * @param roomId : 게임방 uuid
+	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
+	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
+	 */
+	@Transactional
+	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
+		GameRoomDto gameRoomDto, Long gamerId) {
+
+		log.info("============================= updateTurnInformation");
+
+		// 현재 방의 날짜
+		LocalDateTime curTime = gameRoomDto.getCurDate();
+		GameHistoricalPriceDayDto gameHistoricalPriceDayDtoBefore =
+			gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
+				curTime, gameGamerStockDtos.get(0).getCompanyCode()).get(0);
+
+		// 처음 턴일 경우, 정보 출력 후 현재 날짜를 다음 날짜로
+		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
+			// 현재 방의 날짜를 기준으로 다음 영업일을 구한다.
+			GameHistoricalPriceDayDto gameHistoricalPriceDayDto =
+				gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
+					curTime, gameGamerStockDtos.get(0).getCompanyCode());
+
+			return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
+		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
+			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 2);
+			return gameRoomService.updateGameTurn(weekRanges.get(1).getWeekLastDay(), roomId);
+		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MONTH)) {
+			List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(gameRoomDto.getCurDate(), 2);
+			return gameRoomService.updateGameTurn(monthRanges.get(1).getLastDay(), roomId);
+		}
+
+		throw new BadRequestException("지정되지 않은 턴 입니다.");
 	}
 
 	/**
@@ -449,7 +506,86 @@ public class GameService {
 	 */
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceWeek(List<GameStockDto> gameStockDtoList,
 		GameRoomDto gameRoomDto) {
-		return null;
+
+		HashMap<String, List<GameHistoricalPriceDayDto>> mapGameHistoricalPriceDayDto = new HashMap<>();
+		// 첫 번째 턴인경우, 20 번 전 정보를 제공, HashMap에 저장
+		if (gameRoomDto.getCurTurn() == 0) {
+			for (int i = 0; i < gameStockDtoList.size(); ++i) {
+
+				String companyCode = gameStockDtoList.get(i).getCompanyCode();
+				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
+					gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit20(
+						gameRoomDto.getCurDate(), companyCode);
+
+				// 문자열 길이 소수점 2자리 까지만으로 처리
+				for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
+					gameHistoricalPriceDayDto.setOpen(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getOpen())));
+					gameHistoricalPriceDayDto.setHigh(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getHigh())));
+					gameHistoricalPriceDayDto.setLow(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getLow())));
+					gameHistoricalPriceDayDto.setClose(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
+					gameHistoricalPriceDayDto.setAdjclose(
+						String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getAdjclose())));
+				}
+
+				// Key를 가지고 있지 않을 경우만
+				if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
+					mapGameHistoricalPriceDayDto.put(companyCode, gameHistoricalPriceDayDtos);
+				}
+			}
+
+		} else { // 첫 번째 턴이 아닌 경우 해당 주 까지 데이터 준다.
+
+			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 1);
+			LocalDateTime endDate = weekRanges.get(0).getWeekLastDay();
+			for (int i = 0; i < gameStockDtoList.size(); ++i) {
+				String companyCode = gameStockDtoList.get(i).getCompanyCode();
+				log.info("week range");
+				log.info(endDate.minusDays(4) + " " + endDate + " " + companyCode);
+				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
+					gameHistoricalPriceDayService.findAllByDateTimeIsBetweenWithCode(
+						endDate.minusDays(4), endDate, companyCode);
+
+				log.info("result : " + gameHistoricalPriceDayDtos.toString());
+
+				// for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
+				//
+				// 	if(gameHistoricalPriceDayDto.)
+				//
+				// 	if (!gameHistoricalPriceDayDto.getDateTime().isEqual(gameRoomDto.getCurDate())) {
+				// 		gameHistoricalPriceDayDtos.get(0).setDateTime(gameRoomDto.getCurDate());
+				// 		gameHistoricalPriceDayDtos.get(0).setClose("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setHigh("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setOpen("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setLow("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setAdjclose("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setDividends("0");
+				// 		gameHistoricalPriceDayDtos.get(0).setVolume("0");
+				// 	} else {
+				// 		for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
+				// 			gameHistoricalPriceDayDto.setOpen(
+				// 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getOpen())));
+				// 			gameHistoricalPriceDayDto.setHigh(
+				// 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getHigh())));
+				// 			gameHistoricalPriceDayDto.setLow(
+				// 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getLow())));
+				// 			gameHistoricalPriceDayDto.setClose(
+				// 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
+				// 			gameHistoricalPriceDayDto.setAdjclose(
+				// 				String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getAdjclose())));
+				// 		}
+				// 	}
+				// }
+				// Key를 가지고 있지 않을 경우만
+				if (!mapGameHistoricalPriceDayDto.containsKey(companyCode)) {
+					mapGameHistoricalPriceDayDto.put(companyCode, gameHistoricalPriceDayDtos);
+				}
+			}
+		}
+		return mapGameHistoricalPriceDayDto;
 	}
 
 	/**

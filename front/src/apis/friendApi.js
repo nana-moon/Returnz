@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { authApi } from './axiosConfig';
 
 const getFriendRequestsApi = () => {
@@ -7,6 +8,18 @@ const getFriendRequestsApi = () => {
       return res.data.friendRequestList;
     })
     .catch((err) => {
+      return err;
+    });
+};
+const sendFriendRequestApi = (payload) => {
+  return authApi
+    .post(`/requests`, payload)
+    .then((res) => {
+      Swal.fire({ title: '친구요청 완료', confirmButtonColor: '#1CD6C9' });
+      return res;
+    })
+    .catch((err) => {
+      Swal.fire({ title: '해당 유저가 존재하지 않습니다.', confirmButtonColor: '#1CD6C9' });
       return err;
     });
 };
@@ -33,4 +46,4 @@ const declineFriendRequestApi = (payload) => {
     });
 };
 
-export { getFriendRequestsApi, acceptFriendRequestApi, declineFriendRequestApi };
+export { getFriendRequestsApi, sendFriendRequestApi, acceptFriendRequestApi, declineFriendRequestApi };
