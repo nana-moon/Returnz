@@ -204,6 +204,8 @@ public class GameService {
 	public boolean updateTurnInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
 		GameRoomDto gameRoomDto, Long gamerId) {
 
+		log.info("============================= updateTurnInformation");
+
 		// 현재 방의 날짜
 		LocalDateTime curTime = gameRoomDto.getCurDate();
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDtoBefore =
@@ -233,16 +235,18 @@ public class GameService {
 		// 평가손익 : 해당 주식 현재 총 가격 - 해당 주식 총 구매 가격
 		// 수익률 : profitRate : (해당 주식 현재 총 가격 - 해당 주식 총 구매 가격) / (해당 주식 총 구매가격) * 100
 		// 수익률 : profitRate : ((int)(Double.parseDouble(stockPriceDataBefoer.getClose())
-		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice) / (totalCount * averagePrice) * 100
+		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice)
+		// 					/ (totalCount * averagePrice) * 100
 		Integer totalEvaluationStock = gameGamerDto.getTotalEvaluationStock();
 		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
 
-			log.info("==============================================1");
 			// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
 			GameHistoricalPriceDayDto stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
-			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다. : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
-			GameHistoricalPriceDayDto stockPriceDataBefoer = gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
+			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
+			// : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
+			GameHistoricalPriceDayDto stockPriceDataBefoer
+				= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
 
 			Double stockClosePrice = 0.0;
@@ -268,8 +272,12 @@ public class GameService {
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
 				// 수익률 계산
-				Double profitRate =
-					(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				Double profitRate = 0.0;
+				if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
+					&& gameGamerStockDto.getTotalCount() != 0) {
+					profitRate =
+						(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				}
 				// 해당 정보 반영
 				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
@@ -281,13 +289,18 @@ public class GameService {
 				Double valuation =
 					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
 				// 수익률 계산
-				Double profitRate =
-					(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				Double profitRate = 0.0;
+				if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
+					&& gameGamerStockDto.getTotalCount() != 0) {
+					profitRate =
+						(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				}
 				// 해당 정보 반영
 				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
 			}
 			// "gamer_stock" Table update
+			log.info(gameGamerStockDto.toString());
 			gamerStockService.updateDto(gameGamerStockDto);
 		}
 
@@ -301,6 +314,7 @@ public class GameService {
 		gameGamerDto.setTotalProfitRate(
 			(double)(((totalEvaluationAsset - gameGamerDto.getOriginDeposit()) / gameGamerDto.getOriginDeposit())
 				* 100));
+		log.info(gameGamerDto.toString());
 		gamerService.updateDto(gameGamerDto);
 
 		return gameRoomService.updateGameTurn(gameHistoricalPriceDayDto.getDateTime(), roomId);
@@ -503,8 +517,6 @@ public class GameService {
 		if (stockClosePrice == 0) {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
-
-		log.info(gameHistoricalPriceDayDto.toString());
 
 		// deposit이 총 매수 금액 보다 크거나 같을 때 구매할 수 있다.
 		if (gameGamerDto.getDeposit() >= (stockClosePrice * count)) {
