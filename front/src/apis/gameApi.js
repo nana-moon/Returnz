@@ -47,11 +47,24 @@ const buyStockApi = (payload) => {
     });
 };
 
+const sellStockApi = (payload) => {
+  return axios
+    .post('/games/sales', payload)
+    .then((res) => {
+      console.log('매도 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('매도 실패', err);
+      return false;
+    });
+};
+
 const getNewsApi = (payload) => {
   return authApi
     .post('/news', payload)
     .then((res) => {
-      console.log('뉴스가져오기 성공', res);
+      // console.log('뉴스가져오기 성공', res);
       return res.data;
     })
     .catch((err) => {
@@ -64,4 +77,4 @@ const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi, getNewsApi };
+export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi, sellStockApi, getNewsApi };
