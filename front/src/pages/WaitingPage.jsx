@@ -179,9 +179,9 @@ export default function WaitingPage() {
 
   // -------------------------| START/EXIT GAME |------------------------------------------------------------------
 
-  // const handlePage = () => {
-  //   navigate('/game');
-  // };
+  const handlePage = () => {
+    navigate('/game');
+  };
 
   const handleTurn = async (turnReq, id) => {
     const gameData = await gameDataApi(turnReq);
@@ -211,7 +211,7 @@ export default function WaitingPage() {
 
     dispatch(handleGetTodayDate(gameData.currentDate));
     sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
-    // handlePage();
+    handlePage();
   };
 
   const handleGameInfo = async () => {
