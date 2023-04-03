@@ -81,8 +81,16 @@ public class GameService {
 		// 2. id로 멤버 불러오기
 		turnInformation.put("gamer", getAllGamer(gameRoomDto));
 
-		// 3. 나의 현재 보유 종목
+		// 3. 나의 현재 보유 종목, companyName과 logo 붙여서 return
 		List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+		for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
+			// companyName과 logo 불러오기
+			GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
+				gamerStockDto.getCompanyCode());
+			gamerStockDto.setLogo(companyDetailDto.getLogo());
+			gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+		}
+
 		turnInformation.put("gamerStock", gameGamerStockDtos);
 
 		// 6. 주가 정보
