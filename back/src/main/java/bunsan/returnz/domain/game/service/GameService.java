@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -89,16 +90,18 @@ public class GameService {
 		updateStockInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId);
 		gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+		List<GameGamerStockDto> gameGamerStockDtosResponse = new LinkedList<>();
 		for (GameGamerStockDto gamerStockDto : gameGamerStockDtos) {
 			// companyName과 logo 불러오기
 			GameCompanyDetailDto companyDetailDto = gameCompanyDetailService.findByCompanyCode(
 				gamerStockDto.getCompanyCode());
 			gamerStockDto.setLogo(companyDetailDto.getLogo());
 			gamerStockDto.setCompanyName(companyDetailDto.getKoName());
+			gameGamerStockDtosResponse.add(gamerStockDto);
 			log.info(gamerStockDto.toString());
 		}
-		gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
-		turnInformation.put("gamerStock", gameGamerStockDtos);
+
+		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
 
 		// 6. 주가 정보
 		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
