@@ -24,13 +24,22 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
 
   // 턴 시작일 달력 설정
   const maxDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
+  const handleDate = (e) => {
+    const selectedDate = new Date(e.target.value);
+    const day = selectedDate.getDay();
+    if (day === 0 || day === 6) {
+      alert('주말은 선택할 수 없습니다.');
+      e.target.value = '';
+    }
+    handleUserSetting(e);
+  };
 
   return (
     <UserSettingContainer>
       <BackBtn onClick={handleIsUserSetting}>테마보기</BackBtn>
       <TurnDateSection>
         <TurnDateTitle>턴 시작일</TurnDateTitle>
-        <TurnDateInput onChange={handleUserSetting} name="startTime" type="date" min="2001-01-01" max={maxDate} />
+        <TurnDateInput onChange={handleDate} name="startTime" type="date" min="2001-01-01" max={maxDate} />
       </TurnDateSection>
       <TurnPeriodSection>
         <TurnPeriodTitle>턴 단위</TurnPeriodTitle>

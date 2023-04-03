@@ -23,7 +23,7 @@ export default function Chatting({ receivedMessage, getInputMessage }) {
   return (
     <ChattingContainer>
       <ChattingBox>
-        {messageList.map((chat, i) => {
+        {messageList.reverse().map((chat, i) => {
           return (
             // eslint-disable-next-line react/no-array-index-key
             <ChattingDiv key={i}>
@@ -43,13 +43,10 @@ export default function Chatting({ receivedMessage, getInputMessage }) {
   );
 }
 const ChattingContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[100%] h-[100%] p-2`}
+  ${tw`border bg-white rounded-xl w-[100%] h-[80%] p-2`}
 `;
 const ChattingBox = styled.div`
-  ${tw`bg-white rounded-xl w-[100%] min-h-[calc(100%-35px)]`}
-  ::-webkit-scrollbar {
-    display: none;
-  }
+  ${tw`bg-white rounded-xl w-[100%] h-[calc(100%-35px)] flex flex-col-reverse overflow-y-auto`}
 `;
 const ChattingDiv = styled.div`
   ${tw`w-[100%] max-h-[80%] p-2`}
