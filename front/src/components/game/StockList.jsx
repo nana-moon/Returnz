@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 // import StockData from './Items/StockListData';
+import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
+import imgpath from './assets/stockListHelp.png';
 import StockListItem from './Items/StockListItem';
 import { change, receiveSetting } from '../../store/buysellmodal/BuySell.reducer';
 import { modalState, sellNeedData, buyNeedData, selectedIdx } from '../../store/buysellmodal/BuySell.selector';
@@ -30,6 +32,7 @@ export default function StockList() {
   };
 
   const checkCanSell = (data) => {
+    console.log(canSell, 'test');
     const foundObj = canSell.holdingcount.find((obj) => Object.keys(obj)[0] === data);
     console.log('부모컴포넌트', data, canSell, '개수:', foundObj[data]);
     setResult(foundObj[data]);
@@ -38,7 +41,27 @@ export default function StockList() {
   return (
     <StockListContanier>
       {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} checkCanSell={checkCanSell} /> : null}
-      <StockListSection>상장 종목</StockListSection>
+      <StockListSection>
+        상장 종목
+        <div className="absolute top-1 right-4">
+          <Popover
+            animate={{
+              mount: { scale: 1, y: 0 },
+              unmount: { scale: 0, y: 25 },
+            }}
+            placement="right-start"
+          >
+            <PopoverHandler>
+              <Button variant="gradient" color="white" size="sm" className="border border-negative">
+                ?
+              </Button>
+            </PopoverHandler>
+            <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
+              <img src={imgpath} alt="" />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </StockListSection>
       <ListContanier>
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
@@ -76,7 +99,7 @@ const ListContanier = styled.div`
   ${tw`border bg-white rounded-xl overflow-y-auto`}
 `;
 const StockListSection = styled.div`
-  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2`}
+  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2 border-t border-l border-r`}
 `;
 const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}

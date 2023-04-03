@@ -87,34 +87,44 @@ public class RequestSettingGame {
 		}
 		if (this.theme.getTheme().equals("LAST_YEAR")) {
 			LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
-			// 주말을 건너뛰기 위한 로직
-			if (oneYearAgo.getDayOfWeek() == DayOfWeek.SATURDAY) {
-				oneYearAgo = oneYearAgo.minusDays(1);
-			} else if (oneYearAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
-				oneYearAgo = oneYearAgo.minusDays(2);
-			}
-			this.startTime = LocalDate.from(oneYearAgo);
-			return oneYearAgo;
+			// 주말임을 검사하고 맞으면  건너뛰기 위한 로직
+			return jumpWeek(oneYearAgo);
 		}
 		if (this.theme.getTheme().equals("LAST_MONTH")) {
 			LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
-			if (oneMonthAgo.getDayOfWeek() == DayOfWeek.SATURDAY) {
-				oneMonthAgo = oneMonthAgo.minusDays(1);
-			} else if (oneMonthAgo.getDayOfWeek() == DayOfWeek.SUNDAY) {
-				oneMonthAgo = oneMonthAgo.minusDays(2);
-			}
-			this.startTime = LocalDate.from(oneMonthAgo);
-			return oneMonthAgo;
+			return jumpWeek(oneMonthAgo);
 		}
 		return this.startTime.atStartOfDay();
 	}
 
+	private LocalDateTime jumpWeek(LocalDateTime inputDateTime) {
+		if (inputDateTime.getDayOfWeek() == DayOfWeek.SATURDAY) {
+			// 토요일이면 하루 빼고
+			inputDateTime = inputDateTime.minusDays(1);
+		} else if (inputDateTime.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			// 일요일이면 이틀 뺀다
+			inputDateTime = inputDateTime.minusDays(2);
+		}
+		this.startTime = LocalDate.from(inputDateTime);
+		return LocalDateTime.of(
+			inputDateTime.getYear(),
+			inputDateTime.getMonthValue(),
+			inputDateTime.getDayOfMonth(),
+			0, 0, 0
+		);
+	}
+
 	public TurnPerTime setThemTurnPerTime() {
-		if (this.theme != Theme.USER) {
+
+		if (this.theme.equals(Theme.LAST_MONTH) || this.theme.equals(Theme.LAST_YEAR)) {
 			this.turnPerTime = TurnPerTime.DAY;
 			return TurnPerTime.DAY;
+		} else if (!this.theme.equals(Theme.USER)) {
+			this.turnPerTime = TurnPerTime.WEEK;
+			return TurnPerTime.WEEK;
+		} else {
+			return this.turnPerTime;
 		}
-		return this.turnPerTime;
 	}
 
 	public Integer setThemeTotalTurnTime() {
@@ -131,7 +141,7 @@ public class RequestSettingGame {
 			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("LAST_MONTH")) {
-			this.totalTurn = 30;
+			this.totalTurn = 10;
 		}
 		return this.totalTurn;
 	}

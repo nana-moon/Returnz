@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Avatar } from '@material-tailwind/react';
+import { Avatar, Input } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
+import { BsSend } from 'react-icons/bs';
 import { handleModalState } from '../../store/profileeditmodal/ProfileEdit.reducer';
-import { getPossibleProfile } from '../../apis/userApi';
+import { getPossibleProfile, patchMyNickname, patchMyProfile } from '../../apis/userApi';
 
 export default function ProfileEditModal() {
   const dispatch = useDispatch();
+  const onChange = (e) => setNewNickname(e.target.value);
+  const [newNickname, setNewNickname] = useState('');
   const myPic = Cookies.get('profileIcon');
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
@@ -18,11 +21,31 @@ export default function ProfileEditModal() {
   useEffect(() => {
     async function fetchData() {
       const res = await getPossibleProfile();
-      console.log(res, '프사리스트');
       setPossibleProfiles(res);
     }
     fetchData();
   }, []);
+  const handleNicknameChange = async () => {
+    const data = {
+      newNickname: `${newNickname}`,
+    };
+    const res = await patchMyNickname(data);
+    if (res.status === 200) {
+      Cookies.remove('nickname');
+      Cookies.set('nickname', newNickname);
+    }
+  };
+  const handleProfileChange = async (pic) => {
+    const data = {
+      newProfile: pic,
+    };
+    const res = await patchMyProfile(data);
+    console.log(res);
+    if (res.status === 200) {
+      Cookies.remove('profileIcon');
+      Cookies.set('profileIcon', pic);
+    }
+  };
   return (
     <ProfileEditContainer>
       <BackgroundContainer>gg</BackgroundContainer>
@@ -30,22 +53,27 @@ export default function ProfileEditModal() {
         <MyInfoSection>
           <Avatar size="xxl" variant="circular" src={picPath} className=" border-2 border-negative" />
         </MyInfoSection>
-        <UserNameContainer>{myNick}</UserNameContainer>
+        <UserNameContainer>
+          <Input type="text" label={myNick} color="cyan" value={newNickname} onChange={onChange} className="bg-input" />
+          <SendButton onClick={handleNicknameChange}>
+            <BsSend />
+          </SendButton>
+        </UserNameContainer>
         <EncourageMessage>총 12개의 프로필 사진을 해금해보세요</EncourageMessage>
         <PicturesContainer>
-          {possibleProfiles.map((pic) => {
+          {possibleProfiles?.map((pic) => {
             return (
               <Avatar
                 size="xl"
                 variant="circular"
-                className="border-2 border-negative"
+                className="border-2 border-negative hover:cursor-pointer"
                 src={`profile_pics/${pic}.jpg`}
+                onClick={() => handleProfileChange(pic)}
               />
             );
           })}
         </PicturesContainer>
         <ButtonsSection>
-          <CompleteButton>저장하기</CompleteButton>
           <BackButton onClick={handleModal}>나가기</BackButton>
         </ButtonsSection>
       </ModalSection>
@@ -77,7 +105,7 @@ const EncourageMessage = styled.div`
   ${tw`text-center font-bold mb-4 mt-6`}
 `;
 const UserNameContainer = styled.div`
-  ${tw`text-xl text-center`}
+  ${tw`text-xl text-center flex gap-2`}
 `;
 
 const PicturesContainer = styled.div`
@@ -87,9 +115,9 @@ const PicturesContainer = styled.div`
 const ButtonsSection = styled.div`
   ${tw`flex justify-center gap-20 mt-10`}
 `;
-const CompleteButton = styled.div`
-  ${tw`text-white bg-primary border-4 border-primary hover:bg-dprimary focus:border-dprimary font-bold text-xl rounded-lg px-6 py-3.5 text-center`}
-`;
 const BackButton = styled.button`
   ${tw`text-primary bg-white border-4 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold text-xl rounded-lg px-8 py-3.5 text-center`}
+`;
+const SendButton = styled.button`
+  ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
 `;

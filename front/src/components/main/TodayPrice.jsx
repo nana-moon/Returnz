@@ -1,6 +1,7 @@
 import { React } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useQuery } from 'react-query';
+import { AiFillDollarCircle } from 'react-icons/ai';
 import {
   getExchangeKrUs,
   getExchangeKrJp,
@@ -16,7 +17,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: exchangeKrJp } = useQuery({
     queryKey: ['exchangeKrJp'],
@@ -24,7 +25,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: exchangeKrEu } = useQuery({
     queryKey: ['exchangeKrEu'],
@@ -32,7 +33,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
 
   const { data: exchangeKrBit } = useQuery({
@@ -45,7 +46,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   const { data: oilPrice } = useQuery({
     queryKey: ['getOilPrice'],
@@ -53,12 +54,15 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-    staleTime: 600000,
+    staleTime: 6000000,
   });
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
-        <StockTitle>미국 달러 환율</StockTitle>
+        <StockTitle>
+          <AiFillDollarCircle />
+          미국 달러 환율
+        </StockTitle>
         <StockPrice>{parseFloat(exchangeKrUs?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
       </TodayPriceItem>
       {/* <TodayPriceItem>
@@ -96,7 +100,7 @@ const TodayPriceItem = styled.div`
 `;
 
 const StockTitle = styled.div`
-  ${tw`text-black`}
+  ${tw`text-black font-bold flex`}
 `;
 
 const StockPrice = styled.div`
