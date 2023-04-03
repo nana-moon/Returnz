@@ -23,7 +23,7 @@ export const gamedata = createSlice({
     // 환율 한국금리 미국금리
     changeInterest: {
       date: null,
-      exchageRate: 0,
+      exchangeRate: 0,
       korea: 0,
       usa: 0,
     },
@@ -36,6 +36,7 @@ export const gamedata = createSlice({
     gameTurn: {
       nowTurn: 0,
       maxTurn: 30,
+      dayTurn: 2,
     },
   },
   reducers: {
@@ -79,44 +80,49 @@ export const gamedata = createSlice({
       const keys = Object.keys(state.stockDataList);
       const actionkeys = Object.keys(action.payload);
       let tmpdata;
-      const noWorkIdx = [];
+      let noWorkIdx;
 
       for (const key of keys) {
-        if (action.payload[key][0].volume === '0') {
-          const lastIndex = state.stockDataList[key].length - 1;
-          state.stockDataList[key].push(state.stockDataList[key][lastIndex]);
-          console.log('영업날이아니래');
+        state.gameTurn.dayTurn = action.payload[key].length + 1;
+        if (action.payload[key][action.payload[key].length - 1].volume === '0') {
+          // const lastIndex = state.stockDataList[key].length - 1;
+          // state.stockDataList[key].push(state.stockDataList[key][lastIndex]);
+          state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
         } else {
           state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
         }
       }
 
       for (const key of actionkeys) {
-        const name = action.payload[key][0].companyName;
-        const datex = action.payload[key][0].dateTime;
-        const candley = [
-          action.payload[key][0].open,
-          action.payload[key][0].high,
-          action.payload[key][0].low,
-          action.payload[key][0].close,
-        ];
-        const liney = action.payload[key][0].volume;
+        noWorkIdx = [];
+        for (let i = 0; i < action.payload[key].length; i += 1) {
+          const name = action.payload[key][i].companyName;
+          const datex = action.payload[key][i].dateTime;
+          const candley = [
+            action.payload[key][i].open,
+            action.payload[key][i].high,
+            action.payload[key][i].low,
+            action.payload[key][i].close,
+          ];
+          const liney = action.payload[key][i].volume;
 
-        if (liney === '0') {
-          const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[0] === name);
-          const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[0];
-          const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[0];
-          console.log('짤랐어', lastIndex, lastCandle, lastLine, action.payload[key][0]);
-          noWorkIdx.push(lastIndex);
-          tmpdata = { [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } } };
-        } else {
-          tmpdata = { [name]: { candledata: { x: datex, y: candley }, linedata: { x: datex, y: liney } } };
-        }
-
-        const index = state.stockGraphList.findIndex((item) => Object.keys(item)[0] === name);
-        if (index !== -1) {
-          state.stockGraphList[index][name].candledata.push(tmpdata[name].candledata);
-          state.stockGraphList[index][name].linedata.push(tmpdata[name].linedata);
+          if (liney === '0') {
+            const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[i] === name);
+            const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[i];
+            const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[i];
+            console.log('영업일이 아님', lastIndex, lastCandle, lastLine, action.payload[key][i]);
+            noWorkIdx.push(lastIndex);
+            tmpdata = { [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } } };
+          } else {
+            tmpdata = { [name]: { candledata: { x: datex, y: candley }, linedata: { x: datex, y: liney } } };
+          }
+          for (let j = 0; j < action.payload[key].length; j += 1) {
+            const index = state.stockGraphList.findIndex((item) => Object.keys(item)[j] === name);
+            if (index !== -1) {
+              state.stockGraphList[index][name].candledata.push(tmpdata[name].candledata);
+              state.stockGraphList[index][name].linedata.push(tmpdata[name].linedata);
+            }
+          }
         }
       }
 
@@ -134,6 +140,7 @@ export const gamedata = createSlice({
     },
     // 뉴스 업데이트
     handleGetStockNews(state, action) {
+      console.log('업데이트된 뉴스: ', action.payload);
       state.stockNews = action.payload;
     },
     // 주가정보,
@@ -159,6 +166,9 @@ export const gamedata = createSlice({
     handleGetchangeInterest(state, action) {
       state.changeInterest = action.payload;
     },
+    setMaxTurn(state, action) {
+      state.gameTurn.maxTurn = action.payload;
+    },
   },
 });
 
@@ -172,5 +182,6 @@ export const {
   handleUpdateHoldingData,
   handleGetStockNews,
   handleGetchangeInterest,
+  setMaxTurn,
 } = gamedata.actions;
 export default gamedata;

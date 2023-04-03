@@ -4,11 +4,9 @@ const makeRoomApi = async () => {
   return authApi
     .post('/wait-room')
     .then((res) => {
-      console.log('방만들기 성공', res);
       return res.data;
     })
     .catch((err) => {
-      console.log('방만들기 실패', err);
       return err;
     });
 };
@@ -22,11 +20,9 @@ const gameDataApi = (payload) => {
   return authApi
     .post('/games/game', payload)
     .then((res) => {
-      console.log('데이터 가져오기 성공', res);
       return res.data;
     })
     .catch((err) => {
-      console.log('데이터 가져오기 실패', err);
       return err;
     });
 };
