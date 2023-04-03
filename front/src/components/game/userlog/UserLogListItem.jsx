@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 import { sendMessageResult } from '../../../utils/Socket';
-import { getGameRoomId } from '../../../store/roominfo/GameRoom.selector';
+import { getGameRoomId, getIsReadyList } from '../../../store/roominfo/GameRoom.selector';
 
-export default function UserLogListItem({ player }) {
+export default function UserLogListItem({ player, isReady }) {
+  // hooks
+
   // MY LOG
   const myNicmname = Cookies.get('nickname');
   const isMe = myNicmname === player.nickname;
@@ -24,10 +26,9 @@ export default function UserLogListItem({ player }) {
   const header = {
     Authorization: ACCESS_TOKEN,
   };
+  const isReadyList = useSelector(getIsReadyList);
   // READY
-  const [isReady, setIsReady] = useState(false);
   const handleReady = () => {
-    setIsReady(!isReady);
     sendMessageResult(sendAddress, header, 'READY', gameRoomId, {});
   };
   return (
@@ -38,7 +39,7 @@ export default function UserLogListItem({ player }) {
           <div>{player.nickname}</div>
         </UserBox>
         {isMe && (
-          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" isReady={isReady}>
+          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" disabled={!isReady} isReady={isReady}>
             ready
           </ReadyBtn>
         )}
