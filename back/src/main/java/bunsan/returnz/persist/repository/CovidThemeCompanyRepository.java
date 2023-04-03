@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import bunsan.returnz.persist.entity.CovidThemeCompany;
 
 public interface CovidThemeCompanyRepository extends JpaRepository<CovidThemeCompany, String> {
-	@Query(value = "SELECT c FROM CovidThemeCompany c ORDER BY RAND()")
-	Page<CovidThemeCompany> findRandomCompaniesId(Pageable pageable);
+	@Query(value = "SELECT c.companyCode FROM CovidThemeCompany c  ORDER BY RAND()")
+	Page<String> findRandomCompaniesId(Pageable pageable);
 }

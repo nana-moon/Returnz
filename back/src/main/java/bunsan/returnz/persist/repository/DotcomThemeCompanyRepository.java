@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import bunsan.returnz.persist.entity.DotcomThemeCompany;
 
 public interface DotcomThemeCompanyRepository extends JpaRepository<DotcomThemeCompany, String> {
-	@Query(value = "SELECT d FROM DotcomThemeCompany d ORDER BY RAND()")
-	Page<DotcomThemeCompany> findRandomCompaniesId(Pageable pageable);
+	@Query(value = "SELECT d.companyCode FROM DotcomThemeCompany d ORDER BY RAND()")
+	Page<String> findRandomCompaniesId(Pageable pageable);
 }
