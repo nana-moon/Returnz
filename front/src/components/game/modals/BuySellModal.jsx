@@ -152,8 +152,8 @@ export default function BuySellModal({ code, checkCanSell }) {
             />
           </CountInputBox>
           <ButtonContainer>
-            <UpButton onClick={() => handleUpCount()}>▲</UpButton>
-            <DownButton onClick={() => handleDownCount()}>▼</DownButton>
+            <UpButton onClick={() => handleUpCount()}>🛆</UpButton>
+            <DownButton onClick={() => handleDownCount()}>🛆</DownButton>
           </ButtonContainer>
         </CountInputContainer>
 
@@ -244,7 +244,7 @@ const StockSection = styled.div`
 `;
 
 const NameBox = styled.div`
-  ${tw`w-[47%] text-negative`}
+  ${tw`w-[47%] text-gray-500`}
 `;
 
 const StockNameBox = styled.div`
@@ -252,7 +252,7 @@ const StockNameBox = styled.div`
 `;
 
 const CountBox = styled.div`
-  ${tw`w-[40%] text-negative`}
+  ${tw`w-[40%] text-gray-500`}
 `;
 
 const StockCountFirstBox = styled.div`
@@ -283,10 +283,11 @@ const CountInput = styled(Input)`
 `;
 
 const UpButton = styled.button`
-  ${tw`h-6`}
+  ${tw`h-4 mt-2`}
 `;
 
 const DownButton = styled.button`
+  transform: rotate(180deg);
   ${tw`h-6`}
 `;
 
@@ -296,7 +297,7 @@ const ButtonBox = styled.div`
 
 const RatioButton = styled(Button)`
   opacity: 0.7;
-  ${tw`h-6 w-[18%] mx-1 px-0 py-0 bg-negative shadow-none hover:shadow-none`}
+  ${tw`h-6 w-[18%] mx-1 px-0 py-0 bg-gray-500 shadow-none hover:shadow-none`}
 `;
 
 const StockCountSecond = styled.div`
