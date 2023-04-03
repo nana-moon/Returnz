@@ -150,6 +150,7 @@ public class SideBarService {
 
 		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
+
 	public void checkState(Member member, MemberState state) {
 		if (!member.getState().equals(state)) {
 			member.changeState(state);
