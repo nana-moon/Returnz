@@ -41,9 +41,7 @@ public class WaitController {
 	@MessageMapping("/wait-room")
 	public void sendToWaitRoom(WaitMessageDto waitRequest, @Header("Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
-		if (waitRequest.getType().equals(WaitMessageDto.MessageType.ENTER)) {
-			waitService.sendEnterMessage(waitRequest, token);
-		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.CHAT)) {
+		if (waitRequest.getType().equals(WaitMessageDto.MessageType.CHAT)) {
 			waitService.sendChatMessage(waitRequest, token);
 		} else if (waitRequest.getType().equals(WaitMessageDto.MessageType.SETTING)) {
 			ObjectMapper mapper = new ObjectMapper();
