@@ -16,8 +16,9 @@ import {
   handleGetTodayDate,
   handleGetStockInformation,
   handleGetStockNews,
+  handleGetchangeInterest,
 } from '../store/gamedata/GameData.reducer';
-import { gamerStockList, todayDate } from '../store/gamedata/GameData.selector';
+import { gamerStockList, todayDate, stockDataList } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId } from '../store/roominfo/GameRoom.selector';
@@ -27,13 +28,14 @@ import { getMessage, sendMessageResult, stompConnect } from '../utils/Socket';
 
 export default function GamePage() {
   const testdata = useSelector(gamerStockList);
+  const stockdata = useSelector(stockDataList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
   const holdingdata = useSelector(sellNeedData);
   const selectIdx = useSelector(selectedIdx);
   // 뉴스가져올떄 필요한 데이터
   const gameId = useSelector(getGameId);
-  const keys = Object.keys(testdata);
+  const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
 
   const dispatch = useDispatch();
@@ -59,6 +61,7 @@ export default function GamePage() {
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
         dispatch(handleGetTodayDate(res.data.currentDate));
+        dispatch(handleGetchangeInterest(res.data.exchangeInterest));
       })
       .catch((err) => {
         console.log(err);
@@ -75,7 +78,7 @@ export default function GamePage() {
       // eslint-disable-next-line no-await-in-loop
       const newsTmp = await getNewsApi(data);
       getNews.push({ [keys[i]]: newsTmp });
-      // console.log('중간점검', newsTmp, getNews);
+      console.log('중간점검', newsTmp, getNews);
     }
 
     dispatch(handleGetStockNews(getNews));

@@ -1,7 +1,9 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
+import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import imgpath from './Items/bear.jpg';
 import { gamerStockList } from '../../store/gamedata/GameData.selector';
 import HoldingListItem from './Items/HoldingListItem';
 
@@ -18,8 +20,25 @@ export default function HoldingList() {
   return (
     <HoldingListContanier>
       <HoldingListName>
-        보유종목
-        <AiOutlineQuestionCircle className="ml-2" />
+        보유 종목
+        <div className="absolute right-4">
+          <Popover
+            animate={{
+              mount: { scale: 1, y: 0 },
+              unmount: { scale: 0, y: 25 },
+            }}
+            placement="top-end"
+          >
+            <PopoverHandler>
+              <Button variant="gradient" color="white" size="sm" className="border border-negative">
+                ?
+              </Button>
+            </PopoverHandler>
+            <PopoverContent>
+              <img src={imgpath} alt="" />
+            </PopoverContent>
+          </Popover>
+        </div>
       </HoldingListName>
       <ListContanier>
         {holdingdata.map((holding, i) => {

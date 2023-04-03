@@ -9,20 +9,19 @@ export default function StockInfo() {
   const [view, setView] = useState('뉴스');
   const data = [
     {
-      label: '뉴스',
-      value: 'html',
-      desc: `news`,
+      label: '종목 소개',
+      value: 'vue',
+      desc: `datas`,
     },
     {
       label: '주가정보',
       value: 'react',
       desc: `info`,
     },
-
     {
-      label: '종목 소개',
-      value: 'vue',
-      desc: `datas`,
+      label: '뉴스',
+      value: 'html',
+      desc: `news`,
     },
   ];
 
@@ -45,9 +44,9 @@ export default function StockInfo() {
         >
           {data.map(({ value, desc }) => (
             <TabPanels key={value} value={value}>
-              {desc === 'news' && <NewsTab />}
-              {desc === 'info' && <StockInfoTab />}
               {desc === 'datas' && <Description />}
+              {desc === 'info' && <StockInfoTab />}
+              {desc === 'news' && <NewsTab />}
             </TabPanels>
           ))}
         </TabsBodys>
