@@ -24,20 +24,19 @@ export default function SideBar() {
   const myMail = Cookies.get('email');
   // 내 친구
   const [friendList, setfriendList] = useState();
+  // 내가 받은 친구요청 리스트
+  const { data: friendRequests } = useQuery({
+    queryKey: ['friendRequests'],
+    queryFn: () => getFriendRequestsApi(),
+    onError: (e) => {
+      console.log(e);
+    },
+  });
   // 내가 친구 추가하고싶은 사람
   const [newFriendNickname, setNewFriendNickname] = useState('');
   const onChange = (e) => setNewFriendNickname(e.target.value);
-  const [buttonState, setButtonState] = useState(false);
-  const sendFriendRq = () => {
-    setButtonState(true);
-    if (buttonState) {
-      handleFriendRequest();
-    }
-  };
   // 웹소켓
-  // const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-  const sock = new SockJs('http://192.168.100.175:8080/ws');
-
+  const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
   const options = {
     debug: false,
     protocols: Stomp.VERSIONS.supportedProtocols(),
@@ -53,124 +52,87 @@ export default function SideBar() {
   //   },
   //   staleTime: 1000000,
   // });
-  // 구독하기
-  const handleSubscribe = () => {
-    try {
-      stomp.subscribe(
-        `/user/sub/side-bar`,
-        (data) => {
-          const newMessage = JSON.parse(data.body);
-          if (newMessage.type === 'ENTER') {
-            console.log(newMessage, '내 친구 누구냐');
-            const newFriend = newMessage.messageBody.friendList;
-            console.log(newFriend, '나의 칭구칭긔');
-            setfriendList(newFriend);
-          } else if (newMessage.type === 'STATE') {
-            console.log(newMessage, '누가 상태바꿨냐');
-          } else if (newMessage.type === 'FRIEND') {
-            console.log(newMessage, '친구요청 잘왓니');
-          } else if (newMessage.type === 'INVITE') {
-            console.log(newMessage, '야 빨리 게임 들어오래');
-          }
-          console.log('ㅎㅎ');
-        },
-        {
-          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `${myToken}`,
-        },
-      );
-    } catch (err) {
-      console.log(err, '에러');
-    }
-  };
-
-  const handleEnter = () => {
-    try {
-      stomp.send(
-        '/pub/side-bar',
-        {
-          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `${myToken}`,
-        },
-        JSON.stringify({
-          type: 'ENTER',
-          messageBody: {
-            username: `${myMail}`,
-          },
-        }),
-      );
-      // stompUnsub();
-
-      // stomp.send(
-      //   '/pub/side-bar',
-      //   {
-      //     // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-      //     Authorization: `${myToken}`,
-      //   },
-      //   JSON.stringify({
-      //     type: 'FRIEND',
-      //     messageBody: {
-      //       username: `${myMail}`,
-      //     },
-      //   }),
-      // );
-    } catch (err) {
-      console.log(err, '에러');
-    }
-  };
-
   const handleFriendRequest = () => {
-    // handleSubscribe();
-    console.log('함수 들어옴');
-    try {
-      stomp.send(
-        '/pub/side-bar',
-        {
-          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `${myToken}`,
+    stomp.send(
+      '/pub/side-bar',
+      {
+        // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+        Authorization: `${myToken}`,
+      },
+      JSON.stringify({
+        type: 'FRIEND',
+        messageBody: {
+          username: newFriendNickname,
         },
-        JSON.stringify({
-          type: 'FRIEND',
-          messageBody: {
-            username: `${myMail}`,
-          },
-        }),
-      );
-    } catch (err) {
-      console.log(err, '에러');
-    }
+      }),
+    );
   };
-
-  function stompGetAlarms() {
-    try {
-      stomp.debug = null;
-      // console에 보여주는데 그것을 감추기 위한 debug
-      console.log('Connected');
-      stomp.connect(
-        {
-          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `${myToken}`,
-        },
-        () => {
-          handleSubscribe();
-          handleEnter();
-          buttonState && handleFriendRequest();
-          // handleSubscribe();
-          // handleFriendRequest();
-        },
-      );
-    } catch (err) {
-      console.log(err, '에러');
-    }
-  }
 
   useEffect(() => {
-    stompGetAlarms();
-  }, [buttonState]);
+    const stompConnect = () => {
+      try {
+        stomp.debug = null;
+        // console에 보여주는데 그것을 감추기 위한 debug
+        console.log('Connected');
+        stomp.connect(
+          {
+            // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+            Authorization: `${myToken}`,
+          },
+          () => {
+            stomp.subscribe(
+              `/user/sub/side-bar`,
+              (data) => {
+                const newMessage = JSON.parse(data.body);
+                console.log(newMessage, '이게뭔데;');
+                if (newMessage.type === 'ENTER') {
+                  console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
+                  const newFriend = newMessage.messageBody.friendList;
+                  console.log(newFriend, '나의 칭구칭긔');
+                  setfriendList(newFriend);
+                }
+                // -------------------------handle CHAT-----------------------------
+                if (newMessage.type === 'STATE') {
+                  console.log('STATE 메세지 도착', newMessage.messageBody);
+                }
+                // -------------------------handle SETTING-----------------------------
+                if (newMessage.type === 'FRIEND') {
+                  console.log('FRIEND 메세지 도착', newMessage.messageBody);
+                }
+                // -------------------------handle GAME_INFO-----------------------------
+                if (newMessage.type === 'INVITE') {
+                  console.log('INVITE 메세지 도착', newMessage.messageBody);
+                }
 
-  const stompUnsub = () => {
-    stomp.unsubscribe('sub-0');
-  };
+                // 데이터 파싱
+              },
+              {
+                // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+                Authorization: `${myToken}`,
+              },
+            );
+            stomp.send(
+              '/pub/side-bar',
+              {
+                // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+                Authorization: `${myToken}`,
+              },
+              JSON.stringify({
+                type: 'ENTER',
+                messageBody: {
+                  username: `${myMail}`,
+                },
+              }),
+            );
+          },
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    stompConnect();
+  }, []);
+
   // const { data: friendlist } = useQuery('friendlist', async () => {
   //   const response = await stompConnect();
   //   console.log(response, '리액트쿼리');
@@ -187,7 +149,8 @@ export default function SideBar() {
   //       },
   //       {
   //         // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-  //         Authorization: `${myToken}`,
+  //         Authorization:
+  //           'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb29uQG5hdmVyLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJ1c2VybmFtZSI6Im1vb25AbmF2ZXIuY29tIiwiaWQiOjgsIm5pY2tuYW1lIjoibW9vbiIsInByb2ZpbGVJY29uIjoiQSIsImV4cCI6MTY3OTc5NDMyMH0.CN8mcVj8BSqW49qHnwcbjMi8jZ8EMPBEvoIXxWai0M4',
   //       },
   //     );
   //   } catch (err) {}
@@ -210,14 +173,7 @@ export default function SideBar() {
   //   );
   // };
   // sendMessage();
-  const { data: friendRequests } = useQuery({
-    queryKey: ['friendRequests'],
-    queryFn: () => getFriendRequestsApi(),
-    onError: (e) => {
-      console.log(e, '에러');
-    },
-    // staleTime: 1000000,
-  });
+
   return (
     <SideBarContainer>
       <UserProfile />
@@ -242,7 +198,7 @@ export default function SideBar() {
           onChange={onChange}
           className="bg-input"
         />
-        <SearchButton onClick={sendFriendRq}>
+        <SearchButton onClick={handleFriendRequest}>
           <AiOutlineSearch />
         </SearchButton>
       </FriendSearchContainer>
