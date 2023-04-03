@@ -4,14 +4,14 @@ import tw, { styled } from 'twin.macro';
 import imgpath from './bear.jpg';
 
 export default function HoldingListItem({ holding }) {
-  let profit = 'black';
-  if (holding.profitRate < 1) {
+  let profit;
+  if (holding.profitRate < 0) {
     profit = 'lose';
   }
   if (holding.profitRate === 0) {
     profit = 'negative';
   }
-  if (holding.profitRate > 1) {
+  if (holding.profitRate > 0) {
     profit = 'gain';
   }
   return (

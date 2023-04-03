@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
-import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from '@material-tailwind/react';
+import {
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Button,
+} from '@material-tailwind/react';
 import NewsTab from './tabs/NewsTab';
 import StockInfoTab from './tabs/StockInfoTab';
 import Description from './tabs/Description';
 
 export default function StockInfo() {
-  const [view, setView] = useState('뉴스');
+  const [view, setView] = useState('종목 소개');
   const data = [
     {
       label: '종목 소개',
@@ -27,8 +37,24 @@ export default function StockInfo() {
 
   return (
     <StockInfoContanier>
-      <TabContainer id="custom-animation" value="html">
+      <TabContainer id="custom-animation" value="vue">
         <TabsHeader>
+          <div className="absolute top-12 left-2 z-10">
+            <Popover
+              animate={{
+                mount: { scale: 1, y: 0 },
+                unmount: { scale: 0, y: 25 },
+              }}
+              placement="right-start"
+            >
+              <PopoverHandler>
+                <Button variant="gradient" color="white" size="sm" className="border border-negative">
+                  ?
+                </Button>
+              </PopoverHandler>
+              <PopoverContent className="z-20">?</PopoverContent>
+            </Popover>
+          </div>
           {data.map(({ label, value }) => (
             <Tab key={value} value={value} onClick={() => setView(label)}>
               {label}
