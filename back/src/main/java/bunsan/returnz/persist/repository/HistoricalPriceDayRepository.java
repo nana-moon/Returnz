@@ -28,6 +28,13 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 		String companyCode);
 
 	@Query(value = "SELECT * FROM historical_price_day h\n"
+		+ "WHERE h.date_time < :dateTime AND h.company_code = :companyCode\n"
+		+ "ORDER BY h.date_time DESC\n"
+		+ "LIMIT 1", nativeQuery = true)
+	Optional<HistoricalPriceDay> findByDateTimeIsBeforeWithCodeLimit1(LocalDateTime dateTime,
+		String companyCode);
+
+	@Query(value = "SELECT * FROM historical_price_day h\n"
 		+ "WHERE h.date_time <= :dateTime AND h.company_code = :companyCode\n"
 		+ "ORDER BY h.date_time DESC\n"
 		+ "LIMIT 6", nativeQuery = true)
@@ -42,7 +49,6 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 		String companyCode);
 
 	Optional<HistoricalPriceDay> findByDateTimeAndCompanyCode(LocalDateTime dateTime, String companyCode);
-
 
 	// 해당 날로부터 유니크한 날을 가젹온다
 	@Query(value =
