@@ -70,18 +70,18 @@ public class RequestSettingGame {
 
 	public LocalDateTime convertThemeStartDateTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			LocalDateTime startDay = LocalDateTime.of(2019, 12, 31, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(2020, 1, 2, 0, 0, 0);
 			this.startTime = LocalDate.from(startDay);
 			log.info("check in gameSetting startTime in covid : " + this.startTime);
 			return startDay;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
-			LocalDateTime startDay = LocalDateTime.of(1997, 1, 1, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(1997, 1, 2, 0, 0, 0);
 			this.startTime = LocalDate.from(startDay);
 			return startDay;
 		}
 		if (this.theme.getTheme().equals("RIEMANN")) {
-			LocalDateTime startDay = LocalDateTime.of(2008, 1, 1, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(2008, 1, 2, 0, 0, 0);
 			this.startTime = LocalDate.from(startDay);
 			return startDay;
 		}
