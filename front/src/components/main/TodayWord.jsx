@@ -58,9 +58,9 @@ const WordContent = styled.div`
 `;
 
 const LeftArrow = styled.div`
-  ${tw`absolute top-[50%] translate-y-[50%] left-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-12 translate-y-[50%] left-1 text-2xl cursor-pointer`}
 `;
 
 const RightArrow = styled.div`
-  ${tw`absolute top-[50%] translate-y-[50%] right-1 text-2xl cursor-pointer`}
+  ${tw`absolute top-12 translate-y-[50%] right-1 text-2xl cursor-pointer`}
 `;
