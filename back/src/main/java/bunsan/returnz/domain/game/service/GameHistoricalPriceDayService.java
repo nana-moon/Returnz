@@ -93,7 +93,8 @@ public class GameHistoricalPriceDayService {
 	}
 
 	public GameHistoricalPriceDayDto findByDateTimeIsBeforeWithCodeLimit1(LocalDateTime date, String companyCode) {
-		Optional<HistoricalPriceDay> historicalPriceDayOptional = historicalPriceDayRepository.findByDateTimeIsBeforeWithCodeLimit1(
+		Optional<HistoricalPriceDay> historicalPriceDayOptional
+			= historicalPriceDayRepository.findByDateTimeIsBeforeWithCodeLimit1(
 			date, companyCode);
 
 		if (historicalPriceDayOptional.isPresent()) {

@@ -8,6 +8,9 @@ export default function HoldingListItem({ holding }) {
   if (holding.profitRate < 1) {
     profit = 'lose';
   }
+  if (holding.profitRate === 0) {
+    profit = 'negative';
+  }
   if (holding.profitRate > 1) {
     profit = 'gain';
   }
@@ -15,9 +18,9 @@ export default function HoldingListItem({ holding }) {
     <ItemContainer state={profit}>
       <ItemTitleSection>
         <ItemTitleImgBox>
-          <img src={imgpath} alt="dd" />
+          <img src={holding.logo} alt="dd" />
         </ItemTitleImgBox>
-        <CompanyName>{holding.companyCode}</CompanyName>
+        <CompanyName>{holding.companyName}</CompanyName>
       </ItemTitleSection>
       <ContentContainer>
         <LeftScetion>
@@ -26,13 +29,14 @@ export default function HoldingListItem({ holding }) {
           <p>평가금</p>
         </LeftScetion>
         <LeftBox state={profit}>
-          <p>{parseInt(holding.valuation, 10)} 원</p>
+          <p>{holding.valuation} 원</p>
           <p>
-            {holding.profitRate < 1
+            {/* {holding.profitRate < 1
               ? holding.profitRate === 0
                 ? '0.00 %'
                 : `${((1 - holding.profitRate) * 100).toFixed(2)} %`
-              : `${Math.abs((1 - holding.profitRate) * 100).toFixed(2)} %`}
+              : `${Math.abs((1 - holding.profitRate) * 100).toFixed(2)} %`} */}
+            {holding.profitRate} %
           </p>
           <p>{holding.totalAmount.toLocaleString()} 원</p>
         </LeftBox>
@@ -44,7 +48,8 @@ export default function HoldingListItem({ holding }) {
         <RightBox>
           <p>{holding.totalCount.toLocaleString()} 주</p>
           <p>{holding.averagePrice.toLocaleString()} 원</p>
-          <p>{(holding.totalCount * holding.averagePrice).toLocaleString()} 원</p>
+          {/* <p>{(holding.totalCount * holding.averagePrice).toLocaleString()} 원</p> */}
+          <p>{holding.totalAmount.toLocaleString()} 원</p>
         </RightBox>
       </ContentContainer>
     </ItemContainer>
@@ -52,8 +57,8 @@ export default function HoldingListItem({ holding }) {
 }
 const ItemContainer = styled.div`
   ${(props) => (props.state === 'gain' ? tw`bg-red-100` : null)}
-  ${(props) => (props.state === 'lose' ? tw`bg-lose` : null)} 
-  ${(props) => (props.state === 'stay' ? tw`bg-negative` : null)}
+  ${(props) => (props.state === 'lose' ? tw`bg-blue-100` : null)} 
+  ${(props) => (props.state === 'negative' ? tw`bg-negative` : null)}
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

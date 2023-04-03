@@ -134,6 +134,7 @@ export const gamedata = createSlice({
     },
     // 뉴스 업데이트
     handleGetStockNews(state, action) {
+      console.log('업데이트된 뉴스: ', action.payload);
       state.stockNews = action.payload;
     },
     // 주가정보,
@@ -159,6 +160,9 @@ export const gamedata = createSlice({
     handleGetchangeInterest(state, action) {
       state.changeInterest = action.payload;
     },
+    setMaxTurn(state, action) {
+      state.gameTurn.maxTurn = action.payload;
+    },
   },
 });
 
@@ -172,5 +176,6 @@ export const {
   handleUpdateHoldingData,
   handleGetStockNews,
   handleGetchangeInterest,
+  setMaxTurn,
 } = gamedata.actions;
 export default gamedata;

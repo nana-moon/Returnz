@@ -1,14 +1,7 @@
 package bunsan.returnz.domain.game.service;
 
-import bunsan.returnz.domain.game.dto.GameSettings;
-import bunsan.returnz.domain.game.dto.RequestSettingGame;
-import bunsan.returnz.domain.game.enums.Theme;
-import bunsan.returnz.domain.game.enums.TurnPerTime;
-import bunsan.returnz.global.advice.exception.BadRequestException;
-import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import bunsan.returnz.domain.game.dto.GameSettings;
+import bunsan.returnz.domain.game.dto.RequestSettingGame;
+import bunsan.returnz.domain.game.enums.Theme;
+import bunsan.returnz.domain.game.enums.TurnPerTime;
+import bunsan.returnz.global.advice.exception.BadRequestException;
+import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 
 public class GameStartServiceTest {
 	@InjectMocks
