@@ -233,16 +233,18 @@ public class GameService {
 		// 평가손익 : 해당 주식 현재 총 가격 - 해당 주식 총 구매 가격
 		// 수익률 : profitRate : (해당 주식 현재 총 가격 - 해당 주식 총 구매 가격) / (해당 주식 총 구매가격) * 100
 		// 수익률 : profitRate : ((int)(Double.parseDouble(stockPriceDataBefoer.getClose())
-		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice) / (totalCount * averagePrice) * 100
+		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice)
+		// 					/ (totalCount * averagePrice) * 100
 		Integer totalEvaluationStock = gameGamerDto.getTotalEvaluationStock();
 		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
 
-			log.info("==============================================1");
 			// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
 			GameHistoricalPriceDayDto stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
-			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다. : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
-			GameHistoricalPriceDayDto stockPriceDataBefoer = gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
+			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
+			// : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
+			GameHistoricalPriceDayDto stockPriceDataBefoer
+				= gameHistoricalPriceDayService.findByDateTimeIsBeforeWithCodeLimit1(
 				gameHistoricalPriceDayDto.getDateTime(), gameGamerStockDto.getCompanyCode());
 
 			Double stockClosePrice = 0.0;
@@ -503,8 +505,6 @@ public class GameService {
 		if (stockClosePrice == 0) {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
-
-		log.info(gameHistoricalPriceDayDto.toString());
 
 		// deposit이 총 매수 금액 보다 크거나 같을 때 구매할 수 있다.
 		if (gameGamerDto.getDeposit() >= (stockClosePrice * count)) {
