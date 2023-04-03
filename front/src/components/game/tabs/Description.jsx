@@ -11,7 +11,7 @@ export default function Description() {
   const idx = useSelector(selectedIdx);
   const data = useSelector(sellNeedData);
   const key = Object.keys(description);
-  console.log('종목 소개', description, idx, key);
+  // console.log('종목 소개', description, idx, key);
 
   useEffect(() => {
     if (data !== []) {
