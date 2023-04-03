@@ -19,10 +19,8 @@ const stomp = StompJs.over(sock, options);
 // CONNECT SOCKET
 const stompConnect = (header, socketAction) => {
   stomp.debug = null;
-  // console.log('connect');
   stomp.onConnect = () => {
     console.log('WebSocket connection opened');
-    // stomp.subscribe('/topic/example', socketAction); // 예시로 /topic/example 주제에 대한 구독
   };
 
   stomp.onStompError = (frame) => {
@@ -33,7 +31,7 @@ const stompConnect = (header, socketAction) => {
     console.log('WebSocket connection closed');
     setTimeout(() => stompConnect(header, socketAction), stomp.reconnectDelay);
   };
-  console.log('connect');
+
   stomp.connect(header, socketAction, (error) => {
     console.log('connection error:', error);
     setTimeout(() => stompConnect(header, socketAction), stomp.reconnectDelay);
@@ -56,13 +54,13 @@ const stompDisconnect = (subAddress, header) => {
 
 // -------------------------SOCKET ACTION-----------------------------
 
-// 메세지 받기
+// GET MESSAGE
 const getMessage = (subAddress, handleMessage, header) => {
   console.log('getMessage active');
   stomp.subscribe(subAddress, handleMessage, header);
 };
 
-// 메세지 보내기
+// SEND MESSAGE
 const sendMessage = (sendAddress, header, type, messageBody) => {
   console.log('sendMessage active');
   const message = JSON.stringify({
@@ -74,12 +72,12 @@ const sendMessage = (sendAddress, header, type, messageBody) => {
 
 // 메세지 보내기
 const sendMessageResult = (sendAddress, header, type, roomId, messageBody) => {
-  console.log('sendMessageResult active');
   const message = JSON.stringify({
     type,
     roomId,
     messageBody,
   });
+  console.log('sendMessage', { type, roomId, messageBody });
   stomp.send(sendAddress, header, message);
 };
 
