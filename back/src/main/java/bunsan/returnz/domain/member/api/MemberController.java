@@ -95,4 +95,12 @@ public class MemberController {
 		return ResponseEntity.ok().body(Map.of("permittedProfiles", permittedProfiles));
 	}
 
+	//--------------------------------------맴버 상태 변경----------------------------------------
+	@PatchMapping("/state")
+	public ResponseEntity changeMemberState(@RequestHeader("Authorization") String bearerToken) {
+		String token = bearerToken.substring(7);
+		memberService.changeMemberState(token);
+		return ResponseEntity.ok().body(Map.of("result", "success"));
+	}
+
 }
