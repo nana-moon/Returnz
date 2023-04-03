@@ -1,16 +1,19 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  id: null,
+  roomId: null,
+  hostNickname: null,
+  gamerId: null,
+  playerList: [], // profileIcon, nickname, gamerId, username
+  initIsReadyList: [],
+  isReadyList: [], // username
+};
+
 export const gameRoom = createSlice({
   name: 'gameRoom',
-  initialState: {
-    id: null,
-    roomId: null,
-    hostNickname: null,
-    gamerId: null,
-    playerList: [], // profileIcon, nickname, gamerId, username
-    isReadyList: [false, false, false, false],
-  },
+  initialState,
   reducers: {
     setGameId(state, action) {
       state.id = action.payload;
@@ -27,14 +30,18 @@ export const gameRoom = createSlice({
     setPlayerList(state, action) {
       state.playerList = action.payload;
     },
-    removePlayerList(state, action) {
-      state.playerList = [];
-    },
-    setReady(state, action) {
-      state.playerList[action.payload.idx].isReady = true;
+    setInitIsReadyList(state, action) {
+      state.initIsReadyList = action.payload;
     },
     setIsReadyList(state, action) {
       state.isReadyList = action.payload;
+    },
+    resetIsReadyList(state, action) {
+      console.log('initIsReadyList', state.initIsReadyList);
+      state.isReadyList = state.initIsReadyList;
+    },
+    resetGameRoom(state) {
+      Object.assign(state, initialState);
     },
   },
 });
@@ -45,8 +52,9 @@ export const {
   setHostNickname,
   setGamerId,
   setPlayerList,
-  removePlayerList,
-  setReady,
+  setInitIsReadyList,
   setIsReadyList,
+  resetIsReadyList,
+  resetGameRoom,
 } = gameRoom.actions;
 export default gameRoom;

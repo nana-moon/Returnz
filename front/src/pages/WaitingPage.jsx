@@ -21,6 +21,7 @@ import {
   setGamerId,
   setGameRoomId,
   setHostNickname,
+  setInitIsReadyList,
   setIsReadyList,
   setPlayerList,
 } from '../store/roominfo/GameRoom.reducer';
@@ -215,7 +216,7 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  // -------------------------| START/EXIT GAME |------------------------------------------------------------------
+  // -------------------------| START GAME |------------------------------------------------------------------
 
   const handlePage = () => {
     navigate('/game');
@@ -262,6 +263,7 @@ export default function WaitingPage() {
       const readyList = gameInit.gamerList.map((gamer) => {
         return { [gamer.username]: false };
       });
+      dispatch(setInitIsReadyList(readyList));
       dispatch(setIsReadyList(readyList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
@@ -282,7 +284,8 @@ export default function WaitingPage() {
     handleGameInfo(newSetting);
   };
 
-  // 방나가기 ACTION
+  // -------------------------| EXIT GAME |------------------------------------------------------------------
+
   const handleExit = () => {
     dispatch(removeWaiterList());
   };
