@@ -16,5 +16,5 @@ public interface CompanyRepository extends JpaRepository<Company, String> {
 	Page<Company> findRandomCompanies(Pageable pageable);
 
 	@Query(value = "SELECT c FROM Company c where c.code in :companyList ORDER BY RAND()")
-	Page<Company> findCompaniesByCodeList(@Param("companyList") List<String> companyList);
+	Page<Company> findCompaniesByCodeList(@Param("companyList") List<String> companyList, Pageable pageable);
 }
