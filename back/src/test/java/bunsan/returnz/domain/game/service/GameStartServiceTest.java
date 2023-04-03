@@ -7,22 +7,19 @@ import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.repository.HistoricalPriceDayRepository;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
 
 public class GameStartServiceTest {
 	@InjectMocks
@@ -45,6 +42,7 @@ public class GameStartServiceTest {
 		gameSettings = createGameSettings();
 		gameStockIds = Arrays.asList("377190.KS", "095570.KS", "033780.KS");
 	}
+
 	// 예외발생하는지 확인하는 테스튼
 	@Test
 	public void testCheckDayRange_StartDayIsInvalid() {
