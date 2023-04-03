@@ -224,7 +224,12 @@ export default function WaitingPage() {
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
-    console.log('gameData', gameData);
+    // dispatch(setPlayerList(gameData.gamer)); // gamePlayerList
+    // const readyList = gameData.gamer.map((player) => {
+    //   return { [player.username]: false };
+    // });
+    // dispatch(setInitIsReadyList(readyList));
+    // dispatch(setIsReadyList(readyList));
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
@@ -254,8 +259,9 @@ export default function WaitingPage() {
 
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
-      dispatch(setMaxTurn(setting.totalTurn));
       const gameInit = await startGameApi(newSetting);
+      console.log('gameInit', gameInit);
+      dispatch(setMaxTurn(gameInit.totalTurn));
       dispatch(setGameId(gameInit.id)); // gameId
       dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
       dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
