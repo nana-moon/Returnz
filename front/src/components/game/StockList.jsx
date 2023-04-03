@@ -43,7 +43,7 @@ export default function StockList() {
       {modalStat.isOpen ? <BuySellModal code={Object.keys(stockDatas)[selectidx]} checkCanSell={checkCanSell} /> : null}
       <StockListSection>
         상장 종목
-        <div className="absolute top-2 right-4">
+        <div className="absolute top-1 right-4">
           <Popover
             animate={{
               mount: { scale: 1, y: 0 },
@@ -56,7 +56,7 @@ export default function StockList() {
                 ?
               </Button>
             </PopoverHandler>
-            <PopoverContent>
+            <PopoverContent className="z-20">
               <img src={imgpath} alt="" />
             </PopoverContent>
           </Popover>
@@ -99,7 +99,7 @@ const ListContanier = styled.div`
   ${tw`border bg-white rounded-xl overflow-y-auto`}
 `;
 const StockListSection = styled.div`
-  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2`}
+  ${tw`text-2xl fixed absolute z-10 bg-white w-full text-center rounded-t-xl pt-2 border-t border-l border-r`}
 `;
 const OrderButton = styled.div`
   ${tw`absolute bottom-0 flex w-[100%] place-content-evenly`}
