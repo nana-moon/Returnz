@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
-import { sendMessageResult } from '../../../utils/Socket';
-import { getGameRoomId, getIsReadyList } from '../../../store/roominfo/GameRoom.selector';
 
-export default function UserLogListItem({ player, isReady }) {
-  // hooks
-
+export default function UserLogListItem({ player, isReady, getIsReady }) {
   // MY LOG
   const myNicmname = Cookies.get('nickname');
   const isMe = myNicmname === player.nickname;
@@ -19,17 +15,9 @@ export default function UserLogListItem({ player, isReady }) {
   // USER LOG
   const profilePath = `profile_pics/${player.profileIcon}.jpg`;
 
-  // -------------------------SOCKET STATE-----------------------------
-  const ACCESS_TOKEN = Cookies.get('access_token');
-  const gameRoomId = useSelector(getGameRoomId);
-  const sendAddress = '/pub/game-room';
-  const header = {
-    Authorization: ACCESS_TOKEN,
-  };
-  const isReadyList = useSelector(getIsReadyList);
-  // READY
-  const handleReady = () => {
-    sendMessageResult(sendAddress, header, 'READY', gameRoomId, {});
+  // ready
+  const handleIsReady = () => {
+    getIsReady();
   };
   return (
     <UserLogItemContainer isMe={isMe}>
@@ -39,7 +27,7 @@ export default function UserLogListItem({ player, isReady }) {
           <div>{player.nickname}</div>
         </UserBox>
         {isMe && (
-          <ReadyBtn type="submit" onClick={handleReady} className="w-[100%]" disabled={!isReady} isReady={isReady}>
+          <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={!isReady} isReady={isReady}>
             ready
           </ReadyBtn>
         )}
