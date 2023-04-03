@@ -53,12 +53,19 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 	// 해당 날로부터 유니크한 날을 가젹온다
 	@Query(value =
 		"SELECT DISTINCT h.dateTime FROM HistoricalPriceDay h "
-			+ "WHERE h.dateTime > :dateTime AND h.company.code IN :stockIds"
+			+ "WHERE h.dateTime >= :dateTime AND h.company.code IN :stockIds"
 			+ " ORDER BY h.dateTime ASC ")
 	Page<LocalDateTime> getDateEndDate(@Param("dateTime") LocalDateTime dateTime,
 		@Param("stockIds") List<String> stockIds, Pageable pageable);
 
-	// 날을 돌면서 스톡데이터 찾아오는 거
+	//모든 기업이 요청 날에 대해 데이터가 있는지 확인
+	@Query(value =
+		"SELECT CASE WHEN (COUNT(h) = :size) THEN true ELSE false END FROM HistoricalPriceDay h "
+			+ "WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds")
+	Boolean getDayStock(@Param("dateTime") LocalDateTime dateTime,
+		@Param("stockIds") List<String> stockIds, @Param("size") Long size);
+
+
 	@Query(value = "SELECT h FROM HistoricalPriceDay h WHERE h.dateTime = :dateTime AND h.company.code IN :stockIds"
 		+ " ORDER BY h.dateTime ASC")
 	List<HistoricalPriceDay> findAllByDateAndStockIds(@Param("dateTime") LocalDateTime dateTime,
@@ -67,11 +74,11 @@ public interface HistoricalPriceDayRepository extends JpaRepository<HistoricalPr
 	// day
 	// week
 	//month 별 턴처리 필요
-	@Query(value = "SELECT h FROM HistoricalPriceDay h "
-		+ "WHERE h.dateTime > :dateTime "
+	@Query(value = "SELECT DISTINCT h.dateTime  FROM HistoricalPriceDay h "
+		+ "WHERE h.dateTime >= :dateTime "
 		+ "AND h.company.code IN :stockIds "
 		+ "ORDER BY h.dateTime ASC")
-	List<HistoricalPriceDay> getDayDataAfterStartDay(@Param("dateTime") LocalDateTime dateTime,
+	List<LocalDateTime> getDayDataAfterStartDay(@Param("dateTime") LocalDateTime dateTime,
 		@Param("stockIds") List<String> stockIds, Pageable pageable);
 
 	// 해당기간내에 데이터가 몇개 있는지

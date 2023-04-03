@@ -1,5 +1,7 @@
 // 상장종목
 export const stockDataList = (state) => state.gamedatas.stockDataList;
+// 오늘날짜
+export const todayDate = (state) => state.gamedatas.todayDate;
 // 그래프
 export const stockGraphList = (state) => state.gamedatas.stockGraphList;
 // 영업날 아닌 인덱스
@@ -8,6 +10,8 @@ export const noWorkDay = (state) => state.gamedatas.noWorkDay;
 export const stockNews = (state) => state.gamedatas.stockNews;
 export const stockInformation = (state) => state.gamedatas.stockInformation;
 export const stockdescription = (state) => state.gamedatas.stockdescription;
+// 환율
+export const changeInterest = (state) => state.gamedatas.changeInterest;
 // 보유 종목
 export const gamerStockList = (state) => state.gamedatas.gamerStockList;
 // 유저 데이터

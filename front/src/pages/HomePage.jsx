@@ -16,7 +16,7 @@ export default function HomePage() {
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>
-      <div className="grid grid-cols-2 grid-rows-6 gap-8">
+      <div className="grid grid-cols-4 grid-rows-6 gap-8">
         <TopUsersSection>
           <TodayTopUser />
         </TopUsersSection>
@@ -65,7 +65,7 @@ const TestBox = styled.div`
 `;
 
 const TopUsersSection = styled.div`
-  ${tw`row-span-6`}
+  ${tw`row-span-6 col-span-3`}
 `;
 
 const InfoSection = styled.div`

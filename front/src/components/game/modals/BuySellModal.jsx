@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
 import { createGlobalStyle } from 'styled-components';
 import { getGameRoomId, getGamerId } from '../../../store/roominfo/GameRoom.selector';
-import { buyNeedData, sellNeedData, modalState } from '../../../store/buysellmodal/BuySell.selector';
+import { buyNeedData, sellNeedData, modalState, holdingdata } from '../../../store/buysellmodal/BuySell.selector';
 import { receiveSetting, getHoldingCount } from '../../../store/buysellmodal/BuySell.reducer';
-import { buyStockApi } from '../../../apis/gameApi';
+import { buyStockApi, sellStockApi } from '../../../apis/gameApi';
 import { handleBuySellTrade } from '../../../store/gamedata/GameData.reducer';
 import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 
-export default function BuySellModal({ code }) {
+export default function BuySellModal({ code, checkCanSell }) {
   const dispatch = useDispatch();
 
   const [orderCount, setOrderCount] = useState(0);
@@ -23,9 +23,16 @@ export default function BuySellModal({ code }) {
   const thisroomId = useSelector(getGameRoomId);
   const thisgamerId = useSelector(getGamerId);
   const deposit = useSelector(gamerDataList);
+  const sellCount = useSelector(holdingdata);
+  const [tmp, setTmp] = useState(true);
+
+  useEffect(() => {
+    console.log('-------------------------------');
+    checkCanSell(code);
+  }, [tmp]);
 
   const modalData = modalStat.isType ? buyData : sellData;
-  const maxOrderCount = modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : modalData.holdingcount;
+  const maxOrderCount = modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : sellCount;
 
   useEffect(() => {
     if (orderCount > maxOrderCount || orderCount < 0) {
@@ -76,18 +83,36 @@ export default function BuySellModal({ code }) {
       const result = await buyStockApi(data);
 
       if (result) {
-        console.log('매수성공데이터', result);
+        console.log('매수성공데이터', result, code);
         dispatch(handleBuySellTrade(result));
         dispatch(getHoldingCount(result.gamerStock));
-        handleCloseModal();
+        setTmp(!tmp);
+        setTimeout(() => {
+          handleCloseModal();
+        }, 10);
       }
     }
     // ㅁㅐ도라면
     else {
-      const data = {};
+      const data = {
+        roomId: thisroomId,
+        gamerId: thisgamerId,
+        companyCode: code,
+        count: orderCount,
+      };
+      const result = await sellStockApi(data);
+
+      if (result) {
+        console.log('매도성공데이터', result, code);
+        dispatch(handleBuySellTrade(result));
+        dispatch(getHoldingCount(result.gamerStock));
+        setTmp(!tmp);
+        setTimeout(() => {
+          handleCloseModal();
+        }, 10);
+      }
     }
   };
-
   console.log(modalData, 'ddddtest');
 
   return (
@@ -106,7 +131,7 @@ export default function BuySellModal({ code }) {
           <CountBox>주문수량</CountBox>
           <StockCountFirstBox> 주문가능 </StockCountFirstBox>
           <StockCountSecondBox mode={modalStat.isType ? 'gain' : 'lose'}>
-            {modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : modalData.holdingcount}
+            {modalStat.isType ? Math.floor(deposit.deposit / modalData.orderPrice) : sellCount}
           </StockCountSecondBox>
           <StockCountThirdBox> 주 </StockCountThirdBox>
         </StockSection>
