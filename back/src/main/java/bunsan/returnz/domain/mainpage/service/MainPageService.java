@@ -9,13 +9,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import bunsan.returnz.domain.mainpage.dto.RankDto;
 import bunsan.returnz.domain.mainpage.dto.StockDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
-import bunsan.returnz.persist.entity.Member;
+import bunsan.returnz.persist.entity.Ranking;
 import bunsan.returnz.persist.entity.TodayWord;
 import bunsan.returnz.persist.entity.ValidCompany;
 import bunsan.returnz.persist.repository.MemberRepository;
+import bunsan.returnz.persist.repository.RankingRepository;
 import bunsan.returnz.persist.repository.TodayWordRepository;
 import bunsan.returnz.persist.repository.ValidCompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +28,7 @@ public class MainPageService {
 	private final TodayWordRepository todayWordRepository;
 	private final MemberRepository memberRepository;
 	private final ValidCompanyRepository validCompanyRepository;
+	private final RankingRepository rankingRepository;
 
 	public List<TodayWordDto> getWordList() {
 		List<TodayWord> wordList = todayWordRepository.findAll();
@@ -38,19 +39,8 @@ public class MainPageService {
 		return resultList;
 	}
 
-	public List<RankDto> getUserRanks() {
-		List<Member> memberList = memberRepository.findTop10ByOrderByAvgProfitDesc();
-		List<RankDto> rankList = new ArrayList<>();
-		for (Member member : memberList) {
-			RankDto rankDto = RankDto.builder()
-				.username(member.getUsername())
-				.nickname(member.getNickname())
-				.profileIcon(member.getProfileIcon())
-				.avgProfit(member.getAvgProfit())
-				.build();
-			rankList.add(rankDto);
-		}
-		return rankList;
+	public List<Ranking> getUserRanks() {
+		return rankingRepository.findAllByOrderByAvgProfitDesc();
 	}
 
 	@Transactional

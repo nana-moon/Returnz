@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
+import { useNavigate } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -21,65 +22,73 @@ import {
   handleGetStockNews,
   handleGetchangeInterest,
 } from '../store/gamedata/GameData.reducer';
-import { gamerStockList, todayDate, stockDataList } from '../store/gamedata/GameData.selector';
+import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
-import { setIsReadyList } from '../store/roominfo/GameRoom.reducer';
+import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
-  const testdata = useSelector(gamerStockList);
+  // HOOKS
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // 주식 정보 STATE
   const stockdata = useSelector(stockDataList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
-  const holdingdata = useSelector(sellNeedData);
-  const selectIdx = useSelector(selectedIdx);
-  // 뉴스가져올떄 필요한 데이터
+
+  // 뉴스 STATE
   const gameId = useSelector(getGameId);
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
 
-  const dispatch = useDispatch();
+  // TURN STATE
+  const temp = useSelector(gameTurn);
 
-  const readd = () => {};
-
+  // TURN API
   const axiospost = async () => {
-    // 뉴스
-    const datas = {
-      roomId: roomNum,
-      gamerId: gamerNum,
-    };
-
-    await axios
-      .post('/games/game', datas)
-      .then((res) => {
-        console.log('턴 넘어감', res.data);
-        dispatch(handleMoreGameData(res.data.Stocks));
-        dispatch(handleUpdateHoldingData(res.data.gamerStock));
-        dispatch(handleGetStockInformation(res.data.stockInformation));
-        dispatch(handleGetTodayDate(res.data.currentDate));
-        dispatch(handleGetchangeInterest(res.data.exchangeInterest));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    const getNews = [];
-
-    for (let i = 0; i < keys.length; i += 1) {
-      const data = {
-        id: gameId,
-        companyCode: keys[i],
-        articleDateTime: Date,
+    console.log('realTurn', temp.nowTurn, temp.maxTurn);
+    if (temp.nowTurn < temp.maxTurn) {
+      // 뉴스
+      const datas = {
+        roomId: roomNum,
+        gamerId: gamerNum,
       };
-      // eslint-disable-next-line no-await-in-loop
-      const newsTmp = await getNewsApi(data);
-      getNews.push({ [keys[i]]: newsTmp });
-    }
+      await axios
+        .post('/games/game', datas)
+        .then((res) => {
+          // dispatch(setPlayerList(res.data.gamer));
+          dispatch(handleMoreGameData(res.data.Stocks));
+          dispatch(handleUpdateHoldingData(res.data.gamerStock));
+          dispatch(handleGetStockInformation(res.data.stockInformation));
+          dispatch(handleGetTodayDate(res.data.currentDate));
+          dispatch(handleGetchangeInterest(res.data.exchangeInterest));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-    dispatch(handleGetStockNews(getNews));
+      const getNews = [];
+
+      for (let i = 0; i < keys.length; i += 1) {
+        const data = {
+          id: gameId,
+          companyCode: keys[i],
+          articleDateTime: Date,
+        };
+        // eslint-disable-next-line no-await-in-loop
+        const newsTmp = await getNewsApi(data);
+        getNews.push({ [keys[i]]: newsTmp });
+      }
+
+      dispatch(handleGetStockNews(getNews));
+    } else {
+      console.log('turn endendend');
+      navigate('/result');
+    }
   };
 
   // -------------------------| SOCKET |------------------------------------------------------------------
@@ -107,7 +116,7 @@ export default function GamePage() {
   };
 
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
-  const handleMessage = (received) => {
+  const handleMessage = async (received) => {
     const newMessage = JSON.parse(received.body);
     // -------------------------handle READY-----------------------------
     if (newMessage.type === 'READY') {
@@ -120,11 +129,8 @@ export default function GamePage() {
         }
         return isReady;
       });
-      dispatch(setIsReadyList(newIsReadyList));
-    }
-    // -------------------------handle TURN-----------------------------
-    if (newMessage.type === 'TURN') {
-      console.log('TURN 메세지 도착', newMessage.messageBody);
+      await dispatch(setIsReadyList(newIsReadyList));
+      handleTurn(newIsReadyList);
     }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
@@ -190,7 +196,19 @@ export default function GamePage() {
       console.log('WebSocket connection is not active.');
     }
   };
-
+  // -------------------------| TURN |------------------------------------------------------------------
+  const handleTurn = (newIsReadyList) => {
+    console.log(newIsReadyList);
+    const allReady = newIsReadyList.every((isReady) => {
+      console.log(Object.values(isReady));
+      return Object.values(isReady).every((value) => value === true);
+    });
+    console.log('allReady', allReady);
+    if (allReady) {
+      dispatch(resetIsReadyList());
+      axiospost();
+    }
+  };
   // -------------------------| READY |------------------------------------------------------------------
 
   const getIsReady = () => {
@@ -208,6 +226,17 @@ export default function GamePage() {
     }
   };
 
+  // -------------------------| EXIT GAME |------------------------------------------------------------------
+
+  const handleExit = () => {
+    dispatch(resetGameRoom());
+  };
+
+  useEffect(() => {
+    return () => {
+      handleExit();
+    };
+  }, []);
   // -------------------------| RETURN HTML |------------------------------------------------------------------
 
   return (
@@ -215,12 +244,6 @@ export default function GamePage() {
       <Header />
       <GameContainer>
         <LeftSection>
-          <div onClick={readd} onKeyDown={readd} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            Redux 데이터 확인용 버튼
-          </div>
-          <div onClick={axiospost} onKeyDown={axiospost} role="button" tabIndex={0} style={{ cursor: 'pointer' }}>
-            시작 테스트
-          </div>
           <Rate />
           <Stocks />
           <HoldingList />

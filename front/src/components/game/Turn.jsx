@@ -6,6 +6,7 @@ import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailw
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import imgpath from './assets/turnHelp.png';
 import { gameTurn } from '../../store/gamedata/GameData.selector';
+import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
 export default function Turn() {
   const [time, setTime] = useState(60);
@@ -19,18 +20,6 @@ export default function Turn() {
       setAnimationClass('animate'); // 애니메이션 클래스를 다시 추가합니다.
     }, 10);
   }, [turn]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const copy = time;
-  //     if (copy > 0) {
-  //       setTime(copy - 1);
-  //     }
-  //   }, 1000);
-  //   return () => {
-  //     setTime(60);
-  //   };
-  // }, [turn]);
 
   useEffect(() => {
     setTime(60);

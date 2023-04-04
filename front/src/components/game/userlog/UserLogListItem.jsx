@@ -8,6 +8,7 @@ import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 export default function UserLogListItem({ player, isReady, getIsReady }) {
   // MY LOG
   const myNicmname = Cookies.get('nickname');
+  const myUsername = Cookies.get('email');
   const isMe = myNicmname === player.nickname;
   const infoId = { seed: 5000000, buy: 100000, eval: 10000000 };
   const myInfo = useSelector(gamerDataList);
@@ -19,6 +20,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   const handleIsReady = () => {
     getIsReady();
   };
+
   return (
     <UserLogItemContainer isMe={isMe}>
       <LeftSection>
@@ -27,7 +29,13 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
           <div>{player.nickname}</div>
         </UserBox>
         {isMe && (
-          <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={!isReady} isReady={isReady}>
+          <ReadyBtn
+            type="submit"
+            onClick={handleIsReady}
+            className="w-[100%]"
+            disabled={isReady[myUsername]}
+            isReady={isReady}
+          >
             ready
           </ReadyBtn>
         )}
@@ -65,8 +73,8 @@ const UserBox = styled.div`
 `;
 
 const ReadyBtn = styled.button`
-  ${tw`border-2 rounded-lg text-center bg-primary`};
-  ${(props) => (props.isReady ? tw`bg-dprimary` : tw`bg-primary`)}
+  ${tw`border-2 rounded-lg text-center`};
+  ${({ disabled }) => (disabled ? tw`bg-negative` : tw`bg-primary shadow-current`)}
 `;
 
 const MyBox = styled.div`
