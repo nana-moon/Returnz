@@ -35,8 +35,9 @@ export const gamedata = createSlice({
     // 턴 데이터
     gameTurn: {
       nowTurn: 0,
-      maxTurn: 30,
+      maxTurn: 0,
       dayTurn: 2,
+      returnTime: null,
     },
   },
   reducers: {
@@ -169,6 +170,9 @@ export const gamedata = createSlice({
     setMaxTurn(state, action) {
       state.gameTurn.maxTurn = action.payload;
     },
+    setReturnTime(state, action) {
+      state.gameTurn.returnTime = action.payload;
+    },
   },
 });
 
@@ -183,5 +187,6 @@ export const {
   handleGetStockNews,
   handleGetchangeInterest,
   setMaxTurn,
+  setReturnTime,
 } = gamedata.actions;
 export default gamedata;
