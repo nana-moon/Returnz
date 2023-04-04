@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @Service
-public class PurcahseSaleLogDto {
+public class PurchaseSaleLogDto {
 
 	private Integer curTurn;    // 매수, 매도를 한 턴
 	private Integer totalTurn;    // 해당 게임의 전체 턴
