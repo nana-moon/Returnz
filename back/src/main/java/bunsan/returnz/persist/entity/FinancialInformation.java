@@ -80,4 +80,23 @@ public class FinancialInformation {
 			.build();
 	}
 
+	public FinancialInformationDto toDto(FinancialInformation financialInformation) {
+		return FinancialInformationDto.builder()
+			.companyCode(financialInformation.company.getCode())
+			.ebit(financialInformation.ebit)
+			.ebitda(financialInformation.ebitda)
+			.netDebt(financialInformation.netDebt)
+			.operatingCashFlow(financialInformation.operatingCashFlow)
+			.periodType(financialInformation.periodType)
+			.shareIssued(financialInformation.shareIssued)
+			.totalAssets(financialInformation.totalAssets)
+			.totalCapitalization(financialInformation.totalCapitalization)
+			.totalDebt(financialInformation.totalDebt)
+			.totalRevenue(financialInformation.totalRevenue)
+			.dateTime(financialInformation.dateTime)
+			.freeCashFlow(financialInformation.freeCashFlow)
+			.build();
+	}
+
+
 }
