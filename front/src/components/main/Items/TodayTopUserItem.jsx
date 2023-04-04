@@ -29,7 +29,7 @@ export default function TodayTopUserItem({ person, img }) {
 }
 
 const TodayNewsContainer = styled.div`
-  ${tw`py-1 px-6 my-2 flex`}
+  ${tw`py-1 px-6 flex`}
 `;
 
 const TitleText = styled.div`
