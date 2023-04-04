@@ -14,7 +14,7 @@ import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
+import { removeWaiterList, setWaitRoomId, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   setGameId,
@@ -60,6 +60,7 @@ export default function WaitingPage() {
   // ADD WAITER ACTION
   useEffect(() => {
     dispatch(setWaiterList(newWaiter));
+    dispatch(setWaitRoomId(roomInfo.roomId));
   }, []);
 
   // -------------------------| SOCKET |------------------------------------------------------------------

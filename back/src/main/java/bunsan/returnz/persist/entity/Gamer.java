@@ -80,13 +80,4 @@ public class Gamer {
 		return true;
 	}
 
-	public boolean updateDeposit(Integer changeDeposit) {
-		if (changeDeposit >= 0) {
-			this.deposit = changeDeposit;
-			return true;
-		}
-		// TODO : else Error
-		return false;
-	}
-
 }

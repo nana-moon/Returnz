@@ -36,6 +36,7 @@ public class GameRoom {
 	@Builder.Default
 	private Integer curTurn = 0;
 	private LocalDateTime curDate;
+	private LocalDateTime preDate;
 	private Integer totalTurn;
 	@Builder.Default
 	private Integer roomMemberCount = 1;
@@ -63,12 +64,13 @@ public class GameRoom {
 			.curTurn(gameRoom.getCurTurn())
 			.totalTurn(gameRoom.getTotalTurn())
 			.curDate(gameRoom.getCurDate())
+			.preDate(gameRoom.getPreDate())
 			.turnPerTime(gameRoom.getTurnPerTime())
 			.roomMemberCount(gameRoom.getRoomMemberCount())
 			.build();
 	}
 
-	public boolean updateGameTurn(LocalDateTime nextCurDate) {
+	public boolean updateGameTurn(LocalDateTime curDate, LocalDateTime nextCurDate) {
 		// TODO: nextCurDate validation Check
 		if (nextCurDate == null) {
 			return false;
@@ -79,7 +81,7 @@ public class GameRoom {
 		if (this.totalTurn < this.curTurn) {
 			return false;
 		}
-
+		this.preDate = curDate;
 		this.curDate = nextCurDate;
 		this.curTurn += 1;
 		return true;
