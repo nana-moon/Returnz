@@ -23,5 +23,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	// List<Member> findTop10ByOrderByAvgProfitDesc();
 	List<Member> findTop10ByGameCountGreaterThanEqualOrderByAvgProfitDesc(Long gameCount);
-}
 
+	Optional<Member> findByNickname(String nickname);
+}
