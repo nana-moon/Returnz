@@ -17,6 +17,9 @@ export default function Turn() {
   let now;
   if (turn.nowTurn + 1 === turn.maxTurn) {
     now = `마지막 턴이 시작됩니다.`;
+  } else if (turn.nowTurn + 1 > turn.maxTurn) {
+    now = `게임이 종료되었습니다.
+    결과 페이지로 이동합니다`;
   } else {
     now = `${turn.nowTurn + 1}번째 턴이 시작됩니다.`;
   }
