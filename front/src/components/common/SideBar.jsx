@@ -30,6 +30,7 @@ export default function SideBar() {
       console.log(e);
     },
   });
+  const [isVisible, setIsVisible] = useState(true);
   // 웹소켓
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -53,7 +54,6 @@ export default function SideBar() {
   const handleMessage = (data) => {
     if (stompRef.current && stompRef.current.connected) {
       const newMessage = JSON.parse(data.body);
-      console.log(newMessage, '이게뭔데;');
       if (newMessage.type === 'ENTER') {
         console.log('ENTER');
         const newFriend = newMessage.messageBody.friendList;
@@ -64,23 +64,23 @@ export default function SideBar() {
         // setReceivedInvites(newMessage.messageBody);
         console.log(newMessage.messageBody, '내가받은초대진짜진짜임');
       }
-      // if (newMessage.type === 'STATE') {
-      //   console.log('STATE 메세지 도착', newMessage.messageBody);
-      //   // setChangedFriend(newMessage.messageBody);
-      //   const changedFriend = newMessage.messageBody;
-      //   const updatedFriendList = friendList.map((friend) => {
-      //     if (friend.username === changedFriend.friendName) {
-      //       // 친구 정보가 일치하면 state 값 변경
-      //       console.log(friend.username, 'd원래');
-      //       console.log(changedFriend.friendName, '새로운');
-      //       return { ...friend, state: changedFriend.state };
-      //     }
-      //     return friend;
-      //   });
-
-      //   // friendList 갱신
-      //   setfriendList(updatedFriendList);
-      // }
+      if (newMessage.type === 'STATE') {
+        console.log('STATE 메세지 도착', newMessage.messageBody);
+        console.log(friendList, 'friendList!!@@');
+        //   // setChangedFriend(newMessage.messageBody);
+        const changedFriend = newMessage.messageBody;
+        const updatedFriendList = friendList?.map((friend) => {
+          if (friend.username === changedFriend.friendName) {
+            // 친구 정보가 일치하면 state 값 변경
+            console.log(friend.username, 'd원래');
+            console.log(changedFriend.friendName, '새로운');
+            return { ...friend, state: changedFriend.state };
+          }
+          return friend;
+        });
+        // friendList 갱신
+        setfriendList(updatedFriendList);
+      }
     }
   };
 
@@ -121,15 +121,18 @@ export default function SideBar() {
   const handleInvite = (data) => {
     stompRef.current.send(pubAddress, header, data);
   };
+  const handleDelete = (data) => {
+    setIsVisible(data);
+  };
 
   return (
     <SideBarContainer>
       <SideBarScrollEnabledSection>
         <UserProfile />
         <FriendRequestsContainer>
-          {receivedInvites?.length > 0 ? <SectionTitle>초대요청</SectionTitle> : null}
+          {receivedInvites?.length > 0 && isVisible ? <SectionTitle>초대요청</SectionTitle> : null}
           {receivedInvites?.map((friendInv) => {
-            return <IncomingInviteRequest friendInv={friendInv} key={friendInv.nickname} />;
+            return <IncomingInviteRequest friendInv={friendInv} key={friendInv.nickname} handleDelete={handleDelete} />;
           })}
         </FriendRequestsContainer>
         <FriendRequestsContainer>

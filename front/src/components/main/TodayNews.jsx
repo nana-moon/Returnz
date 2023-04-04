@@ -29,7 +29,7 @@ export default function TodayNews() {
         className="w-[1%] h-[70%] mx-auto absolute"
         style={{
           top: '36px',
-          left: '275px',
+          left: '50%',
           width: '2px',
           background:
             'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0, 214, 201,1) 70%, rgba(0, 214, 201,1) 70%, rgba(0,0,0,0) 100%)',
