@@ -94,20 +94,6 @@ public class GameService {
 		log.info("================= turn progress - 나의 보유 종목");
 		List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
 
-		// 6. 주가 정보
-		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
-
-		//  7. 첫턴일 떄만 종목 디테일 정보 제공
-		if (gameRoomDto.getCurTurn() == 0) {
-			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
-		}
-
-		// 4. 다음 턴 정보 업데이트
-		if (!updateTurnInformation(gameGamerStockDtos, roomId,
-			gameRoomDto, gamerId)) {
-			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
-		}
-
 		// 주식 평가 정보 update
 		updateStockInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId);
@@ -124,6 +110,20 @@ public class GameService {
 		}
 
 		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
+
+		// 6. 주가 정보
+		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
+
+		//  7. 첫턴일 떄만 종목 디테일 정보 제공
+		if (gameRoomDto.getCurTurn() == 0) {
+			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
+		}
+
+		// 4. 다음 턴 정보 업데이트
+		if (!updateTurnInformation(gameGamerStockDtos, roomId,
+			gameRoomDto, gamerId)) {
+			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
+		}
 
 		return turnInformation;
 	}
