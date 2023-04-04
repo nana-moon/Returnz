@@ -74,8 +74,8 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
-        console.log(res.data, '턴 데이터');
-        // dispatch(setPlayerList(res.data.gamer));
+        console.log(res.data.gamer, '턴 데이터');
+        dispatch(setPlayerList(res.data.gamer));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
