@@ -645,7 +645,7 @@ public class GameService {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
 
-		Integer stockClosePrice = Integer.valueOf(gameHistoricalPriceDayDto.getClose());
+		Integer stockClosePrice = (int)Double.parseDouble(gameHistoricalPriceDayDto.getClose());
 
 		// 외국 주식인 경우 환율 적용
 		if (gameHistoricalPriceDayDto.getMarket().equals("nasdaq")) {
