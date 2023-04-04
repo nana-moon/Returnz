@@ -8,7 +8,7 @@ public enum ProfileIcon {
 	TWO("B"), // 누적 1판 달성
 	THREE("C"), // 누적 5판 달성
 	FOUR("D"), // 첫 1등
-	FIVE("E"), // 꼴등
+	FIVE("E"), // 꼴등 > 4등
 	SIX("F"), // 한 판 수익률 10퍼 이상
 	SEVEN("G"), // 한 판 수익률 30퍼 이상
 	EIGHT("H"), // 랭킹 1위 달성
