@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
-import bunsan.returnz.domain.game.dto.PurchaseSaleLogDto;
 import bunsan.returnz.domain.result.dto.GamerLogResponseDto;
+import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerLog;
 import bunsan.returnz.persist.entity.PurchaseSaleLog;
@@ -32,19 +32,19 @@ public class ResultService {
 	 * @param memberId : 해당 방의 게이머의 아이디
 	 * @return : 매수, 매도 로그를 List로 반환한다.
 	 */
-	public List<PurchaseSaleLogDto> findAllByGameRoomIdAndMemberIdOrderById(Long gameRoomId, Long memberId) {
+	public List<PurchaseSaleLogResponseDto> findAllByGameRoomIdAndMemberIdOrderById(Long gameRoomId, Long memberId) {
 
 		List<PurchaseSaleLog> purchaseSaleLogs = purchaseSaleLogRepository.findAllByGameRoomIdAndMemberIdOrderById(
 			gameRoomId,
 			memberId);
-		List<PurchaseSaleLogDto> purchaseSaleLogDtos = new LinkedList<>();
+		List<PurchaseSaleLogResponseDto> purchaseSaleLogResponseDtos = new LinkedList<>();
 
 		for (PurchaseSaleLog purchaseSaleLog : purchaseSaleLogs) {
 			PurchaseSaleLog log = new PurchaseSaleLog();
-			purchaseSaleLogDtos.add(log.toDto(purchaseSaleLog));
+			purchaseSaleLogResponseDtos.add(log.toResponseDto(purchaseSaleLog));
 		}
 
-		return purchaseSaleLogDtos;
+		return purchaseSaleLogResponseDtos;
 	}
 
 	/**
