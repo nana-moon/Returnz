@@ -20,6 +20,7 @@ const gameDataApi = (payload) => {
   return authApi
     .post('/games/game', payload)
     .then((res) => {
+      console.log(res.data.gamer, 'resdata!!@@');
       return res.data;
     })
     .catch((err) => {
@@ -72,8 +73,18 @@ const getNewsApi = (payload) => {
     });
 };
 
-const resultApi = (param, payload) => {
-  // return axios.get(`url${param}`, { payload });
+const resultApi = async (payload) => {
+  console.log('resultPayload', payload);
+  return axios
+    .post('/results', payload)
+    .then((res) => {
+      console.log('결과 받아오기 성공', res);
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('결과 받아오기 실패', err);
+      return false;
+    });
 };
 
 export { makeRoomApi, startGameApi, gameDataApi, serverTimeApi, resultApi, buyStockApi, sellStockApi, getNewsApi };

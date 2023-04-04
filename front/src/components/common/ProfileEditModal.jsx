@@ -40,7 +40,6 @@ export default function ProfileEditModal() {
       newProfile: pic,
     };
     const res = await patchMyProfile(data);
-    console.log(res);
     if (res.status === 200) {
       Cookies.remove('profileIcon');
       Cookies.set('profileIcon', pic);
@@ -64,6 +63,7 @@ export default function ProfileEditModal() {
           {possibleProfiles?.map((pic) => {
             return (
               <Avatar
+                key={pic}
                 size="xl"
                 variant="circular"
                 className="border-2 border-negative hover:cursor-pointer"

@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.friend.dto.FriendInfo;
+import bunsan.returnz.domain.friend.service.FriendService;
 import bunsan.returnz.domain.member.enums.MemberState;
 import bunsan.returnz.domain.sidebar.dto.SideMessageDto;
 import bunsan.returnz.global.advice.exception.BadRequestException;
@@ -30,66 +31,39 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SideBarService {
 	private final JwtTokenProvider jwtTokenProvider;
-	// private final SimpMessagingTemplate simpMessagingTemplate;
-	private final FriendRequestRepository friendRequestRepository;
 	private final MemberRepository memberRepository;
 	private final RedisPublisher redisPublisher;
 	private final RedisSideBarRepository redisSideBarRepository;
 
-	@Transactional
-	public void sendFriendRequest(SideMessageDto sideRequest, String token) {
-		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
-		Map<String, Object> requestBody = sideRequest.getMessageBody();
-
-		// token에 저장된 Member > 요청한 사람
-		Member requester = jwtTokenProvider.getMember(token);
-		if (requester.getFriends().size() >= 20) {
-			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
-		}
-		String requestUsername = requester.getUsername();
-		String targetUsername = (String)requestBody.get("username");
-
-		checkValidRequest(requestUsername, targetUsername);
-
-		// 친구 요청 존재 여부 확인
-		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
-			targetUsername)) {
-			throw new ConflictException("이미 요청을 보낸 유저입니다.");
-		}
-		FriendRequest friendRequest = FriendRequest.builder()
-			.requestUsername(requestUsername)
-			.targetUsername(targetUsername)
-			.build();
-		// DB에 저장
-		FriendRequest savedRequest = friendRequestRepository.save(friendRequest);
-
-		// 새로운 사이드 메세지 생성
-		Map<String, Object> messageBody = new HashMap<>();
-		messageBody.put("requestId", savedRequest.getId());
-		messageBody.put("username", targetUsername);
-		messageBody.put("requestUsername", requester.getUsername());
-		messageBody.put("nickname", requester.getNickname());
-		messageBody.put("profileIcon", requester.getProfileIcon());
-
-		SideMessageDto sideMessageDto = SideMessageDto.builder()
-			.type(SideMessageDto.MessageType.FRIEND)
-			.messageBody(messageBody)
-			.build();
-
-		log.info(sideMessageDto.toString());
-
-		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		// simpMessagingTemplate.convertAndSendToUser(targetUsername,
-		// 	"/sub/side-bar", sideMessageDto);
-		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
-	}
+	// @Transactional
+	// public void sendFriendRequest(SideMessageDto sideRequest, String token) {
+	// 	Map<String, Object> requestBody = sideRequest.getMessageBody();
+	//
+	// 	// token에 저장된 Member > 요청한 사람
+	// 	Member requester = jwtTokenProvider.getMember(token);
+	// 	if (requester.getFriends().size() >= 20) {
+	// 		throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
+	// 	}
+	// 	String requestUsername = requester.getUsername();
+	// 	String targetUsername = (String)requestBody.get("username");
+	//
+	// 	checkValidRequest(requestUsername, targetUsername);
+	//
+	// 	// 친구 요청 존재 여부 확인
+	// 	SideMessageDto sideMessageDto = friendService.checkPresentFriendRequest(requester, targetUsername);
+	//
+	//
+	// 	log.info(sideMessageDto.toString());
+	//
+	// 	redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
+	// }
 
 	@Transactional
 	public void sendInviteMessage(SideMessageDto sideRequest, String token) {
 		// token에 저장된 Member > 요청한 사람
 		Map<String, Object> requestBody = sideRequest.getMessageBody();
 		Member requester = jwtTokenProvider.getMember(token);
-		if(requestBody.get("username") == null) {
+		if (requestBody.get("username") == null) {
 			throw new BadRequestException("초대 상대가 존재하지 않습니다.");
 		}
 		// 새로운 사이드 메세지 생성
@@ -104,9 +78,6 @@ public class SideBarService {
 			.messageBody(messageBody)
 			.build();
 
-		// 이 topic을 구독한 유저에게 전달 > 웹소켓 연결 안되어 있으면 어캄?
-		// simpMessagingTemplate.convertAndSendToUser((String)requestBody.get("targetUsername"),
-		// 	"/sub/side-bar", sideMessageDto);
 		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 	}
 
@@ -168,14 +139,9 @@ public class SideBarService {
 					.type(SideMessageDto.MessageType.STATE)
 					.messageBody(messageBody)
 					.build();
-				// simpMessagingTemplate.convertAndSendToUser(friend.getUsername(),
-				// "/sub/side-bar", sideMessageDto);
 
 				redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 			}
 		}
-	}
-
-	public void sendExitMessage(SideMessageDto sideRequest, String token) {
 	}
 }
