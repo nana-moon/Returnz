@@ -46,4 +46,33 @@ const declineFriendRequestApi = (payload) => {
     });
 };
 
-export { getFriendRequestsApi, sendFriendRequestApi, acceptFriendRequestApi, declineFriendRequestApi };
+const acceptInviteRequestApi = (payload) => {
+  return authApi
+    .post(`/friends/${payload}`)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+const declineInviteRequestApi = (payload) => {
+  return authApi
+    .delete(`/requests/${payload}`)
+    .then((res) => {
+      return res;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
+export {
+  getFriendRequestsApi,
+  sendFriendRequestApi,
+  acceptFriendRequestApi,
+  declineFriendRequestApi,
+  acceptInviteRequestApi,
+  declineInviteRequestApi,
+};

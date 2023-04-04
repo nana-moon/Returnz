@@ -60,7 +60,7 @@ export default function TodayPrice() {
     <TodayPriceContainer>
       <TodayPriceItem>
         <StockTitle>
-          <AiFillDollarCircle />
+          {/* <AiFillDollarCircle /> */}
           미국 달러 환율
         </StockTitle>
         <StockPrice>{parseFloat(exchangeKrUs?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
@@ -100,7 +100,7 @@ const TodayPriceItem = styled.div`
 `;
 
 const StockTitle = styled.div`
-  ${tw`text-black font-bold flex`}
+  ${tw`text-black font-bold`}
 `;
 
 const StockPrice = styled.div`

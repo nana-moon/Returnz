@@ -41,7 +41,7 @@ public class GamerStock {
 	@Builder.Default
 	@ColumnDefault("0")
 	@Column(nullable = false)
-	private Double averagePrice = 0.0;
+	private Integer averagePrice = 0;
 
 	@Builder.Default
 	@ColumnDefault("0")
