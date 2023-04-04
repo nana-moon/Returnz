@@ -11,7 +11,7 @@ export default function FriendSearchInput() {
     const data = {
       type: 'FRIEND',
       messageBody: {
-        username: `${friendNickname}`,
+        nickname: `${friendNickname}`,
       },
     };
     sendFriendRequestApi(data);
@@ -20,7 +20,7 @@ export default function FriendSearchInput() {
     <FriendSearchContainer>
       <Input
         type="text"
-        label="이메일을 검색하세요"
+        label="친구 닉네임을 검색하세요"
         color="cyan"
         value={friendNickname}
         onChange={onChange}
