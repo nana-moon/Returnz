@@ -196,11 +196,16 @@ public class Member implements UserDetails {
 		this.profileIcon = newProfile;
 	}
 
-	public void addProfile(String newProfile) {
+	public String addProfile(String newProfile) {
 		this.permittedProfiles.add(newProfile);
+		return newProfile;
 	}
 
 	public void addStreakCount() {
 		this.streakCount++;
+	}
+
+	public void setStreakCountZero() {
+		this.streakCount = 0L;
 	}
 }
