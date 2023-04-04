@@ -1,12 +1,13 @@
 import React from 'react';
+import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
 
-export default function TodayNewsItem({ news }) {
+export default function TodayNewsItem({ stock }) {
   return (
     <TodayNewsContainer>
-      <TitleText>{news.주제}</TitleText>
-      <SubTitleText>{news.용어}</SubTitleText>
-      <ContentText>{news.주제}</ContentText>
+      <Avatar size="xl" variant="circular" src={stock.logo} className=" border-2 border-negative" />
+      <TitleText>{stock.stockName}</TitleText>
+      <ContentText>{stock.stockCode}</ContentText>
     </TodayNewsContainer>
   );
 }
@@ -16,11 +17,7 @@ const TodayNewsContainer = styled.div`
 `;
 
 const TitleText = styled.div`
-  ${tw`text-2xl`}
-`;
-
-const SubTitleText = styled.div`
-  ${tw`text-lg`}
+  ${tw`text-lg font-bold`}
 `;
 
 const ContentText = styled.div`

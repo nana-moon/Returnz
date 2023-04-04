@@ -1,11 +1,18 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { AiOutlineStock } from 'react-icons/ai';
-import newsDummy from './todayNewsDummy';
+import { getRecommendedStock } from '../../apis/homeApi';
 import TodayNewsItem from './Items/TodayNewsItem';
 
 export default function TodayNews() {
-  const [data] = useState(newsDummy);
+  const [recommendedStock, setRecommendedStock] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const res = await getRecommendedStock();
+      setRecommendedStock(res);
+    }
+    fetchData();
+  }, []);
   return (
     <TodayNewsContainer>
       <TodayNewsTitle>
@@ -13,9 +20,9 @@ export default function TodayNews() {
         <AiOutlineStock className="my-auto" />
       </TodayNewsTitle>
       <TodayNewsSection>
-        {data.map((news, i) => {
+        {recommendedStock?.map((stock) => {
           // eslint-disable-next-line react/no-array-index-key
-          return <TodayNewsItem news={news} key={i} />;
+          return <TodayNewsItem stock={stock} key={stock.stockCode} />;
         })}
       </TodayNewsSection>
     </TodayNewsContainer>
