@@ -9,7 +9,7 @@ import Stomp from 'webstomp-client';
 import { Avatar } from '@material-tailwind/react';
 import { getWaitRoomId } from '../../../store/roominfo/WaitRoom.selector';
 
-export default function FriendListItems({ friend }) {
+export default function FriendListItems({ friend, handleInvite }) {
   // 내정보
   const myToken = Cookies.get('access_token');
   const [currentRoute, setCurrentRoute] = useState('');
@@ -31,37 +31,16 @@ export default function FriendListItems({ friend }) {
       setfriendStateColor('text-negative');
     }
   }, []);
-  // 대기자 STATE
   const roomId = useSelector(getWaitRoomId);
-  // 웹소켓
-  const stompRef = useRef(null);
-  if (!stompRef.current) {
-    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-    const options = {
-      debug: false,
-      protocols: Stomp.VERSIONS.supportedProtocols(),
-    };
-    stompRef.current = StompJs.over(sock, options);
-  }
-  // ------웹소켓정보-------------
-  // const subAddress = `/user/sub/side-bar`;
-  const pubAddress = '/pub/side-bar';
-  const header = {
-    Authorization: myToken,
-  };
-
   const handleInviteRequest = () => {
-    stompRef.current.send(
-      pubAddress,
-      header,
-      JSON.stringify({
-        type: 'INVITE',
-        messageBody: {
-          roomId: `${roomId}`,
-          username: `${friend.username}`, // 초대 상대
-        },
-      }),
-    );
+    const data = JSON.stringify({
+      type: 'INVITE',
+      messageBody: {
+        roomId: `${roomId}`,
+        username: `${friend.username}`, // 초대 상대
+      },
+    });
+    handleInvite(data);
   };
 
   return (
