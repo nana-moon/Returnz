@@ -703,6 +703,7 @@ public class GameService {
 			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
 			stockClosePrice = Double.parseDouble(
 				String.format("%.2f", stockClosePrice * gameExchangeInterestDto.getExchangeRate()));
+			stockClosePrice = (int)stockClosePrice;
 		}
 
 		if (stockClosePrice == 0) {
@@ -817,7 +818,7 @@ public class GameService {
 			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
 
-		Double stockClosePrice = Double.parseDouble(
+		double stockClosePrice = Double.parseDouble(
 			String.format("%.2f", Double.parseDouble(gameHistoricalPriceDayDto.getClose())));
 
 		// 외국 주식인 경우 환율 적용
@@ -825,6 +826,7 @@ public class GameService {
 			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
 			stockClosePrice = Double.parseDouble(
 				String.format("%.2f", stockClosePrice * gameExchangeInterestDto.getExchangeRate()));
+			stockClosePrice = (int)stockClosePrice;
 		}
 
 		if (stockClosePrice == 0) {
