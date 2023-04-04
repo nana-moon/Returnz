@@ -6,6 +6,7 @@ import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailw
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import imgpath from './assets/turnHelp.png';
 import { gameTurn } from '../../store/gamedata/GameData.selector';
+import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
 export default function Turn() {
   const [time, setTime] = useState(60);
