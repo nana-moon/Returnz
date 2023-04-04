@@ -9,7 +9,6 @@ import UserLogListItem from './UserLogListItem';
 export default function UserLogList({ getIsReady }) {
   const playerList = useSelector(getPlayerList);
   const isReadyList = useSelector(getIsReadyList);
-  console.log(playerList['ssafy4@naver.com']);
   return (
     <UserLogContainer>
       {Array.from({ length: 4 }).map((_, i) => {
