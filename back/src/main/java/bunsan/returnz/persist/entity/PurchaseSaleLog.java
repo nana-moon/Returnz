@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import bunsan.returnz.domain.game.dto.PurchaseSaleLogDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,4 +45,32 @@ public class PurchaseSaleLog {
 	@JoinColumn(name = "MEMBER_ID")
 	private Member member;    // 해당하는 게임 룸
 
+	public boolean updateDto(PurchaseSaleLogDto purcahseSaleLogDto) {
+		this.curTurn = purcahseSaleLogDto.getCurTurn();
+		this.totalTurn = purcahseSaleLogDto.getTotalTurn();
+		this.companyCode = purcahseSaleLogDto.getCompanyCode();
+		this.companyName = purcahseSaleLogDto.getCompanyName();
+		this.date = purcahseSaleLogDto.getDate();
+		this.category = purcahseSaleLogDto.getCategory();
+		this.count = purcahseSaleLogDto.getCount();
+		this.price = purcahseSaleLogDto.getPrice();
+		this.gameRoom = purcahseSaleLogDto.getGameRoom();
+		this.member = purcahseSaleLogDto.getMember();
+		return true;
+	}
+
+	public PurchaseSaleLogDto toDto(PurchaseSaleLog purchaseSaleLog) {
+		return PurchaseSaleLogDto.builder()
+			.curTurn(purchaseSaleLog.getCurTurn())
+			.totalTurn(purchaseSaleLog.getTotalTurn())
+			.companyCode(purchaseSaleLog.getCompanyCode())
+			.companyName(purchaseSaleLog.getCompanyName())
+			.date(purchaseSaleLog.getDate())
+			.category(purchaseSaleLog.getCategory())
+			.count(purchaseSaleLog.getCount())
+			.price(purchaseSaleLog.getPrice())
+			.gameRoom(purchaseSaleLog.getGameRoom())
+			.member(purchaseSaleLog.getMember())
+			.build();
+	}
 }
