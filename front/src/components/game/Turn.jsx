@@ -20,18 +20,6 @@ export default function Turn() {
     }, 10);
   }, [turn]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const copy = time;
-  //     if (copy > 0) {
-  //       setTime(copy - 1);
-  //     }
-  //   }, 1000);
-  //   return () => {
-  //     setTime(60);
-  //   };
-  // }, [turn]);
-
   useEffect(() => {
     setTime(60);
     const interval = setInterval(() => {

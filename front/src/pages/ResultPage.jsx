@@ -107,7 +107,7 @@ export default function ResultPage() {
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid`}
+  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px]`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
