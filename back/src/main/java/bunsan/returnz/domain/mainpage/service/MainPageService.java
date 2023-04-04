@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.mainpage.dto.RankDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
-import bunsan.returnz.persist.entity.Member;
+import bunsan.returnz.persist.entity.Ranking;
 import bunsan.returnz.persist.entity.TodayWord;
 import bunsan.returnz.persist.repository.MemberRepository;
+import bunsan.returnz.persist.repository.RankingRepository;
 import bunsan.returnz.persist.repository.TodayWordRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class MainPageService {
 	private final TodayWordRepository todayWordRepository;
 	private final MemberRepository memberRepository;
+	private final RankingRepository rankingRepository;
 
 	public List<TodayWordDto> getWordList() {
 		List<TodayWord> wordList = todayWordRepository.findAll();
@@ -28,19 +29,20 @@ public class MainPageService {
 		return resultList;
 	}
 
-	public List<RankDto> getUserRanks() {
-		List<Member> memberList = memberRepository.findTop10ByOrderByAvgProfitDesc();
-		List<RankDto> rankList = new ArrayList<>();
-		for (Member member : memberList) {
-			RankDto rankDto = RankDto.builder()
-				.username(member.getUsername())
-				.nickname(member.getNickname())
-				.profileIcon(member.getProfileIcon())
-				.avgProfit(member.getAvgProfit())
-				.build();
-			rankList.add(rankDto);
-		}
-		return rankList;
+	public List<Ranking> getUserRanks() {
+		// List<Member> memberList = memberRepository.findTop10ByGameCountGreaterThanOrderByAvgProfitDesc(4L);
+		// List<Ranking> rankList = new ArrayList<>();
+		// for (Member member : memberList) {
+		// 	Ranking ranking = Ranking.builder()
+		// 		.username(member.getUsername())
+		// 		.nickname(member.getNickname())
+		// 		.profileIcon(member.getProfileIcon())
+		// 		.avgProfit(member.getAvgProfit())
+		// 		.build();
+		// 	rankList.add(ranking);
+		// }
+		// return rankList;
 		// return null;
+		return rankingRepository.findAllByOrderByAvgProfitDesc();
 	}
 }
