@@ -31,9 +31,6 @@ public class NewsService {
 		NewsGroup newsGroup = gameRoom.getNewsGroup();
 		List<FinancialNews> financialNewsList = newsGroup.getFinancialNews();
 		for (FinancialNews financialNews : financialNewsList) {
-			log.info(financialNews.getKoName());
-		}
-		for (FinancialNews financialNews : financialNewsList) {
 			if (financialNews.getDate().isEqual(newsRequestDto.getArticleDateTime())
 				&& financialNews.getCode().equals(newsRequestDto.getCompanyCode())
 			) {
