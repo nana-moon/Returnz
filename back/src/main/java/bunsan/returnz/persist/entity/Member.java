@@ -179,12 +179,12 @@ public class Member implements UserDetails {
 	}
 
 	// 누적 수익률 증가
-	public void increaseAccReturn(Long gameReturn) {
+	public void addAccReturn(Long gameReturn) {
 		this.accumulatedReturn += gameReturn;
 	}
 
 	// 게임 횟수 증가
-	public void increaseGameCount() {
+	public void addGameCount() {
 		this.gameCount++;
 	}
 
@@ -198,5 +198,9 @@ public class Member implements UserDetails {
 
 	public void addProfile(String newProfile) {
 		this.permittedProfiles.add(newProfile);
+	}
+
+	public void addStreakCount() {
+		this.streakCount++;
 	}
 }
