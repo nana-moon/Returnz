@@ -1,4 +1,4 @@
-package bunsan.returnz.domain.mainpage.service;
+package bunsan.returnz.domain.mainpage.service.readonly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class MainPageService {
 	private final TodayWordRepository todayWordRepository;
 	private final MemberRepository memberRepository;
@@ -43,7 +44,7 @@ public class MainPageService {
 		return rankingRepository.findAllByOrderByAvgProfitDesc();
 	}
 
-	@Transactional
+
 	public List<StockDto> recomandStockList() {
 		Pageable pageable = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "marketCap"));
 		List<ValidCompany> sortedList = validCompanyRepository.findAllWithCompanies(pageable)
