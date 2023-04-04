@@ -48,7 +48,7 @@ public class MemberController {
 
 	//--------------------------------------로그인-------------------------------------------
 	@PostMapping("/login")
-	public ResponseEntity<TokenInfo> login(@RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<TokenInfo> login(@RequestBody @Valid LoginRequest loginRequest) {
 		TokenInfo tokenInfo = memberService.login(loginRequest.getUsername(), loginRequest.getPassword());
 		return ResponseEntity.ok().body(tokenInfo);
 	}
