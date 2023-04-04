@@ -10,9 +10,11 @@ import bunsan.returnz.domain.result.dto.GamerLogResponseDto;
 import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerLog;
+import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.PurchaseSaleLog;
 import bunsan.returnz.persist.repository.GamerLogRepository;
 import bunsan.returnz.persist.repository.GamerRepository;
+import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.PurchaseSaleLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class ResultService {
 	private final PurchaseSaleLogRepository purchaseSaleLogRepository;
 	private final GamerLogRepository gamerLogRepository;
 	private final GamerRepository gamerRepository;
+	private final MemberRepository memberRepository;
 
 	/**
 	 *
@@ -79,5 +82,33 @@ public class ResultService {
 			gameGamerDtos.add(game.toDto(gamer));
 		}
 		return gameGamerDtos;
+	}
+	// 유저의 평균 수익률 갱신
+	public void updateAvgProfit(Member member, Double totalProfit) {
+		Long gameReturn = Double.valueOf(totalProfit).longValue();
+		member.addAccReturn(gameReturn);
+		// 유저의 gameCount ++
+		member.addGameCount();
+		// 평균 수익률 갱신
+		member.setAvgProfit();
+		memberRepository.save(member);
+	}
+
+	public List<String> getNewProfile(Member member, int rank, Double totalProfit, int gameMemberCount) {
+
+		// 유저의 연승 횟수 올리기
+		if(gameMemberCount >= 2 && rank == 1) {
+			member.addStreakCount();
+			memberRepository.save(member);
+		}
+		//검증 로직 함수화
+		// B(사자) 1판함
+		// C(호랑이) 5판함
+		// D(고양이) 첫1등
+		// E(쥐) 꼴등
+		// F(여우) 한판수익률10퍼
+		// G(미어캣) 한판수익률30퍼
+		// K(기린) 2연승-(1등 2번)
+		return null;
 	}
 }
