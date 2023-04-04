@@ -59,4 +59,9 @@ public class MainPageService {
 		}
 		return stockDtos;
 	}
+	public void getDetail(String stockCode){
+		//제일 최근 해당기업 financial_date
+		//
+
+	}
 }
