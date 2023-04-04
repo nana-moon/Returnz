@@ -658,7 +658,7 @@ public class GameService {
 	}
 
 	/**
-	 * Description : 주식 매수. (현재 작성 중)
+	 * Description : 주식 매수.
 	 * @param gameBuySellRequestBody : 요청 시 body, gamerId, 주문 수량 count, 종목코드 comapnyCode, 방 번호 roomId를 담고 있다.
 	 * @return : 매수가 성공할 경우 True를 리턴한다. 이외에는 Error를 발생시킨다.
 	 */
@@ -690,10 +690,6 @@ public class GameService {
 			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
 			stockClosePrice = (int)(Double.parseDouble(gameHistoricalPriceDayDto.getClose())
 				* gameExchangeInterestDto.getExchangeRate());
-		}
-
-		if (stockClosePrice == 0) {
-			throw new BadRequestException("해당 종목의 가격 정보가 없습니다.");
 		}
 
 		// deposit이 총 매수 금액 보다 크거나 같을 때 구매할 수 있다.
