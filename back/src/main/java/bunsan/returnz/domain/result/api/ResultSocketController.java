@@ -1,8 +1,16 @@
 package bunsan.returnz.domain.result.api;
 
+import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
@@ -19,7 +27,7 @@ public class ResultSocketController {
 	private final ResultSocketService resultSocketService;
 
 	@MessageMapping("/result-room")
-	public void sendToResultRoom(RoomMessageDto roomMessageDto, @Header("Authorization") String bearerToken) {
+	public void sendToResultRoom(@Valid RoomMessageDto roomMessageDto, @Header("Authorization") String bearerToken) {
 		String token = bearerToken.substring(7);
 		if (roomMessageDto.getType().equals(RoomMessageDto.MessageType.CHAT)) {
 			resultSocketService.sendChatMessage(roomMessageDto, token);
@@ -27,4 +35,5 @@ public class ResultSocketController {
 			throw new BadRequestException("요청 타입이 올바르지 않습니다.");
 		}
 	}
+
 }
