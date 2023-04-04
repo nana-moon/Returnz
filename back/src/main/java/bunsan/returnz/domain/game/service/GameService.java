@@ -727,10 +727,9 @@ public class GameService {
 			// 평가 손익, 손익 비율은 바뀌지 않음 -> 턴 정보가 끝날 때 변경
 			Integer totalCount = gameGamerStockDto.getTotalCount() + count;
 			Integer totalAmount = gameGamerStockDto.getTotalAmount() + purchasePrice;
-			Double averagePrice = 0.0;
+			int averagePrice = 0;
 			if (totalAmount != 0 && totalCount != 0) {
-				averagePrice = (double)(totalAmount / totalCount);
-				averagePrice = Double.parseDouble(String.format("%.2f", averagePrice));
+				averagePrice = (totalAmount / totalCount);
 			}
 
 			// "gamer" Table update
@@ -853,9 +852,9 @@ public class GameService {
 			Integer totalCount = gameGamerStockDto.getTotalCount() - count;
 			Integer totalAmount =
 				gameGamerStockDto.getTotalAmount() - (int)(gameGamerStockDto.getAveragePrice() * count);
-			Double averagePrice = gameGamerStockDto.getAveragePrice();
+			Integer averagePrice = gameGamerStockDto.getAveragePrice();
 			if (totalCount == 0) {
-				averagePrice = 0.0;
+				averagePrice = 0;
 				totalAmount = 0;
 			}
 
