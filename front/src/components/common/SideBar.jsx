@@ -20,6 +20,7 @@ export default function SideBar() {
   const myMail = Cookies.get('email');
   // 내 친구
   const [friendList, setfriendList] = useState([]);
+  const [receivedInvites, setReceivedInvites] = useState([]);
   // 내가 받은 친구요청 리스트
   const { data: friendRequests } = useQuery({
     queryKey: ['friendRequests'],
@@ -58,7 +59,7 @@ export default function SideBar() {
         setfriendList(newFriend);
       }
       if (newMessage.type === 'INVITE') {
-        console.log('INVITE 메세지 도착', newMessage.messageBody);
+        setReceivedInvites([...receivedInvites, newMessage.messageBody]);
       }
       // if (newMessage.type === 'STATE') {
       //   console.log('STATE 메세지 도착', newMessage.messageBody);
@@ -197,12 +198,12 @@ export default function SideBar() {
     <SideBarContainer>
       <SideBarScrollEnabledSection>
         <UserProfile />
-        {/* <FriendRequestsContainer>
-          {friendInvites?.length > 0 ? <SectionTitle>초대요청</SectionTitle> : null}
-          {friendInvites?.map((friendInv) => {
-            return <IncomingFriendRequests friendReq={friendInv} key={friendInv.requestId} />;
+        <FriendRequestsContainer>
+          {receivedInvites?.length > 0 ? <SectionTitle>초대요청</SectionTitle> : null}
+          {receivedInvites?.map((friendInv) => {
+            return <IncomingFriendRequests friendReq={friendInv} key={friendInv.nickname} />;
           })}
-        </FriendRequestsContainer> */}
+        </FriendRequestsContainer>
         <FriendRequestsContainer>
           {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
           {friendRequests?.map((friendReq) => {
