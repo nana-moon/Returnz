@@ -22,4 +22,16 @@ const getTopTenRank = () => {
     });
 };
 
-export { getTodayWord, getTopTenRank };
+const getRecommendedStock = () => {
+  return axios
+    .get('/recommend-stock')
+    .then((res) => {
+      console.log('추천주식', res.data);
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
+
+export { getTodayWord, getTopTenRank, getRecommendedStock };

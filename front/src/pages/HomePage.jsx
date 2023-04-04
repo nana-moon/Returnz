@@ -21,21 +21,10 @@ export default function HomePage() {
           <TodayTopUser />
         </TopUsersSection>
         <RecommendedSection>
-          <TestBox>
-            <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />
-          </TestBox>
-          <TestBox>
-            <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />
-          </TestBox>
-          <TestBox>
-            <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />
-          </TestBox>
-          <TestBox>
-            <Avatar size="lg" variant="circular" src="profile_pics/F.jpg" />
-          </TestBox>
+          <TodayNews />
         </RecommendedSection>
         {/* <InfoSection>
-          <TodayNews />
+          
         </InfoSection> */}
         <InfoSection>
           <TodayWord />

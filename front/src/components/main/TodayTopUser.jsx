@@ -23,7 +23,7 @@ export default function TodayTopUser() {
       <TopUserBox>
         <div className="flex ml-4 pt-4 font-bold border-b-2 mr-4 pb-2">
           <div className="w-[15%] text-left pl-2">등수</div>
-          <div className="w-[70%] text-center">아이디</div>
+          <div className="w-[70%] pl-1">아이디</div>
           <div className="w-[15%] ">수익률</div>
         </div>
         {topTenUsers?.map((person, i) => {
@@ -45,7 +45,7 @@ const TopUserTitle = styled.div`
   ${tw`text-3xl text-center font-bold border w-[90%] absolute bg-white rounded-2xl border-negative border-2 py-1`}
 `;
 const TopUserBox = styled.div`
-  ${tw`w-[100%] h-[100%] border bg-white rounded-2xl border-negative border-2 pt-5`}
+  ${tw`w-[100%] h-[100%] border bg-white rounded-2xl border-negative border-2 pt-5 pb-3`}
 `;
 
 // const GraphContainer = styled.div`
