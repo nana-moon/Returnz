@@ -12,7 +12,6 @@ export default function TodayTopUser() {
     async function fetchData() {
       const res = await getTopTenRank();
       setTopTenUsers(res);
-      console.log(res, 'bdsfbi');
     }
     fetchData();
   }, []);
