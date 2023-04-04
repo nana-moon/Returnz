@@ -228,8 +228,7 @@ public class GameService {
 		GameRoomDto gameRoomDto, Long gamerId) {
 
 		log.info("============================= updateStockInformation");
-
-		List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 2);
+		
 		// 현재 방의 날짜
 		LocalDateTime curDate = gameRoomDto.getCurDate();
 		LocalDateTime preDate = gameRoomDto.getPreDate();
@@ -258,10 +257,10 @@ public class GameService {
 			GameHistoricalPriceDayDto stockPriceData = null;
 			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 				stockPriceData = gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-					preDate, gameGamerStockDto.getCompanyCode());
+					curDate, gameGamerStockDto.getCompanyCode());
 			} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
 				stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-					weekRanges.get(1).getWeekLastDay(), gameGamerStockDto.getCompanyCode());
+					curDate, gameGamerStockDto.getCompanyCode());
 			}
 
 			// // 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
