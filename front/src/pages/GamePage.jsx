@@ -95,34 +95,10 @@ export default function GamePage() {
         companyCode: keys[i],
         articleDateTime: Date,
       };
-
-      await axios
-        .post('/games/game', datas)
-        .then((res) => {
-          console.log('res데이터', res);
-          // dispatch(setPlayerList(res.data.gamer));
-          dispatch(handleMoreGameData(res.data.Stocks));
-          dispatch(handleUpdateHoldingData(res.data.gamerStock));
-          dispatch(handleGetStockInformation(res.data.stockInformation));
-          dispatch(handleGetTodayDate(res.data.currentDate));
-          dispatch(handleGetchangeInterest(res.data.exchangeInterest));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      const getNews = [];
-
-      for (let i = 0; i < keys.length; i += 1) {
-        const data = {
-          id: gameId,
-          companyCode: keys[i],
-          articleDateTime: Date,
-        };
-        // eslint-disable-next-line no-await-in-loop
-        const newsTmp = await getNewsApi(data);
-        getNews.push({ [keys[i]]: newsTmp });
-      }
+      // eslint-disable-next-line no-await-in-loop
+      const newsTmp = await getNewsApi(data);
+      getNews.push({ [keys[i]]: newsTmp });
+    }
 
     dispatch(handleGetStockNews(getNews));
   };
