@@ -3,12 +3,16 @@ package bunsan.returnz.domain.mainpage.api;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.mainpage.dto.RankDto;
+import bunsan.returnz.domain.mainpage.dto.StockDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
 import bunsan.returnz.domain.mainpage.service.MainPageService;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +22,26 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/api")
 public class MainPageController {
 	public final MainPageService mainPageService;
 
-	@GetMapping("/api/today-words")
+	@GetMapping("/today-words")
 	public ResponseEntity<Map> getWordList() {
 		List<TodayWordDto> requestDtoList = mainPageService.getWordList();
 		return ResponseEntity.ok(Map.of("todayWordList", requestDtoList));
 	}
 
-	@GetMapping("/api/user-ranks")
+	@GetMapping("/user-ranks")
 	public ResponseEntity<Map> getUserRanks() {
 		List<RankDto> requestDtoList = mainPageService.getUserRanks();
 		return ResponseEntity.ok(Map.of("userRank", requestDtoList));
+	}
+
+	@GetMapping("/recommend-stock")
+	public ResponseEntity<?> getRecommendStock() {
+		List<StockDto> stockDtos = mainPageService.recomandStockList();
+		return ResponseEntity.ok().body(stockDtos);
 	}
 
 }
