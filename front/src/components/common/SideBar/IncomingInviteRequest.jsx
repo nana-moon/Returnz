@@ -3,7 +3,7 @@ import { React } from 'react';
 import tw, { styled } from 'twin.macro';
 import { acceptInviteRequestApi, declineInviteRequestApi } from '../../../apis/friendApi';
 
-export default function IncomingInviteRequest() {
+export default function IncomingInviteRequest({ friendInv }) {
   const acceptRequest = () => {
     acceptInviteRequestApi();
   };
