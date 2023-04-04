@@ -20,7 +20,7 @@ export default function FriendSearchInput() {
     <FriendSearchContainer>
       <Input
         type="text"
-        label="친구의 이메일을 검색하세요"
+        label="이메일을 검색하세요"
         color="cyan"
         value={friendNickname}
         onChange={onChange}
