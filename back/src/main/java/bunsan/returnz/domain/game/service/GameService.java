@@ -649,7 +649,7 @@ public class GameService {
 
 		// 외국 주식인 경우 환율 적용
 		if (gameHistoricalPriceDayDto.getMarket().equals("nasdaq")) {
-			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
+			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getPreDate());
 			stockClosePrice = (int)(Double.parseDouble(gameHistoricalPriceDayDto.getClose())
 				* gameExchangeInterestDto.getExchangeRate());
 		}
@@ -730,6 +730,10 @@ public class GameService {
 			return stockInformation;
 
 		} else {
+			GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getPreDate());
+			log.info("stock close price : " + stockClosePrice);
+			log.info("환율 : " + gameExchangeInterestDto.getExchangeRate());
+			// log.info(gameGamerDto.getDeposit() >= (stockClosePrice * count))
 			throw new BadRequestException("예치금이 충분하지 않습니다.");
 		}
 
