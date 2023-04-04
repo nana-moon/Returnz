@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import bunsan.returnz.domain.mainpage.dto.StockDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
 import bunsan.returnz.domain.mainpage.service.readonly.MainPageService;
+import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.Ranking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,9 +45,14 @@ public class MainPageController {
 		List<StockDto> stockDtos = mainPageService.recomandStockList();
 		return ResponseEntity.ok().body(stockDtos);
 	}
+
 	@GetMapping("/recommend-stock/{stockCode}")
-	public ResponseEntity<?> getDetailStock(@PathVariable String stockCode){
-		// TODO: 2023-04-04 입력검사
+	public ResponseEntity<?> getDetailStock(@PathVariable String stockCode) {
+		// KS 로끝난ㄴ다면
+		if (!stockCode.substring(stockCode.length() - 2).equals("KS")
+			|| (!stockCode.equals(stockCode.toUpperCase()))) {
+			throw new BadRequestException("잘못된 주식양식입니다.");
+		}
 		Map<?, ?> detail = mainPageService.getDetail(stockCode);
 		return ResponseEntity.ok().body(detail);
 	}
