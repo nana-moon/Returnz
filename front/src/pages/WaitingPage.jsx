@@ -239,11 +239,7 @@ export default function WaitingPage() {
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
-    // const readyList = gameInit.gamerList.map((gamer) => {
-    //   return { [gamer.username]: false };
-    // });
-    // dispatch(setInitIsReadyList(readyList));
-    // dispatch(setIsReadyList(readyList));
+    dispatch(setPlayerList(gameData.gamer));
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
@@ -281,12 +277,6 @@ export default function WaitingPage() {
       dispatch(setGameId(gameInit.id)); // gameId
       dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
       dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
-      dispatch(setPlayerList(gameInit.gamerList)); // gamePlayerList
-      const readyList = gameInit.gamerList.map((gamer) => {
-        return { [gamer.username]: false };
-      });
-      dispatch(setInitIsReadyList(readyList));
-      dispatch(setIsReadyList(readyList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
       const turnApiReq = {
