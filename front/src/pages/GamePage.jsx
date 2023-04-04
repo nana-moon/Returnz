@@ -57,9 +57,11 @@ export default function GamePage() {
         roomId: roomNum,
         gamerId: gamerNum,
       };
+
       await axios
         .post('/games/game', datas)
         .then((res) => {
+          console.log('res데이터', res);
           // dispatch(setPlayerList(res.data.gamer));
           dispatch(handleMoreGameData(res.data.Stocks));
           dispatch(handleUpdateHoldingData(res.data.gamerStock));
