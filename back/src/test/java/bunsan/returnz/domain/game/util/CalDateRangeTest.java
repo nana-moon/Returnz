@@ -78,12 +78,12 @@ class CalDateRangeTest {
 			LocalDate lastDate = week.getWeekLastDay().toLocalDate();
 			Period period = Period.between(firstDate, lastDate);
 			System.out.println(period.getDays());
-			sum+=period.getDays()+1;
+			sum += period.getDays() + 1;
 			System.out.println(lastDate);
 		}
 		System.out.println(sum);
 		System.out.println(monthRanges.size());
-		assertEquals(sum, monthRanges.size() );
+		assertEquals(sum, monthRanges.size());
 
 	}
 }
