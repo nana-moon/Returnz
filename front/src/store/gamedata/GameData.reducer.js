@@ -35,7 +35,7 @@ export const gamedata = createSlice({
     // 턴 데이터
     gameTurn: {
       nowTurn: 0,
-      maxTurn: 30,
+      maxTurn: 0,
       returnTime: null,
     },
   },
