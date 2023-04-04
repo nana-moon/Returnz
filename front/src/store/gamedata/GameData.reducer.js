@@ -83,7 +83,7 @@ export const gamedata = createSlice({
       const keys = Object.keys(state.stockDataList);
       const actionkeys = Object.keys(action.payload);
       let tmpdata;
-      let noWorkIdx;
+      const noWorkIdx = [];
 
       for (const key of keys) {
         state.gameTurn.dayTurn = action.payload[key].length + 1;
@@ -97,7 +97,6 @@ export const gamedata = createSlice({
       }
 
       for (const key of actionkeys) {
-        noWorkIdx = [];
         for (let i = 0; i < action.payload[key].length; i += 1) {
           const name = action.payload[key][i].companyName;
           const datex = action.payload[key][i].dateTime;
@@ -110,6 +109,10 @@ export const gamedata = createSlice({
           const liney = action.payload[key][i].volume;
 
           if (liney === '0') {
+            console.log(candley, candley[0]);
+          }
+
+          if (candley[0] === '0' || candley[1] === '0') {
             const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[i] === name);
             const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[i];
             const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[i];
@@ -159,7 +162,7 @@ export const gamedata = createSlice({
     handleBuySellTrade(state, action) {
       const userInfo = {
         deposit: action.payload.gamer.deposit,
-        ammountOfBuy: action.payload.gamer.totalEvaluationStock,
+        ammountOfBuy: action.payload.gamer.totalPurchaseAmount,
       };
       state.gamerDataList = userInfo;
 
