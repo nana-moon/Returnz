@@ -1,11 +1,12 @@
 import { Avatar } from '@material-tailwind/react';
-import { React } from 'react';
+import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useNavigate } from 'react-router-dom';
-import { acceptInviteRequestApi, declineInviteRequestApi } from '../../../apis/friendApi';
+import { acceptInviteRequestApi } from '../../../apis/friendApi';
 
-export default function IncomingInviteRequest({ friendInv }) {
+export default function IncomingInviteRequest({ friendInv, handleDelete }) {
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(true);
 
   const acceptInvRequest = async () => {
     const res = await acceptInviteRequestApi(friendInv.roomId);
@@ -15,24 +16,27 @@ export default function IncomingInviteRequest({ friendInv }) {
     }
   };
   const declineRequest = () => {
-    declineInviteRequestApi(friendInv.roomId);
+    setIsVisible(false);
+    handleDelete(false);
   };
   return (
-    <RequestContainer>
-      <Avatar
-        size="md"
-        variant="circular"
-        src={`profile_pics/${friendInv.profileIcon}.jpg`}
-        className="my-auto border-2 border-negative "
-      />
-      <RequestBox>
-        <RequestNickname>{friendInv.nickname}</RequestNickname>
-        <ButtonsContainer>
-          <AcceptButton onClick={acceptInvRequest}>수락</AcceptButton>
-          <DeclineButton onClick={declineRequest}>거절</DeclineButton>
-        </ButtonsContainer>
-      </RequestBox>
-    </RequestContainer>
+    isVisible && (
+      <RequestContainer>
+        <Avatar
+          size="md"
+          variant="circular"
+          src={`profile_pics/${friendInv.profileIcon}.jpg`}
+          className="my-auto border-2 border-negative "
+        />
+        <RequestBox>
+          <RequestNickname>{friendInv.nickname}</RequestNickname>
+          <ButtonsContainer>
+            <AcceptButton onClick={acceptInvRequest}>수락</AcceptButton>
+            <DeclineButton onClick={declineRequest}>거절</DeclineButton>
+          </ButtonsContainer>
+        </RequestBox>
+      </RequestContainer>
+    )
   );
 }
 
