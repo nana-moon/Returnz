@@ -47,6 +47,12 @@ public class ResultService {
 		return purchaseSaleLogDtos;
 	}
 
+	/**
+	 * Description : 결과 페이지 중 Gamer에 대한 정보를 얻기 위해 사용한다.
+	 * @param memberId : 멤버 고유 아이디
+	 * @param gameRoomId : 게임방 고유 아이디
+	 * @return : 해당 게임방에 참가한 Gamer들의 정보를 List로 반환한다.
+	 */
 	public List<GamerLogResponseDto> findAllByMemberIdAndGameRoomId(Long memberId, Long gameRoomId) {
 		List<GamerLog> gamerLogs = gamerLogRepository.findAllByMemberIdAndGameRoomId(memberId, gameRoomId);
 		List<GamerLogResponseDto> gamerLogResponseDtos = new LinkedList<>();
@@ -59,6 +65,11 @@ public class ResultService {
 		return gamerLogResponseDtos;
 	}
 
+	/**
+	 * Description : 결과 페이지에서 해당 유저의 rank를 얻기 위해서 사용한다.
+	 * @param gameRoomId : 게임방 고유 아이디
+	 * @return : Gamer를 total profit rate를 기준으로 정렬한다.
+	 */
 	public List<GameGamerDto> findAllByGameRoomIdOrderByTotalProfitRate(Long gameRoomId) {
 		List<Gamer> gamers = gamerRepository.findAllByGameRoomIdOrderByTotalProfitRate(gameRoomId);
 
