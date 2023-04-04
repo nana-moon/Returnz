@@ -4,11 +4,12 @@ import tw, { styled } from 'twin.macro';
 import { acceptInviteRequestApi, declineInviteRequestApi } from '../../../apis/friendApi';
 
 export default function IncomingInviteRequest({ friendInv }) {
-  const acceptRequest = () => {
-    acceptInviteRequestApi();
+  const acceptInvRequest = async () => {
+    const res = await acceptInviteRequestApi(friendInv.roomId);
+    console.log(res, '거의끝남 ㄱㄱㄱㄱㄱㄱㄱ');
   };
   const declineRequest = () => {
-    declineInviteRequestApi();
+    declineInviteRequestApi(friendInv.roomId);
   };
   return (
     <RequestContainer>
@@ -21,7 +22,7 @@ export default function IncomingInviteRequest({ friendInv }) {
       <RequestBox>
         <RequestNickname>{friendInv.nickname}</RequestNickname>
         <ButtonsContainer>
-          <AcceptButton onClick={acceptRequest}>수락</AcceptButton>
+          <AcceptButton onClick={acceptInvRequest}>수락</AcceptButton>
           <DeclineButton onClick={declineRequest}>거절</DeclineButton>
         </ButtonsContainer>
       </RequestBox>
