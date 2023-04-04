@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import bunsan.returnz.domain.game.dto.PurchaseSaleLogDto;
+import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,6 +72,19 @@ public class PurchaseSaleLog {
 			.price(purchaseSaleLog.getPrice())
 			.gameRoom(purchaseSaleLog.getGameRoom())
 			.member(purchaseSaleLog.getMember())
+			.build();
+	}
+
+	public PurchaseSaleLogResponseDto toResponseDto(PurchaseSaleLog purchaseSaleLog) {
+		return PurchaseSaleLogResponseDto.builder()
+			.curTurn(purchaseSaleLog.getCurTurn())
+			.totalTurn(purchaseSaleLog.getTotalTurn())
+			.companyCode(purchaseSaleLog.getCompanyCode())
+			.companyName(purchaseSaleLog.getCompanyName())
+			.date(purchaseSaleLog.getDate())
+			.category(purchaseSaleLog.getCategory())
+			.count(purchaseSaleLog.getCount())
+			.price(purchaseSaleLog.getPrice())
 			.build();
 	}
 }
