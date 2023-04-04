@@ -2,6 +2,8 @@ package bunsan.returnz.domain.waiting.api;
 
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -57,7 +59,7 @@ public class WaitController {
 	//----------------------------------대기방 인원 조정------------------------------------
 	@PatchMapping("/api/wait-room/exit")
 	public ResponseEntity deleteWaiter(@RequestHeader(value = "Authorization") String bearerToken,
-		@RequestParam String roomId) {
+		@RequestParam @NotBlank String roomId) {
 		String token = bearerToken.substring(7);
 		waitService.deleteWaiter(token, roomId);
 		return ResponseEntity.ok().body(Map.of("result", "success"));
@@ -65,7 +67,7 @@ public class WaitController {
 
 	@PatchMapping("/api/wait-room/enter")
 	public ResponseEntity createWaiter(@RequestHeader(value = "Authorization") String bearerToken,
-		@RequestParam String roomId) {
+		@RequestParam @NotBlank String roomId) {
 		String token = bearerToken.substring(7);
 		WaitRoom waitRoom = waitService.createWaiter(token, roomId);
 		return ResponseEntity.ok().body(waitRoom);
