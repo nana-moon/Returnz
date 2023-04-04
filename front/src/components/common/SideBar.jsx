@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SockJs from 'sockjs-client';
 import StompJs from 'stompjs';
 import Cookies from 'js-cookie';
@@ -29,91 +29,165 @@ export default function SideBar() {
     },
   });
   // 웹소켓
-  const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-  const options = {
-    debug: false,
-    protocols: Stomp.VERSIONS.supportedProtocols(),
-    reconnectDelay: 1000, // 재시도 간격 1초로 설정
-    heartbeatIncoming: 4000, // 4초마다 서버로부터 heartbeat 메시지 받기
-    heartbeatOutgoing: 4000, // 4초마다 서버로 heartbeat 메시지 보내기
-  };
-  // client 객체 생성 및 서버주소 입력
-  const stomp = StompJs.over(sock, options);
-  // stomp로 감싸기
+  // -------------------------SOCKET MANAGER-----------------------------
 
+  const stompRef = useRef(null);
+  if (!stompRef.current) {
+    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+    const options = {
+      debug: false,
+      protocols: Stomp.VERSIONS.supportedProtocols(),
+    };
+    stompRef.current = StompJs.over(sock, options);
+  }
+  // ------웹소켓정보-------------
+  const subAddress = `/user/sub/side-bar`;
+  const pubAddress = '/pub/side-bar';
+  const header = {
+    Authorization: myToken,
+  };
+
+  // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
+  const handleMessage = (data) => {
+    if (stompRef.current && stompRef.current.connected) {
+      const newMessage = JSON.parse(data.body);
+      console.log(newMessage, '이게뭔데;');
+      if (newMessage.type === 'ENTER') {
+        console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
+        const newFriend = newMessage.messageBody.friendList;
+        setfriendList(newFriend);
+      }
+      if (newMessage.type === 'INVITE') {
+        console.log('INVITE 메세지 도착', newMessage.messageBody);
+      }
+      // if (newMessage.type === 'STATE') {
+      //   console.log('STATE 메세지 도착', newMessage.messageBody);
+      //   // setChangedFriend(newMessage.messageBody);
+      //   const changedFriend = newMessage.messageBody;
+      //   const updatedFriendList = friendList.map((friend) => {
+      //     if (friend.username === changedFriend.friendName) {
+      //       // 친구 정보가 일치하면 state 값 변경
+      //       console.log(friend.username, 'd원래');
+      //       console.log(changedFriend.friendName, '새로운');
+      //       return { ...friend, state: changedFriend.state };
+      //     }
+      //     return friend;
+      //   });
+
+      //   // friendList 갱신
+      //   setfriendList(updatedFriendList);
+      // }
+    }
+  };
+
+  // -------------------------SOCKET CONNECT-----------------------------
   useEffect(() => {
     const stompConnect = () => {
-      try {
-        stomp.debug = null;
-        // console에 보여주는데 그것을 감추기 위한 debug
-        console.log('Connected');
-        stomp.connect(
-          {
-            // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-            Authorization: `${myToken}`,
-          },
-          () => {
-            stomp.subscribe(
-              `/user/sub/side-bar`,
-              (data) => {
-                const newMessage = JSON.parse(data.body);
-                console.log(newMessage, '이게뭔데;');
-                if (newMessage.type === 'ENTER') {
-                  console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
-                  const newFriend = newMessage.messageBody.friendList;
-                  setfriendList(newFriend);
-                }
-                // -------------------------handle CHAT-----------------------------
-                if (newMessage.type === 'STATE') {
-                  console.log('STATE 메세지 도착', newMessage.messageBody);
-                  // setChangedFriend(newMessage.messageBody);
-                  const changedFriend = newMessage.messageBody;
-                  const updatedFriendList = friendList.map((friend) => {
-                    if (friend.username === changedFriend.friendName) {
-                      // 친구 정보가 일치하면 state 값 변경
-                      console.log(friend.username, 'd원래');
-                      console.log(changedFriend.friendName, '새로운');
-                      return { ...friend, state: changedFriend.state };
-                    }
-                    return friend;
-                  });
-
-                  // friendList 갱신
-                  setfriendList(updatedFriendList);
-                }
-                // -------------------------handle GAME_INFO-----------------------------
-                if (newMessage.type === 'INVITE') {
-                  console.log('INVITE 메세지 도착', newMessage.messageBody);
-                }
-
-                // 데이터 파싱
+      stompRef.current.debug = null;
+      stompRef.current.connect(
+        header,
+        () => {
+          stompRef.current.subscribe(subAddress, handleMessage, header);
+          stompRef.current.send(
+            pubAddress,
+            header,
+            JSON.stringify({
+              type: 'ENTER',
+              messageBody: {
+                username: `${myMail}`,
               },
-              {
-                // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-                Authorization: `${myToken}`,
-              },
-            );
-            stomp.send(
-              '/pub/side-bar',
-              {
-                // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-                Authorization: `${myToken}`,
-              },
-              JSON.stringify({
-                type: 'ENTER',
-                messageBody: {
-                  username: `${myMail}`,
-                },
-              }),
-            );
-          },
-        );
-      } catch (err) {
-        console.log(err);
-      }
+            }),
+          );
+        },
+        (error) => {
+          console.log('WebSocket connection error:', error);
+        },
+      );
     };
+
     stompConnect();
+
+    // Clean up when the component unmounts
+    return () => {
+      stompRef.current && stompRef.current.unsubscribe(subAddress);
+    };
   }, []);
+
+  // ==========================================
+
+  // useEffect(() => {
+  //   const stompConnect = () => {
+  //     try {
+  //       stomp.debug = null;
+  //       // console에 보여주는데 그것을 감추기 위한 debug
+  //       console.log('Connected');
+  //       stomp.connect(
+  //         {
+  //           // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+  //           Authorization: `${myToken}`,
+  //         },
+  //         () => {
+  //           stomp.subscribe(
+  //             `/user/sub/side-bar`,
+  //             (data) => {
+  //               const newMessage = JSON.parse(data.body);
+  //               console.log(newMessage, '이게뭔데;');
+  //               if (newMessage.type === 'ENTER') {
+  //                 console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
+  //                 const newFriend = newMessage.messageBody.friendList;
+  //                 setfriendList(newFriend);
+  //               }
+  //               // -------------------------handle CHAT-----------------------------
+  //               if (newMessage.type === 'STATE') {
+  //                 console.log('STATE 메세지 도착', newMessage.messageBody);
+  //                 // setChangedFriend(newMessage.messageBody);
+  //                 const changedFriend = newMessage.messageBody;
+  //                 const updatedFriendList = friendList.map((friend) => {
+  //                   if (friend.username === changedFriend.friendName) {
+  //                     // 친구 정보가 일치하면 state 값 변경
+  //                     console.log(friend.username, 'd원래');
+  //                     console.log(changedFriend.friendName, '새로운');
+  //                     return { ...friend, state: changedFriend.state };
+  //                   }
+  //                   return friend;
+  //                 });
+
+  //                 // friendList 갱신
+  //                 setfriendList(updatedFriendList);
+  //               }
+  //               // -------------------------handle GAME_INFO-----------------------------
+  //               if (newMessage.type === 'INVITE') {
+  //                 console.log('INVITE 메세지 도착', newMessage.messageBody);
+  //               }
+
+  //               // 데이터 파싱
+  //             },
+  //             {
+  //               // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+  //               Authorization: `${myToken}`,
+  //             },
+  //           );
+  //           stomp.send(
+  //             '/pub/side-bar',
+  //             {
+  //               // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
+  //               Authorization: `${myToken}`,
+  //             },
+  //             JSON.stringify({
+  //               type: 'ENTER',
+  //               messageBody: {
+  //                 username: `${myMail}`,
+  //               },
+  //             }),
+  //           );
+  //         },
+  //       );
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   stompConnect();
+  // }, []);
 
   return (
     <SideBarContainer>
