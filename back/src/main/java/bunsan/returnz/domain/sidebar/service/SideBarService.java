@@ -89,11 +89,13 @@ public class SideBarService {
 		// token에 저장된 Member > 요청한 사람
 		Map<String, Object> requestBody = sideRequest.getMessageBody();
 		Member requester = jwtTokenProvider.getMember(token);
-
+		if(requestBody.get("username") == null) {
+			throw new BadRequestException("초대 상대가 존재하지 않습니다.");
+		}
 		// 새로운 사이드 메세지 생성
 		Map<String, Object> messageBody = new HashMap<>();
 		messageBody.put("roomId", requestBody.get("roomId"));
-		messageBody.put("username", requester.getUsername());
+		messageBody.put("username", requestBody.get("username"));
 		messageBody.put("nickname", requester.getNickname());
 		messageBody.put("profileIcon", requester.getProfileIcon());
 

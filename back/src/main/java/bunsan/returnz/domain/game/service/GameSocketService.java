@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.stereotype.Service;
 
@@ -48,9 +49,6 @@ public class GameSocketService {
 	}
 
 	private void checkGameRoomId(RoomMessageDto roomMessageDto) {
-		if (roomMessageDto.getRoomId() == null) {
-			throw new BadRequestException("게임방 정보를 입력해주세요.");
-		}
 		gameRoomRepository.findByRoomId(roomMessageDto.getRoomId())
 			.orElseThrow(() -> new BadRequestException("게임룸 정보가 올바르지 않습니다."));
 	}
@@ -72,16 +70,19 @@ public class GameSocketService {
 		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
 	}
 
-	public void sendEndMessage(RoomMessageDto roomMessageDto) {
-		checkGameRoomId(roomMessageDto);
-		checkResultRoomId(roomMessageDto);
-		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
-	}
+	// public String createResultRoom(String gameRoomId) {
+	// 	gameRoomRepository.findByRoomId(gameRoomId)
+	// 		.orElseThrow(() -> new BadRequestException("게임룸 정보가 올바르지 않습니다."));
+	// 	// result-room 생성 후 반환
+	//
+	// 	redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
+	// }
 
 	private void checkResultRoomId(RoomMessageDto roomMessageDto) {
 		if (roomMessageDto.getMessageBody().get("resultRoomId") == null) {
 			throw new BadRequestException("결과창 정보를 불러올 수 없습니다.");
 		}
+		// result room 정보 조회
 	}
 
 	public String sendServerTime(String roomId) {
