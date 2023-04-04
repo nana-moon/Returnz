@@ -71,12 +71,13 @@ public class MainPageService {
 		return stockDtos;
 	}
 
-	public Map<?,?> getDetail(String stockCode) {
+	public Map<?, ?> getDetail(String stockCode) {
 		// 제일 최근 해당기업 financial_date 전부다
 		Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "dateTime"));
-		List<FinancialInformation> getListRecent = financialInformationRepository.recentFinancialInfo(pageable, stockCode)
+		List<FinancialInformation> getListRecent = financialInformationRepository.recentFinancialInfo(pageable,
+				stockCode)
 			.getContent();
-		if(getListRecent.size() == 0){
+		if (getListRecent.size() == 0) {
 			throw new BusinessException("디비에 정보가 없습니다.");
 		}
 		FinancialInformationDto recentFinancialDto = getListRecent.get(0).toDto();
@@ -86,7 +87,7 @@ public class MainPageService {
 		log.info(gameCompanyDetailDto.getKoName());
 		log.info(recentFinancialDto.getCompanyCode());
 		Map<String, Object> res = new HashMap<>();
-		res.put("company" , gameCompanyDetailDto);
+		res.put("company", gameCompanyDetailDto);
 		res.put("financial", recentFinancialDto);
 
 		return res;
