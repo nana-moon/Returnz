@@ -259,6 +259,12 @@ export default function GamePage() {
     }
   }, [turnInfo]);
 
+  // 새로고침, 뒤로가기, 창 닫기 방지
+
+  window.onbeforeunload = function () {};
+
+  window.addEventListener('popstate', function (event) {});
+
   // -------------------------||| HTML |||------------------------------------------------------------------
 
   return (
