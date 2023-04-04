@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import { BsFillArrowRightCircleFill, BsFillArrowLeftCircleFill } from 'react-icons/bs';
-import { FaBook } from 'react-icons/fa';
 import { getTodayWord } from '../../apis/homeApi';
 
 export default function TodayWord() {
@@ -27,7 +26,7 @@ export default function TodayWord() {
   }, []);
   return (
     <TodayWordContainer>
-      <TodayWordTitle> 📝 오늘의 단어</TodayWordTitle>
+      <TodayWordTitle> 📝 오늘의 단어 </TodayWordTitle>
       <WordTitle>{word[currentIndex]?.keyWord}</WordTitle>
       <WordContent>{word[currentIndex]?.description}</WordContent>
       <LeftArrow>
@@ -41,7 +40,7 @@ export default function TodayWord() {
 }
 
 const TodayWordContainer = styled.div`
-  ${tw`text-center w-[100%] h-[70%] relative bg-white rounded-xl border-2 border-negative py-10 px-2 mt-12`}
+  ${tw`text-center w-[100%] h-[60%] relative bg-white rounded-xl border-2 border-negative py-10 px-2 mt-10`}
 `;
 
 const WordTitle = styled.div`

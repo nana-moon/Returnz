@@ -20,6 +20,7 @@ export default function SideBar() {
   const myMail = Cookies.get('email');
   // 내 친구
   const [friendList, setfriendList] = useState([]);
+
   const [receivedInvites, setReceivedInvites] = useState([]);
   // 내가 받은 친구요청 리스트
   const { data: friendRequests } = useQuery({
@@ -54,7 +55,7 @@ export default function SideBar() {
       const newMessage = JSON.parse(data.body);
       console.log(newMessage, '이게뭔데;');
       if (newMessage.type === 'ENTER') {
-        console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
+        console.log('ENTER');
         const newFriend = newMessage.messageBody.friendList;
         setfriendList(newFriend);
       }
