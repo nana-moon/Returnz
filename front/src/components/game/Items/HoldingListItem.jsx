@@ -29,7 +29,7 @@ export default function HoldingListItem({ holding }) {
           <p>평가금</p>
         </LeftScetion>
         <LeftBox state={profit}>
-          <p>{holding.valuation} 원</p>
+          <p>{parseInt(holding.valuation, 10).toLocaleString()} 원</p>
           <p>
             {/* {holding.profitRate < 1
               ? holding.profitRate === 0
@@ -38,7 +38,7 @@ export default function HoldingListItem({ holding }) {
               : `${Math.abs((1 - holding.profitRate) * 100).toFixed(2)} %`} */}
             {holding.profitRate} %
           </p>
-          <p>{holding.totalAmount.toLocaleString()} 원</p>
+          <p>{parseInt(holding.totalAmount + holding.valuation, 10).toLocaleString()} 원</p>
         </LeftBox>
         <RightSection>
           <p>매도가능</p>

@@ -5,15 +5,21 @@ import { getIsReadyList, getPlayerList } from '../../../store/roominfo/GameRoom.
 import NullListItem from '../../waiting/NullListItem';
 import UserLogListItem from './UserLogListItem';
 
-export default function UserLogList() {
+export default function UserLogList({ getIsReady }) {
   const playerList = useSelector(getPlayerList);
   const isReadyList = useSelector(getIsReadyList);
-  console.log('isReadyList', isReadyList);
   return (
     <UserLogContainer>
       {Array.from({ length: 4 }).map((_, i) => {
         if (i < playerList.length) {
-          return <UserLogListItem key={playerList[i].nickname} player={playerList[i]} isReady={isReadyList[i]} />;
+          return (
+            <UserLogListItem
+              key={playerList[i].nickname}
+              player={playerList[i]}
+              isReady={isReadyList[i]}
+              getIsReady={getIsReady}
+            />
+          );
         }
         // eslint-disable-next-line react/no-array-index-key
         return <NullListItem key={i} />;
