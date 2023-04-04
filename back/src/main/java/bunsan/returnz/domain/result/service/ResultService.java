@@ -1,18 +1,22 @@
 package bunsan.returnz.domain.result.service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
+import bunsan.returnz.domain.member.enums.ProfileIcon;
 import bunsan.returnz.domain.result.dto.GamerLogResponseDto;
 import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import bunsan.returnz.persist.entity.Gamer;
 import bunsan.returnz.persist.entity.GamerLog;
+import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.PurchaseSaleLog;
 import bunsan.returnz.persist.repository.GamerLogRepository;
 import bunsan.returnz.persist.repository.GamerRepository;
+import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.PurchaseSaleLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +29,7 @@ public class ResultService {
 	private final PurchaseSaleLogRepository purchaseSaleLogRepository;
 	private final GamerLogRepository gamerLogRepository;
 	private final GamerRepository gamerRepository;
+	private final MemberRepository memberRepository;
 
 	/**
 	 *
@@ -79,5 +84,62 @@ public class ResultService {
 			gameGamerDtos.add(game.toDto(gamer));
 		}
 		return gameGamerDtos;
+	}
+
+	public void updateAvgProfit(Member member, Double totalProfit) {
+		// 유저의 평균 수익률 갱신
+		Long gameReturn = Double.valueOf(totalProfit).longValue();
+		member.addAccReturn(gameReturn);
+		// 유저의 gameCount ++
+		member.addGameCount();
+		// 평균 수익률 갱신
+		member.setAvgProfit();
+		memberRepository.save(member);
+	}
+
+	public List<String> getNewProfile(Member member, int rank, Double totalProfit, int gameMemberCount) {
+		List<String> newProfiles = new ArrayList<>();
+		// 1등일 때
+		if (gameMemberCount >= 2 && rank == 1) {
+			// D(고양이) 첫 1등
+			addNewProfile(member, ProfileIcon.FOUR.getCode(), newProfiles);
+			// 연승 + 1
+			member.addStreakCount();
+		} else if (gameMemberCount != 1) {
+			// 1등 아닐 때 (한명일 땐 0으로 돌아가면 안됨)
+			member.setStreakCountZero();
+		}
+		// B(사자) 1판함 & C(호랑이) 5판함
+		if (member.getGameCount() == 1) {
+			addNewProfile(member, ProfileIcon.TWO.getCode(), newProfiles);
+		} else if (member.getGameCount() == 5) {
+			addNewProfile(member, ProfileIcon.THREE.getCode(), newProfiles);
+		}
+
+		// E(쥐) 꼴등
+		if (gameMemberCount >= 4 && rank == gameMemberCount) {
+			addNewProfile(member, ProfileIcon.FIVE.getCode(), newProfiles);
+		}
+
+		// F(여우) 한 판 수익률 10퍼
+		if (totalProfit >= 10) {
+			addNewProfile(member, ProfileIcon.SIX.getCode(), newProfiles);
+			// G(미어캣) 한 판 수익률 30퍼
+			if (totalProfit >= 30) {
+				addNewProfile(member, ProfileIcon.SEVEN.getCode(), newProfiles);
+			}
+		}
+		// K(기린) 2연승 - (1등 2번)
+		if (member.getStreakCount() == 2) {
+			addNewProfile(member, ProfileIcon.ELEVEN.getCode(), newProfiles);
+		}
+		memberRepository.save(member);
+		return newProfiles;
+	}
+
+	private void addNewProfile(Member member, String code, List<String> newProfiles) {
+		if (!member.getPermittedProfiles().contains(code)) {
+			newProfiles.add(member.addProfile(code));
+		}
 	}
 }
