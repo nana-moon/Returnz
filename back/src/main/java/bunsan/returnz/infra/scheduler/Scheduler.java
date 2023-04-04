@@ -32,6 +32,7 @@ public class Scheduler {
 	private final RankingRepository rankingRepository;
 	private final MemberRepository memberRepository;
 	private final EconomicWordRepository economicWordRepository;
+	private final Long MIN_GAME_COUNT = 5L;
 
 	@Scheduled(cron = "0 0 0 * * *")
 	public void updateTodayWords() {
@@ -58,7 +59,7 @@ public class Scheduler {
 		log.info("{}에 실행되었습니다.", LocalDateTime.now());
 		rankingRepository.deleteAll();
 
-		List<Member> memberList = memberRepository.findTop10ByGameCountGreaterThanOrderByAvgProfitDesc(4L);
+		List<Member> memberList = memberRepository.findTop10ByGameCountGreaterThanEqualOrderByAvgProfitDesc(MIN_GAME_COUNT);
 		List<Ranking> rankList = new ArrayList<>();
 		int index = 0;
 		for (Member member : memberList) {
