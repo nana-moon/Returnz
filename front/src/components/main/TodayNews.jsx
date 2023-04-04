@@ -15,10 +15,10 @@ export default function TodayNews() {
   }, []);
   return (
     <TodayNewsContainer>
-      <TodayNewsTitle>
+      {/* <TodayNewsTitle>
         오늘의 추천 종목
         <AiOutlineStock className="my-auto" />
-      </TodayNewsTitle>
+      </TodayNewsTitle> */}
       <TodayNewsSection>
         {recommendedStock?.map((stock) => {
           // eslint-disable-next-line react/no-array-index-key
@@ -30,12 +30,12 @@ export default function TodayNews() {
 }
 
 const TodayNewsContainer = styled.div`
-  ${tw`text-center`}
+  ${tw`text-center w-[100%] h-[100%]`}
 `;
 const TodayNewsTitle = styled.div`
   ${tw`flex text-2xl gap-2 justify-center`}
 `;
 
 const TodayNewsSection = styled.div`
-  ${tw`h-full p-2 grid grid-cols-2 grid-rows-2 gap-2`}
+  ${tw`h-full grid grid-cols-2 grid-rows-2 gap-2`}
 `;
