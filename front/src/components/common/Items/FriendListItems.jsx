@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SockJs from 'sockjs-client';
 import StompJs from 'stompjs';
 import Cookies from 'js-cookie';
@@ -34,95 +34,34 @@ export default function FriendListItems({ friend }) {
   // 대기자 STATE
   const roomId = useSelector(getWaitRoomId);
   // 웹소켓
-  const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
-  const options = {
-    debug: false,
-    protocols: Stomp.VERSIONS.supportedProtocols(),
-    reconnectDelay: 1000, // 재시도 간격 1초로 설정
-    heartbeatIncoming: 4000, // 4초마다 서버로부터 heartbeat 메시지 받기
-    heartbeatOutgoing: 4000, // 4초마다 서버로 heartbeat 메시지 보내기
+  const stompRef = useRef(null);
+  if (!stompRef.current) {
+    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+    const options = {
+      debug: false,
+      protocols: Stomp.VERSIONS.supportedProtocols(),
+    };
+    stompRef.current = StompJs.over(sock, options);
+  }
+  // ------웹소켓정보-------------
+  // const subAddress = `/user/sub/side-bar`;
+  const pubAddress = '/pub/side-bar';
+  const header = {
+    Authorization: myToken,
   };
-  // client 객체 생성 및 서버주소 입력
-  const stomp = StompJs.over(sock, options);
-  // const handleInviteRequest = () => {
-  //   stomp.send(
-  //     '/pub/side-bar',
-  //     {
-  //       // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-  //       Authorization: `${myToken}`,
-  //     },
-  //     JSON.stringify({
-  //       type: 'FRIEND',
-  //       messageBody: {
-  //         roomId: `${roomId}`,
-  //         username: `${friend.username}`,
-  //       },
-  //     }),
-  //   );
-  // };
 
   const handleInviteRequest = () => {
-    try {
-      stomp.debug = null;
-      // console에 보여주는데 그것을 감추기 위한 debug
-      console.log('Connected');
-      stomp.connect(
-        {
-          // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-          Authorization: `${myToken}`,
+    stompRef.current.send(
+      pubAddress,
+      header,
+      JSON.stringify({
+        type: 'INVITE',
+        messageBody: {
+          roomId: `${roomId}`,
+          username: `${friend.username}`, // 초대 상대
         },
-        () => {
-          console.log('하하랗라하라');
-          stomp.subscribe(
-            `/user/sub/side-bar`,
-            (data) => {
-              const newMessage = JSON.parse(data.body);
-              console.log(newMessage, '이게뭔데;');
-              if (newMessage.type === 'ENTER') {
-                console.log('ENTER 메세지 도착. 나의 친구칭긔', newMessage.messageBody);
-                const newFriend = newMessage.messageBody.friendList;
-                console.log(newFriend, '나의 칭구칭긔');
-                // setfriendList(newFriend);
-              }
-              // -------------------------handle CHAT-----------------------------
-              if (newMessage.type === 'STATE') {
-                console.log('STATE 메세지 도착', newMessage.messageBody);
-              }
-              // -------------------------handle SETTING-----------------------------
-              if (newMessage.type === 'FRIEND') {
-                console.log('FRIEND 메세지 도착', newMessage.messageBody);
-              }
-              // -------------------------handle GAME_INFO-----------------------------
-              if (newMessage.type === 'INVITE') {
-                console.log('INVITE 메세지 도착', newMessage.messageBody);
-              }
-
-              // 데이터 파싱
-            },
-            {
-              // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-              Authorization: `${myToken}`,
-            },
-          );
-          stomp.send(
-            '/pub/side-bar',
-            {
-              // 여기에서 유효성 검증을 위해 header를 넣어줄 수 있음
-              Authorization: `${myToken}`,
-            },
-            JSON.stringify({
-              type: 'FRIEND',
-              messageBody: {
-                roomId: `${roomId}`,
-                username: `${friend.username}`,
-              },
-            }),
-          );
-        },
-      );
-    } catch (err) {
-      console.log(err);
-    }
+      }),
+    );
   };
 
   return (
