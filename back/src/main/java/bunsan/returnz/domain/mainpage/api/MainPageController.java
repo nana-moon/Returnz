@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.mainpage.dto.StockDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
-import bunsan.returnz.domain.mainpage.service.MainPageService;
+import bunsan.returnz.domain.mainpage.service.readonly.MainPageService;
 import bunsan.returnz.persist.entity.Ranking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +46,9 @@ public class MainPageController {
 	}
 	@GetMapping("/recommend-stock/{stockCode}")
 	public ResponseEntity<?> getDetailStock(@PathVariable String stockCode){
-		log.info(stockCode);
-		return null;
+		// TODO: 2023-04-04 입력검사
+		Map<?, ?> detail = mainPageService.getDetail(stockCode);
+		return ResponseEntity.ok().body(detail);
 	}
 
 }
