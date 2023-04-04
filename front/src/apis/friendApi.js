@@ -58,22 +58,10 @@ const acceptInviteRequestApi = (payload) => {
     });
 };
 
-const declineInviteRequestApi = (payload) => {
-  return authApi
-    .delete(`/requests/${payload}`)
-    .then((res) => {
-      return res;
-    })
-    .catch((err) => {
-      return err;
-    });
-};
-
 export {
   getFriendRequestsApi,
   sendFriendRequestApi,
   acceptFriendRequestApi,
   declineFriendRequestApi,
   acceptInviteRequestApi,
-  declineInviteRequestApi,
 };
