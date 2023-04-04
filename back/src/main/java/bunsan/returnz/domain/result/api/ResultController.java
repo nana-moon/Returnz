@@ -38,8 +38,8 @@ public class ResultController {
 	private final GamerService gamerService;
 	private final MemberService memberService;
 
-	@PostMapping("/result")
-	public ResponseEntity<?> gameStart(@RequestBody ResultRequestBody resultRequestBody) {
+	@PostMapping
+	public ResponseEntity<?> getGameResult(@RequestBody ResultRequestBody resultRequestBody) {
 
 		GameRoom gameRoom = gameRoomService.findById(resultRequestBody.getGameRoomId());
 		if (!gameRoom.getCurTurn().equals(gameRoom.getTotalTurn())) {
