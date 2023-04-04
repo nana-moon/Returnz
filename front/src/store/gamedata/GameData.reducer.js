@@ -1,45 +1,47 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  // 상장종목
+  stockDataList: {},
+  // 오늘날짜
+  todayDate: null,
+  // 그래프
+  stockGraphList: [],
+  // 영업날이 아님
+  noWorkDay: [],
+  // 뉴스,
+  stockNews: [],
+  // 주가정보
+  stockInformation: {},
+  // 종목 내용
+  stockdescription: {},
+  // 보유종목
+  gamerStockList: [{}],
+  // 환율 한국금리 미국금리
+  changeInterest: {
+    date: null,
+    exchangeRate: 0,
+    korea: 0,
+    usa: 0,
+  },
+  // 유저 데이터
+  gamerDataList: {
+    deposit: 10000000,
+    ammountOfBuy: 0,
+  },
+  // 턴 데이터
+  gameTurn: {
+    nowTurn: 0,
+    maxTurn: 0,
+    dayTurn: 2,
+    returnTime: null,
+  },
+};
+
 export const gamedata = createSlice({
   name: 'gamedata',
-  initialState: {
-    // 상장종목
-    stockDataList: {},
-    // 오늘날짜
-    todayDate: null,
-    // 그래프
-    stockGraphList: [],
-    // 영업날이 아님
-    noWorkDay: [],
-    // 뉴스,
-    stockNews: [],
-    // 주가정보
-    stockInformation: {},
-    // 종목 내용
-    stockdescription: {},
-    // 보유종목
-    gamerStockList: [{}],
-    // 환율 한국금리 미국금리
-    changeInterest: {
-      date: null,
-      exchangeRate: 0,
-      korea: 0,
-      usa: 0,
-    },
-    // 유저 데이터
-    gamerDataList: {
-      deposit: 10000000,
-      ammountOfBuy: 0,
-    },
-    // 턴 데이터
-    gameTurn: {
-      nowTurn: 0,
-      maxTurn: 0,
-      dayTurn: 2,
-      returnTime: null,
-    },
-  },
+  initialState,
   reducers: {
     // 첫턴 데이터들
     handleGetGameData(state, action) {
@@ -173,6 +175,9 @@ export const gamedata = createSlice({
     setReturnTime(state, action) {
       state.gameTurn.returnTime = action.payload;
     },
+    resetGameData(state) {
+      Object.assign(state, initialState);
+    },
   },
 });
 
@@ -188,5 +193,6 @@ export const {
   handleGetchangeInterest,
   setMaxTurn,
   setReturnTime,
+  resetGameData,
 } = gamedata.actions;
 export default gamedata;
