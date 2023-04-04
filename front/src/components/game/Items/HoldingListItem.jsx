@@ -86,7 +86,7 @@ const LeftScetion = styled.div`
 const LeftBox = styled.div`
   ${(props) => (props.state === 'gain' ? tw`text-gain` : null)}
   ${(props) => (props.state === 'lose' ? tw`text-lose` : null)}  
-  ${tw`flex-col w-[25%]  text-right pr-2 text-sm`}
+  ${tw`flex-col w-[25%]  text-right pr-2 text-sm overflow-hidden`}
 `;
 
 const RightSection = styled.div`

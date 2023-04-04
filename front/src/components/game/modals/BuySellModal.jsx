@@ -1,6 +1,7 @@
 /* eslint-disable radix */
 import React, { useEffect, useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import Swal from 'sweetalert2';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Input } from '@material-tailwind/react';
 import { createGlobalStyle } from 'styled-components';
@@ -40,17 +41,15 @@ export default function BuySellModal({ code, checkCanSell }) {
       maxOrderCount = Math.floor(deposit.deposit / parseInt(modalData.orderPrice, 10));
       cost = parseInt(modalData.orderPrice);
     } else {
-      maxOrderCount = Math.floor(
-        deposit.deposit / Math.floor(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate),
-      );
-      cost = parseInt(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate, 10);
+      maxOrderCount = Math.floor(deposit.deposit / Math.floor(modalData.orderPrice * exchange.exchangeRate));
+      cost = parseInt(parseFloat(modalData.orderPrice) * exchange.exchangeRate, 10);
     }
   } else {
     maxOrderCount = sellCount;
     if (modalData.country === 'ko') {
       cost = parseInt(modalData.orderPrice, 10);
     } else {
-      cost = parseInt(parseInt(modalData.orderPrice, 10) * exchange.exchangeRate, 10);
+      cost = parseInt(parseFloat(modalData.orderPrice) * exchange.exchangeRate, 10);
     }
   }
 
@@ -110,6 +109,13 @@ export default function BuySellModal({ code, checkCanSell }) {
         dispatch(getHoldingCount(result.gamerStock));
         setTmp(!tmp);
         setTimeout(() => {
+          Swal.fire({
+            title: `${modalData.companyName}, ${orderCount}주`,
+            html: `성공적으로 <span style="color:red;">매수</span>했습니다`,
+            icon: 'success',
+            timer: 1000,
+            showConfirmButton: false,
+          });
           handleCloseModal();
         }, 10);
       }
@@ -124,12 +130,19 @@ export default function BuySellModal({ code, checkCanSell }) {
       };
       const result = await sellStockApi(data);
 
-      if (result) {
+      if (result !== '실패') {
         console.log('매도성공데이터', result, code);
         dispatch(handleBuySellTrade(result));
         dispatch(getHoldingCount(result.gamerStock));
         setTmp(!tmp);
         setTimeout(() => {
+          Swal.fire({
+            title: `${modalData.companyName}, ${orderCount}주`,
+            html: `성공적으로 <span style="color:blue;">매도</span>했습니다`,
+            icon: 'success',
+            timer: 1000,
+            showConfirmButton: false,
+          });
           handleCloseModal();
         }, 10);
       }
