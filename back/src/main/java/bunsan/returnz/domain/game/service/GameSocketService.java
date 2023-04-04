@@ -70,21 +70,6 @@ public class GameSocketService {
 		redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
 	}
 
-	// public String createResultRoom(String gameRoomId) {
-	// 	gameRoomRepository.findByRoomId(gameRoomId)
-	// 		.orElseThrow(() -> new BadRequestException("게임룸 정보가 올바르지 않습니다."));
-	// 	// result-room 생성 후 반환
-	//
-	// 	redisPublisher.publishGameRoom(redisGameRoomRepository.getTopic("game-room"), roomMessageDto);
-	// }
-
-	private void checkResultRoomId(RoomMessageDto roomMessageDto) {
-		if (roomMessageDto.getMessageBody().get("resultRoomId") == null) {
-			throw new BadRequestException("결과창 정보를 불러올 수 없습니다.");
-		}
-		// result room 정보 조회
-	}
-
 	public String sendServerTime(String roomId) {
 		// log.info("111");
 		gameRoomRepository.findByRoomId(roomId)
