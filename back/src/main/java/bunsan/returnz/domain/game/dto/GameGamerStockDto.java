@@ -26,9 +26,4 @@ public class GameGamerStockDto {
 	private String logo;
 	private String companyName;
 
-	// public GamerStock toEntity(GameGamerStockDto){
-	// 	return GamerStock.builder()
-	//
-	// 		.build();
-	// }
 }
