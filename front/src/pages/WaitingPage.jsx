@@ -17,6 +17,7 @@ import WaitingListItem from '../components/waiting/WaitingListItem';
 import { removeWaiterList, setWaitRoomId, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
+  resetGameRoom,
   setGameId,
   setGamerId,
   setGameRoomId,
@@ -42,7 +43,7 @@ export default function WaitingPage() {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // -------------------------| WAITROOM |------------------------------------------------------------------
+  // -------------------------||| WAITROOM |||------------------------------------------------------------------
 
   // ROOM STATE
   const roomInfo = location.state;
@@ -64,7 +65,7 @@ export default function WaitingPage() {
     dispatch(setWaitRoomId(roomInfo.roomId));
   }, []);
 
-  // -------------------------| SOCKET |------------------------------------------------------------------
+  // -------------------------||| SOCKET |||------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -137,7 +138,7 @@ export default function WaitingPage() {
     };
   }, []);
 
-  // -------------------------| CHAT |------------------------------------------------------------------
+  // -------------------------||| CHAT |||------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
@@ -153,7 +154,7 @@ export default function WaitingPage() {
     }
   };
 
-  // -------------------------| SETTING |------------------------------------------------------------------
+  // -------------------------||| SETTING |||------------------------------------------------------------------
 
   // SETTING GAME STATE
   const initial = {
@@ -168,9 +169,8 @@ export default function WaitingPage() {
   const [isValidSetting, setIsValidSetting] = useState(false); // 설정 유효성 검사
 
   // SETTING GAME ACTION
-  const getIsUserSetting = () => {
-    setIsUserSetting(!isUserSetting);
-  };
+  // -------------------------SET THEME-----------------------------
+
   const getTheme = (selectedTheme) => {
     const newData = { ...setting, theme: selectedTheme };
     const message = JSON.stringify({
@@ -186,6 +186,14 @@ export default function WaitingPage() {
     stompRef.current.send(sendAddress, header, message);
     setSetting(newData);
   };
+  // -------------------------IS USER-----------------------------
+
+  const getIsUserSetting = () => {
+    setIsUserSetting(!isUserSetting);
+  };
+
+  // -------------------------SET USER SETTING-----------------------------
+
   const getUserSetting = (newData) => {
     const message = JSON.stringify({
       type: 'SETTING',
@@ -200,6 +208,8 @@ export default function WaitingPage() {
     stompRef.current.send(sendAddress, header, message);
     setSetting(newData);
   };
+
+  // -------------------------VALIDATION PER SET-----------------------------
 
   useEffect(() => {
     const isValid = () => {
@@ -217,14 +227,23 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  // -------------------------| START GAME |------------------------------------------------------------------
+  // -------------------------||| START GAME |||------------------------------------------------------------------
+
+  // -------------------------NAVIGATE TO GAMEROOM-----------------------------
 
   const handlePage = () => {
     navigate('/game');
   };
 
+  // -------------------------GET FIRST TURN DATA-----------------------------
+
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
+    // const readyList = gameInit.gamerList.map((gamer) => {
+    //   return { [gamer.username]: false };
+    // });
+    // dispatch(setInitIsReadyList(readyList));
+    // dispatch(setIsReadyList(readyList));
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
@@ -252,6 +271,8 @@ export default function WaitingPage() {
     handlePage();
   };
 
+  // -------------------------GET GAMEROOM INFO-----------------------------
+
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
       const gameInit = await startGameApi(newSetting);
@@ -278,6 +299,8 @@ export default function WaitingPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  // -------------------------GET FIRST TURN DATA-----------------------------
+
   const handleStart = async (e) => {
     try {
       setIsLoading(true);
@@ -294,7 +317,7 @@ export default function WaitingPage() {
     }
   };
 
-  // -------------------------| EXIT GAME |------------------------------------------------------------------
+  // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
 
   const handleExit = () => {
     dispatch(removeWaiterList());
@@ -306,7 +329,7 @@ export default function WaitingPage() {
     };
   }, []);
 
-  // -------------------------| RETURN HTML |------------------------------------------------------------------
+  // -------------------------||| RETURN HTML |||------------------------------------------------------------------
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
