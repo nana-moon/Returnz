@@ -19,7 +19,8 @@ import bunsan.returnz.domain.game.dto.GameGamerStockDto;
 import bunsan.returnz.domain.game.dto.GameHistoricalPriceDayDto;
 import bunsan.returnz.domain.game.dto.GameRoomDto;
 import bunsan.returnz.domain.game.dto.GameStockDto;
-import bunsan.returnz.domain.game.dto.PurcahseSaleLogDto;
+import bunsan.returnz.domain.game.dto.GamerLogDto;
+import bunsan.returnz.domain.game.dto.PurchaseSaleLogDto;
 import bunsan.returnz.domain.game.enums.StockState;
 import bunsan.returnz.domain.game.enums.TurnPerTime;
 import bunsan.returnz.domain.game.util.calendarrange.CalDateRange;
@@ -45,6 +46,7 @@ public class GameService {
 	private final MemberService memberService;
 	private final GameExchangeInterestService gameExchangeInterestService;
 	private final PurchaseSaleLogService purchaseSaleLogService;
+	private final GamerLogService gamerLogService;
 
 	/**
 	 * Description : 턴이 시작할 때 필요한 정보를 반환한다.
@@ -373,6 +375,23 @@ public class GameService {
 		GameHistoricalPriceDayDto gameHistoricalPriceDayDtoBefore =
 			gameHistoricalPriceDayService.findAllByDateTimeIsBeforeWithCodeLimit1(
 				curTime, gameGamerStockDtos.get(0).getCompanyCode()).get(0);
+
+		GameGamerDto gamer = gamerService.findById(gamerId);
+
+		// 턴 정보 저장하기
+		GamerLogDto gamerLogDto = GamerLogDto.builder()
+			.deposit(gamer.getDeposit())
+			.originDeposit(gamer.getOriginDeposit())
+			.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
+			.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
+			.totalEvaluationStock(gamer.getTotalEvaluationStock())
+			.totalProfitRate(gamer.getTotalProfitRate())
+			.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
+			.member(memberService.findById(gamer.getMermberId()))
+			.curTurn(gameRoomDto.getCurTurn())
+			.build();
+
+		gamerLogService.updateDto(gamerLogDto);
 
 		// 처음 턴일 경우, 정보 출력 후 현재 날짜를 다음 날짜로
 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
@@ -740,7 +759,7 @@ public class GameService {
 			stockInformation.put("gamer", gameGamerDto);
 			stockInformation.put("gamerStock", gameGamerStockDtos);
 
-			PurcahseSaleLogDto purcahseSaleLogDto = PurcahseSaleLogDto.builder()
+			PurchaseSaleLogDto purcahseSaleLogDto = PurchaseSaleLogDto.builder()
 				.curTurn(gameRoomDto.getCurTurn())
 				.totalTurn(gameRoomDto.getTotalTurn())
 				.companyCode(companyCode)
@@ -872,7 +891,7 @@ public class GameService {
 			stockInformation.put("gamer", gameGamerDto);
 			stockInformation.put("gamerStock", gameGamerStockDtos);
 
-			PurcahseSaleLogDto purcahseSaleLogDto = PurcahseSaleLogDto.builder()
+			PurchaseSaleLogDto purcahseSaleLogDto = PurchaseSaleLogDto.builder()
 				.curTurn(gameRoomDto.getCurTurn())
 				.totalTurn(gameRoomDto.getTotalTurn())
 				.companyCode(companyCode)
