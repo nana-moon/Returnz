@@ -10,9 +10,7 @@ import TodayWord from '../components/main/TodayWord';
 export default function HomePage() {
   return (
     <MainContainer>
-      <PriceSection>
-        <TodayPrice />
-      </PriceSection>
+      <PriceSection>{/* <TodayPrice /> */}</PriceSection>
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>
@@ -39,7 +37,7 @@ const MainContainer = styled.div`
 `;
 const PriceSection = styled.div`
   height: 56px;
-  ${tw`mt-4`}
+  ${tw``}
 `;
 
 const ButtonsSection = styled.div`
