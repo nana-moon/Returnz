@@ -123,7 +123,6 @@ public class FriendService {
 
 	@Transactional
 	public SideMessageDto sendFriendRequest(SideMessageDto sideRequest, String token) {
-		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideRequest);
 		Map<String, Object> requestBody = sideRequest.getMessageBody();
 
 		// token에 저장된 Member > 요청한 사람
@@ -131,18 +130,26 @@ public class FriendService {
 		if (requester.getFriends().size() >= 20) {
 			throw new BadRequestException("친구는 20명을 넘을 수 없습니다.");
 		}
-		String requestUsername = requester.getUsername();
-		String targetUsername = (String)requestBody.get("username");
+		String nickname = (String)requestBody.get("nickname");
+		Member member = memberRepository.findByNickname(nickname)
+				.orElseThrow(()-> new NotFoundException("해당 닉네임 유저를 찾을 수 없습니다."));
+		String targetUsername = member.getUsername();
 
-		sideBarService.checkValidRequest(requestUsername, targetUsername);
+		sideBarService.checkValidRequest(requester.getUsername(), targetUsername);
+		SideMessageDto sideMessageDto = checkPresentFriendRequest(requester, targetUsername);
 
+		redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 		// 친구 요청 존재 여부 확인
-		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requestUsername,
+		return sideMessageDto;
+	}
+
+	public SideMessageDto checkPresentFriendRequest(Member requester, String targetUsername) {
+		if (friendRequestRepository.existsFriendRequestByRequestUsernameAndTargetUsername(requester.getUsername(),
 			targetUsername)) {
 			throw new ConflictException("이미 요청을 보낸 유저입니다.");
 		}
 		FriendRequest friendRequest = FriendRequest.builder()
-			.requestUsername(requestUsername)
+			.requestUsername(requester.getUsername())
 			.targetUsername(targetUsername)
 			.build();
 		// DB에 저장
@@ -159,7 +166,6 @@ public class FriendService {
 			.type(SideMessageDto.MessageType.FRIEND)
 			.messageBody(messageBody)
 			.build();
-		// redisPublisher.publishSideBar(redisSideBarRepository.getTopic("side-bar"), sideMessageDto);
 		return sideMessageDto;
 	}
 }
