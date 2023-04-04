@@ -2,7 +2,7 @@ package bunsan.returnz.domain.game.service;
 
 import org.springframework.stereotype.Service;
 
-import bunsan.returnz.domain.game.dto.PurcahseSaleLogDto;
+import bunsan.returnz.domain.game.dto.PurchaseSaleLogDto;
 import bunsan.returnz.persist.entity.PurchaseSaleLog;
 import bunsan.returnz.persist.repository.PurchaseSaleLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +15,9 @@ public class PurchaseSaleLogService {
 
 	private final PurchaseSaleLogRepository purchaseSaleLogRepository;
 
-	public boolean updateDto(PurcahseSaleLogDto purcahseSaleLogDto) {
+	public boolean updateDto(PurchaseSaleLogDto purchaseSaleLogDto) {
 		PurchaseSaleLog purchaseSaleLog = new PurchaseSaleLog();
-		purchaseSaleLog.updateDto(purcahseSaleLogDto);
+		purchaseSaleLog.updateDto(purchaseSaleLogDto);
 		purchaseSaleLogRepository.save(purchaseSaleLog);
 		return true;
 	}
