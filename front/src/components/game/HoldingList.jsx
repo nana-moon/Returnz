@@ -3,7 +3,7 @@ import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
 import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import imgpath from './Items/bear.jpg';
+import imgpath from './assets/holdingListHelp.png';
 import { gamerStockList } from '../../store/gamedata/GameData.selector';
 import HoldingListItem from './Items/HoldingListItem';
 
@@ -34,7 +34,7 @@ export default function HoldingList() {
                 ?
               </Button>
             </PopoverHandler>
-            <PopoverContent>
+            <PopoverContent className="z-10 shadow-xl border-gray-400 shadow-xl shadow-gray-600">
               <img src={imgpath} alt="" />
             </PopoverContent>
           </Popover>

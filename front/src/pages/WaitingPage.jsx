@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import tw, { styled } from 'twin.macro';
 import Cookies from 'js-cookie';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import SockJs from 'sockjs-client';
+import Stomp from 'webstomp-client';
+import StompJs from 'stompjs';
 import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
 import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
@@ -30,7 +33,7 @@ import {
   handleGetchangeInterest,
   setMaxTurn,
 } from '../store/gamedata/GameData.reducer';
-import { getMessage, sendMessage, stompConnect, stompDisconnect } from '../utils/Socket';
+import { getMessage } from '../utils/Socket';
 
 export default function WaitingPage() {
   // HOOKS
@@ -61,7 +64,20 @@ export default function WaitingPage() {
 
   // -------------------------| SOCKET |------------------------------------------------------------------
 
+  // -------------------------SOCKET MANAGER-----------------------------
+
+  const stompRef = useRef(null);
+  if (!stompRef.current) {
+    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+    const options = {
+      debug: false,
+      protocols: Stomp.VERSIONS.supportedProtocols(),
+    };
+    stompRef.current = StompJs.over(sock, options);
+  }
+
   // -------------------------SOCKET STATE-----------------------------
+
   const ACCESS_TOKEN = Cookies.get('access_token');
   const waitRoomId = roomInfo.roomId;
   const subAddress = `/sub/wait-room/${waitRoomId}`;
@@ -72,13 +88,7 @@ export default function WaitingPage() {
 
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
   const handleMessage = (received) => {
-    console.log('handleMessage active');
     const newMessage = JSON.parse(received.body);
-    // -------------------------handle ENTER-----------------------------
-    if (newMessage.type === 'ENTER') {
-      console.log('ENTER 메세지 도착', newMessage.messageBody);
-      const { roomId, id, username, nickname, profileIcon, avgProfit, captainName } = newMessage.messageBody;
-    }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
       console.log('CHAT 메세지 도착', newMessage.messageBody);
@@ -102,25 +112,43 @@ export default function WaitingPage() {
       navigate('/game', { state: newMessage.messageBody });
     }
   };
-
   // -------------------------SOCKET CONNECT-----------------------------
-  const socketAction = () => {
-    console.log('the connection is successful');
-    getMessage(subAddress, handleMessage, header);
-    sendMessage(sendAddress, header, 'ENTER', { roomId: waitRoomId });
-  };
-
   useEffect(() => {
-    // SOCKET CONNECT
-    stompConnect(header, socketAction);
-  }, [subAddress, sendAddress]);
+    const stompConnect = () => {
+      stompRef.current.debug = null;
+      stompRef.current.connect(
+        header,
+        () => {
+          stompRef.current.subscribe(subAddress, handleMessage, header);
+        },
+        (error) => {
+          console.log('WebSocket connection error:', error);
+        },
+      );
+    };
+
+    stompConnect();
+
+    // Clean up when the component unmounts
+    return () => {
+      stompRef.current.disconnect();
+    };
+  }, []);
 
   // -------------------------| CHAT |------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
     console.log('inputMessage in waitingPage', inputMessage);
-    sendMessage(sendAddress, header, 'CHAT', { roomId: waitRoomId, contents: inputMessage });
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'CHAT',
+        messageBody: { roomId: waitRoomId, contents: inputMessage },
+      });
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
   };
 
   // -------------------------| SETTING |------------------------------------------------------------------
@@ -143,24 +171,32 @@ export default function WaitingPage() {
   };
   const getTheme = (selectedTheme) => {
     const newData = { ...setting, theme: selectedTheme };
-    sendMessage(sendAddress, header, 'SETTING', {
-      roomId: waitRoomId,
-      theme: selectedTheme,
-      turnPerTime: 'NO',
-      startTime: null,
-      totalTurn: null,
+    const message = JSON.stringify({
+      type: 'SETTING',
+      messageBody: {
+        roomId: waitRoomId,
+        theme: selectedTheme,
+        turnPerTime: 'NO',
+        startTime: null,
+        totalTurn: null,
+      },
     });
+    stompRef.current.send(sendAddress, header, message);
     setSetting(newData);
   };
   const getUserSetting = (newData) => {
-    setSetting(newData);
-    sendMessage(sendAddress, header, 'SETTING', {
-      roomId: waitRoomId,
-      theme: newData.theme,
-      turnPerTime: newData.turnPerTime,
-      startTime: newData.startTime,
-      totalTurn: newData.totalTurn,
+    const message = JSON.stringify({
+      type: 'SETTING',
+      messageBody: {
+        roomId: waitRoomId,
+        theme: newData.theme,
+        turnPerTime: newData.turnPerTime,
+        startTime: newData.startTime,
+        totalTurn: newData.totalTurn,
+      },
     });
+    stompRef.current.send(sendAddress, header, message);
+    setSetting(newData);
   };
 
   useEffect(() => {
@@ -212,22 +248,13 @@ export default function WaitingPage() {
     dispatch(handleGetStockNews(getNews));
 
     dispatch(handleGetTodayDate(gameData.currentDate));
-    sendMessage(sendAddress, header, 'EXIT', { roomId: waitRoomId });
     handlePage();
   };
 
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
-      console.log('maxturn', setting.totalTurn);
       dispatch(setMaxTurn(setting.totalTurn));
       const gameInit = await startGameApi(newSetting);
-      console.log('gameInit', gameInit);
-      sendMessage(sendAddress, header, 'GAME_INFO', {
-        roomId: waitRoomId,
-        id: gameInit.Id,
-        gamerList: gameInit.gamerList,
-        gameRoomId: gameInit.roomId,
-      });
       dispatch(setGameId(gameInit.id)); // gameId
       dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
       dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
@@ -247,20 +274,16 @@ export default function WaitingPage() {
   };
 
   const handleStart = async (e) => {
-    // update memberlist and setting
     const memberIdList = waiterList.map((waiter) => {
       return waiter.id;
     });
     const newSetting = { ...setting, memberIdList };
     setSetting(newSetting);
-    console.log('!!!!!!!!!!!!!!!!', newSetting);
     handleGameInfo(newSetting);
   };
 
   // 방나가기 ACTION
   const handleExit = () => {
-    // SOCKET DISCONNECT
-    stompDisconnect(subAddress, header);
     dispatch(removeWaiterList());
   };
 

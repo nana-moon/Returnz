@@ -4,32 +4,35 @@ import tw, { styled } from 'twin.macro';
 import { Tooltip } from '@material-tailwind/react';
 import { receiveBuyData, receiveSellData, selectIdx } from '../../../store/buysellmodal/BuySell.reducer';
 import { selectedIdx } from '../../../store/buysellmodal/BuySell.selector';
-import { noWorkDay } from '../../../store/gamedata/GameData.selector';
+import { gameTurn, noWorkDay } from '../../../store/gamedata/GameData.selector';
 
 export default function StockListItem({ Stock, i, Code, checkCanSell }) {
   const dispatch = useDispatch();
   const isSelect = useSelector(selectedIdx);
   const isWork = useSelector(noWorkDay);
+  const turnIdx = useSelector(gameTurn);
   const isThis = isWork.includes(i);
+
   const replacedName = Stock[Stock.length - 1].companyName.replace(/(보통주|우선주)/, (matched) =>
     matched === '보통주' ? '' : ' (우)',
   );
   const keys = Object.keys(Code);
+  const idx = turnIdx.dayTurn;
 
   let isUp;
-  if (Stock[Stock.length - 1].close - Stock[Stock.length - 2].close === 0) {
+  if (Stock[Stock.length - 1].close - Stock[Stock.length - idx].close === 0) {
     isUp = 'STAY';
-  } else if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10) > 0) {
+  } else if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - idx].close, 10) > 0) {
     isUp = 'UP';
   } else {
     isUp = 'DOWN';
   }
 
   const diff = [
-    Stock[Stock.length - 1].close - Stock[Stock.length - 2].close,
+    Stock[Stock.length - 1].close - Stock[Stock.length - idx].close,
     (
-      ((parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - 2].close, 10)) /
-        parseInt(Stock[Stock.length - 2].close, 10)) *
+      ((parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - idx].close, 10)) /
+        parseInt(Stock[Stock.length - idx].close, 10)) *
       100
     ).toFixed(2),
   ];
@@ -74,6 +77,7 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
           companyName: Stock[Stock.length - 1].companyName,
           orderPrice: Stock[Stock.length - 1].close,
           companyCode: keys[i],
+          country: Stock[Stock.length - 1].currencyType,
         };
         console.log(['데이터소개', value], keys[i]);
         checkCanSell(keys[i]);
