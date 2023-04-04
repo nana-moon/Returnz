@@ -156,7 +156,12 @@ public class Member implements UserDetails {
 	public void addFriend(Member member) {
 		List<Member> myFriends = this.getFriends();
 		if (!myFriends.contains(member)) {
+			// 첫 친구 추가일 때 프로필 해금
+			if (myFriends.size() == 0) {
+				this.permittedProfiles.add(ProfileIcon.TWELVE.getCode());
+			}
 			myFriends.add(member);
+
 		}
 	}
 
