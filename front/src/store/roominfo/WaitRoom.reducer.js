@@ -1,13 +1,22 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  roomId: null,
+  hostNickname: null,
+  waiterList: [],
+  setting: {
+    theme: null,
+    turnPerTime: 'NO',
+    startTime: null,
+    totalTurn: null,
+    memberIdList: [],
+  },
+};
+
 export const waitRoom = createSlice({
   name: 'waitRoom',
-  initialState: {
-    roomId: null,
-    hostNickname: null,
-    waiterList: [],
-  },
+  initialState,
   reducers: {
     setWaitRoomId(state, action) {
       state.roomId = action.payload;
@@ -20,6 +29,9 @@ export const waitRoom = createSlice({
     },
     removeWaiterList(state, action) {
       state.waiterList = [];
+    },
+    resetWaitRoom(state) {
+      Object.assign(state, initialState);
     },
   },
 });
