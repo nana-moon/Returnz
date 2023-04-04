@@ -1,12 +1,18 @@
 import { Avatar } from '@material-tailwind/react';
 import { React } from 'react';
 import tw, { styled } from 'twin.macro';
+import { useNavigate } from 'react-router-dom';
 import { acceptInviteRequestApi, declineInviteRequestApi } from '../../../apis/friendApi';
 
 export default function IncomingInviteRequest({ friendInv }) {
+  const navigate = useNavigate();
+
   const acceptInvRequest = async () => {
     const res = await acceptInviteRequestApi(friendInv.roomId);
     console.log(res, '거의끝남 ㄱㄱㄱㄱㄱㄱㄱ');
+    if (res && res.status === 200) {
+      navigate('/waiting');
+    }
   };
   const declineRequest = () => {
     declineInviteRequestApi(friendInv.roomId);
