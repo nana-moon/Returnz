@@ -80,60 +80,66 @@ export const gamedata = createSlice({
     },
     // 두번째 부터
     handleMoreGameData(state, action) {
-      const keys = Object.keys(state.stockDataList);
-      const actionkeys = Object.keys(action.payload);
-      let tmpdata;
-      const noWorkIdx = [];
+      state.gameTurn.nowTurn += 1;
+      if (state.gameTurn.nowTurn === state.gameTurn.maxTurn) {
+        const tmp = 0;
+      } else {
+        const keys = Object.keys(state.stockDataList);
+        const actionkeys = Object.keys(action.payload);
+        let tmpdata;
+        const noWorkIdx = [];
 
-      for (const key of keys) {
-        state.gameTurn.dayTurn = action.payload[key].length + 1;
-        if (action.payload[key][action.payload[key].length - 1].volume === '0') {
-          // const lastIndex = state.stockDataList[key].length - 1;
-          // state.stockDataList[key].push(state.stockDataList[key][lastIndex]);
-          state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
-        } else {
-          state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
-        }
-      }
-
-      for (const key of actionkeys) {
-        for (let i = 0; i < action.payload[key].length; i += 1) {
-          const name = action.payload[key][i].companyName;
-          const datex = action.payload[key][i].dateTime;
-          const candley = [
-            action.payload[key][i].open,
-            action.payload[key][i].high,
-            action.payload[key][i].low,
-            action.payload[key][i].close,
-          ];
-          const liney = action.payload[key][i].volume;
-
-          if (liney === '0') {
-            console.log(candley, candley[0]);
-          }
-
-          if (candley[0] === '0' || candley[1] === '0') {
-            const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[i] === name);
-            const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[i];
-            const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[i];
-            console.log('영업일이 아님', lastIndex, lastCandle, lastLine, action.payload[key][i]);
-            noWorkIdx.push(lastIndex);
-            tmpdata = { [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } } };
+        for (const key of keys) {
+          state.gameTurn.dayTurn = action.payload[key].length + 1;
+          if (action.payload[key][action.payload[key].length - 1].volume === '0') {
+            // const lastIndex = state.stockDataList[key].length - 1;
+            // state.stockDataList[key].push(state.stockDataList[key][lastIndex]);
+            state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
           } else {
-            tmpdata = { [name]: { candledata: { x: datex, y: candley }, linedata: { x: datex, y: liney } } };
+            state.stockDataList[key] = [...state.stockDataList[key], ...action.payload[key]];
           }
-          for (let j = 0; j < action.payload[key].length; j += 1) {
-            const index = state.stockGraphList.findIndex((item) => Object.keys(item)[j] === name);
-            if (index !== -1) {
-              state.stockGraphList[index][name].candledata.push(tmpdata[name].candledata);
-              state.stockGraphList[index][name].linedata.push(tmpdata[name].linedata);
+        }
+
+        for (const key of actionkeys) {
+          for (let i = 0; i < action.payload[key].length; i += 1) {
+            const name = action.payload[key][i].companyName;
+            const datex = action.payload[key][i].dateTime;
+            const candley = [
+              action.payload[key][i].open,
+              action.payload[key][i].high,
+              action.payload[key][i].low,
+              action.payload[key][i].close,
+            ];
+            const liney = action.payload[key][i].volume;
+
+            if (liney === '0') {
+              console.log(candley, candley[0]);
+            }
+
+            if (candley[0] === '0' || candley[1] === '0') {
+              const lastIndex = state.stockGraphList.findIndex((item) => Object.keys(item)[i] === name);
+              const lastCandle = state.stockGraphList[lastIndex][name].candledata.slice(-1)[i];
+              const lastLine = state.stockGraphList[lastIndex][name].linedata.slice(-1)[i];
+              console.log('영업일이 아님', lastIndex, lastCandle, lastLine, action.payload[key][i]);
+              noWorkIdx.push(lastIndex);
+              tmpdata = {
+                [name]: { candledata: { x: datex, y: lastCandle.y }, linedata: { x: datex, y: lastLine.y } },
+              };
+            } else {
+              tmpdata = { [name]: { candledata: { x: datex, y: candley }, linedata: { x: datex, y: liney } } };
+            }
+            for (let j = 0; j < action.payload[key].length; j += 1) {
+              const index = state.stockGraphList.findIndex((item) => Object.keys(item)[j] === name);
+              if (index !== -1) {
+                state.stockGraphList[index][name].candledata.push(tmpdata[name].candledata);
+                state.stockGraphList[index][name].linedata.push(tmpdata[name].linedata);
+              }
             }
           }
         }
-      }
 
-      state.noWorkDay = noWorkIdx;
-      state.gameTurn.nowTurn += 1;
+        state.noWorkDay = noWorkIdx;
+      }
     },
     handleUpdateHoldingData(state, action) {
       const holdingdata = [];
