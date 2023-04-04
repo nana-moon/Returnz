@@ -64,11 +64,11 @@ public class ResultController {
 			Member member = memberService.findById(gameGamerDtos.get(i).getMermberId());
 
 			// 유저의 평균 수익률 갱신
-			Double prev_avg_profit = gameGamerDtos.get(i).getTotalProfitRate();
-			resultService.updateAvgProfit(member, prev_avg_profit);
+			Double prevAvgProfit = gameGamerDtos.get(i).getTotalProfitRate();
+			resultService.updateAvgProfit(member, prevAvgProfit);
 			// 유저의 새로 해금된 프사 리턴
 			Integer gameMemberCount = gameGamerDtos.size();
-			List<String> newProfiles = resultService.getNewProfile(member, i + 1, prev_avg_profit, gameMemberCount);
+			List<String> newProfiles = resultService.getNewProfile(member, i + 1, prevAvgProfit, gameMemberCount);
 
 
 			gamerInformation.put("rank", (i + 1));
