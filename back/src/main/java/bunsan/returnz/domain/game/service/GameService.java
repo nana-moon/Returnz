@@ -93,6 +93,21 @@ public class GameService {
 		// 3. 나의 현재 보유 종목, companyName과 logo 붙여서 return
 		log.info("================= turn progress - 나의 보유 종목");
 		List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
+
+		// 6. 주가 정보
+		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
+
+		//  7. 첫턴일 떄만 종목 디테일 정보 제공
+		if (gameRoomDto.getCurTurn() == 0) {
+			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
+		}
+
+		// 4. 다음 턴 정보 업데이트
+		if (!updateTurnInformation(gameGamerStockDtos, roomId,
+			gameRoomDto, gamerId)) {
+			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
+		}
+
 		// 주식 평가 정보 update
 		updateStockInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId);
@@ -109,20 +124,6 @@ public class GameService {
 		}
 
 		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
-
-		// 6. 주가 정보
-		turnInformation.put("stockInformation", getStockPriceInformation(gameRoomDto.getCurDate(), gameStockDtoList));
-
-		//  7. 첫턴일 떄만 종목 디테일 정보 제공
-		if (gameRoomDto.getCurTurn() == 0) {
-			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
-		}
-
-		// 4. 다음 턴 정보 업데이트
-		if (!updateTurnInformation(gameGamerStockDtos, roomId,
-			gameRoomDto, gamerId)) {
-			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
-		}
 
 		return turnInformation;
 	}
@@ -257,20 +258,20 @@ public class GameService {
 			GameHistoricalPriceDayDto stockPriceData = null;
 			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
 				stockPriceData = gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-					curDate, gameGamerStockDto.getCompanyCode());
+					preDate, gameGamerStockDto.getCompanyCode());
 			} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
 				stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
 					weekRanges.get(1).getWeekLastDay(), gameGamerStockDto.getCompanyCode());
 			}
 
-			// 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
-			// : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
-			GameHistoricalPriceDayDto stockPriceDataBefore = null;
-			if (stockPriceData == null) {
-				stockPriceDataBefore
-					= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-					preDate, gameGamerStockDto.getCompanyCode());
-			}
+			// // 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
+			// // : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
+			// GameHistoricalPriceDayDto stockPriceDataBefore = null;
+			// if (stockPriceData == null) {
+			// 	stockPriceDataBefore
+			// 		= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+			// 		preDate, gameGamerStockDto.getCompanyCode());
+			// }
 
 			Double stockClosePrice = 0.0;
 			if (stockPriceData != null) {
@@ -286,19 +287,19 @@ public class GameService {
 						Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
 			}
 
-			if (stockPriceDataBefore != null) {
-				stockClosePrice = Double.parseDouble(
-					String.format("%.2f", Double.parseDouble(stockPriceDataBefore.getClose())));
-			}
-
-			if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
-				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
-					stockPriceDataBefore.getDateTime());
-				stockClosePrice = Double.parseDouble(
-					String.format("%.2f",
-						Double.parseDouble(stockPriceDataBefore.getClose())
-							* gameExchangeInterestDto.getExchangeRate()));
-			}
+			// if (stockPriceDataBefore != null) {
+			// 	stockClosePrice = Double.parseDouble(
+			// 		String.format("%.2f", Double.parseDouble(stockPriceDataBefore.getClose())));
+			// }
+			//
+			// if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
+			// 	GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
+			// 		stockPriceDataBefore.getDateTime());
+			// 	stockClosePrice = Double.parseDouble(
+			// 		String.format("%.2f",
+			// 			Double.parseDouble(stockPriceDataBefore.getClose())
+			// 				* gameExchangeInterestDto.getExchangeRate()));
+			// }
 
 			if (stockClosePrice != 0) {
 				log.info("stockClosePrice != 0 : " + stockClosePrice);
