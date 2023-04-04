@@ -113,6 +113,10 @@ export default function SideBar() {
     };
   }, []);
 
+  // -----------------------------------[Invite]----------------------------------------------------------
+  const handleInvite = (data) => {
+    stompRef.current.send(pubAddress, header, data);
+  };
   // ==========================================
 
   // useEffect(() => {
@@ -193,7 +197,12 @@ export default function SideBar() {
     <SideBarContainer>
       <SideBarScrollEnabledSection>
         <UserProfile />
-
+        {/* <FriendRequestsContainer>
+          {friendInvites?.length > 0 ? <SectionTitle>초대요청</SectionTitle> : null}
+          {friendInvites?.map((friendInv) => {
+            return <IncomingFriendRequests friendReq={friendInv} key={friendInv.requestId} />;
+          })}
+        </FriendRequestsContainer> */}
         <FriendRequestsContainer>
           {friendRequests?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
           {friendRequests?.map((friendReq) => {
@@ -203,7 +212,7 @@ export default function SideBar() {
         <FriendListContainer>
           {friendList?.length > 0 ? <SectionTitle>내 친구들</SectionTitle> : null}
           {friendList?.map((friend) => {
-            return <FriendListItems friend={friend} key={friend.username} />;
+            return <FriendListItems friend={friend} key={friend.username} handleInvite={handleInvite} />;
           })}
         </FriendListContainer>
       </SideBarScrollEnabledSection>
@@ -214,7 +223,7 @@ export default function SideBar() {
 
 const SideBarContainer = styled.div`
   position: relative;
-  ${tw`bg-white border-l-2 border-negative w-1/5 h-screen`}
+  ${tw`bg-white border-l-2 border-negative w-1/5`}
 `;
 
 const FriendRequestsContainer = styled.div`
