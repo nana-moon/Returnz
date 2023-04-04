@@ -14,13 +14,14 @@ import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { removeWaiterList, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
+import { removeWaiterList, setWaitRoomId, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   setGameId,
   setGamerId,
   setGameRoomId,
   setHostNickname,
+  setInitIsReadyList,
   setIsReadyList,
   setPlayerList,
 } from '../store/roominfo/GameRoom.reducer';
@@ -33,7 +34,7 @@ import {
   handleGetchangeInterest,
   setMaxTurn,
 } from '../store/gamedata/GameData.reducer';
-import { getMessage } from '../utils/Socket';
+import LoadPage from '../components/loading/LoadPage';
 
 export default function WaitingPage() {
   // HOOKS
@@ -60,6 +61,7 @@ export default function WaitingPage() {
   // ADD WAITER ACTION
   useEffect(() => {
     dispatch(setWaiterList(newWaiter));
+    dispatch(setWaitRoomId(roomInfo.roomId));
   }, []);
 
   // -------------------------| SOCKET |------------------------------------------------------------------
@@ -215,7 +217,7 @@ export default function WaitingPage() {
     setIsValidSetting(isValid());
   }, [setting]);
 
-  // -------------------------| START/EXIT GAME |------------------------------------------------------------------
+  // -------------------------| START GAME |------------------------------------------------------------------
 
   const handlePage = () => {
     navigate('/game');
@@ -223,7 +225,6 @@ export default function WaitingPage() {
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
-    console.log('gameData', gameData);
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
     dispatch(handleGetStockDescription(gameData.companyDetail));
@@ -253,8 +254,9 @@ export default function WaitingPage() {
 
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
-      dispatch(setMaxTurn(setting.totalTurn));
       const gameInit = await startGameApi(newSetting);
+      console.log('gameInit', gameInit);
+      dispatch(setMaxTurn(gameInit.totalTurn));
       dispatch(setGameId(gameInit.id)); // gameId
       dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
       dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
@@ -262,6 +264,7 @@ export default function WaitingPage() {
       const readyList = gameInit.gamerList.map((gamer) => {
         return { [gamer.username]: false };
       });
+      dispatch(setInitIsReadyList(readyList));
       dispatch(setIsReadyList(readyList));
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
@@ -269,20 +272,30 @@ export default function WaitingPage() {
         gamerId: myGameInfo.gamerId,
         roomId: gameInit.roomId,
       };
-      handleTurn(turnApiReq, gameInit.id);
+      await handleTurn(turnApiReq, gameInit.id);
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleStart = async (e) => {
-    const memberIdList = waiterList.map((waiter) => {
-      return waiter.id;
-    });
-    const newSetting = { ...setting, memberIdList };
-    setSetting(newSetting);
-    handleGameInfo(newSetting);
+    try {
+      setIsLoading(true);
+      const memberIdList = waiterList.map((waiter) => {
+        return waiter.id;
+      });
+      const newSetting = { ...setting, memberIdList };
+      setSetting(newSetting);
+      await handleGameInfo(newSetting);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   };
 
-  // 방나가기 ACTION
+  // -------------------------| EXIT GAME |------------------------------------------------------------------
+
   const handleExit = () => {
     dispatch(removeWaiterList());
   };
@@ -295,41 +308,47 @@ export default function WaitingPage() {
 
   // -------------------------| RETURN HTML |------------------------------------------------------------------
   return (
-    <WaitingContainer>
-      <TopSection>
-        {Array.from({ length: 4 }).map((_, i) => {
-          if (i < waiterList.length) {
-            return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
-          }
-          // eslint-disable-next-line react/no-array-index-key
-          return <NullListItem key={i} />;
-        })}
-      </TopSection>
-      <BottomSection>
-        {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
-        {isUserSetting && (
-          <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
-        )}
-        <BottomRightSection>
-          <ChattingBox>
-            <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
-          </ChattingBox>
-          <ButtonBox>
-            {isHost && (
-              <StartButton onClick={handleStart} disabled={!isValidSetting}>
-                시작하기
-              </StartButton>
+    // eslint-disable-next-line react/jsx-no-useless-fragment
+    <>
+      {isLoading ? (
+        <LoadPage />
+      ) : (
+        <WaitingContainer>
+          <TopSection>
+            {Array.from({ length: 4 }).map((_, i) => {
+              if (i < waiterList.length) {
+                return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
+              }
+              // eslint-disable-next-line react/no-array-index-key
+              return <NullListItem key={i} />;
+            })}
+          </TopSection>
+          <BottomSection>
+            {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
+            {isUserSetting && (
+              <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
             )}
-            <ExitButton to="/" onClick={handleExit} className="bg-[#E19999] hover:bg-[#976161]">
-              나가기
-            </ExitButton>
-          </ButtonBox>
-        </BottomRightSection>
-      </BottomSection>
-    </WaitingContainer>
+            <BottomRightSection>
+              <ChattingBox>
+                <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+              </ChattingBox>
+              <ButtonBox>
+                {isHost && (
+                  <StartButton onClick={handleStart} disabled={!isValidSetting}>
+                    시작하기
+                  </StartButton>
+                )}
+                <ExitButton to="/" onClick={handleExit} className="bg-[#E19999] hover:bg-[#976161]">
+                  나가기
+                </ExitButton>
+              </ButtonBox>
+            </BottomRightSection>
+          </BottomSection>
+        </WaitingContainer>
+      )}
+    </>
   );
 }
-
 const WaitingContainer = styled.div`
   ${tw`w-[75%]`}
 `;
@@ -340,13 +359,13 @@ const BottomSection = styled.section`
   ${tw`flex gap-5 mt-10 h-[300px]`}
 `;
 const BottomRightSection = styled.section`
-  ${tw`w-[50%] h-[100%]`}
+  ${tw`w-[50%] h-auto`}
 `;
 const ChattingBox = styled.section`
-  ${tw`w-[100%] h-[90%]`}
+  ${tw`w-[100%] h-[80%]`}
 `;
 const ButtonBox = styled.div`
-  ${tw`h-[10%] flex gap-5 mt-5`}
+  ${tw`h-[10%] flex gap-5 mt-2`}
 `;
 const StartButton = styled.button`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}

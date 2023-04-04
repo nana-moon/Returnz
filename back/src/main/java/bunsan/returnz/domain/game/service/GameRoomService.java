@@ -31,12 +31,17 @@ public class GameRoomService {
 			.orElseThrow(() -> new BadRequestException("findByRoomId : 게임 방을 찾을 수 없습니다."));
 	}
 
-	public boolean updateGameTurn(LocalDateTime nextCurDate, String roomId) {
+	public boolean updateGameTurn(LocalDateTime curDate, LocalDateTime nextCurDate, String roomId) {
 		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findByRoomId(roomId);
 
-		optionalGameRoom.map(gameRoom -> gameRoom.updateGameTurn(nextCurDate))
+		optionalGameRoom.map(gameRoom -> gameRoom.updateGameTurn(curDate, nextCurDate))
 			.orElseThrow(() -> new NotFoundException(""));
 		gameRoomRepository.save(optionalGameRoom.orElseThrow(() -> new BadRequestException("")));
 		return true;
+	}
+
+	public GameRoom findById(Long id) {
+		Optional<GameRoom> optionalGameRoom = gameRoomRepository.findById(id);
+		return optionalGameRoom.orElse(null);
 	}
 }

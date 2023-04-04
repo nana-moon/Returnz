@@ -2,7 +2,9 @@ package bunsan.returnz.domain.game.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -62,5 +64,26 @@ class CalDateRangeTest {
 
 		assertEquals(LocalDateTime.of(2023, 7, 1, 0, 0), monthRanges.get(4).getFirstDay());
 		assertEquals(LocalDateTime.of(2023, 7, 31, 0, 0), monthRanges.get(4).getLastDay());
+	}
+
+	@Test
+	void testCalculateTheme() {
+		LocalDateTime startDate = LocalDateTime.of(2020, 1, 2, 0, 0);
+		int weeks = 30;
+
+		List<WeekRange> monthRanges = CalDateRange.calculateWeekRanges(startDate, weeks);
+		int sum = 0;
+		for (WeekRange week : monthRanges) {
+			LocalDate firstDate = week.getWeekFirstDay().toLocalDate();
+			LocalDate lastDate = week.getWeekLastDay().toLocalDate();
+			Period period = Period.between(firstDate, lastDate);
+			System.out.println(period.getDays());
+			sum+=period.getDays()+1;
+			System.out.println(lastDate);
+		}
+		System.out.println(sum);
+		System.out.println(monthRanges.size());
+		assertEquals(sum, monthRanges.size() );
+
 	}
 }
