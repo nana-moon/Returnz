@@ -12,13 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import bunsan.returnz.domain.mainpage.dto.RankDto;
 import bunsan.returnz.domain.mainpage.dto.StockDto;
 import bunsan.returnz.domain.mainpage.dto.TodayWordDto;
-import bunsan.returnz.persist.entity.FinancialInformation;
 import bunsan.returnz.persist.entity.Member;
 import bunsan.returnz.persist.entity.TodayWord;
-import bunsan.returnz.persist.repository.FinancialInformationRepository;
+import bunsan.returnz.persist.entity.ValidCompany;
 import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.TodayWordRepository;
-import lombok.AllArgsConstructor;
+import bunsan.returnz.persist.repository.ValidCompanyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MainPageService {
 	private final TodayWordRepository todayWordRepository;
 	private final MemberRepository memberRepository;
-	private final FinancialInformationRepository financialInformationRepository;
+	private final ValidCompanyRepository validCompanyRepository;
 
 	public List<TodayWordDto> getWordList() {
 		List<TodayWord> wordList = todayWordRepository.findAll();
@@ -52,16 +51,15 @@ public class MainPageService {
 			rankList.add(rankDto);
 		}
 		return rankList;
-		// return null;
 	}
 
 	@Transactional
 	public List<StockDto> recomandStockList() {
-		Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "totalAssets"));
-		List<FinancialInformation> content = financialInformationRepository.findAllWithCompanies(pageable)
+		Pageable pageable = PageRequest.of(0, 4, Sort.by(Sort.Direction.DESC, "marketCap"));
+		List<ValidCompany> sortedList = validCompanyRepository.findAllWithCompanies(pageable)
 			.getContent();
 		List<StockDto> stockDtos = new ArrayList<>();
-		for (FinancialInformation financialInformation : content) {
+		for (ValidCompany financialInformation : sortedList) {
 			StockDto build = StockDto.builder()
 				.stockName(financialInformation.getCompany().getCompanyName())
 				.stockCode(financialInformation.getCompany().getCode())
