@@ -25,19 +25,26 @@ export default function ProfileEditModal() {
     }
     fetchData();
   }, []);
-  const handleNicknameChange = () => {
+  const handleNicknameChange = async () => {
     const data = {
       newNickname: `${newNickname}`,
     };
-    const res = patchMyNickname(data);
-    console.log(res);
+    const res = await patchMyNickname(data);
+    if (res.status === 200) {
+      Cookies.remove('nickname');
+      Cookies.set('nickname', newNickname);
+    }
   };
-  const handleProfileChange = (pic) => {
+  const handleProfileChange = async (pic) => {
     const data = {
       newProfile: pic,
     };
-    const res = patchMyProfile(data);
+    const res = await patchMyProfile(data);
     console.log(res);
+    if (res.status === 200) {
+      Cookies.remove('profileIcon');
+      Cookies.set('profileIcon', pic);
+    }
   };
   return (
     <ProfileEditContainer>
@@ -59,14 +66,14 @@ export default function ProfileEditModal() {
               <Avatar
                 size="xl"
                 variant="circular"
-                className="border-2 border-negative"
+                className="border-2 border-negative hover:cursor-pointer"
                 src={`profile_pics/${pic}.jpg`}
+                onClick={() => handleProfileChange(pic)}
               />
             );
           })}
         </PicturesContainer>
         <ButtonsSection>
-          <CompleteButton>저장하기</CompleteButton>
           <BackButton onClick={handleModal}>나가기</BackButton>
         </ButtonsSection>
       </ModalSection>
@@ -98,7 +105,7 @@ const EncourageMessage = styled.div`
   ${tw`text-center font-bold mb-4 mt-6`}
 `;
 const UserNameContainer = styled.div`
-  ${tw`text-xl text-center`}
+  ${tw`text-xl text-center flex gap-2`}
 `;
 
 const PicturesContainer = styled.div`
@@ -107,9 +114,6 @@ const PicturesContainer = styled.div`
 
 const ButtonsSection = styled.div`
   ${tw`flex justify-center gap-20 mt-10`}
-`;
-const CompleteButton = styled.div`
-  ${tw`text-white bg-primary border-4 border-primary hover:bg-dprimary focus:border-dprimary font-bold text-xl rounded-lg px-6 py-3.5 text-center`}
 `;
 const BackButton = styled.button`
   ${tw`text-primary bg-white border-4 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold text-xl rounded-lg px-8 py-3.5 text-center`}

@@ -44,7 +44,17 @@ export default function StockInfoTab() {
       (((viewInfo[1].historyPrice - viewInfo[0].historyPrice) / viewInfo[0].historyPrice) * 100).toFixed(2),
       viewInfo[2].volume,
     ],
-    ['4일 전', viewInfo[0].historyPrice, viewInfo[0].historyDiff, '', viewInfo[0].volume],
+    [
+      '4일 전',
+      viewInfo[0].historyPrice,
+      viewInfo[0].historyDiff,
+      (
+        ((viewInfo[0].historyPrice - (viewInfo[0].historyPrice - viewInfo[0].historyDiff)) /
+          (viewInfo[0].historyPrice - viewInfo[0].historyDiff)) *
+        100
+      ).toFixed(2),
+      viewInfo[0].volume,
+    ],
   ];
 
   const getColor = (value) => {

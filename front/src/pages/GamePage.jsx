@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import SockJs from 'sockjs-client';
+import Stomp from 'webstomp-client';
+import StompJs from 'stompjs';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -24,7 +27,6 @@ import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
-import { getMessage, sendMessageResult, stompConnect } from '../utils/Socket';
 import { setIsReadyList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
@@ -41,11 +43,7 @@ export default function GamePage() {
 
   const dispatch = useDispatch();
 
-  const readd = () => {
-    console.log(testdata, '보유 종목상태');
-    // console.log(holdingdata, 'se', selectIdx, 'testdata2');
-    // console.log('뉴스가져올데이터', gameId, keys, Date);
-  };
+  const readd = () => {};
 
   const axiospost = async () => {
     // 뉴스
@@ -57,7 +55,7 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
-        console.log(res.data, '턴 넘어갔어');
+        console.log('턴 넘어감', res.data);
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
@@ -79,13 +77,24 @@ export default function GamePage() {
       // eslint-disable-next-line no-await-in-loop
       const newsTmp = await getNewsApi(data);
       getNews.push({ [keys[i]]: newsTmp });
-      console.log('중간점검', newsTmp, getNews);
     }
 
     dispatch(handleGetStockNews(getNews));
   };
 
   // -------------------------| SOCKET |------------------------------------------------------------------
+
+  // -------------------------SOCKET MANAGER-----------------------------
+
+  const stompRef = useRef(null);
+  if (!stompRef.current) {
+    const sock = new SockJs('http://j8c106.p.ssafy.io:8188/ws');
+    const options = {
+      debug: false,
+      protocols: Stomp.VERSIONS.supportedProtocols(),
+    };
+    stompRef.current = StompJs.over(sock, options);
+  }
 
   // -------------------------SOCKET STATE-----------------------------
   const ACCESS_TOKEN = Cookies.get('access_token');
@@ -99,13 +108,7 @@ export default function GamePage() {
 
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
   const handleMessage = (received) => {
-    console.log('handleMessage active');
     const newMessage = JSON.parse(received.body);
-    // -------------------------handle ENTER-----------------------------
-    if (newMessage.type === 'ENTER') {
-      console.log('ENTER 메세지 도착', newMessage.messageBody);
-      const { username } = newMessage.messageBody;
-    }
     // -------------------------handle READY-----------------------------
     if (newMessage.type === 'READY') {
       console.log('READY 메세지 도착', newMessage.messageBody);
@@ -126,36 +129,83 @@ export default function GamePage() {
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
       console.log('CHAT 메세지 도착', newMessage.messageBody);
-      const { roomId, nickname, contents } = newMessage.messageBody;
+      const { nickname, contents } = newMessage.messageBody;
       setReceivedMessage({ nickname, contents });
-    }
-    // -------------------------handle END-----------------------------
-    if (newMessage.type === 'END') {
-      console.log('END 메세지 도착', newMessage.messageBody);
-      const { roomId, resultRoomId } = newMessage.messageBody;
     }
   };
 
   // -------------------------SOCKET CONNECT-----------------------------
-  const socketAction = () => {
-    console.log('the connection is successful');
-    getMessage(subAddress, handleMessage, header);
-    sendMessageResult(sendAddress, header, 'ENTER', gameRoomId, {});
-    sendMessageResult(sendAddress, header, 'TURN', gameRoomId, {});
-    sendMessageResult(sendAddress, header, 'END', gameRoomId, { resultRoomId: 'resultRoomId' });
-  };
 
   useEffect(() => {
-    // SOCKET CONNECT
-    stompConnect(header, socketAction);
-  }, [subAddress, sendAddress]);
+    const maxRetries = 5;
+    let retryCount = 0;
+
+    const retryConnect = () => {
+      if (retryCount < maxRetries) {
+        console.log(`WebSocket connection attempt ${retryCount + 1}`);
+        stompConnect();
+      } else {
+        console.log('Max retries reached. Giving up.');
+      }
+    };
+
+    const stompConnect = () => {
+      stompRef.current.debug = null;
+      stompRef.current.connect(
+        header,
+        () => {
+          console.log('connect!!');
+          stompRef.current.subscribe(subAddress, handleMessage, header);
+        },
+        (error) => {
+          console.log('WebSocket connection error:', error);
+          retryCount += 1;
+          setTimeout(retryConnect, 3000); // Retry connection after 3 seconds
+        },
+      );
+    };
+
+    retryConnect();
+
+    // Clean up when the component unmounts
+    return () => {
+      stompRef.current.disconnect();
+    };
+  }, []);
 
   // -------------------------| CHAT |------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
-    console.log('inputMessage in waitingPage', inputMessage);
-    sendMessageResult(sendAddress, header, 'CHAT', gameRoomId, { contents: inputMessage });
+    // Check WebSocket connection status
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'CHAT',
+        roomId: gameRoomId,
+        messageBody: { contents: inputMessage },
+      });
+
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
+  };
+
+  // -------------------------| READY |------------------------------------------------------------------
+
+  const getIsReady = () => {
+    // Check WebSocket connection status
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'READY',
+        roomId: gameRoomId,
+        messageBody: {},
+      });
+
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
   };
 
   // -------------------------| RETURN HTML |------------------------------------------------------------------
@@ -181,7 +231,7 @@ export default function GamePage() {
           <StockInfo />
         </MiddleSection>
         <RightSection>
-          <UserLogList />
+          <UserLogList getIsReady={getIsReady} />
           <div className="h-[50%]">
             <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
           </div>

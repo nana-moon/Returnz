@@ -12,6 +12,7 @@ import {
   Button,
 } from '@material-tailwind/react';
 import NewsTab from './tabs/NewsTab';
+import imagePath from './assets/tabHelp.png';
 import StockInfoTab from './tabs/StockInfoTab';
 import Description from './tabs/Description';
 
@@ -52,7 +53,10 @@ export default function StockInfo() {
                   ?
                 </Button>
               </PopoverHandler>
-              <PopoverContent className="z-20">?</PopoverContent>
+
+              <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
+                <img src={imagePath} alt="" />
+              </PopoverContent>
             </Popover>
           </div>
           {data.map(({ label, value }) => (
