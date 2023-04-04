@@ -6,6 +6,7 @@ import Cookies from 'js-cookie';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
+import { useNavigate } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -21,7 +22,7 @@ import {
   handleGetStockNews,
   handleGetchangeInterest,
 } from '../store/gamedata/GameData.reducer';
-import { gamerStockList, todayDate, stockDataList } from '../store/gamedata/GameData.selector';
+import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
 import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
@@ -32,6 +33,7 @@ import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '
 export default function GamePage() {
   // HOOKS
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // 주식 정보 STATE
   const stockdata = useSelector(stockDataList);
@@ -43,42 +45,50 @@ export default function GamePage() {
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
 
+  // TURN STATE
+  const temp = useSelector(gameTurn);
+
   // TURN API
   const axiospost = async () => {
-    // 뉴스
-    const datas = {
-      roomId: roomNum,
-      gamerId: gamerNum,
-    };
-
-    await axios
-      .post('/games/game', datas)
-      .then((res) => {
-        // dispatch(setPlayerList(res.data.gamer));
-        dispatch(handleMoreGameData(res.data.Stocks));
-        dispatch(handleUpdateHoldingData(res.data.gamerStock));
-        dispatch(handleGetStockInformation(res.data.stockInformation));
-        dispatch(handleGetTodayDate(res.data.currentDate));
-        dispatch(handleGetchangeInterest(res.data.exchangeInterest));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    const getNews = [];
-
-    for (let i = 0; i < keys.length; i += 1) {
-      const data = {
-        id: gameId,
-        companyCode: keys[i],
-        articleDateTime: Date,
+    console.log('realTurn', temp.nowTurn, temp.maxTurn);
+    if (temp.nowTurn < temp.maxTurn) {
+      // 뉴스
+      const datas = {
+        roomId: roomNum,
+        gamerId: gamerNum,
       };
-      // eslint-disable-next-line no-await-in-loop
-      const newsTmp = await getNewsApi(data);
-      getNews.push({ [keys[i]]: newsTmp });
-    }
+      await axios
+        .post('/games/game', datas)
+        .then((res) => {
+          // dispatch(setPlayerList(res.data.gamer));
+          dispatch(handleMoreGameData(res.data.Stocks));
+          dispatch(handleUpdateHoldingData(res.data.gamerStock));
+          dispatch(handleGetStockInformation(res.data.stockInformation));
+          dispatch(handleGetTodayDate(res.data.currentDate));
+          dispatch(handleGetchangeInterest(res.data.exchangeInterest));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
-    dispatch(handleGetStockNews(getNews));
+      const getNews = [];
+
+      for (let i = 0; i < keys.length; i += 1) {
+        const data = {
+          id: gameId,
+          companyCode: keys[i],
+          articleDateTime: Date,
+        };
+        // eslint-disable-next-line no-await-in-loop
+        const newsTmp = await getNewsApi(data);
+        getNews.push({ [keys[i]]: newsTmp });
+      }
+
+      dispatch(handleGetStockNews(getNews));
+    } else {
+      console.log('turn endendend');
+      navigate('/result');
+    }
   };
 
   // -------------------------| SOCKET |------------------------------------------------------------------
