@@ -73,8 +73,12 @@ public class GameService {
 		GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(gameRoomDto.getCurDate());
 		turnInformation.put("exchangeInterest", gameExchangeInterestDto);
 
+		// 영업일인 종목 리스트 제공
+
 		// 1. 날짜 별 그래프 데이터 - 게임 진행 주식 종목 가져오기
 		List<GameStockDto> gameStockDtoList = gameStockService.findAllByGameRoomId(gameRoomId);
+
+		turnInformation.put("businessDay", getBusinessDay(gameStockDtoList, gameRoomDto));
 
 		// 1. 날짜 별 그래프 데이터 - 게임 진행 주식 종목을 바탕으로
 		if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MINUTE)) { // TODO : Current Null Return
@@ -145,6 +149,23 @@ public class GameService {
 			mapGameComapnyDetailDto.put(companyCode, gameCompanyDetailService.findByCompanyCode(companyCode));
 		}
 		return mapGameComapnyDetailDto;
+	}
+
+	List<String> getBusinessDay(List<GameStockDto> gameStockDtoList, GameRoomDto gameRoomDto) {
+
+		log.info("getBusinessDay : " + gameRoomDto.getCurDate());
+
+		List<String> businessDay = new LinkedList<>();
+		for (GameStockDto gameStockDto : gameStockDtoList) {
+			GameHistoricalPriceDayDto gameHistoricalPriceDayDto
+				= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(gameRoomDto.getCurDate(),
+				gameStockDto.getCompanyCode());
+
+			if (gameHistoricalPriceDayDto != null) {
+				businessDay.add(gameStockDto.getCompanyCode());
+			}
+		}
+		return businessDay;
 	}
 
 	/**
@@ -391,7 +412,8 @@ public class GameService {
 				roomId);
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
 			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 2);
-			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), weekRanges.get(1).getWeekLastDay(), roomId);
+			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(),
+				weekRanges.get(1).getWeekLastDay().minusDays(1), roomId);
 		} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.MONTH)) {
 			List<MonthRange> monthRanges = CalDateRange.calculateMonthRanges(gameRoomDto.getCurDate(), 2);
 			return gameRoomService.updateGameTurn(gameRoomDto.getCurDate(), monthRanges.get(1).getLastDay(), roomId);
