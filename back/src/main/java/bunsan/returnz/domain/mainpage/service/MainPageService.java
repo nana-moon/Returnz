@@ -30,19 +30,6 @@ public class MainPageService {
 	}
 
 	public List<Ranking> getUserRanks() {
-		// List<Member> memberList = memberRepository.findTop10ByGameCountGreaterThanOrderByAvgProfitDesc(4L);
-		// List<Ranking> rankList = new ArrayList<>();
-		// for (Member member : memberList) {
-		// 	Ranking ranking = Ranking.builder()
-		// 		.username(member.getUsername())
-		// 		.nickname(member.getNickname())
-		// 		.profileIcon(member.getProfileIcon())
-		// 		.avgProfit(member.getAvgProfit())
-		// 		.build();
-		// 	rankList.add(ranking);
-		// }
-		// return rankList;
-		// return null;
 		return rankingRepository.findAllByOrderByAvgProfitDesc();
 	}
 }
