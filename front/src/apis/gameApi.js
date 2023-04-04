@@ -27,6 +27,12 @@ const gameDataApi = (payload) => {
     });
 };
 
+const serverTimeApi = async (payload) => {
+  console.log('roomId', payload);
+  const abc = await authApi.get(`/server-time?roomId=${payload}`);
+  console.log('servertime', abc);
+};
+
 const buyStockApi = (payload) => {
   return axios
     .post('/games/purchases', payload)
@@ -70,4 +76,4 @@ const resultApi = (param, payload) => {
   // return axios.get(`url${param}`, { payload });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, resultApi, buyStockApi, sellStockApi, getNewsApi };
+export { makeRoomApi, startGameApi, gameDataApi, serverTimeApi, resultApi, buyStockApi, sellStockApi, getNewsApi };
