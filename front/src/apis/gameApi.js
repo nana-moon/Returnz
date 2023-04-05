@@ -74,11 +74,10 @@ const getNewsApi = (payload) => {
 };
 
 const resultApi = async (payload) => {
-  console.log('resultPayload', payload);
   return axios
     .post('/results', payload)
     .then((res) => {
-      console.log('결과 받아오기 성공', res);
+      // console.log('결과 받아오기 성공', res);
       return res.data;
     })
     .catch((err) => {

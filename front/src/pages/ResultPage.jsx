@@ -15,33 +15,21 @@ import { resultApi } from '../apis/gameApi';
 export default function ResultPage() {
   // HOOKS
   const location = useLocation();
-  const { roomNum, gameRoomId } = location.state;
-  console.log('gameRoomId, resultpage, 19', gameRoomId);
-  // -------------------------| RESULT STATE |------------------------------------------------------------------
-  const init = [
-    // {
-    //   rank,
-    //   id,
-    //   nickname,
-    //   profile,
-    //   prev_avg_profit: [{ turn, profit }],
-    //   trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
-    //   profits,
-    //   newProfiles: [],
-    // },
-  ];
+  const { gameId, gameRoomId } = location.state;
+  // -------------------------||| RESULT STATE |||------------------------------------------------------------------
+  const init = [];
   const [result, setResult] = useState(init);
 
   useEffect(() => {
     async function fetchData() {
-      const resultData = await resultApi({ roomNum });
-      setResult(resultData);
+      const resultData = await resultApi({ gameRoomId: gameId });
       console.log('ResultData, resultpage, 27', resultData);
+      setResult(resultData);
     }
     fetchData();
   }, []);
 
-  // -------------------------| SOCKET |------------------------------------------------------------------
+  // -------------------------||| SOCKET |||------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -100,7 +88,7 @@ export default function ResultPage() {
     };
   }, [gameRoomId, ACCESS_TOKEN]);
 
-  // -------------------------| CHAT |------------------------------------------------------------------
+  // -------------------------||| CHAT |||------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
@@ -118,22 +106,11 @@ export default function ResultPage() {
     }
   };
 
-  // -------------------------| RETURN HTML |------------------------------------------------------------------
-  // const init = [
-  //   {
-  //     rank,
-  //     id,
-  //     nickname,
-  //     profile,
-  //     prev_avg_profit: [{ turn, profit }],
-  //     trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
-  //     profits,
-  //     newProfiles: [],
-  //   },
-  // ];
+  // -------------------------||| RETURN HTML |||------------------------------------------------------------------
+
   return (
     <ResultContainer>
-      <ResultRank init={init} />
+      <ResultRank result={result} />
       <ResultInfo />
       <LeftBottomSection>
         <UnlockResult />
