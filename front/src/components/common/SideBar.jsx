@@ -14,6 +14,7 @@ import FriendSearchInput from './SideBar/FriendSearchInput';
 import IncomingFriendRequests from './SideBar/IncomingFriendRequests';
 import IncomingInviteRequest from './SideBar/IncomingInviteRequest';
 import { getFriendRequestsApi } from '../../apis/friendApi';
+import { patchStateApi } from '../../apis/userApi';
 
 export default function SideBar() {
   // 내정보
@@ -22,9 +23,10 @@ export default function SideBar() {
   // 내 친구
   const [friendList, setfriendList] = useState([]);
   const [receivedInvites, setReceivedInvites] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
   // 내가 받은 친구요청 리스트
-  const { data: friendRequests } = useQuery({
-    queryKey: ['friendRequests'],
+  const { data: friendRequestList } = useQuery({
+    queryKey: ['friendRequestList'],
     queryFn: () => getFriendRequestsApi(),
     onError: (e) => {
       console.log(e);
@@ -61,24 +63,23 @@ export default function SideBar() {
       }
       if (newMessage.type === 'INVITE') {
         setReceivedInvites([...receivedInvites, newMessage.messageBody]);
-        // setReceivedInvites(newMessage.messageBody);
-        console.log(newMessage.messageBody, '내가받은초대진짜진짜임');
       }
       if (newMessage.type === 'STATE') {
         console.log('STATE 메세지 도착', newMessage.messageBody);
-        // const changedFriends = []
-        // const changedFriend = newMessage.messageBody;
-        // const updatedFriendList = friendList?.map((friend) => {
-        //   if (friend.username === changedFriend.friendName) {
-        //     // 친구 정보가 일치하면 state 값 변경
-        //     console.log(friend.username, 'd원래');
-        //     console.log(changedFriend.friendName, '새로운');
-        //     return { [...changedFriends, changedFriend ]};
-        //   }
-        //   return friend;
-        // });
-        // // friendList 갱신
-        // setfriendList(updatedFriendList);
+        stompRef.current.send(
+          pubAddress,
+          header,
+          JSON.stringify({
+            type: 'ENTER',
+            messageBody: {
+              username: `${myMail}`,
+            },
+          }),
+        );
+      }
+      if (newMessage.type === 'FRIEND') {
+        console.log('FRIEND 메세지 도착', newMessage.messageBody);
+        setFriendRequests([...friendRequests, newMessage.messageBody]);
       }
     }
   };
@@ -113,6 +114,7 @@ export default function SideBar() {
     // Clean up when the component unmounts
     return () => {
       stompRef.current && stompRef.current.unsubscribe(subAddress);
+      patchStateApi();
     };
   }, []);
 
@@ -132,6 +134,12 @@ export default function SideBar() {
           {receivedInvites?.length > 0 && isVisible ? <SectionTitle>초대요청</SectionTitle> : null}
           {receivedInvites?.map((friendInv) => {
             return <IncomingInviteRequest friendInv={friendInv} key={friendInv.nickname} handleDelete={handleDelete} />;
+          })}
+        </FriendRequestsContainer>
+        <FriendRequestsContainer>
+          {friendRequestList?.length > 0 ? <SectionTitle>친구요청</SectionTitle> : null}
+          {friendRequestList?.map((friendReq) => {
+            return <IncomingFriendRequests friendReq={friendReq} key={friendReq.requestId} />;
           })}
         </FriendRequestsContainer>
         <FriendRequestsContainer>
