@@ -13,7 +13,7 @@ export default function UsePage() {
       {modal === true ? <ProfileEditModal /> : null}
       <Header />
       <div className="flex pt-14">
-        <div className="w-[100%] flex justify-center">
+        <div className="w-[80%] flex justify-center">
           <Outlet />
         </div>
         <SideBar />
