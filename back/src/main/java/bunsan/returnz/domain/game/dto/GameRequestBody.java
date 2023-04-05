@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class GameRequestBody {
 	private String roomId;
 	private Long gamerId;
+	private boolean isCaptain;
 }
