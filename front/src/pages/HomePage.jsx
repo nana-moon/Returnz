@@ -15,7 +15,9 @@ export default function HomePage() {
           인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
         </TickerText>
       </TickerWrapper>
-      <PriceSection>{/* <TodayPrice /> */}</PriceSection>
+      <PriceSection>
+        <TodayPrice />
+      </PriceSection>
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>
