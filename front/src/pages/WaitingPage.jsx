@@ -104,7 +104,7 @@ export default function WaitingPage() {
       const { roomId, gameInit } = newMessage.messageBody;
       console.log('gameInit3 in handle game_info (received)', gameInit);
 
-      handleTurn(gameInit);
+      handleSave(gameInit);
     }
     // -------------------------handle EXIT-----------------------------
     if (newMessage.type === 'EXIT') {
@@ -293,7 +293,6 @@ export default function WaitingPage() {
 
     // send game info
     console.log('gameInit1 in save gameroom info', gameInit);
-    sendMessage(gameInit);
 
     // first turn api
     const turnApiReq = {
@@ -309,7 +308,7 @@ export default function WaitingPage() {
     if (isValidSetting) {
       // game room info api
       const gameInit = await startGameApi(newSetting);
-      await handleSave(gameInit);
+      await sendMessage(gameInit);
     }
   };
 
