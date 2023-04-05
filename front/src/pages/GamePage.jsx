@@ -37,6 +37,10 @@ export default function GamePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const turnInfo = useSelector(gameTurn);
+  const turnInfoRef = useRef(turnInfo);
+  useEffect(() => {
+    turnInfoRef.current = turnInfo;
+  }, [turnInfo]);
 
   // -------------------------||| HANDLE BACK |||------------------------------------------------------------------
 
@@ -66,7 +70,11 @@ export default function GamePage() {
   const Date = useSelector(todayDate);
 
   // 주식 API
-  const axiospost = async () => {
+  const axiospost = async (currentTurn) => {
+    // 결과창 넘어가는 턴 조건
+    if (currentTurn.nowTurn + 1 === currentTurn.maxTurn) {
+      navigate('/result', { state: { gameId, gameRoomId } });
+    }
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
@@ -74,7 +82,6 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
-        console.log('turn data, gamepage, 77', res.data.gamer);
         dispatch(setPlayerList(res.data.gamer));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
@@ -110,7 +117,7 @@ export default function GamePage() {
       return isReady.status === true;
     });
     if (allReady) {
-      await axiospost();
+      await axiospost(turnInfoRef.current);
     }
   };
 
