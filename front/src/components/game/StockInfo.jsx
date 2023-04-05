@@ -88,7 +88,7 @@ export default function StockInfo() {
 const StockInfoContanier = styled.div`
   margin-top: 1.25rem;
   max-height: 28%;
-  ${tw`border row-span-3 bg-white rounded-xl h-[28%] pt-2 flex justify-center overflow-hidden`}
+  ${tw`border row-span-3 bg-white rounded-xl h-[28%] pt-2 flex justify-center`}
 `;
 
 const TabContainer = styled(Tabs)`
@@ -105,6 +105,7 @@ const TabsBodys = styled(TabsBody)`
   &::-webkit-scrollbar-thumb {
     background-color: transparent;
   }
+  ${tw`overflow-y-auto`}
 `;
 
 const TabPanels = styled(TabPanel)``;

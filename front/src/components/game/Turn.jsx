@@ -10,7 +10,7 @@ import { gameTurn } from '../../store/gamedata/GameData.selector';
 import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
 export default function Turn() {
-  const [time, setTime] = useState(60);
+  const [time, setTime] = useState(59);
   const turn = useSelector(gameTurn);
   console.log('turn---------------------', turn);
   const [animationClass, setAnimationClass] = useState('animate');
