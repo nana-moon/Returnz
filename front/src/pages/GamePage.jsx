@@ -154,6 +154,10 @@ export default function GamePage() {
   const ACCESS_TOKEN = Cookies.get('access_token');
   const gameRoomId = useSelector(getGameRoomId);
   const isReadyList = useSelector(getIsReadyList);
+  const isReadyListRef = useRef(isReadyList);
+  useEffect(() => {
+    isReadyListRef.current = isReadyList;
+  }, [isReadyList]);
   const subAddress = `/sub/game-room/${gameRoomId}`;
   const sendAddress = '/pub/game-room';
   const header = {
@@ -169,7 +173,7 @@ export default function GamePage() {
       console.log('READY 메세지 도착', newMessage.messageBody);
       const { username } = newMessage.messageBody;
       // ready한 user의 ready 상태 바꾸기
-      const newIsReadyList = isReadyList.map((isReady) => {
+      const newIsReadyList = isReadyListRef.current.map((isReady) => {
         if (isReady.username === username) {
           return { ...isReady, status: true };
         }
