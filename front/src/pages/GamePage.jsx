@@ -87,7 +87,7 @@ export default function GamePage() {
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
-      isCaptain: isHost,
+      captain: isHost,
     };
     console.log(datas);
     await axios
@@ -235,10 +235,9 @@ export default function GamePage() {
 
     retryConnect();
 
-    // Clean up when the component unmounts
-    // return () => {
-    //   stompRef.current.disconnect();
-    // };
+    return () => {
+      stompRef.current.disconnect();
+    };
   }, []);
 
   // -------------------------||| CHAT |||------------------------------------------------------------------
