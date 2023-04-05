@@ -49,9 +49,9 @@ export default function ResultInfo({ result, selectedIdx }) {
 }
 
 const InfoContainer = styled.div`
-  ${tw`border bg-white rounded-xl p-2`}
+  ${tw`border bg-white rounded-xl p-2 font-spoq`}
 `;
 
 const InfoHeader = styled.header`
-  ${tw` bg-white flex justify-center items-center h-10`}
+  ${tw` bg-white flex justify-center items-center h-10 font-bold`}
 `;
