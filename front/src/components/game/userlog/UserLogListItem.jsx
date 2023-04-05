@@ -10,6 +10,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   const myUsername = Cookies.get('email');
   const {
     userName,
+    nickname,
     userProfileIcon,
     deposit,
     originDeposit,
@@ -29,20 +30,14 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   };
 
   return (
-    <UserLogItemContainer isMe={isMe}>
+    <UserLogItemContainer isMe={isMe} isReady={isReady.status}>
       <LeftSection>
         <UserBox>
           <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{player.nickname}</div>
+          <div>{nickname}</div>
         </UserBox>
         {isMe && (
-          <ReadyBtn
-            type="submit"
-            onClick={handleIsReady}
-            className="w-[100%]"
-            disabled={isReady[myUsername]}
-            isReady={isReady}
-          >
+          <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
             ready
           </ReadyBtn>
         )}
@@ -65,6 +60,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
 const UserLogItemContainer = styled.div`
   ${tw`border-2 bg-white rounded-xl flex p-5 gap-5`}
   ${(props) => (props.isMe ? tw`h-[40%]` : tw`h-[20%]`)}
+  ${(props) => (props.isReady ? tw`bg-primary text-white` : tw``)}
 `;
 
 const LeftSection = styled.div`
