@@ -91,9 +91,6 @@ public class GameService {
 			turnInformation.put("Stocks", getStockPriceMonth(gameStockDtoList, gameRoomDto));
 		}
 
-		// 2. id로 멤버 불러오기
-		turnInformation.put("gamer", getAllGamer(gameRoomDto));
-
 		// 3. 나의 현재 보유 종목, companyName과 logo 붙여서 return
 		log.info("================= turn progress - 나의 보유 종목");
 		List<GameGamerStockDto> gameGamerStockDtos = gamerStockService.findAllByGamer_Id(gamerId);
@@ -112,6 +109,9 @@ public class GameService {
 			gameGamerStockDtosResponse.add(gamerStockDto);
 			log.info(gamerStockDto.toString());
 		}
+
+		// 2. id로 멤버 불러오기
+		turnInformation.put("gamer", getAllGamer(gameRoomDto));
 
 		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
 
