@@ -100,7 +100,7 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
       <span className="ripple" />
       <ItemTitleSection>
         <ItemTitleImgBox>
-          <img src={Stock[Stock.length - 1]?.logo} alt="dd" />
+          <img src={Stock[Stock.length - 1]?.logo} alt="" />
         </ItemTitleImgBox>
         <CompanyName>
           {isThis && <Tooltip content="영업일이 아닙니다">⚠️ </Tooltip>}
