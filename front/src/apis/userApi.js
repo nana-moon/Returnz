@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2';
 import { authApi } from './axiosConfig';
+import profileCondition from '../components/game/assets/ProfileConditon';
 
 const getPossibleProfile = () => {
   return authApi
@@ -14,14 +15,21 @@ const getPossibleProfile = () => {
 };
 
 const patchMyProfile = (payload) => {
+  const data = {
+    newProfile: payload,
+  };
   return authApi
-    .patch('/members/profile', payload)
+    .patch('/members/profile', data)
     .then((res) => {
-      Swal.fire({ text: '프로필이 성공적으로 변경되었습니다.', confirmButtonColor: '#1CD6C9' });
+      Swal.fire({ title: '프로필이 성공적으로 변경되었습니다.', confirmButtonColor: '#1CD6C9' });
       return res;
     })
     .catch((error) => {
-      Swal.fire({ text: '오류가 발생했습니다.', confirmButtonColor: '#1CD6C9' });
+      Swal.fire({
+        title: '프로필을 변경할 수 없습니다.',
+        text: `${profileCondition[payload]}`,
+        confirmButtonColor: '#1CD6C9',
+      });
       return error;
     });
 };
