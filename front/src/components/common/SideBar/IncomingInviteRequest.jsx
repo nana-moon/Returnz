@@ -16,11 +16,11 @@ export default function IncomingInviteRequest({ friendInv, handleDelete }) {
     console.log(res, '거의끝남 ㄱㄱㄱㄱㄱㄱㄱ');
     console.log(res.data.captainName, '방장누구야');
     if (res && res.status === 200) {
-      dispatch(setHostNickname(res.data.captainName));
-      dispatch(setWaitRoomId(res.data.roomId));
-      setTimeout(() => {
-        navigate('/waiting');
-      }, 100);
+      // dispatch(setHostNickname(res.data.captainName));
+      // dispatch(setWaitRoomId(res.data.roomId));
+      // setTimeout(() => {
+      //   navigate('/waiting');
+      // }, 100);
     }
   };
   const declineRequest = () => {
