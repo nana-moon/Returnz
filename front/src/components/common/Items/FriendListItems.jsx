@@ -52,6 +52,12 @@ export default function FriendListItems({ friend, handleInvite }) {
         username: `${friend.username}`, // 초대 상대
       },
     });
+    Swal.fire({
+      title: `초대 성공`,
+      icon: 'success',
+      timer: 1000,
+      showConfirmButton: false,
+    });
     handleInvite(data);
   };
 
