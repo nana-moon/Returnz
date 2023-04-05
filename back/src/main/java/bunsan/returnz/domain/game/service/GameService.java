@@ -55,7 +55,7 @@ public class GameService {
 	 * @return : HashMap<String, Object> 형태로 반환
 	 */
 	@Transactional
-	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId) {
+	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId, boolean isCaptain) {
 
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 		Long gameRoomId = gameRoomDto.getId();
@@ -124,7 +124,7 @@ public class GameService {
 		}
 
 		// 4. 다음 턴 정보 업데이트
-		if (!updateTurnInformation(gameGamerStockDtos, roomId,
+		if (isCaptain && !updateTurnInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
@@ -132,6 +132,7 @@ public class GameService {
 		return turnInformation;
 	}
 
+	@Transactional
 	public GameExchangeInterestDto getExchangeInterest(LocalDateTime curDate) {
 		return gameExchangeInterestService.findAllByDateIsBeforeLimit1(LocalDate.from(curDate));
 	}
@@ -141,6 +142,7 @@ public class GameService {
 	 * @param gameStockDtoList :  현재 게임 주식 종목 리스트
 	 * @return : 현재 게임 주식 종목 리스트의 추가 정보를 반환한다.
 	 */
+	@Transactional
 	public HashMap<String, GameCompanyDetailDto> getCompanyDetail(List<GameStockDto> gameStockDtoList) {
 		HashMap<String, GameCompanyDetailDto> mapGameComapnyDetailDto = new HashMap<>();
 
@@ -150,7 +152,7 @@ public class GameService {
 		}
 		return mapGameComapnyDetailDto;
 	}
-
+	@Transactional
 	List<String> getBusinessDay(List<GameStockDto> gameStockDtoList, GameRoomDto gameRoomDto) {
 
 		log.info("getBusinessDay : " + gameRoomDto.getCurDate());
@@ -175,6 +177,7 @@ public class GameService {
 	 * @param gameStockDtoList : 현재 게임 주식 종목 리스트
 	 * @return : 과거 주가 데이터를 반환한다.
 	 */
+	@Transactional
 	public HashMap<String, List<GameStockPriceInformationDto>> getStockPriceInformation(LocalDateTime curDate,
 		List<GameStockDto> gameStockDtoList) {
 		HashMap<String, List<GameStockPriceInformationDto>> mapGameStockPriceInformationDto = new HashMap<>();
@@ -427,6 +430,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임 방 정보를 가지고 있는 Dto
 	 * @return : 현재 방에 참여하고 있는 참여자의 정보를 반환한다.
 	 */
+	@Transactional
 	HashMap<String, GameGamerDto> getAllGamer(GameRoomDto gameRoomDto) {
 		List<GameGamerDto> gameGamerDtos = gamerService.findAllByGameRoomId(gameRoomDto.getId());
 		HashMap<String, GameGamerDto> mapGameGamerDto = new HashMap<>();
@@ -448,6 +452,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : 작성 중
 	 */
+	@Transactional
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceMinute(List<GameStockDto> gameStockDtoList,
 		GameRoomDto gameRoomDto) {
 		return null;
@@ -458,6 +463,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : 일별 주식 가격을 반환한다.
 	 */
+	@Transactional
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceDay(List<GameStockDto> gameStockDtoList,
 		GameRoomDto gameRoomDto, GameExchangeInterestDto gameExchangeInterestDto) {
 
@@ -535,6 +541,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : 주별 주식 가격을 반환한다.
 	 */
+	@Transactional
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceWeek(List<GameStockDto> gameStockDtoList,
 		GameRoomDto gameRoomDto) {
 
@@ -607,6 +614,7 @@ public class GameService {
 	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
 	 * @return : 월별 주식 가격을 반환한다.
 	 */
+	@Transactional
 	public HashMap<String, List<GameHistoricalPriceDayDto>> getStockPriceMonth(List<GameStockDto> gameStockDtoList,
 		GameRoomDto gameRoomDto) {
 		return null;
@@ -620,6 +628,7 @@ public class GameService {
 	 * @param companyCode : 종목코드
 	 * @return : 해당 종목코드와 게임방의 턴을 확인해 해당 날짜의 가격을 가져온다.
 	 */
+	@Transactional
 	public Double getStockPrice(String roomId, String companyCode) {
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 

@@ -18,5 +18,9 @@ export default function UnlockResult({ result }) {
 }
 
 const UnlockContainer = styled.div`
-  ${tw`border bg-white rounded-xl h-[80%]`}
+  ${tw`border bg-white p-2 rounded-xl h-[80%] font-spoq`}
+`;
+
+const UnlockContainerTitle = styled.div`
+  ${tw`text-center font-bold`}
 `;
