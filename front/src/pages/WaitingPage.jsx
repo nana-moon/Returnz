@@ -373,7 +373,7 @@ export default function WaitingPage() {
           <TopSection>
             {Array.from({ length: 4 }).map((_, i) => {
               if (i < waiterList.length) {
-                return <WaitingListItem key={waiterList[i]} waiter={waiterList[i]} />;
+                return <WaitingListItem key={waiterList[i].memberId} waiter={waiterList[i]} />;
               }
               // eslint-disable-next-line react/no-array-index-key
               return <NullListItem key={i} />;
