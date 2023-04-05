@@ -75,7 +75,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
         return (
           <Tooltip
             key={theme.name}
-            className="w-72 text-lg bg-dprimary break-keep text-center"
+            className="w-72 text-lg bg-dprimary break-keep text-center p-3"
             content={theme.description}
             animate={{
               mount: { scale: 1, y: 0 },
@@ -103,9 +103,9 @@ const ThemeBox = styled.button`
   .ripple {
     position: absolute;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #ffffff83;
     transform: scale(0);
-    animation: ripple-effect 1s linear forwards;
+    animation: ripple-effect 1.2s linear forwards;
   }
 
   @keyframes ripple-effect {
@@ -114,6 +114,6 @@ const ThemeBox = styled.button`
       opacity: 0;
     }
   }
-  ${tw`flex justify-center items-center border w-[100%] relative drop-shadow-lg bg-white rounded-xl overflow-hidden`}
-  ${({ active }) => active && tw`bg-blue-gray-100`}
+  ${tw`flex justify-center items-center border w-[100%] relative drop-shadow-lg bg-white rounded-xl overflow-hidden text-lg font-bold`}
+  ${({ active }) => active && tw`bg-primary text-white`}
 `;
