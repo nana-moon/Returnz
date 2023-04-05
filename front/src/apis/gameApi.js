@@ -19,6 +19,7 @@ const startGameApi = async (payload) => {
 };
 
 const gameDataApi = (payload) => {
+  console.log('gameDataApi Payload -------', payload);
   return authApi
     .post('/games/game', payload)
     .then((res) => {
