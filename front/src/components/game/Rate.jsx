@@ -11,15 +11,15 @@ export default function Rate() {
   return (
     <RateContanier>
       {/* <div className="absolute right-4 top-2">?</div> */}
-      <div className="mt-2 mb-1 text-center">
+      <div className="mb-1 text-center">
         <div className="font-bold text-lg"> 환율 </div>
         <div> {rateData.exchangeRate.toFixed(2)} 원</div>
       </div>
-      <div className="mt-2 mb-1 text-center">
+      <div className="mb-1 text-center">
         <div className="font-bold text-lg"> 금리🇰🇷 </div>
         <div> {rateData.korea} %</div>
       </div>
-      <div className="mt-2 text-center">
+      <div className="mb-1 text-center">
         <div className="font-bold text-lg"> 금리🇺🇸 </div>
         <div> {rateData.usa} %</div>
       </div>
