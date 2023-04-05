@@ -38,13 +38,14 @@ import {
 import LoadPage from '../components/loading/LoadPage';
 import RequestQueue from '../utils/RequestQueue';
 
+const requestQueue = new RequestQueue();
+
 export default function WaitingPage() {
   // -------------------------||| HOOKS |||------------------------------------------------------------------
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const requestQueue = new RequestQueue();
 
   // -------------------------||| WAITROOM STATE |||------------------------------------------------------------------
 
@@ -238,6 +239,7 @@ export default function WaitingPage() {
   // -------------------------REQUEST FIRST TURN DATA-----------------------------
 
   const handleTurn = async (turnApiReq, id) => {
+    // turn API
     const gameData = await requestQueue.addRequest(() => gameDataApi(turnApiReq));
     console.log('turn data, waitingpage, 249', gameData.gamer);
     dispatch(setPlayerList(gameData.gamer));
@@ -248,7 +250,20 @@ export default function WaitingPage() {
     const keys = Object.keys(gameData.Stocks);
     const Date = gameData.currentDate;
     const gameId = id;
-    console.log(keys, Date, gameId, '가능');
+    // news API
+    const newsCache = new Map();
+
+    const getNewsApiWithCache = async (data) => {
+      const cacheKey = `${data.id}_${data.companyCode}_${data.articleDateTime}`;
+      if (newsCache.has(cacheKey)) {
+        return newsCache.get(cacheKey);
+      }
+
+      const news = await requestQueue.addRequest(() => getNewsApi(data));
+      newsCache.set(cacheKey, news);
+      return news;
+    };
+
     const getNews = [];
 
     for (let i = 0; i < keys.length; i += 1) {
@@ -258,7 +273,7 @@ export default function WaitingPage() {
         articleDateTime: Date,
       };
       // eslint-disable-next-line no-await-in-loop
-      const newsTmp = await requestQueue.addRequest(() => getNewsApi(data));
+      const newsTmp = await getNewsApiWithCache(data);
       getNews.push({ [keys[i]]: newsTmp });
     }
 
