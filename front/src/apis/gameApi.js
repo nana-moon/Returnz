@@ -13,6 +13,7 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
+  console.log('startGameApi', payload);
   const res = await authApi.post('/games/init', payload);
   return res.data;
 };
