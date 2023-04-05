@@ -15,10 +15,31 @@ import { resultApi } from '../apis/gameApi';
 export default function ResultPage() {
   // HOOKS
   const location = useLocation();
-  const gameRoomId = location.state;
+  const { roomNum, gameRoomId } = location.state;
+  console.log('gameRoomId, resultpage, 19', gameRoomId);
   // -------------------------| RESULT STATE |------------------------------------------------------------------
-  const resuldData = resultApi({ gameRoomId });
-  console.log('ResultData!!@@', resuldData);
+  const init = [
+    // {
+    //   rank,
+    //   id,
+    //   nickname,
+    //   profile,
+    //   prev_avg_profit: [{ turn, profit }],
+    //   trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
+    //   profits,
+    //   newProfiles: [],
+    // },
+  ];
+  const [result, setResult] = useState(init);
+
+  useEffect(() => {
+    async function fetchData() {
+      const resultData = await resultApi({ roomNum });
+      setResult(resultData);
+      console.log('ResultData, resultpage, 27', resultData);
+    }
+    fetchData();
+  }, []);
 
   // -------------------------| SOCKET |------------------------------------------------------------------
 
@@ -37,9 +58,7 @@ export default function ResultPage() {
   // -------------------------SOCKET STATE-----------------------------
 
   const ACCESS_TOKEN = Cookies.get('access_token');
-  // const resultRoomId = useSelector(getResultRoomId);
-  const resultRoomId = 'temp';
-  const subAddress = `/sub/game-room/${resultRoomId}`;
+  const subAddress = `/sub/result-room/${gameRoomId}`;
   const sendAddress = '/pub/result-room';
   const header = {
     Authorization: ACCESS_TOKEN,
@@ -79,7 +98,7 @@ export default function ResultPage() {
     return () => {
       stompRef.current.disconnect();
     };
-  }, [resultRoomId, ACCESS_TOKEN]);
+  }, [gameRoomId, ACCESS_TOKEN]);
 
   // -------------------------| CHAT |------------------------------------------------------------------
 
@@ -100,10 +119,21 @@ export default function ResultPage() {
   };
 
   // -------------------------| RETURN HTML |------------------------------------------------------------------
-
+  // const init = [
+  //   {
+  //     rank,
+  //     id,
+  //     nickname,
+  //     profile,
+  //     prev_avg_profit: [{ turn, profit }],
+  //     trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
+  //     profits,
+  //     newProfiles: [],
+  //   },
+  // ];
   return (
     <ResultContainer>
-      <ResultRank />
+      <ResultRank init={init} />
       <ResultInfo />
       <LeftBottomSection>
         <UnlockResult />

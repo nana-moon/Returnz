@@ -1,5 +1,6 @@
 import React from 'react';
 import tw, { styled } from 'twin.macro';
+import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
 import { makeRoomApi } from '../../apis/gameApi';
 
@@ -9,6 +10,11 @@ export default function TopButtons() {
   // 대기방 만들고 방정보 전달하기
   const handleMakeRoom = async () => {
     const waitRoomInfo = await makeRoomApi();
+    Swal.fire({
+      title: `성공적으로 방을 생성하였습니다.`,
+      timer: 1000,
+      showConfirmButton: false,
+    });
     navigate('/waiting', { state: waitRoomInfo });
   };
   return (
