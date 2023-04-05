@@ -48,19 +48,9 @@ const declineFriendRequestApi = (payload) => {
 
 const acceptInviteRequestApi = (payload) => {
   return authApi
-    .post(`/friends/${payload}`)
+    .patch(`/wait-room/enter?roomId=${payload}`)
     .then((res) => {
-      return res;
-    })
-    .catch((err) => {
-      return err;
-    });
-};
-
-const declineInviteRequestApi = (payload) => {
-  return authApi
-    .delete(`/requests/${payload}`)
-    .then((res) => {
+      console.log(res, '자, 대기방 들가자~~~');
       return res;
     })
     .catch((err) => {
@@ -74,5 +64,4 @@ export {
   acceptFriendRequestApi,
   declineFriendRequestApi,
   acceptInviteRequestApi,
-  declineInviteRequestApi,
 };

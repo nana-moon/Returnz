@@ -58,10 +58,10 @@ export default function StockInfoTab() {
   ];
 
   const getColor = (value) => {
-    if (parseInt(value, 10) > 0) {
+    if (value > 0) {
       return 'text-gain';
     }
-    if (parseInt(value, 10) < 0) {
+    if (value < 0) {
       return 'text-lose';
     }
     return 'text-black';
@@ -82,12 +82,16 @@ export default function StockInfoTab() {
         <tbody>
           {data.map((row, rowIndex) => {
             const Row = rowIndex % 2 === 1 ? StyledRow : UnstyledRow;
-            const colorClass = getColor(parseInt(row[2], 10));
+            const colorClass = getColor(parseFloat(row[2]));
             return (
               <Row key={rowIndex}>
                 <StyledCell>{row[0]}</StyledCell>
-                <StyledCell className={colorClass}>{row[1] ? parseInt(row[1], 10).toLocaleString() : null}</StyledCell>
-                <StyledCell className={colorClass}>{parseInt(row[2], 10)}</StyledCell>
+                <StyledCell className={colorClass}>
+                  {Number.isInteger(row[1]) ? parseInt(row[1], 10) : parseFloat(row[1]).toFixed(2)}
+                </StyledCell>
+                <StyledCell className={colorClass}>
+                  {Number.isInteger(row[2]) ? parseInt(row[2], 10) : parseFloat(row[2]).toFixed(2)}
+                </StyledCell>
                 <StyledCell className={colorClass}>{row[3]}%</StyledCell>
                 <StyledCell>{row[4].toLocaleString()}</StyledCell>
               </Row>
