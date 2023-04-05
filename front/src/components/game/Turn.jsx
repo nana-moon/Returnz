@@ -50,7 +50,7 @@ export default function Turn() {
   const Icon = [];
 
   for (let i = 0; i < turn.maxTurn; i += 1) {
-    Icon.push(<TurnIcon index={i} num={turn.nowTurn} />);
+    Icon.push(<TurnIcon index={i} num={turn.nowTurn} key={i} />);
   }
   return (
     <TurnContanier>
