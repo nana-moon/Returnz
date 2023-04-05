@@ -74,6 +74,7 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
+        console.log('턴넘어감', res.data);
         console.log('turn data, gamepage, 77', res.data.gamer);
         dispatch(setPlayerList(res.data.gamer));
         dispatch(handleMoreGameData(res.data.Stocks));
