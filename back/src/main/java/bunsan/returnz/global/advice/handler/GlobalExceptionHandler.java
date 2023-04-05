@@ -28,34 +28,34 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
-		HttpRequestMethodNotSupportedException e) {
+		HttpRequestMethodNotSupportedException error) {
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ErrorResponse(405, "허용되지 않은 메서드입니다."));
 	}
 
 	@ExceptionHandler(NotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, e.getMessage()));
+	public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException error) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, error.getMessage()));
 	}
 
 	@ExceptionHandler(BadRequestException.class)
-	public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
-		return ResponseEntity.badRequest().body(new ErrorResponse(400, e.getMessage()));
+	public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException error) {
+		return ResponseEntity.badRequest().body(new ErrorResponse(400, error.getMessage()));
 	}
 
 	@ExceptionHandler(ForbiddenException.class)
-	public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(403, e.getMessage()));
+	public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException error) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(403, error.getMessage()));
 	}
 
 	@ExceptionHandler(ConflictException.class)
-	public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, e.getMessage()));
+	public ResponseEntity<ErrorResponse> handleConflictException(ConflictException error) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, error.getMessage()));
 	}
 
 	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+	public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException error) {
 		return ResponseEntity.internalServerError()
-			.body(new ErrorResponse(500, "서버에 알 수 없는 문제가 발생했습니다." + e.getMessage()));
+			.body(new ErrorResponse(500, "서버에 알 수 없는 문제가 발생했습니다." + error.getMessage()));
 	}
 
 }

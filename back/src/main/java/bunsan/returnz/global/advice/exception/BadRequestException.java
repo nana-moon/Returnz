@@ -7,3 +7,4 @@ public class BadRequestException extends BusinessException {
 		super(message);
 	}
 }
+

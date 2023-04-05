@@ -2,6 +2,10 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.9'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.sonarqube' version '3.3'
+	id 'jacoco'
+	id 'checkstyle'
+	id 'org.ec4j.editorconfig' version '0.0.3'
 }
 
 group = 'bunsan'
@@ -31,6 +35,8 @@ dependencies {
 	// Spring Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.security:spring-security-messaging'
+
 
 	// =========================== DB ====================================
 	// JPA
@@ -44,15 +50,77 @@ dependencies {
 	// Kafka
 	implementation 'org.springframework.kafka:spring-kafka'
 
+	implementation 'org.webjars:bootstrap:3.3.7'
+	implementation 'org.webjars:jquery:3.1.1-1'
+	implementation 'org.webjars:webjars-locator-core'
+	implementation 'org.webjars:sockjs-client:1.0.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3'
 
+	//======================= debug =================================
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.1'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.1'
+
+
+
+	//=======================test=================================
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.mockito:mockito-core:3.12.4'
+
+	//=====================sonarQube============================
+	implementation 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3'
+
+}
+
+jacoco {
+	toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		csv.enabled false
+		html.enabled false
+	}
+}
+
+sonarqube {
+	properties {
+		property "sonar.host.url", "http://3.36.7.48:9000/"
+		property "sonar.login", "squ_b6797f2d50953587f27455cb6af9a79a5ffbe336"
+		property "sonar.sources", "src" // 소스 경로
+		property "sonar.language", "java" // 언어
+		property "sonar.sourceEncoding", "UTF-8"
+		property "sonar.profile", "Sonar way" // SonarQube 에서 분석할 때 적용할 프로필(분석할 수준 설정)
+		property "sonar.java.binaries", "${buildDir}/classes" // 자바 클래스 파일위치
+		property "sonar.test.inclusions", "**/*Test.java" // 코드 분석에 사용할 테스트 소스
+		property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml" // jacoco 플러그인의 결과 파일
+	}
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+checkstyle {
+	maxWarnings = 0 // 규칙이 어긋나는 코드가 하나라도 있을 경우 빌드 fail을 내고 싶다면 이 선언을 추가한다.
+	configFile = file("${rootDir}/naver-checkstyle-rules.xml")
+	configProperties = ["suppressionFile": "${rootDir}/naver-checkstyle-suppressions.xml"]
+	toolVersion = "8.29"
+}
+
+
+
+
+editorconfig {
+	excludes = ['build']
 }
