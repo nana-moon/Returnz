@@ -316,6 +316,7 @@ export default function WaitingPage() {
     const turnApiReq = {
       gamerId: myGameInfo.gamerId,
       roomId: gameInit.roomId,
+      isCaptin: isHost,
     };
     await handleTurn(turnApiReq, gameInit.id);
   };

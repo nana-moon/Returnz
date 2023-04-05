@@ -1,24 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import tw, { styled } from 'twin.macro';
 import TradeListItem from './TradeListItem';
 
-export default function TradeList() {
-  const trades = [
-    { id: 1, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 2, type: '매도', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 3, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 4, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 5, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 6, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 7, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 8, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 9, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-    { id: 10, type: '매수', corp: '삼성전자', date: '2020-12-12', amount: 160000, count: 2, unit: 80000 },
-  ];
+export default function TradeList({ selectedResult }) {
+  const [tradeList, setTradeList] = useState([]);
+
+  useEffect(() => {
+    if (selectedResult) {
+      setTradeList(selectedResult.trade_list);
+      console.log('selectedResult', selectedResult);
+    }
+  }, [selectedResult]);
+
   return (
     <TradeListContainer>
-      {trades.map((trade) => {
-        return <TradeListItem key={trade.id} trade={trade} />;
+      {tradeList.map((trade, i) => {
+        // eslint-disable-next-line react/no-array-index-key
+        return <TradeListItem key={i} trade={trade} />;
       })}
     </TradeListContainer>
   );
