@@ -128,7 +128,7 @@ export default function SideBar() {
   };
 
   return (
-    <SideBarContainer>
+   <SideBarContainer>
       <SideBarScrollEnabledSection>
         <UserProfile />
         <FriendRequestsContainer>
@@ -158,6 +158,7 @@ export default function SideBar() {
       </SideBarScrollEnabledSection>
       <FriendSearchInput />
     </SideBarContainer>
+
   );
 }
 

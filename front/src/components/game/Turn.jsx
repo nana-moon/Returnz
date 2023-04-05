@@ -121,7 +121,7 @@ const BarSection = styled.div`
   animation: ${BarTimer} 60s, ${shake} 0.3s 40 48s;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
-  ${tw`w-[100%] bg-primary rounded-full absolute bottom-0 text-center h-6`}
+  ${tw`w-[100%] bg-primary rounded-full absolute bottom-0 text-center h-2`}
 `;
 
 const TurnContanier = styled.div`
