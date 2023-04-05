@@ -36,7 +36,6 @@ export default function Turn() {
       });
     }, 10);
   }, [turn]);
-
   useEffect(() => {
     setTime(60);
     const interval = setInterval(() => {
