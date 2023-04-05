@@ -174,7 +174,8 @@ const SideBarScrollEnabledSection = styled.div`
   &::-webkit-scrollbar-thumb {
     background-color: transparent;
   }
-  ${tw`overflow-y-auto h-[calc(100%-26px)]`}
+  height: 88vh;
+  ${tw`overflow-y-auto`}
 `;
 const FriendListContainer = styled.div`
   ${tw``}
