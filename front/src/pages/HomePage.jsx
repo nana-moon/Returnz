@@ -59,6 +59,7 @@ const InfoSection = styled.div`
   ${tw`col-span-3 row-span-2`}
 `;
 const TickerWrapper = styled.div`
+  width: 75%;
   position: absolute;
   left: 0px;
   overflow: hidden;
