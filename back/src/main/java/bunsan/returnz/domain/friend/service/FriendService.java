@@ -76,6 +76,9 @@ public class FriendService {
 		memberRepository.save(requestMember);
 		memberRepository.save(targetMember);
 		friendRequestRepository.deleteById(request.getId());
+
+		sideBarService.sendEnterMessage(targetMember.getUsername());
+		sideBarService.sendEnterMessage(requestMember.getUsername());
 	}
 
 	public void deleteRequest(Long id, String token) {
