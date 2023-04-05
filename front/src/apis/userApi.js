@@ -51,11 +51,10 @@ const patchStateApi = () => {
   return authApi
     .patch('/members/state')
     .then((res) => {
-      console.log('상태변경쓰', res);
+      console.log('상태변경');
       return res;
     })
     .catch((error) => {
-      console.log('에러', error);
       return error;
     });
 };
