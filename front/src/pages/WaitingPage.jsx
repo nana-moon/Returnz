@@ -289,6 +289,7 @@ export default function WaitingPage() {
     dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
     dispatch(setCaptainName(captainName)); // captainName
     const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+    console.log('myGameInfo-----', myGameInfo);
     dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
 
     // send game info
