@@ -57,6 +57,11 @@ public class GameService {
 	@Transactional
 	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId, boolean isCaptain) {
 
+		log.info("GetTurnInformation === ");
+		log.info(roomId);
+		log.info(String.valueOf(gamerId));
+		log.info(String.valueOf(isCaptain));
+
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 		Long gameRoomId = gameRoomDto.getId();
 		HashMap<String, Object> turnInformation = new HashMap<>();
@@ -124,6 +129,7 @@ public class GameService {
 		}
 
 		// 4. 다음 턴 정보 업데이트
+		log.info("isCaptin : " + isCaptain);
 		if (isCaptain && !updateTurnInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
