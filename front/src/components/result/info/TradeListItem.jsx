@@ -19,5 +19,5 @@ export default function TradeListItem({ trade }) {
 }
 
 const TradeItemContainer = styled.div`
-  ${tw`border rounded-xl flex justify-evenly my-1 py-2`}
+  ${tw`border rounded-xl flex flex-nowrap  justify-between items-center w-[100%] my-1 py-2`}
 `;
