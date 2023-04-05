@@ -55,7 +55,7 @@ public class GameService {
 	 * @return : HashMap<String, Object> 형태로 반환
 	 */
 	@Transactional
-	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId) {
+	public HashMap<String, Object> getTurnInformation(String roomId, Long gamerId, boolean isCaptain) {
 
 		GameRoomDto gameRoomDto = gameRoomService.findByRoomId(roomId);
 		Long gameRoomId = gameRoomDto.getId();
@@ -124,7 +124,7 @@ public class GameService {
 		}
 
 		// 4. 다음 턴 정보 업데이트
-		if (!updateTurnInformation(gameGamerStockDtos, roomId,
+		if (isCaptain && !updateTurnInformation(gameGamerStockDtos, roomId,
 			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
