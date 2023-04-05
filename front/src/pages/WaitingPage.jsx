@@ -54,14 +54,14 @@ export default function WaitingPage() {
   const myProfile = Cookies.get('profileIcon');
   const myNickname = Cookies.get('nickname');
   const isHost = myEmail === roomInfo.captainName;
-  const newWaiter = { id: myId, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
+  const newHost = { id: myId, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
 
   // WAITER STATE
   const waiterList = useSelector(getWaiterList);
 
   // ADD WAITER ACTION
   useEffect(() => {
-    dispatch(setWaiterList(newWaiter));
+    dispatch(setWaiterList(newHost));
     dispatch(setWaitRoomId(roomInfo.roomId));
   }, []);
 
@@ -92,6 +92,13 @@ export default function WaitingPage() {
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
   const handleMessage = (received) => {
     const newMessage = JSON.parse(received.body);
+    // -------------------------handle ENTER-----------------------------
+    if (newMessage.type === 'ENTER') {
+      console.log('ENTER 메세지 도착', newMessage.messageBody);
+      const { roomId, memberId, username, nickname, profileIcon, avgProfit } = newMessage.messageBody;
+      const newWaiter = { id: memberId, username, nickname, profile: profileIcon, avgProfit };
+      dispatch(setWaiterList(newWaiter));
+    }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
       console.log('CHAT 메세지 도착', newMessage.messageBody);
@@ -239,6 +246,7 @@ export default function WaitingPage() {
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
+    console.log('turn data, waitingpage, 249', gameData.gamer);
     dispatch(setPlayerList(gameData.gamer));
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
