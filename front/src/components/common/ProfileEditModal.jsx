@@ -15,6 +15,21 @@ export default function ProfileEditModal() {
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
   const [possibleProfiles, setPossibleProfiles] = useState([]);
+  const allProfiles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  const profileCondition = [
+    '회원가입을 하면 사용할 수 있습니다.',
+    '게임을 한번 진행하면 사용할 수 있습니다.',
+    '게임을 5번 진행하면 사용할 수 있습니다.',
+    '게임에서 1등을 하면 사용할 수 있습니다.',
+    '게임에서 꼴등을 하면 사용할 수 있습니다.',
+    '한번의 게임에서 수익률이 10% 초과하면 사용할 수 있습니다.',
+    '한번의 게임에서 수익률이 30% 초과하면 사용할 수 있습니다.',
+    '전체 유저 중 랭킹 1위를 달성하면 획득할 수 있습니다.',
+    '전체 유저 중 랭킹 3위 이내를 달성하면 획득할 수 있습니다.',
+    '전체 유저 중 랭킹 10위 이내를 달성하면 획득할 수 있습니다.',
+    '2연승을 달성하면 획득하실 수 있습니다.',
+    '첫 친구를 추가하면 획득하실 수 있습니다.',
+  ];
   const handleModal = () => {
     dispatch(handleModalState(false));
   };
@@ -60,16 +75,23 @@ export default function ProfileEditModal() {
         </UserNameContainer>
         <EncourageMessage>총 12개의 프로필 사진을 해금해보세요</EncourageMessage>
         <PicturesContainer>
-          {possibleProfiles?.map((pic) => {
+          {allProfiles?.map((pic) => {
+            const isMyProfile = possibleProfiles.includes(pic);
             return (
-              <Avatar
-                key={pic}
-                size="xl"
-                variant="circular"
-                className="border-2 border-negative hover:cursor-pointer"
-                src={`profile_pics/${pic}.jpg`}
-                onClick={() => handleProfileChange(pic)}
-              />
+              <div className="relative">
+                <Avatar
+                  key={pic}
+                  size="xl"
+                  variant="circular"
+                  className=" border-2 border-negative"
+                  src={`profile_pics/${pic}.jpg`}
+                />
+                <AbleClick
+                  key={pic}
+                  className={`${isMyProfile ? ' hover:cursor-pointer' : 'bg-black opacity-50'}`}
+                  onClick={() => handleProfileChange(pic)}
+                />
+              </div>
             );
           })}
         </PicturesContainer>
@@ -120,4 +142,18 @@ const BackButton = styled.button`
 `;
 const SendButton = styled.button`
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
+`;
+
+const AbleClick = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  left: 1px;
+  height: 72px;
+  width: 72px;
+  ${tw`rounded-full`}
+`;
+
+const ConditionPopover = styled.div`
+  ${tw`rounded-full`}
 `;

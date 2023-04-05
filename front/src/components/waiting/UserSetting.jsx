@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import { Radio } from '@material-tailwind/react';
 
 export default function UserSetting({ setting, getIsUserSetting, getUserSetting }) {
   // 사용자 설정 데이터
@@ -44,26 +45,26 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
       <TurnPeriodSection>
         <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
         <TurnPeriodForm onChange={handleUserSetting}>
-          <input type="radio" id="periodChoice1" name="turnPerTime" value="DAY" />
+          <Radio id="periodChoice1" name="turnPerTime" value="DAY" />
           <label htmlFor="periodChoice1">1일</label>
 
-          <input type="radio" id="periodChoice2" name="turnPerTime" value="WEEK" />
+          <Radio id="periodChoice2" name="turnPerTime" value="WEEK" />
           <label htmlFor="periodChoice2">1주</label>
 
-          <input type="radio" id="periodChoice3" name="turnPerTime" value="MONTH" />
+          <Radio id="periodChoice3" name="turnPerTime" value="MONTH" />
           <label htmlFor="periodChoice3">한 달</label>
         </TurnPeriodForm>
       </TurnPeriodSection>
       <TurnCountSection>
         <TurnCountTitle>턴 수</TurnCountTitle>
         <TurnCountForm onChange={handleUserSetting}>
-          <input type="radio" id="contactChoice1" name="totalTurn" value="10" />
+          <Radio id="contactChoice1" name="totalTurn" value="10" />
           <label htmlFor="contactChoice1">10턴</label>
 
-          <input type="radio" id="contactChoice2" name="totalTurn" value="30" />
+          <Radio id="contactChoice2" name="totalTurn" value="30" />
           <label htmlFor="contactChoice2">30턴</label>
 
-          <input type="radio" id="contactChoice3" name="totalTurn" value="50" />
+          <Radio id="contactChoice3" name="totalTurn" value="50" />
           <label htmlFor="contactChoice3">50턴</label>
         </TurnCountForm>
       </TurnCountSection>

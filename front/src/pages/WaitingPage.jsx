@@ -9,19 +9,19 @@ import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
 import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
-import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
+import { getCaptainName, getMemberCount, getWaiterList, getWaitRoomId } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { removeWaiterList, setWaitRoomId, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
+import { setWaitRoomId, addWaiter, resetWaitRoom } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
+  setCaptainName,
   setGameId,
   setGamerId,
   setGameRoomId,
-  setHostNickname,
   setInitIsReadyList,
   setIsReadyList,
   setPlayerList,
@@ -38,32 +38,22 @@ import {
 import LoadPage from '../components/loading/LoadPage';
 
 export default function WaitingPage() {
-  // HOOKS
+  // -------------------------||| HOOKS |||------------------------------------------------------------------
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // -------------------------||| WAITROOM |||------------------------------------------------------------------
+  // -------------------------||| WAITROOM STATE |||------------------------------------------------------------------
 
-  // ROOM STATE
-  const roomInfo = location.state;
-
-  // HOST STATE
-  const myId = Cookies.get('id');
   const myEmail = Cookies.get('email');
-  const myProfile = Cookies.get('profileIcon');
-  const myNickname = Cookies.get('nickname');
-  const isHost = myEmail === roomInfo.captainName;
-  const newWaiter = { id: myId, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
 
-  // WAITER STATE
+  const waitRoomId = useSelector(getWaitRoomId);
+  const captainName = useSelector(getCaptainName);
+  const memberCount = useSelector(getMemberCount);
   const waiterList = useSelector(getWaiterList);
 
-  // ADD WAITER ACTION
-  useEffect(() => {
-    dispatch(setWaiterList(newWaiter));
-    dispatch(setWaitRoomId(roomInfo.roomId));
-  }, []);
+  const isHost = myEmail === captainName;
 
   // -------------------------||| SOCKET |||------------------------------------------------------------------
 
@@ -82,7 +72,6 @@ export default function WaitingPage() {
   // -------------------------SOCKET STATE-----------------------------
 
   const ACCESS_TOKEN = Cookies.get('access_token');
-  const waitRoomId = roomInfo.roomId;
   const subAddress = `/sub/wait-room/${waitRoomId}`;
   const sendAddress = '/pub/wait-room';
   const header = {
@@ -92,6 +81,12 @@ export default function WaitingPage() {
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
   const handleMessage = (received) => {
     const newMessage = JSON.parse(received.body);
+    // -------------------------handle ENTER-----------------------------
+    if (newMessage.type === 'ENTER') {
+      console.log('ENTER 메세지 도착', newMessage.messageBody);
+      const { roomId, memberId, username, nickname, profileIcon, avgProfit } = newMessage.messageBody;
+      dispatch(addWaiter(newMessage.messageBody));
+    }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
       console.log('CHAT 메세지 도착', newMessage.messageBody);
@@ -106,7 +101,10 @@ export default function WaitingPage() {
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
       console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
-      const { roomId, gameRoomId } = newMessage.messageBody;
+      const { roomId, gameInit } = newMessage.messageBody;
+      console.log('gameInit3 in handle game_info (received)', gameInit);
+
+      handleTurn(gameInit);
     }
     // -------------------------handle EXIT-----------------------------
     if (newMessage.type === 'EXIT') {
@@ -235,10 +233,11 @@ export default function WaitingPage() {
     navigate('/game');
   };
 
-  // -------------------------GET FIRST TURN DATA-----------------------------
+  // -------------------------REQUEST FIRST TURN DATA-----------------------------
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
+    console.log('turn data, waitingpage, 249', gameData.gamer);
     dispatch(setPlayerList(gameData.gamer));
     dispatch(handleGetGameData(gameData.Stocks));
     dispatch(handleGetStockInformation(gameData.stockInformation));
@@ -267,35 +266,62 @@ export default function WaitingPage() {
     handlePage();
   };
 
-  // -------------------------GET GAMEROOM INFO-----------------------------
+  // -------------------------SEND GAME_INFO-----------------------------
+
+  const sendMessage = (gameInit) => {
+    console.log('gameInit2 in send game_info', gameInit);
+    const gameRoomId = gameInit.roomId;
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'GAME_INFO',
+        messageBody: { roomId: waitRoomId, gameRoomId, gameInit },
+      });
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
+  };
+
+  // -------------------------SAVE GAMEROOM INFO-----------------------------
+  const handleSave = async (gameInit) => {
+    dispatch(setMaxTurn(gameInit.totalTurn)); // maxTurn
+    dispatch(setGameId(gameInit.id)); // gameId
+    dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
+    dispatch(setCaptainName(captainName)); // captainName
+    const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+    dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
+
+    // send game info
+    console.log('gameInit1 in save gameroom info', gameInit);
+    sendMessage(gameInit);
+
+    // first turn api
+    const turnApiReq = {
+      gamerId: myGameInfo.gamerId,
+      roomId: gameInit.roomId,
+    };
+    await handleTurn(turnApiReq, gameInit.id);
+  };
+
+  // -------------------------REQUEST GAMEROOM INFO-----------------------------
 
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
+      // game room info api
       const gameInit = await startGameApi(newSetting);
-      console.log('gameInit', gameInit);
-      dispatch(setMaxTurn(gameInit.totalTurn));
-      dispatch(setGameId(gameInit.id)); // gameId
-      dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
-      dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
-      dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
-      const turnApiReq = {
-        gamerId: myGameInfo.gamerId,
-        roomId: gameInit.roomId,
-      };
-      await handleTurn(turnApiReq, gameInit.id);
+      await handleSave(gameInit);
     }
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // -------------------------GET FIRST TURN DATA-----------------------------
+  // -------------------------CLICK START-----------------------------
 
   const handleStart = async (e) => {
     try {
       setIsLoading(true);
       const memberIdList = waiterList.map((waiter) => {
-        return waiter.id;
+        return waiter.memberId;
       });
       const newSetting = { ...setting, memberIdList };
       setSetting(newSetting);
@@ -310,7 +336,7 @@ export default function WaitingPage() {
   // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
 
   const handleExit = () => {
-    dispatch(removeWaiterList());
+    dispatch(resetWaitRoom());
   };
 
   useEffect(() => {
