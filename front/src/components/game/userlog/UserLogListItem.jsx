@@ -8,6 +8,7 @@ import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 export default function UserLogListItem({ player, isReady, getIsReady }) {
   // MY LOG
   const myUsername = Cookies.get('email');
+  const myaccount = useSelector(gamerDataList);
   const {
     userName,
     nickname,
@@ -30,6 +31,13 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     getIsReady();
   };
 
+  let isUp;
+  if (totalEvaluationAsset - originDeposit > 0) {
+    isUp = 'gain';
+  } else if (totalEvaluationAsset - originDeposit < 0) {
+    isUp = 'lose';
+  }
+
   return (
     <UserLogItemContainer isMe={isMe} isReady={isReady.status}>
       <LeftSection>
@@ -44,13 +52,34 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
         )}
       </LeftSection>
       <RightSection>
-        <div className="mb-0">총 평가 자산 : {totalEvaluationAsset}</div>
-        <div>평가손익 : {totalProfitRate}%</div>
+        <div className="flex">
+          <div className="w-[40%]">총 평가 자산 </div>
+          <EvaluationAssetBox isUp={isUp}>: {totalEvaluationAsset.toLocaleString()} 원</EvaluationAssetBox>
+        </div>
+        <div className="flex">
+          <div className="w-[40%]">평가손익 </div>
+
+          {isUp === 'lose' ? (
+            <EvaluationAssetBox isUp={isUp}>
+              : {(totalEvaluationAsset - originDeposit).toLocaleString()}원 ({totalProfitRate} %){' '}
+            </EvaluationAssetBox>
+          ) : (
+            <EvaluationAssetBox isUp={isUp}>
+              : {(totalEvaluationAsset - originDeposit).toLocaleString()}원 (+{totalProfitRate} %){' '}
+            </EvaluationAssetBox>
+          )}
+        </div>
         {isMe && (
           <MyBox>
-            <div>예수금 {deposit}</div>
-            <div>총매입금액 {totalPurchaseAmount}</div>
-            <div>총평가금액 {totalEvaluationAsset}</div>
+            <CostBox>
+              <Cost className="font-bold">예수금</Cost> <Won> {myaccount.deposit.toLocaleString()} 원 </Won>
+            </CostBox>
+            <CostBox>
+              <Cost className="font-bold">총 매입금액</Cost> <Won> {myaccount.ammountOfBuy.toLocaleString()} 원 </Won>
+            </CostBox>
+            <CostBox>
+              <Cost className="font-bold">총 평가금액</Cost> <Won> {totalEvaluationAsset.toLocaleString()} 원 </Won>
+            </CostBox>
           </MyBox>
         )}
       </RightSection>
@@ -59,7 +88,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
 }
 
 const UserLogItemContainer = styled.div`
-  ${tw`border-2 bg-white rounded-xl flex p-5 gap-5`}
+  ${tw`border-2 bg-white rounded-xl flex p-5 gap-5 overflow-hidden`}
   ${(props) => (props.isMe ? tw`h-[40%]` : tw`h-[20%]`)}
   ${(props) => (props.isReady ? tw`bg-primary text-white` : tw``)}
 `;
@@ -69,7 +98,7 @@ const LeftSection = styled.div`
 `;
 
 const RightSection = styled.div`
-  ${tw`flex flex-col justify-center gap-2 items-center  w-[70%] text-sm`}
+  ${tw`flex flex-col justify-center gap-2 w-[70%] text-sm`}
 `;
 
 const UserBox = styled.div`
@@ -83,4 +112,32 @@ const ReadyBtn = styled.button`
 
 const MyBox = styled.div`
   ${tw`flex justify-center items-center gap-2 text-xs text-center`};
+`;
+
+const CostBox = styled.div`
+  ${tw``}
+`;
+
+const Cost = styled.span`
+  text-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${tw`font-bold`}
+`;
+
+const Won = styled.span`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${tw``}
+`;
+
+const EvaluationAssetBox = styled.div`
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${(props) => props.isUp === 'gain' && tw`text-gain`}
+  ${(props) => props.isUp === 'lose' && tw`text-lose`}
+  ${tw``};
 `;
