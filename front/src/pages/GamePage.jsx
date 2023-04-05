@@ -37,6 +37,10 @@ export default function GamePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const turnInfo = useSelector(gameTurn);
+  const turnInfoRef = useRef(turnInfo);
+  useEffect(() => {
+    turnInfoRef.current = turnInfo;
+  }, [turnInfo]);
 
   // -------------------------||| HANDLE BACK |||------------------------------------------------------------------
 
@@ -66,7 +70,11 @@ export default function GamePage() {
   const Date = useSelector(todayDate);
 
   // 주식 API
-  const axiospost = async () => {
+  const axiospost = async (currentTurn) => {
+    // 결과창 넘어가는 턴 조건
+    if (currentTurn.nowTurn + 1 === currentTurn.maxTurn) {
+      navigate('/result', { state: { gameId, gameRoomId } });
+    }
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
@@ -74,7 +82,8 @@ export default function GamePage() {
     await axios
       .post('/games/game', datas)
       .then((res) => {
-        console.log(res.data.gamer, '턴 데이터');
+        console.log('턴넘어감', res.data);
+        console.log('turn data, gamepage, 77', res.data.gamer);
         dispatch(setPlayerList(res.data.gamer));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
@@ -107,12 +116,10 @@ export default function GamePage() {
   const handleTurn = async (newIsReadyList) => {
     console.log(newIsReadyList);
     const allReady = newIsReadyList.every((isReady) => {
-      console.log(Object.values(isReady));
-      return Object.values(isReady).every((value) => value === true);
+      return isReady.status === true;
     });
     if (allReady) {
-      dispatch(resetIsReadyList());
-      await axiospost();
+      await axiospost(turnInfoRef.current);
     }
   };
 
@@ -163,11 +170,12 @@ export default function GamePage() {
       const { username } = newMessage.messageBody;
       // ready한 user의 ready 상태 바꾸기
       const newIsReadyList = isReadyList.map((isReady) => {
-        if (Object.prototype.hasOwnProperty.call(isReady, username)) {
-          return { ...isReady, [username]: true };
+        if (isReady.username === username) {
+          return { ...isReady, status: true };
         }
         return isReady;
       });
+      console.log('newisreadylist, 167', newIsReadyList);
       await dispatch(setIsReadyList(newIsReadyList));
       handleTurn(newIsReadyList);
     }
@@ -213,9 +221,9 @@ export default function GamePage() {
     retryConnect();
 
     // Clean up when the component unmounts
-    return () => {
-      stompRef.current.disconnect();
-    };
+    // return () => {
+    //   stompRef.current.disconnect();
+    // };
   }, []);
 
   // -------------------------||| CHAT |||------------------------------------------------------------------
@@ -255,9 +263,15 @@ export default function GamePage() {
 
   useEffect(() => {
     if (turnInfo.nowTurn >= turnInfo.maxTurn) {
-      navigate('/result', { state: gameRoomId });
+      navigate('/result', { state: { roomNum, gameRoomId } });
     }
   }, [turnInfo]);
+
+  // 새로고침, 뒤로가기, 창 닫기 방지
+
+  window.onbeforeunload = function () {};
+
+  window.addEventListener('popstate', function (event) {});
 
   // -------------------------||| HTML |||------------------------------------------------------------------
 

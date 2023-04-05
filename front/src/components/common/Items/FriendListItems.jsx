@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import SockJs from 'sockjs-client';
-import StompJs from 'stompjs';
+import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import tw, { styled } from 'twin.macro';
-import Stomp from 'webstomp-client';
+import Swal from 'sweetalert2';
 import { Avatar } from '@material-tailwind/react';
 import { getWaitRoomId } from '../../../store/roominfo/WaitRoom.selector';
+import { deleteFriendApi } from '../../../apis/friendApi';
 
 export default function FriendListItems({ friend, handleInvite }) {
   // 내정보
@@ -30,7 +29,21 @@ export default function FriendListItems({ friend, handleInvite }) {
       setfriendColor('bg-negative');
       setfriendStateColor('text-negative');
     }
-  }, []);
+  }, [friend]);
+  const deleteFriend = (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: '정말로 친구를 삭제하시겠습니까?',
+      showCancelButton: true,
+      cancelButtonText: '나가기',
+      confirmButtonColor: '#FF5454',
+      confirmButtonText: '네, 삭제하겠습니다.',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteFriendApi(friend.username);
+      }
+    });
+  };
   const roomId = useSelector(getWaitRoomId);
   const handleInviteRequest = () => {
     const data = JSON.stringify({
@@ -40,14 +53,12 @@ export default function FriendListItems({ friend, handleInvite }) {
         username: `${friend.username}`, // 초대 상대
       },
     });
-    console.log('내가 초대하고싶은애', friend.username);
-    console.log('내가 cheo', data);
     handleInvite(data);
   };
 
   return (
     <>
-      <FriendInfoContainer>
+      <FriendInfoContainer onContextMenu={deleteFriend}>
         <Avatar
           variant="circular"
           src={`profile_pics/${friend.profileIcon}.jpg`}
@@ -56,7 +67,6 @@ export default function FriendListItems({ friend, handleInvite }) {
         <FriendStateCircle className={friendColor} />
         <FriendInfoSection>
           <FriendNameItem>{friend.nickname}</FriendNameItem>
-          {/* <FriendNameItem>이름이열글자인사람이</FriendNameItem> */}
           <FriendStateItem className={friendStateColor}>{friend.state}</FriendStateItem>
         </FriendInfoSection>
       </FriendInfoContainer>

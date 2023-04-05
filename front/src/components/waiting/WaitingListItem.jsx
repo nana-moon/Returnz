@@ -3,8 +3,8 @@ import tw, { styled } from 'twin.macro';
 import { Avatar } from '@material-tailwind/react';
 
 export default function WaitingListItem({ waiter }) {
-  const { profile, nickname, avgProfit } = waiter;
-  const profilePath = `profile_pics/${profile}.jpg`;
+  const { profileIcon, nickname, avgProfit } = waiter;
+  const profilePath = `profile_pics/${profileIcon}.jpg`;
   return (
     <UserContainer>
       <Avatar size="xxl" variant="circular" src={profilePath} />

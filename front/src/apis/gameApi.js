@@ -4,6 +4,7 @@ const makeRoomApi = async () => {
   return authApi
     .post('/wait-room')
     .then((res) => {
+      // console.log('makeRoomApi from gameApi', res.data);
       return res.data;
     })
     .catch((err) => {
@@ -12,6 +13,7 @@ const makeRoomApi = async () => {
 };
 
 const startGameApi = async (payload) => {
+  console.log('startGameApi', payload);
   const res = await authApi.post('/games/init', payload);
   return res.data;
 };
@@ -74,11 +76,10 @@ const getNewsApi = (payload) => {
 };
 
 const resultApi = async (payload) => {
-  console.log('resultPayload', payload);
   return axios
     .post('/results', payload)
     .then((res) => {
-      console.log('결과 받아오기 성공', res);
+      // console.log('결과 받아오기 성공', res);
       return res.data;
     })
     .catch((err) => {
