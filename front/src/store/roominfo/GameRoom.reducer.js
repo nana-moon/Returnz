@@ -21,7 +21,7 @@ export const gameRoom = createSlice({
       state.roomId = action.payload;
     },
     setCaptainName(state, action) {
-      state.hostNickname = action.payload;
+      state.captainName = action.payload;
     },
     setGamerId(state, action) {
       state.gamerId = action.payload;

@@ -26,7 +26,13 @@ import {
 import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
-import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
+import {
+  getGameId,
+  getGameRoomId,
+  getGamerId,
+  getIsReadyList,
+  getCaptainName,
+} from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
 import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
@@ -58,6 +64,9 @@ export default function GamePage() {
   }, [navigate]);
 
   // -------------------------||| GAME DATA |||------------------------------------------------------------------
+  const myEmail = Cookies.get('email');
+  const captainName = useSelector(getCaptainName);
+  const isHost = myEmail === captainName;
 
   // 주식 STATE
   const stockdata = useSelector(stockDataList);
@@ -78,7 +87,9 @@ export default function GamePage() {
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
+      isCaptain: isHost,
     };
+    console.log(datas);
     await axios
       .post('/games/game', datas)
       .then((res) => {
