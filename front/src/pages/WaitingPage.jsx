@@ -18,10 +18,10 @@ import { setWaitRoomId, addWaiter, resetWaitRoom } from '../store/roominfo/WaitR
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
+  setCaptainName,
   setGameId,
   setGamerId,
   setGameRoomId,
-  setHostNickname,
   setInitIsReadyList,
   setIsReadyList,
   setPlayerList,
@@ -101,7 +101,10 @@ export default function WaitingPage() {
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
       console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
-      const { roomId, gameRoomId } = newMessage.messageBody;
+      const { roomId, gameInit } = newMessage.messageBody;
+      console.log('gameInit3 in handle game_info (received)', gameInit);
+
+      handleTurn(gameInit);
     }
     // -------------------------handle EXIT-----------------------------
     if (newMessage.type === 'EXIT') {
@@ -230,7 +233,7 @@ export default function WaitingPage() {
     navigate('/game');
   };
 
-  // -------------------------GET FIRST TURN DATA-----------------------------
+  // -------------------------REQUEST FIRST TURN DATA-----------------------------
 
   const handleTurn = async (turnApiReq, id) => {
     const gameData = await gameDataApi(turnApiReq);
@@ -263,35 +266,62 @@ export default function WaitingPage() {
     handlePage();
   };
 
-  // -------------------------GET GAMEROOM INFO-----------------------------
+  // -------------------------SEND GAME_INFO-----------------------------
+
+  const sendMessage = (gameInit) => {
+    console.log('gameInit2 in send game_info', gameInit);
+    const gameRoomId = gameInit.roomId;
+    if (stompRef.current.connected) {
+      const message = JSON.stringify({
+        type: 'GAME_INFO',
+        messageBody: { roomId: waitRoomId, gameRoomId, gameInit },
+      });
+      stompRef.current.send(sendAddress, header, message);
+    } else {
+      console.log('WebSocket connection is not active.');
+    }
+  };
+
+  // -------------------------SAVE GAMEROOM INFO-----------------------------
+  const handleSave = async (gameInit) => {
+    dispatch(setMaxTurn(gameInit.totalTurn)); // maxTurn
+    dispatch(setGameId(gameInit.id)); // gameId
+    dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
+    dispatch(setCaptainName(captainName)); // captainName
+    const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+    dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
+
+    // send game info
+    console.log('gameInit1 in save gameroom info', gameInit);
+    sendMessage(gameInit);
+
+    // first turn api
+    const turnApiReq = {
+      gamerId: myGameInfo.gamerId,
+      roomId: gameInit.roomId,
+    };
+    await handleTurn(turnApiReq, gameInit.id);
+  };
+
+  // -------------------------REQUEST GAMEROOM INFO-----------------------------
 
   const handleGameInfo = async (newSetting) => {
     if (isValidSetting) {
+      // game room info api
       const gameInit = await startGameApi(newSetting);
-      console.log('gameInit', gameInit);
-      dispatch(setMaxTurn(gameInit.totalTurn));
-      dispatch(setGameId(gameInit.id)); // gameId
-      dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
-      dispatch(setHostNickname(captainName)); // captainName
-      const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
-      dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
-      const turnApiReq = {
-        gamerId: myGameInfo.gamerId,
-        roomId: gameInit.roomId,
-      };
-      await handleTurn(turnApiReq, gameInit.id);
+      await handleSave(gameInit);
     }
   };
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // -------------------------GET FIRST TURN DATA-----------------------------
+  // -------------------------CLICK START-----------------------------
 
   const handleStart = async (e) => {
     try {
       setIsLoading(true);
       const memberIdList = waiterList.map((waiter) => {
-        return waiter.id;
+        return waiter.memberId;
       });
       const newSetting = { ...setting, memberIdList };
       setSetting(newSetting);
