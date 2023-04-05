@@ -3,8 +3,9 @@ import { React, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { acceptInviteRequestApi } from '../../../apis/friendApi';
-import { setHostNickname, setWaitRoomId } from '../../../store/roominfo/WaitRoom.reducer';
+import { setCaptainName, setWaitRoomId, setMemberCount, setWaiterList } from '../../../store/roominfo/WaitRoom.reducer';
 
 export default function IncomingInviteRequest({ friendInv, handleDelete }) {
   const navigate = useNavigate();
@@ -13,14 +14,20 @@ export default function IncomingInviteRequest({ friendInv, handleDelete }) {
 
   const acceptInvRequest = async () => {
     const res = await acceptInviteRequestApi(friendInv.roomId);
-    console.log(res, '거의끝남 ㄱㄱㄱㄱㄱㄱㄱ');
-    console.log(res.data.captainName, '방장누구야');
     if (res && res.status === 200) {
-      // dispatch(setHostNickname(res.data.captainName));
-      // dispatch(setWaitRoomId(res.data.roomId));
-      // setTimeout(() => {
-      //   navigate('/waiting');
-      // }, 100);
+      console.log('roomInfo in IncomingInv', res);
+      dispatch(setWaitRoomId(res.data.roomId));
+      dispatch(setCaptainName(res.data.captainName));
+      dispatch(setMemberCount(res.data.memberCount));
+      dispatch(setWaiterList(res.data.waiterList));
+      Swal.fire({
+        title: `성공적으로 방을 생성하였습니다.`,
+        timer: 1000,
+        showConfirmButton: false,
+      });
+      setTimeout(() => {
+        navigate('/waiting');
+      }, 100);
     }
   };
   const declineRequest = () => {
