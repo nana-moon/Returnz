@@ -18,5 +18,5 @@ export default function ResultRank({ result, getWho }) {
 }
 
 const RankContainer = styled.div`
-  ${tw`flex flex-col justify-evenly`}
+  ${tw`flex flex-col justify-between`}
 `;
