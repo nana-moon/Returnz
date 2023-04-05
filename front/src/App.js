@@ -23,7 +23,7 @@ function App() {
           <div className="bg-base h-screen">
             <PrivateRoute />
           </div>
-          <ReactQueryDevtools initialIsOpen />
+          {/* <ReactQueryDevtools initialIsOpen /> */}
         </QueryClientProvider>
       </Provider>
     </React.Suspense>
