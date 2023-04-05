@@ -1,23 +1,32 @@
 import React from 'react';
 import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { Outlet } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
-import Header from './components/common/Header';
-import SideBar from './components/common/SideBar';
+import { Provider } from 'react-redux';
+import LoadPage from './components/loading/LoadPage';
+import { store } from './store/Store';
+import PrivateRoute from './utils/PrivateRoute';
 
 function App() {
-  const queryClient = new QueryClient();
-  const path = window.location.pathname;
-  const pageList = ['/', '/waiting', '/profile'];
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        suspense: true,
+      },
+    },
+  });
+
   return (
-    <QueryClientProvider client={queryClient}>
-      {pageList.some((page) => page === path) && <Header />}
-      {pageList.some((page) => page === path) && <SideBar />}
-      <Outlet />
-      <ReactQueryDevtools initialIsOpen />
-    </QueryClientProvider>
+    <React.Suspense fallback={<LoadPage />}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <div className="bg-base h-screen">
+            <PrivateRoute />
+          </div>
+          {/* <ReactQueryDevtools initialIsOpen /> */}
+        </QueryClientProvider>
+      </Provider>
+    </React.Suspense>
   );
 }
 
