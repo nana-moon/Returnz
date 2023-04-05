@@ -21,7 +21,7 @@ export default function IncomingInviteRequest({ friendInv, handleDelete }) {
       dispatch(setMemberCount(res.data.memberCount));
       dispatch(setWaiterList(res.data.waiterList));
       Swal.fire({
-        title: `성공적으로 방을 생성하였습니다.`,
+        title: `방에 입장하였습니다.`,
         timer: 1000,
         showConfirmButton: false,
       });

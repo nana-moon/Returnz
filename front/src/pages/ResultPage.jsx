@@ -106,14 +106,21 @@ export default function ResultPage() {
     }
   };
 
+  // -------------------------||| TOGGLE USER LOG |||------------------------------------------------------------------
+  const [selectedIdx, setSelectedIdx] = useState('');
+  const getWho = (idx) => {
+    console.log('idx', idx);
+    setSelectedIdx(idx);
+  };
+
   // -------------------------||| RETURN HTML |||------------------------------------------------------------------
 
   return (
     <ResultContainer>
-      <ResultRank result={result} />
-      <ResultInfo />
+      <ResultRank result={result} getWho={getWho} />
+      <ResultInfo result={result} selectedIdx={selectedIdx} />
       <LeftBottomSection>
-        <UnlockResult />
+        <UnlockResult result={result} />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
       <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
