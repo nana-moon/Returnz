@@ -20,7 +20,7 @@ function App() {
     <React.Suspense fallback={<LoadPage />}>
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
-          <div className="bg-base h-screen">
+          <div className="bg-base min-h-screen">
             <PrivateRoute />
           </div>
           {/* <ReactQueryDevtools initialIsOpen /> */}
