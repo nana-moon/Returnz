@@ -36,7 +36,8 @@ export default function FriendSearchInput() {
 const FriendSearchContainer = styled.div`
   position: fixed;
   bottom: 0px;
-  ${tw`flex border-t-2 border-negative p-2 gap-2 bg-white`}
+  right: 0px;
+  ${tw`flex border-t-2 border-l-2 border-negative p-2 gap-2 bg-white w-[20%]`}
 `;
 
 const SearchButton = styled.button`

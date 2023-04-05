@@ -36,6 +36,7 @@ import {
   setMaxTurn,
 } from '../store/gamedata/GameData.reducer';
 import LoadPage from '../components/loading/LoadPage';
+import RequestQueue from '../utils/RequestQueue';
 
 export default function WaitingPage() {
   // -------------------------||| HOOKS |||------------------------------------------------------------------
@@ -43,6 +44,7 @@ export default function WaitingPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const requestQueue = new RequestQueue();
 
   // -------------------------||| WAITROOM STATE |||------------------------------------------------------------------
 
@@ -236,7 +238,7 @@ export default function WaitingPage() {
   // -------------------------REQUEST FIRST TURN DATA-----------------------------
 
   const handleTurn = async (turnApiReq, id) => {
-    const gameData = await gameDataApi(turnApiReq);
+    const gameData = await requestQueue.addRequest(() => gameDataApi(turnApiReq));
     console.log('turn data, waitingpage, 249', gameData.gamer);
     dispatch(setPlayerList(gameData.gamer));
     dispatch(handleGetGameData(gameData.Stocks));
@@ -256,7 +258,7 @@ export default function WaitingPage() {
         articleDateTime: Date,
       };
       // eslint-disable-next-line no-await-in-loop
-      const newsTmp = await getNewsApi(data);
+      const newsTmp = await requestQueue.addRequest(() => getNewsApi(data));
       getNews.push({ [keys[i]]: newsTmp });
     }
 
@@ -289,6 +291,7 @@ export default function WaitingPage() {
     dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
     dispatch(setCaptainName(captainName)); // captainName
     const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
+    console.log('myGameInfo--------------------------', myGameInfo);
     dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
 
     // send game info
