@@ -9,12 +9,12 @@ import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
 import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
-import { getWaiterList } from '../store/roominfo/WaitRoom.selector';
+import { getCaptainName, getMemberCount, getWaiterList, getWaitRoomId } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { removeWaiterList, setWaitRoomId, setWaiterList } from '../store/roominfo/WaitRoom.reducer';
+import { setWaitRoomId, addWaiter, resetWaitRoom } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
@@ -38,32 +38,22 @@ import {
 import LoadPage from '../components/loading/LoadPage';
 
 export default function WaitingPage() {
-  // HOOKS
+  // -------------------------||| HOOKS |||------------------------------------------------------------------
+
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
 
-  // -------------------------||| WAITROOM |||------------------------------------------------------------------
+  // -------------------------||| WAITROOM STATE |||------------------------------------------------------------------
 
-  // ROOM STATE
-  const roomInfo = location.state;
-
-  // HOST STATE
-  const myId = Cookies.get('id');
   const myEmail = Cookies.get('email');
-  const myProfile = Cookies.get('profileIcon');
-  const myNickname = Cookies.get('nickname');
-  const isHost = myEmail === roomInfo.captainName;
-  const newHost = { id: myId, username: myEmail, nickname: myNickname, profile: myProfile, avgProfit: null };
 
-  // WAITER STATE
+  const waitRoomId = useSelector(getWaitRoomId);
+  const captainName = useSelector(getCaptainName);
+  const memberCount = useSelector(getMemberCount);
   const waiterList = useSelector(getWaiterList);
 
-  // ADD WAITER ACTION
-  useEffect(() => {
-    dispatch(setWaiterList(newHost));
-    dispatch(setWaitRoomId(roomInfo.roomId));
-  }, []);
+  const isHost = myEmail === captainName;
 
   // -------------------------||| SOCKET |||------------------------------------------------------------------
 
@@ -82,7 +72,6 @@ export default function WaitingPage() {
   // -------------------------SOCKET STATE-----------------------------
 
   const ACCESS_TOKEN = Cookies.get('access_token');
-  const waitRoomId = roomInfo.roomId;
   const subAddress = `/sub/wait-room/${waitRoomId}`;
   const sendAddress = '/pub/wait-room';
   const header = {
@@ -96,8 +85,7 @@ export default function WaitingPage() {
     if (newMessage.type === 'ENTER') {
       console.log('ENTER 메세지 도착', newMessage.messageBody);
       const { roomId, memberId, username, nickname, profileIcon, avgProfit } = newMessage.messageBody;
-      const newWaiter = { id: memberId, username, nickname, profile: profileIcon, avgProfit };
-      dispatch(setWaiterList(newWaiter));
+      dispatch(addWaiter(newMessage.messageBody));
     }
     // -------------------------handle CHAT-----------------------------
     if (newMessage.type === 'CHAT') {
@@ -284,7 +272,7 @@ export default function WaitingPage() {
       dispatch(setMaxTurn(gameInit.totalTurn));
       dispatch(setGameId(gameInit.id)); // gameId
       dispatch(setGameRoomId(gameInit.roomId)); // gameRoomId
-      dispatch(setHostNickname(roomInfo.captainName)); // gameHostNickname
+      dispatch(setHostNickname(captainName)); // captainName
       const myGameInfo = gameInit.gamerList.find((gamer) => gamer.username === myEmail);
       dispatch(setGamerId(myGameInfo.gamerId)); // myGameId
       const turnApiReq = {
@@ -318,7 +306,7 @@ export default function WaitingPage() {
   // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
 
   const handleExit = () => {
-    dispatch(removeWaiterList());
+    dispatch(resetWaitRoom());
   };
 
   useEffect(() => {
