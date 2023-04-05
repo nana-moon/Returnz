@@ -80,7 +80,7 @@ const resultApi = async (payload) => {
   return axios
     .post('/results', payload)
     .then((res) => {
-      // console.log('결과 받아오기 성공', res);
+      console.log('결과 받아오기 성공', res.data);
       return res.data;
     })
     .catch((err) => {
