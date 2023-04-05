@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Avatar } from '@material-tailwind/react';
 
-export default function RankListItem({ user, getUser }) {
-  const { rank, profile, nickname, profits } = user;
+export default function RankListItem({ user, idx, getWho }) {
+  const { id, rank, profile, nickname, profits } = user;
   const profilePath = `profile_pics/${profile}.jpg`;
   const rankIcon = ['🥇', '🥈', '🥉', '💸'];
   const handleResultInfo = () => {
-    getUser(user);
+    getWho(idx);
   };
   return (
     <UserContainer onClick={handleResultInfo}>
