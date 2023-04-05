@@ -58,6 +58,7 @@ const InfoSection = styled.div`
 `;
 const TickerWrapper = styled.div`
   position: absolute;
+  left: 0px;
   overflow: hidden;
 `;
 
