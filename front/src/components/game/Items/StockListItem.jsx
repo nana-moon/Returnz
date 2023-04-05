@@ -20,7 +20,10 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
   const idx = turnIdx.dayTurn;
 
   let isUp;
-  if (Stock[Stock.length - 1].close - Stock[Stock.length - idx].close === 0) {
+  if (
+    Stock[Stock.length - 1].close - Stock[Stock.length - idx].close === 0 ||
+    parseInt(Stock[Stock.length - idx].close, 10) === 0
+  ) {
     isUp = 'STAY';
   } else if (parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - idx].close, 10) > 0) {
     isUp = 'UP';
@@ -28,14 +31,22 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
     isUp = 'DOWN';
   }
 
-  const diff = [
-    Stock[Stock.length - 1].close - Stock[Stock.length - idx].close,
-    (
+  let per;
+  let dif;
+
+  if (parseInt(Stock[Stock.length - idx].close, 10) === 0) {
+    per = 0;
+    dif = 0;
+  } else {
+    per = (
       ((parseInt(Stock[Stock.length - 1].close, 10) - parseInt(Stock[Stock.length - idx].close, 10)) /
         parseInt(Stock[Stock.length - idx].close, 10)) *
       100
-    ).toFixed(2),
-  ];
+    ).toFixed(2);
+    dif = Stock[Stock.length - 1].close - Stock[Stock.length - idx].close;
+  }
+
+  const diff = [dif, per];
   const handleselectIdx = (data) => {
     dispatch(selectIdx(data));
   };

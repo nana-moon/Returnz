@@ -7,14 +7,21 @@ import { gamerDataList } from '../../../store/gamedata/GameData.selector';
 
 export default function UserLogListItem({ player, isReady, getIsReady }) {
   // MY LOG
-  const myNicmname = Cookies.get('nickname');
   const myUsername = Cookies.get('email');
-  const isMe = myNicmname === player.nickname;
-  const infoId = { seed: 5000000, buy: 100000, eval: 10000000 };
-  const myInfo = useSelector(gamerDataList);
+  const {
+    userName,
+    userProfileIcon,
+    deposit,
+    originDeposit,
+    totalPurchaseAmount,
+    totalEvaluationAsset,
+    totalEvaluationStock,
+    totalProfitRate,
+  } = player;
+  const isMe = myUsername === userName;
 
   // USER LOG
-  const profilePath = `profile_pics/${player.profileIcon}.jpg`;
+  const profilePath = `profile_pics/${userProfileIcon}.jpg`;
 
   // ready
   const handleIsReady = () => {
@@ -41,13 +48,13 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
         )}
       </LeftSection>
       <RightSection>
-        <div className="mb-0">총 평가 자산 : {player.total}</div>
-        <div>평가손익 : {player.profit}%</div>
+        <div className="mb-0">총 평가 자산 : {totalEvaluationAsset}</div>
+        <div>평가손익 : {totalProfitRate}%</div>
         {isMe && (
           <MyBox>
-            <div>예수금 {myInfo.deposit.toLocaleString()}</div>
-            <div>총매입금액 {myInfo.ammountOfBuy.toLocaleString()}</div>
-            <div>총평가금액 {infoId.eval}</div>
+            <div>예수금 {deposit}</div>
+            <div>총매입금액 {totalPurchaseAmount}</div>
+            <div>총평가금액 {totalEvaluationAsset}</div>
           </MyBox>
         )}
       </RightSection>

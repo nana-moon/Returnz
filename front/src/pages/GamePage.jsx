@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -21,6 +21,7 @@ import {
   handleGetStockInformation,
   handleGetStockNews,
   handleGetchangeInterest,
+  resetGameData,
 } from '../store/gamedata/GameData.reducer';
 import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
@@ -31,11 +32,30 @@ import { getNewsApi } from '../apis/gameApi';
 import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
 
 export default function GamePage() {
-  // HOOKS
+  // -------------------------||| HOOKS |||------------------------------------------------------------------
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const turnInfo = useSelector(gameTurn);
 
-  // 주식 정보 STATE
+  // -------------------------||| HANDLE BACK |||------------------------------------------------------------------
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      event.preventDefault();
+      navigate('/', { replace: true });
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigate]);
+
+  // -------------------------||| GAME DATA |||------------------------------------------------------------------
+
+  // 주식 STATE
   const stockdata = useSelector(stockDataList);
   const roomNum = useSelector(getGameRoomId);
   const gamerNum = useSelector(getGamerId);
@@ -45,53 +65,70 @@ export default function GamePage() {
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
 
-  // TURN STATE
-  const temp = useSelector(gameTurn);
-
-  // TURN API
+  // 주식 API
   const axiospost = async () => {
-    console.log('realTurn', temp.nowTurn, temp.maxTurn);
-    if (temp.nowTurn < temp.maxTurn) {
-      // 뉴스
-      const datas = {
-        roomId: roomNum,
-        gamerId: gamerNum,
+    const datas = {
+      roomId: roomNum,
+      gamerId: gamerNum,
+    };
+    await axios
+      .post('/games/game', datas)
+      .then((res) => {
+        console.log(res.data.gamer, '턴 데이터');
+        dispatch(setPlayerList(res.data.gamer));
+        dispatch(handleMoreGameData(res.data.Stocks));
+        dispatch(handleUpdateHoldingData(res.data.gamerStock));
+        dispatch(handleGetStockInformation(res.data.stockInformation));
+        dispatch(handleGetTodayDate(res.data.currentDate));
+        dispatch(handleGetchangeInterest(res.data.exchangeInterest));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    // 뉴스 ACTION
+    const getNews = [];
+
+    for (let i = 0; i < keys.length; i += 1) {
+      const data = {
+        id: gameId,
+        companyCode: keys[i],
+        articleDateTime: Date,
       };
-      await axios
-        .post('/games/game', datas)
-        .then((res) => {
-          // dispatch(setPlayerList(res.data.gamer));
-          dispatch(handleMoreGameData(res.data.Stocks));
-          dispatch(handleUpdateHoldingData(res.data.gamerStock));
-          dispatch(handleGetStockInformation(res.data.stockInformation));
-          dispatch(handleGetTodayDate(res.data.currentDate));
-          dispatch(handleGetchangeInterest(res.data.exchangeInterest));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // eslint-disable-next-line no-await-in-loop
+      const newsTmp = await getNewsApi(data);
+      getNews.push({ [keys[i]]: newsTmp });
+    }
 
-      const getNews = [];
+    dispatch(handleGetStockNews(getNews));
+  };
 
-      for (let i = 0; i < keys.length; i += 1) {
-        const data = {
-          id: gameId,
-          companyCode: keys[i],
-          articleDateTime: Date,
-        };
-        // eslint-disable-next-line no-await-in-loop
-        const newsTmp = await getNewsApi(data);
-        getNews.push({ [keys[i]]: newsTmp });
-      }
-
-      dispatch(handleGetStockNews(getNews));
-    } else {
-      console.log('turn endendend');
-      navigate('/result');
+  // -------------------------||| TURN |||------------------------------------------------------------------
+  const handleTurn = async (newIsReadyList) => {
+    console.log(newIsReadyList);
+    const allReady = newIsReadyList.every((isReady) => {
+      console.log(Object.values(isReady));
+      return Object.values(isReady).every((value) => value === true);
+    });
+    if (allReady) {
+      dispatch(resetIsReadyList());
+      await axiospost();
     }
   };
 
-  // -------------------------| SOCKET |------------------------------------------------------------------
+  // -------------------------||| EXIT GAMEROOM |||------------------------------------------------------------------
+
+  const handleExit = () => {
+    dispatch(resetGameRoom());
+    dispatch(resetGameData());
+  };
+
+  useEffect(() => {
+    return () => {
+      handleExit();
+    };
+  }, []);
+  // -------------------------||| SOCKET |||------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -106,6 +143,7 @@ export default function GamePage() {
   }
 
   // -------------------------SOCKET STATE-----------------------------
+
   const ACCESS_TOKEN = Cookies.get('access_token');
   const gameRoomId = useSelector(getGameRoomId);
   const isReadyList = useSelector(getIsReadyList);
@@ -116,6 +154,7 @@ export default function GamePage() {
   };
 
   // -------------------------HANDLE A RECEIVED MESSAGE-----------------------------
+
   const handleMessage = async (received) => {
     const newMessage = JSON.parse(received.body);
     // -------------------------handle READY-----------------------------
@@ -179,7 +218,7 @@ export default function GamePage() {
     };
   }, []);
 
-  // -------------------------| CHAT |------------------------------------------------------------------
+  // -------------------------||| CHAT |||------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
@@ -196,20 +235,8 @@ export default function GamePage() {
       console.log('WebSocket connection is not active.');
     }
   };
-  // -------------------------| TURN |------------------------------------------------------------------
-  const handleTurn = (newIsReadyList) => {
-    console.log(newIsReadyList);
-    const allReady = newIsReadyList.every((isReady) => {
-      console.log(Object.values(isReady));
-      return Object.values(isReady).every((value) => value === true);
-    });
-    console.log('allReady', allReady);
-    if (allReady) {
-      dispatch(resetIsReadyList());
-      axiospost();
-    }
-  };
-  // -------------------------| READY |------------------------------------------------------------------
+
+  // -------------------------||| READY |||------------------------------------------------------------------
 
   const getIsReady = () => {
     // Check WebSocket connection status
@@ -226,18 +253,13 @@ export default function GamePage() {
     }
   };
 
-  // -------------------------| EXIT GAME |------------------------------------------------------------------
-
-  const handleExit = () => {
-    dispatch(resetGameRoom());
-  };
-
   useEffect(() => {
-    return () => {
-      handleExit();
-    };
-  }, []);
-  // -------------------------| RETURN HTML |------------------------------------------------------------------
+    if (turnInfo.nowTurn >= turnInfo.maxTurn) {
+      navigate('/result', { state: gameRoomId });
+    }
+  }, [turnInfo]);
+
+  // -------------------------||| HTML |||------------------------------------------------------------------
 
   return (
     <>

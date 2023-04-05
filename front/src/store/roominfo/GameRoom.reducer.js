@@ -6,9 +6,7 @@ const initialState = {
   roomId: null,
   hostNickname: null,
   gamerId: null,
-  playerList: [], // profileIcon, nickname, gamerId, username
-  // deposit, gamerId, memberId, originDeposit, totalEvaluationAsset, totalEvaluationStock, totalProfitRate, totalPurchaseAmount, userName, userProfileIcon
-  initIsReadyList: [],
+  playerList: [], // deposit, gamerId, memberId, originDeposit, totalEvaluationAsset, totalEvaluationStock, totalProfitRate, totalPurchaseAmount, userName, userProfileIcon
   isReadyList: [], // username
 };
 
@@ -29,7 +27,12 @@ export const gameRoom = createSlice({
       state.gamerId = action.payload;
     },
     setPlayerList(state, action) {
-      state.playerList = action.payload;
+      const newPlayerList = Object.values(action.payload);
+      const readyList = newPlayerList.map((player) => {
+        return { [player.userName]: false };
+      });
+      setIsReadyList(readyList);
+      state.playerList = newPlayerList;
     },
     setInitIsReadyList(state, action) {
       state.initIsReadyList = action.payload;

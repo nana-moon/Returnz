@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import tw, { styled } from 'twin.macro';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { useSelector } from 'react-redux';
 import SockJs from 'sockjs-client';
@@ -10,8 +10,16 @@ import ResultRank from '../components/result/rank/ResultRank';
 import ResultInfo from '../components/result/info/ResultInfo';
 import UnlockResult from '../components/result/UnlockResult';
 import Chatting from '../components/chatting/Chatting';
+import { resultApi } from '../apis/gameApi';
 
 export default function ResultPage() {
+  // HOOKS
+  const location = useLocation();
+  const gameRoomId = location.state;
+  // -------------------------| RESULT STATE |------------------------------------------------------------------
+  const resuldData = resultApi({ gameRoomId });
+  console.log('ResultData!!@@', resuldData);
+
   // -------------------------| SOCKET |------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
@@ -81,7 +89,7 @@ export default function ResultPage() {
     if (stompRef.current.connected) {
       const message = JSON.stringify({
         type: 'CHAT',
-        roomId: resultRoomId,
+        roomId: gameRoomId,
         messageBody: { contents: inputMessage },
       });
 
