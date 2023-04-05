@@ -21,7 +21,7 @@ export default function ResultInfo() {
 
   return (
     <InfoContainer>
-      <InfoHeader>{username} 님의 게임 로그</InfoHeader>
+      <InfoHeader>📈 {username} 님의 게임 로그</InfoHeader>
       <Tabs id="custom-animation" value="html">
         <TabsHeader>
           {data.map(({ label, value }) => (
@@ -49,9 +49,9 @@ export default function ResultInfo() {
 }
 
 const InfoContainer = styled.div`
-  ${tw`border bg-white rounded-xl p-2`}
+  ${tw`border bg-white rounded-xl p-2 font-spoq`}
 `;
 
 const InfoHeader = styled.header`
-  ${tw` bg-white flex justify-center items-center h-10`}
+  ${tw` bg-white flex justify-center items-center h-10 font-bold`}
 `;
