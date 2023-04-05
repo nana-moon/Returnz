@@ -31,6 +31,7 @@ export default function FriendListItems({ friend, handleInvite }) {
       setfriendStateColor('text-negative');
     }
   }, []);
+
   const roomId = useSelector(getWaitRoomId);
   const handleInviteRequest = () => {
     const data = JSON.stringify({
@@ -40,8 +41,6 @@ export default function FriendListItems({ friend, handleInvite }) {
         username: `${friend.username}`, // 초대 상대
       },
     });
-    console.log('내가 초대하고싶은애', friend.username);
-    console.log('내가 cheo', data);
     handleInvite(data);
   };
 

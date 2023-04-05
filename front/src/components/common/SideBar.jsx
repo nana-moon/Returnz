@@ -66,20 +66,19 @@ export default function SideBar() {
       }
       if (newMessage.type === 'STATE') {
         console.log('STATE 메세지 도착', newMessage.messageBody);
-        console.log(friendList, 'friendList!!@@');
-        //   // setChangedFriend(newMessage.messageBody);
-        const changedFriend = newMessage.messageBody;
-        const updatedFriendList = friendList?.map((friend) => {
-          if (friend.username === changedFriend.friendName) {
-            // 친구 정보가 일치하면 state 값 변경
-            console.log(friend.username, 'd원래');
-            console.log(changedFriend.friendName, '새로운');
-            return { ...friend, state: changedFriend.state };
-          }
-          return friend;
-        });
-        // friendList 갱신
-        setfriendList(updatedFriendList);
+        // const changedFriends = []
+        // const changedFriend = newMessage.messageBody;
+        // const updatedFriendList = friendList?.map((friend) => {
+        //   if (friend.username === changedFriend.friendName) {
+        //     // 친구 정보가 일치하면 state 값 변경
+        //     console.log(friend.username, 'd원래');
+        //     console.log(changedFriend.friendName, '새로운');
+        //     return { [...changedFriends, changedFriend ]};
+        //   }
+        //   return friend;
+        // });
+        // // friendList 갱신
+        // setfriendList(updatedFriendList);
       }
     }
   };
