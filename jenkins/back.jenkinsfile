@@ -31,6 +31,13 @@ node {
         }
 
     }
+    stage('SonarQube Analysis') {
+        dir('back') {
+            withSonarQubeEnv() {
+              sh "./gradlew  sonar"
+            }
+        }
+    }
 
 
     stage('Test') { 
