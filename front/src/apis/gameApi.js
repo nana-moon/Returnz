@@ -4,6 +4,7 @@ const makeRoomApi = async () => {
   return authApi
     .post('/wait-room')
     .then((res) => {
+      // console.log('makeRoomApi from gameApi', res.data);
       return res.data;
     })
     .catch((err) => {
