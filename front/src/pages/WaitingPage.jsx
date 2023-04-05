@@ -14,7 +14,7 @@ import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { setWaitRoomId, addWaiter, resetWaitRoom } from '../store/roominfo/WaitRoom.reducer';
+import { setWaitRoomId, addWaiter, resetWaitRoom, setTheme, setCustom } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
@@ -99,7 +99,9 @@ export default function WaitingPage() {
     // -------------------------handle SETTING-----------------------------
     if (newMessage.type === 'SETTING') {
       console.log('SETTING 메세지 도착', newMessage.messageBody);
-      // const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+      const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+      dispatch(setTheme(theme));
+      dispatch(setCustom({ turnPerTime, startTime, totalTurn }));
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
@@ -316,6 +318,7 @@ export default function WaitingPage() {
     const turnApiReq = {
       gamerId: myGameInfo.gamerId,
       roomId: gameInit.roomId,
+      captain: isHost,
     };
     await handleTurn(turnApiReq, gameInit.id);
   };
