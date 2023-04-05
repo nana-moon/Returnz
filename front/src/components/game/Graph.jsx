@@ -91,8 +91,8 @@ export default function Graph() {
         categories: categoriess,
         labels: {
           formatter(val) {
-            const index = categoriess.indexOf(val);
-            return `${index + 1}`;
+            // const index = categoriess.indexOf(val);
+            return '';
           },
         },
       },

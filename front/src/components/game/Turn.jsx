@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { keyframes } from 'styled-components';
 import tw, { styled } from 'twin.macro';
 import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 import { Popover, PopoverHandler, PopoverContent, Button } from '@material-tailwind/react';
 import { AiOutlineCheckCircle } from 'react-icons/ai';
 import imgpath from './assets/turnHelp.png';
@@ -13,11 +14,25 @@ export default function Turn() {
   const turn = useSelector(gameTurn);
   const [animationClass, setAnimationClass] = useState('animate');
   // console.log('현재 턴은:', turn);
+  let now;
+  if (turn.nowTurn + 1 === turn.maxTurn) {
+    now = `마지막 턴이 시작됩니다.`;
+  } else if (turn.nowTurn + 1 > turn.maxTurn) {
+    now = `게임이 종료되었습니다.
+    결과 페이지로 이동합니다`;
+  } else {
+    now = `${turn.nowTurn + 1}번째 턴이 시작됩니다.`;
+  }
 
   useEffect(() => {
     setAnimationClass(''); // 애니메이션 클래스를 제거합니다.
     setTimeout(() => {
       setAnimationClass('animate'); // 애니메이션 클래스를 다시 추가합니다.
+      Swal.fire({
+        title: `${now}`,
+        timer: 1000,
+        showConfirmButton: false,
+      });
     }, 10);
   }, [turn]);
 
@@ -102,21 +117,6 @@ const BarTimer = keyframes`
   }
 `;
 
-const BarTimerText = keyframes`
-  0% {
-    ${tw`text-black`}
-  }
-  79.9%{
-    ${tw`text-black`}
-  }
-  80% {
-    ${tw`text-gain`}
-  }
-  100% {
-    ${tw`text-gain`}
-  }
-`;
-
 const BarSection = styled.div`
   animation: ${BarTimer} 60s, ${shake} 0.3s 40 48s;
   animation-fill-mode: forwards;
@@ -133,9 +133,6 @@ const CountSection = styled.div`
 `;
 
 const TimeSection = styled.div`
-  animation: ${BarTimerText} 60s, ${shake} 0.3s 40 48s;
-  animation-fill-mode: none;
-  animation-timing-function: linear;
   ${tw`absolute bottom-0 text-center w-[100%] bg-transparent`}
 `;
 
