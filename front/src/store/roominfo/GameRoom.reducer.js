@@ -29,9 +29,9 @@ export const gameRoom = createSlice({
     setPlayerList(state, action) {
       const newPlayerList = Object.values(action.payload);
       const readyList = newPlayerList.map((player) => {
-        return { [player.userName]: false };
+        return { username: player.userName, status: false };
       });
-      setIsReadyList(readyList);
+      state.isReadyList = readyList;
       state.playerList = newPlayerList;
     },
     setInitIsReadyList(state, action) {
