@@ -2,7 +2,7 @@ import React from 'react';
 import tw, { styled } from 'twin.macro';
 import Chart from 'react-apexcharts';
 
-export default function ReturnGraph() {
+export default function ReturnGraph({ selectedResult }) {
   const data = {
     options: {
       chart: {
