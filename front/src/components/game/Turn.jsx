@@ -12,6 +12,7 @@ import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 export default function Turn() {
   const [time, setTime] = useState(60);
   const turn = useSelector(gameTurn);
+  console.log('turn---------------------', turn);
   const [animationClass, setAnimationClass] = useState('animate');
   // console.log('현재 턴은:', turn);
   let now;
