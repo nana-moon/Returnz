@@ -15,7 +15,7 @@ export default function ReturnGraph({ selectedResult }) {
     series: [
       {
         name: 'return',
-        data: [30, 40, 45, 50, 49, 60, 70, 91, 45, 67],
+        data: selectedResult?.profits,
       },
     ],
   };
