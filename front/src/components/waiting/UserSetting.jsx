@@ -72,10 +72,10 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
   );
 }
 const UserSettingContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%]`}
+  ${tw`border bg-white rounded-xl w-[50%] text-lg`}
 `;
 const BackBtn = styled.button`
-  ${tw`w-[100%] h-[25%] hover:bg-blue-gray-50`}
+  ${tw`w-[100%] h-[25%] hover:bg-blue-gray-50 text-xl font-bold`}
 `;
 const TurnDateSection = styled.div`
   ${tw`flex w-[100%] h-[25%]`}

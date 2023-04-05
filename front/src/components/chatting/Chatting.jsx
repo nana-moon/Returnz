@@ -34,7 +34,7 @@ export default function Chatting({ receivedMessage, getInputMessage }) {
             // eslint-disable-next-line react/no-array-index-key
             <ChattingDiv key={i} isMe={isMe}>
               <NicknameSpan isMe={isMe} value={chat?.nickname}>
-                [{isMe ? '나' : chat?.nickname}]
+                {isMe ? '나' : chat?.nickname}
               </NicknameSpan>
               {chat?.contents}
             </ChattingDiv>
@@ -62,8 +62,8 @@ const ChattingDiv = styled.div`
   ${({ isMe }) => (isMe ? tw`text-end` : tw``)}
 `;
 const NicknameSpan = styled.span`
-  ${tw`mr-2`}
-  ${({ isMe }) => (isMe ? tw`text-red-500` : tw`bg-lose`)}
+  ${tw`mr-2 px-1 border rounded-xl`}
+  ${({ isMe }) => (isMe ? tw`text-red-500 bg-red-50` : tw`text-blue-gray-500 bg-blue-gray-50`)}
 `;
 const ChattingInput = styled.input`
   ${tw`border bg-[#EDEEFF] rounded-xl w-[100%] max-h-8 p-2`}
