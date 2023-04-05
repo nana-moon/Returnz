@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   roomId: null,
   hostNickname: null,
-  waiterList: [],
+  waiterList: [], // id, username, nickname, profile, avgProfit
   setting: {
     theme: null,
     turnPerTime: 'NO',
