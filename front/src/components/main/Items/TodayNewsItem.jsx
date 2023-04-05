@@ -1,22 +1,36 @@
 import React from 'react';
 import { Avatar } from '@material-tailwind/react';
 import tw, { styled } from 'twin.macro';
+import Swal from 'sweetalert2';
+import { getStockDetail } from '../../../apis/homeApi';
 
 export default function TodayNewsItem({ stock }) {
+  const handleModal = async () => {
+    const response = await getStockDetail(stock.stockCode);
+    console.log(response);
+    Swal.fire({
+      title: `${response.company.koName}`,
+      imageUrl: `${response.company.logo}`,
+      imageWidth: 200,
+      text: `${response.company.description}`,
+      showCloseButton: true,
+      confirmButtonText: '정보 보기',
+    }).then(() => {
+      Swal.fire({
+        title: '하하',
+      });
+    });
+  };
   return (
-    <TodayNewsContainer bgImg={stock.logo}>
+    <TodayNewsContainer onClick={handleModal}>
       <Avatar size="xl" variant="circular" src={stock.logo} className=" border-2 border-negative" />
       <TitleText>{stock.stockName}</TitleText>
       <ContentText>{stock.stockCode}</ContentText>
     </TodayNewsContainer>
   );
 }
-// background-image: url(${(props) => props.bgImg});
-// background-color: rgba(255, 255, 255, 0.2);
-// background-size: 100px 100px;
-// opacity: 1;
+
 const TodayNewsContainer = styled.div`
-  // background-image: url(${(props) => props.bgImg});
   ${tw`bg-white hover:bg-negative rounded-lg py-1 px-2`}
 `;
 

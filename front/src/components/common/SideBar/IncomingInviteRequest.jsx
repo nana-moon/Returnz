@@ -1,18 +1,26 @@
 import { Avatar } from '@material-tailwind/react';
 import { React, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import tw, { styled } from 'twin.macro';
 import { useNavigate } from 'react-router-dom';
 import { acceptInviteRequestApi } from '../../../apis/friendApi';
+import { setHostNickname, setWaitRoomId } from '../../../store/roominfo/WaitRoom.reducer';
 
 export default function IncomingInviteRequest({ friendInv, handleDelete }) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(true);
 
   const acceptInvRequest = async () => {
     const res = await acceptInviteRequestApi(friendInv.roomId);
     console.log(res, '거의끝남 ㄱㄱㄱㄱㄱㄱㄱ');
+    console.log(res.data.captainName, '방장누구야');
     if (res && res.status === 200) {
-      navigate('/waiting');
+      // dispatch(setHostNickname(res.data.captainName));
+      // dispatch(setWaitRoomId(res.data.roomId));
+      // setTimeout(() => {
+      //   navigate('/waiting');
+      // }, 100);
     }
   };
   const declineRequest = () => {
