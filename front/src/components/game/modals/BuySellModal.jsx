@@ -148,6 +148,7 @@ export default function BuySellModal({ code, checkCanSell }) {
       }
     }
   };
+
   console.log(modalData, 'ddddtest');
 
   return (
