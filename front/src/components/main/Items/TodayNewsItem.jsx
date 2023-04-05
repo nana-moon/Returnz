@@ -5,9 +5,21 @@ import Swal from 'sweetalert2';
 import { getStockDetail } from '../../../apis/homeApi';
 
 export default function TodayNewsItem({ stock }) {
-  const handleModal = () => {
-    getStockDetail(stock.stockCode);
-    // Swal.fire({ title: '로그아웃 성공', confirmButtonColor: '#1CD6C9' });
+  const handleModal = async () => {
+    const response = await getStockDetail(stock.stockCode);
+    console.log(response);
+    Swal.fire({
+      title: `${response.company.koName}`,
+      imageUrl: `${response.company.logo}`,
+      imageWidth: 200,
+      text: `${response.company.description}`,
+      showCloseButton: true,
+      confirmButtonText: '정보 보기',
+    }).then(() => {
+      Swal.fire({
+        title: '하하',
+      });
+    });
   };
   return (
     <TodayNewsContainer onClick={handleModal}>
