@@ -63,6 +63,7 @@ export default function SideBar() {
       }
       if (newMessage.type === 'INVITE') {
         setReceivedInvites([...receivedInvites, newMessage.messageBody]);
+        console.log(newMessage.messageBody, '내가받은초대진짜진짜임');
       }
       if (newMessage.type === 'STATE') {
         console.log('STATE 메세지 도착', newMessage.messageBody);
