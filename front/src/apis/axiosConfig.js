@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 
 // 로그인된 사용자
 const BASE_URL = 'http://j8c106.p.ssafy.io/api';
+
 axios.defaults.baseURL = BASE_URL;
 
 const authApi = axios.create({
