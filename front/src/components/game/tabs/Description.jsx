@@ -40,7 +40,7 @@ export default function Description() {
 
 const DescriptionContainer = styled.div`
   width: 100%;
-  ${tw`h-[100%]`}
+  ${tw`h-[100%] overflow-y-auto`}
 `;
 
 const DescriptionImgSection = styled.div`

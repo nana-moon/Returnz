@@ -63,7 +63,13 @@ export default function TodayPrice() {
           {/* <AiFillDollarCircle /> */}
           미국 달러 환율
         </StockTitle>
-        <StockPrice>{parseFloat(exchangeKrUs?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
+        <StockPrice>
+          {parseFloat(exchangeKrUs?.['5. Exchange Rate'])
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          원
+        </StockPrice>
       </TodayPriceItem>
       {/* <TodayPriceItem>
         <StockTitle>
@@ -73,19 +79,37 @@ export default function TodayPrice() {
       </TodayPriceItem> */}
       <TodayPriceItem>
         <StockTitle>일본 엔 환율</StockTitle>
-        <StockPrice>{(parseFloat(exchangeKrJp?.['5. Exchange Rate']) * 100).toFixed(2)}원</StockPrice>
+        <StockPrice>
+          {(parseFloat(exchangeKrJp?.['5. Exchange Rate']) * 100)
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          원
+        </StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
         <StockTitle>유럽 유로 환율</StockTitle>
-        <StockPrice>{parseFloat(exchangeKrEu?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
+        <StockPrice>
+          {parseFloat(exchangeKrEu?.['5. Exchange Rate'])
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          원
+        </StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
         <StockTitle>비트코인 현재가</StockTitle>
-        <StockPrice>{parseFloat(exchangeKrBit?.['5. Exchange Rate']).toFixed(2)}원</StockPrice>
+        <StockPrice>
+          {parseFloat(exchangeKrBit?.['5. Exchange Rate'])
+            .toFixed(2)
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          원
+        </StockPrice>
       </TodayPriceItem>
       <TodayPriceItem>
         <StockTitle> 원유 가격</StockTitle>
-        <StockPrice>${oilPrice?.value}</StockPrice>
+        <StockPrice>${oilPrice?.value.toLocaleString()}</StockPrice>
       </TodayPriceItem>
     </TodayPriceContainer>
   );

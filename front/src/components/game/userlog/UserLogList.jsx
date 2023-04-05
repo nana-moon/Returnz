@@ -12,10 +12,11 @@ export default function UserLogList({ getIsReady }) {
   return (
     <UserLogContainer>
       {Array.from({ length: 4 }).map((_, i) => {
-        if (i < playerList.length) {
+        console.log('test', playerList, isReadyList);
+        if (playerList.length && isReadyList.length && i < playerList.length) {
           return (
             <UserLogListItem
-              key={playerList[i].nickname}
+              key={playerList[i]}
               player={playerList[i]}
               isReady={isReadyList[i]}
               getIsReady={getIsReady}

@@ -3,8 +3,8 @@ import tw, { styled } from 'twin.macro';
 import { Avatar } from '@material-tailwind/react';
 
 export default function RankListItem({ user, getUser }) {
-  const { rank, profile, nickname, returnRate } = user;
-  const profilePath = `profile_pics/${profile}`;
+  const { rank, profile, nickname, profits } = user;
+  const profilePath = `profile_pics/${profile}.jpg`;
   const rankIcon = ['🥇', '🥈', '🥉', '💸'];
   const handleResultInfo = () => {
     getUser(user);
@@ -14,7 +14,7 @@ export default function RankListItem({ user, getUser }) {
       <p className="text-3xl">{rankIcon[rank - 1]}</p>
       <Avatar size="lg" variant="circular" src={profilePath} />
       <p className="col-span-2">{nickname}</p>
-      <div>{returnRate}</div>
+      <div>{profits[profits.length - 1].totalProfitRate}</div>
     </UserContainer>
   );
 }

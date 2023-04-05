@@ -58,10 +58,23 @@ const acceptInviteRequestApi = (payload) => {
     });
 };
 
+const deleteFriendApi = (payload) => {
+  return authApi
+    .delete(`/friends?username=${payload}`)
+    .then((res) => {
+      Swal.fire({ title: '친구삭제 완료', confirmButtonColor: '#1CD6C9' });
+      return res;
+    })
+    .catch((err) => {
+      return err;
+    });
+};
+
 export {
   getFriendRequestsApi,
   sendFriendRequestApi,
   acceptFriendRequestApi,
   declineFriendRequestApi,
   acceptInviteRequestApi,
+  deleteFriendApi,
 };

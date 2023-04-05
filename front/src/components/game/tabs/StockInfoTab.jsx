@@ -104,7 +104,7 @@ export default function StockInfoTab() {
 }
 
 const StyledTable = styled.table`
-  ${tw`table-auto w-full text-sm`}
+  ${tw`table-auto w-full text-sm h-[100%] overflow-y-scroll`}
 `;
 
 const StyledHeader = styled.th`

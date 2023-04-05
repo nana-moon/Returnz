@@ -81,8 +81,10 @@ export const gamedata = createSlice({
     // 두번째 부터
     handleMoreGameData(state, action) {
       state.gameTurn.nowTurn += 1;
+      console.log('last turn check, gamedatareducer', state.gameTurn.nowTurn);
       if (state.gameTurn.nowTurn === state.gameTurn.maxTurn) {
         const tmp = 0;
+        console.log(tmp);
       } else {
         const keys = Object.keys(state.stockDataList);
         const actionkeys = Object.keys(action.payload);
