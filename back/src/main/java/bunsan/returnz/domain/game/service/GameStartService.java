@@ -285,7 +285,6 @@ public class GameStartService {
 	 */
 	@Transactional
 	public List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
-		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		Pageable pageable = PageRequest.of(0, DEFAULT_COMPANY_COUNT);
 		if (gameSettings.getTheme().equals(Theme.COVID)) {
 			List<String> companyCode =
@@ -312,7 +311,6 @@ public class GameStartService {
 					.build();
 				gameStockRepository.save(companyEntity);
 			}
-			log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			return content;
 		} else {
 			Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
