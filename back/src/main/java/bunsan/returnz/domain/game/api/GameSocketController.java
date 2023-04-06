@@ -1,6 +1,5 @@
 package bunsan.returnz.domain.game.api;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -9,7 +8,11 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
 import bunsan.returnz.domain.game.service.GameSocketService;
@@ -20,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 public class GameSocketController {
 	private final GameSocketService gameSocketService;
 
@@ -38,11 +42,10 @@ public class GameSocketController {
 			throw new BadRequestException("요청 타입이 올바르지 않습니다.");
 		}
 
-
 	}
 
 	@GetMapping("/api/server-time")
-	public ResponseEntity sendServerTime(@RequestParam @NotBlank  String roomId) {
+	public ResponseEntity sendServerTime(@RequestParam @NotBlank String roomId) {
 		String returnTime = gameSocketService.sendServerTime(roomId);
 		return ResponseEntity.ok(Map.of("returnTime", returnTime));
 	}
