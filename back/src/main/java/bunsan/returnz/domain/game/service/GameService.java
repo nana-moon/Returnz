@@ -342,20 +342,6 @@ public class GameService {
 							Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
 				}
 
-				// if (stockPriceDataBefore != null) {
-				// 	stockClosePrice = Double.parseDouble(
-				// 		String.format("%.2f", Double.parseDouble(stockPriceDataBefore.getClose())));
-				// }
-				//
-				// if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
-				// 	GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
-				// 		stockPriceDataBefore.getDateTime());
-				// 	stockClosePrice = Double.parseDouble(
-				// 		String.format("%.2f",
-				// 			Double.parseDouble(stockPriceDataBefore.getClose())
-				// 				* gameExchangeInterestDto.getExchangeRate()));
-				// }
-
 				if (stockClosePrice != 0) {
 					log.info("stockClosePrice != 0 : " + stockClosePrice);
 					double totalPrice = stockClosePrice * gameGamerStockDto.getTotalCount();
@@ -615,8 +601,7 @@ public class GameService {
 			LocalDateTime endDate = weekRanges.get(0).getWeekLastDay();
 			for (int i = 0; i < gameStockDtoList.size(); ++i) {
 				String companyCode = gameStockDtoList.get(i).getCompanyCode();
-				log.info("week range");
-				log.info(endDate.minusDays(4) + " " + endDate + " " + companyCode);
+
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBetweenWithCode(
 						endDate.minusDays(4), endDate, companyCode);
