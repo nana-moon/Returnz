@@ -112,6 +112,7 @@ export default function WaitingPage() {
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
+      setIsLoading(true);
       console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
       const { roomId, gameInit } = newMessage.messageBody;
       console.log('gameInit3 in handle game_info (received)', gameInit);
