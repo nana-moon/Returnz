@@ -1,14 +1,12 @@
 package bunsan.returnz.domain.result.api;
 
-import java.util.Map;
-
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.RoomMessageDto;
 import bunsan.returnz.domain.result.service.ResultSocketService;
@@ -19,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 public class ResultSocketController {
 	private final ResultSocketService resultSocketService;
 
