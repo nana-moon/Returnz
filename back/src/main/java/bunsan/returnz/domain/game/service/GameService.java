@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import bunsan.returnz.domain.result.service.ResultService;
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
@@ -47,6 +48,7 @@ public class GameService {
 	private final GameExchangeInterestService gameExchangeInterestService;
 	private final PurchaseSaleLogService purchaseSaleLogService;
 	private final GamerLogService gamerLogService;
+	private final ResultService resultService;
 
 	/**
 	 * Description : 턴이 시작할 때 필요한 정보를 반환한다.
@@ -110,9 +112,6 @@ public class GameService {
 			log.info(gamerStockDto.toString());
 		}
 
-		// 2. id로 멤버 불러오기
-		turnInformation.put("gamer", getAllGamer(gameRoomDto));
-
 		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
 
 		// 6. 주가 정보
@@ -128,6 +127,25 @@ public class GameService {
 			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
+
+		List<GameGamerDto> gameGamerDtosbyRank = resultService.findAllByGameRoomIdOrderByTotalProfitRate(gameRoomDto.getId());
+
+		// 2. id로 멤버 불러오기
+		HashMap<String, GameGamerDto> gameGamerDtos = getAllGamer(gameRoomDto);
+		for (String key : gameGamerDtos.keySet()) {
+
+			GameGamerDto gameGamerDto = gameGamerDtos.get(key);
+			gameGamerDto.setNickname(memberService.findById(gameGamerDto.getMemberId()).getNickname());
+			gameGamerDtos.put(key, gameGamerDto);
+
+			for(int i = 0; i < gameGamerDtosbyRank.size(); ++i) {
+				if(gameGamerDtosbyRank.get(i).getGamerId().equals(gameGamerDto.getGamerId())) {
+					gameGamerDto.setRank(i + 1);
+					break;
+				}
+			}
+		}
+		turnInformation.put("gamer", gameGamerDtos);
 
 		return turnInformation;
 	}
@@ -404,7 +422,7 @@ public class GameService {
 			.totalEvaluationStock(gamer.getTotalEvaluationStock())
 			.totalProfitRate(gamer.getTotalProfitRate())
 			.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-			.member(memberService.findById(gamer.getMermberId()))
+			.member(memberService.findById(gamer.getMemberId()))
 			.curTurn(gameRoomDto.getCurTurn())
 			.build();
 
@@ -446,7 +464,7 @@ public class GameService {
 				// TODO : uerProfilePath 추가하기 (member에서 조회한 후 직접 input)
 				gameGamerDtos.get(i)
 					.setUserProfileIcon(
-						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon());
+						memberService.getMemberbyId(gameGamerDtos.get(i).getMemberId()).getProfileIcon());
 				mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
 			}
 		}
@@ -759,7 +777,7 @@ public class GameService {
 				.count(count)
 				.price((int)stockClosePrice)
 				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.member(memberService.findById(gameGamerDto.getMemberId()))
 				.build();
 
 			purchaseSaleLogService.updateDto(purcahseSaleLogDto);
@@ -896,7 +914,7 @@ public class GameService {
 				.count(count)
 				.price((int)salesPrice)
 				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.member(memberService.findById(gameGamerDto.getMemberId()))
 				.build();
 
 			purchaseSaleLogService.updateDto(purcahseSaleLogDto);

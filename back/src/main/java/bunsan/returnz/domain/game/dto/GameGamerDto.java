@@ -15,9 +15,11 @@ import lombok.ToString;
 @ToString
 public class GameGamerDto {
 	private Long gamerId;
-	private Long mermberId;
+	private Long memberId;
+	private String nickname;
 	private String userName;
 	private String userProfileIcon;
+	private Integer rank;
 	private Integer deposit;        // 예치금
 	private Integer originDeposit;        // 원본 예치금
 	private Integer totalPurchaseAmount;    // 총 구매한 가격
