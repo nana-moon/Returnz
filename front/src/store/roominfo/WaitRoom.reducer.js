@@ -40,12 +40,12 @@ export const waitRoom = createSlice({
       });
     },
     setTheme(state, action) {
-      console.log('theme', action.payload);
+      console.log('theme update', action.payload);
       state.theme = action.payload;
     },
     setCustom(state, action) {
-      console.log('custom', action.payload);
-      state.theme = action.payload;
+      console.log('custom update', action.payload);
+      state.custom = action.payload;
     },
     resetWaitRoom(state) {
       Object.assign(state, initialState);
