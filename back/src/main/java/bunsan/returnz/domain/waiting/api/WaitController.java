@@ -4,10 +4,12 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -57,15 +59,15 @@ public class WaitController {
 	}
 
 	//----------------------------------대기방 인원 조정------------------------------------
-	@PatchMapping("/api/wait-room/exit")
+	@DeleteMapping("/api/wait-room/waiter")
 	public ResponseEntity deleteWaiter(@RequestHeader(value = "Authorization") String bearerToken,
 		@RequestParam @NotBlank String roomId) {
 		String token = bearerToken.substring(7);
 		waitService.deleteWaiter(token, roomId);
-		return ResponseEntity.ok().body(Map.of("result", "success"));
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@PatchMapping("/api/wait-room/enter")
+	@PostMapping("/api/wait-room/waiter")
 	public ResponseEntity createWaiter(@RequestHeader(value = "Authorization") String bearerToken,
 		@RequestParam @NotBlank String roomId) {
 		String token = bearerToken.substring(7);
