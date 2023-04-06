@@ -4,8 +4,9 @@ import tw, { styled } from 'twin.macro';
 import { acceptFriendRequestApi, declineFriendRequestApi } from '../../../apis/friendApi';
 
 export default function IncomingFriendRequests({ friendReq }) {
+  console.log(friendReq);
   const acceptRequest = () => {
-    acceptFriendRequestApi(friendReq.requestId);
+    acceptFriendRequestApi(friendReq);
   };
   const declineRequest = () => {
     declineFriendRequestApi(friendReq.requestId);

@@ -56,7 +56,7 @@ export default function StockList() {
                 ?
               </Button>
             </PopoverHandler>
-            <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
+            <PopoverContent className="z-40 border-gray-400 shadow-xl shadow-gray-600">
               <img src={imgpath} alt="" />
             </PopoverContent>
           </Popover>
