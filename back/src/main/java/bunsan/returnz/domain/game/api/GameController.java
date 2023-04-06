@@ -5,11 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
 import bunsan.returnz.domain.game.dto.GameRequestBody;
@@ -31,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
 @Slf4j
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
@@ -62,7 +58,7 @@ public class GameController {
 		}
 
 		HashMap<String, Object> turnInformation = gameService.getTurnInformation(gameRequestBody.getRoomId(),
-			gameRequestBody.getGamerId());
+			gameRequestBody.getGamerId(), gameRequestBody.isCaptain());
 		if ((boolean)turnInformation.get("turnEnd")) {
 			return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
 		}

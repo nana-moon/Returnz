@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import { Radio } from '@material-tailwind/react';
+import Swal from 'sweetalert2';
 
 export default function UserSetting({ setting, getIsUserSetting, getUserSetting }) {
   // 사용자 설정 데이터
@@ -28,7 +30,10 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
     const selectedDate = new Date(e.target.value);
     const day = selectedDate.getDay();
     if (day === 0 || day === 6) {
-      alert('주말은 선택할 수 없습니다.');
+      Swal.fire({
+        title: `주말은 선택할 수 없습니다/`,
+        icon: 'error',
+      });
       e.target.value = '';
     }
     handleUserSetting(e);
@@ -44,26 +49,26 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
       <TurnPeriodSection>
         <TurnPeriodTitle>턴 단위</TurnPeriodTitle>
         <TurnPeriodForm onChange={handleUserSetting}>
-          <input type="radio" id="periodChoice1" name="turnPerTime" value="DAY" />
+          <Radio id="periodChoice1" name="turnPerTime" value="DAY" />
           <label htmlFor="periodChoice1">1일</label>
 
-          <input type="radio" id="periodChoice2" name="turnPerTime" value="WEEK" />
+          <Radio id="periodChoice2" name="turnPerTime" value="WEEK" />
           <label htmlFor="periodChoice2">1주</label>
 
-          <input type="radio" id="periodChoice3" name="turnPerTime" value="MONTH" />
+          <Radio id="periodChoice3" name="turnPerTime" value="MONTH" />
           <label htmlFor="periodChoice3">한 달</label>
         </TurnPeriodForm>
       </TurnPeriodSection>
       <TurnCountSection>
         <TurnCountTitle>턴 수</TurnCountTitle>
         <TurnCountForm onChange={handleUserSetting}>
-          <input type="radio" id="contactChoice1" name="totalTurn" value="10" />
+          <Radio id="contactChoice1" name="totalTurn" value="10" />
           <label htmlFor="contactChoice1">10턴</label>
 
-          <input type="radio" id="contactChoice2" name="totalTurn" value="30" />
+          <Radio id="contactChoice2" name="totalTurn" value="30" />
           <label htmlFor="contactChoice2">30턴</label>
 
-          <input type="radio" id="contactChoice3" name="totalTurn" value="50" />
+          <Radio id="contactChoice3" name="totalTurn" value="50" />
           <label htmlFor="contactChoice3">50턴</label>
         </TurnCountForm>
       </TurnCountSection>
@@ -71,10 +76,10 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
   );
 }
 const UserSettingContainer = styled.div`
-  ${tw`border bg-white rounded-xl w-[50%]`}
+  ${tw`border bg-white rounded-xl w-[50%] text-lg`}
 `;
 const BackBtn = styled.button`
-  ${tw`w-[100%] h-[25%] hover:bg-blue-gray-50`}
+  ${tw`w-[100%] h-[25%] hover:bg-blue-gray-50 text-xl font-bold`}
 `;
 const TurnDateSection = styled.div`
   ${tw`flex w-[100%] h-[25%]`}

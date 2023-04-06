@@ -15,12 +15,21 @@ import { resultApi } from '../apis/gameApi';
 export default function ResultPage() {
   // HOOKS
   const location = useLocation();
-  const gameRoomId = location.state;
-  // -------------------------| RESULT STATE |------------------------------------------------------------------
-  const resuldData = resultApi({ gameRoomId });
-  console.log('ResultData!!@@', resuldData);
+  const { gameId, gameRoomId } = location.state;
+  // -------------------------||| RESULT STATE |||------------------------------------------------------------------
+  const init = [];
+  const [result, setResult] = useState(init);
 
-  // -------------------------| SOCKET |------------------------------------------------------------------
+  useEffect(() => {
+    async function fetchData() {
+      const resultData = await resultApi({ gameRoomId: gameId });
+      console.log('ResultData, resultpage, 27', resultData);
+      setResult(resultData);
+    }
+    fetchData();
+  }, []);
+
+  // -------------------------||| SOCKET |||------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -37,9 +46,7 @@ export default function ResultPage() {
   // -------------------------SOCKET STATE-----------------------------
 
   const ACCESS_TOKEN = Cookies.get('access_token');
-  // const resultRoomId = useSelector(getResultRoomId);
-  const resultRoomId = 'temp';
-  const subAddress = `/sub/game-room/${resultRoomId}`;
+  const subAddress = `/sub/result-room/${gameRoomId}`;
   const sendAddress = '/pub/result-room';
   const header = {
     Authorization: ACCESS_TOKEN,
@@ -79,9 +86,9 @@ export default function ResultPage() {
     return () => {
       stompRef.current.disconnect();
     };
-  }, [resultRoomId, ACCESS_TOKEN]);
+  }, [gameRoomId, ACCESS_TOKEN]);
 
-  // -------------------------| CHAT |------------------------------------------------------------------
+  // -------------------------||| CHAT |||------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
@@ -99,14 +106,21 @@ export default function ResultPage() {
     }
   };
 
-  // -------------------------| RETURN HTML |------------------------------------------------------------------
+  // -------------------------||| TOGGLE USER LOG |||------------------------------------------------------------------
+  const [selectedIdx, setSelectedIdx] = useState('');
+  const getWho = (idx) => {
+    console.log('idx', idx);
+    setSelectedIdx(idx);
+  };
+
+  // -------------------------||| RETURN HTML |||------------------------------------------------------------------
 
   return (
     <ResultContainer>
-      <ResultRank />
-      <ResultInfo />
+      <ResultRank result={result} getWho={getWho} />
+      <ResultInfo result={result} selectedIdx={selectedIdx} />
       <LeftBottomSection>
-        <UnlockResult />
+        <UnlockResult result={result} />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
       <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
@@ -115,7 +129,7 @@ export default function ResultPage() {
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px]`}
+  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px] font-spoq`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
@@ -124,5 +138,5 @@ const LeftBottomSection = styled.div`
 `;
 
 const Button = styled(Link)`
-  ${tw`border bg-white rounded-xl w-[100%] min-h-[50px] flex justify-center items-center`}
+  ${tw`border bg-gain hover:bg-red-500 focus:border-red-600 text-white rounded-xl w-[100%] min-h-[50px] flex font-bold justify-center items-center`}
 `;

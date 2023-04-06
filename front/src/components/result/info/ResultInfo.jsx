@@ -4,24 +4,24 @@ import { Tabs, TabsHeader, TabsBody, Tab, TabPanel } from '@material-tailwind/re
 import ReturnGraph from './ReturnGraph';
 import TradeList from './TradeList';
 
-export default function ResultInfo() {
+export default function ResultInfo({ result, selectedIdx }) {
+  const selectedResult = result[selectedIdx];
   const data = [
     {
       label: '수익률 그래프',
       value: 'graph',
-      desc: <ReturnGraph />,
+      desc: <ReturnGraph selectedResult={selectedResult} />,
     },
     {
       label: '매매내역',
       value: 'trade',
-      desc: <TradeList />,
+      desc: <TradeList selectedResult={selectedResult} />,
     },
   ];
-  const [username, setUsername] = useState('gio');
 
   return (
     <InfoContainer>
-      <InfoHeader>{username} 님의 게임 로그</InfoHeader>
+      <InfoHeader>{selectedResult?.nickname}님의 게임 로그</InfoHeader>
       <Tabs id="custom-animation" value="html">
         <TabsHeader>
           {data.map(({ label, value }) => (
@@ -49,9 +49,9 @@ export default function ResultInfo() {
 }
 
 const InfoContainer = styled.div`
-  ${tw`border bg-white rounded-xl p-2`}
+  ${tw`border bg-white rounded-xl p-2 font-spoq`}
 `;
 
 const InfoHeader = styled.header`
-  ${tw` bg-white flex justify-center items-center h-10`}
+  ${tw` bg-white flex justify-center items-center h-10 font-bold`}
 `;

@@ -14,7 +14,7 @@ export default function TodayTopUserItem({ person, img }) {
           className="my-auto ml-6 w-[15%]"
         />
         <TitleText>{person.nickname}</TitleText>
-        <ContentText>{person.avgProfit}%</ContentText>
+        <ContentText>{person.avgProfit.toFixed(2)}%</ContentText>
       </TodayNewsContainer>
       <div
         className="w-[60%] mx-auto"
