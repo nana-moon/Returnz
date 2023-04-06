@@ -62,7 +62,7 @@ public class GameController {
 		}
 
 		HashMap<String, Object> turnInformation = gameService.getTurnInformation(gameRequestBody.getRoomId(),
-			gameRequestBody.getGamerId());
+			gameRequestBody.getGamerId(), gameRequestBody.isCaptain());
 		if ((boolean)turnInformation.get("turnEnd")) {
 			return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
 		}
