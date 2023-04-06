@@ -16,7 +16,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-
+    enabled: false,
     cacheTime: 6000000,
     refetchInterval: 6000000,
     staleTime: Infinity,
@@ -28,7 +28,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-
+    enabled: false,
     cacheTime: 60000000,
     refetchInterval: 6000000,
     staleTime: Infinity,
@@ -40,7 +40,7 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-
+    enabled: false,
     cacheTime: 60000000,
     refetchInterval: 6000000,
     staleTime: Infinity,
@@ -57,23 +57,24 @@ export default function TodayPrice() {
     onError: (e) => {
       console.log(e);
     },
-
+    enabled: false,
     cacheTime: 60000000,
     refetchInterval: 6000000,
     staleTime: Infinity,
     refetchOnMount: false,
   });
-  // const { data: oilPrice } = useQuery({
-  //   queryKey: ['getOilPrice'],
-  //   queryFn: () => getOilPrice(),
-  //   onError: (e) => {
-  //     console.log(e);
-  //   },
-  //   cacheTime: 60000000,
-  //   refetchInterval: 6000000,
-  //   staleTime: Infinity,
-  //   refetchOnMount: false,
-  // });
+  const { data: oilPrice } = useQuery({
+    queryKey: ['getOilPrice'],
+    queryFn: () => getOilPrice(),
+    onError: (e) => {
+      console.log(e);
+    },
+    enabled: false,
+    cacheTime: 60000000,
+    refetchInterval: 6000000,
+    staleTime: Infinity,
+    refetchOnMount: false,
+  });
   return (
     <TodayPriceContainer>
       <TodayPriceItem>
