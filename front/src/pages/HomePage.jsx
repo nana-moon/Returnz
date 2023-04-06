@@ -5,7 +5,6 @@ import TodayPrice from '../components/main/TodayPrice';
 import TodayTopUser from '../components/main/TodayTopUser';
 import TopButtons from '../components/main/TopButtons';
 import TodayWord from '../components/main/TodayWord';
-import HelpInfo from '../components/game/assets/HelpInfo';
 
 export default function HomePage() {
   return (
@@ -16,7 +15,9 @@ export default function HomePage() {
           인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
         </TickerText>
       </TickerWrapper>
-      <PriceSection>{/* <TodayPrice /> */}</PriceSection>
+      <PriceSection>
+        <TodayPrice />
+      </PriceSection>
       <ButtonsSection>
         <TopButtons />
       </ButtonsSection>
@@ -40,7 +41,7 @@ const MainContainer = styled.div`
 `;
 const PriceSection = styled.div`
   height: 56px;
-  ${tw`mt-2`}
+  ${tw`mt-12`}
 `;
 
 const ButtonsSection = styled.div`
@@ -58,9 +59,10 @@ const InfoSection = styled.div`
   ${tw`col-span-3 row-span-2`}
 `;
 const TickerWrapper = styled.div`
-  position: relative;
+  width: 75%;
+  position: absolute;
+  left: 0px;
   overflow: hidden;
-  height: 2rem; /* 티커의 높이 조정 */
 `;
 
 const TickerText = styled.p`

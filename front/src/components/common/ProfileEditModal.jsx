@@ -16,20 +16,6 @@ export default function ProfileEditModal() {
   const picPath = `profile_pics/${myPic}.jpg`;
   const [possibleProfiles, setPossibleProfiles] = useState([]);
   const allProfiles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-  const profileCondition = [
-    '회원가입을 하면 사용할 수 있습니다.',
-    '게임을 한번 진행하면 사용할 수 있습니다.',
-    '게임을 5번 진행하면 사용할 수 있습니다.',
-    '게임에서 1등을 하면 사용할 수 있습니다.',
-    '게임에서 꼴등을 하면 사용할 수 있습니다.',
-    '한번의 게임에서 수익률이 10% 초과하면 사용할 수 있습니다.',
-    '한번의 게임에서 수익률이 30% 초과하면 사용할 수 있습니다.',
-    '전체 유저 중 랭킹 1위를 달성하면 획득할 수 있습니다.',
-    '전체 유저 중 랭킹 3위 이내를 달성하면 획득할 수 있습니다.',
-    '전체 유저 중 랭킹 10위 이내를 달성하면 획득할 수 있습니다.',
-    '2연승을 달성하면 획득하실 수 있습니다.',
-    '첫 친구를 추가하면 획득하실 수 있습니다.',
-  ];
   const handleModal = () => {
     dispatch(handleModalState(false));
   };
@@ -51,10 +37,7 @@ export default function ProfileEditModal() {
     }
   };
   const handleProfileChange = async (pic) => {
-    const data = {
-      newProfile: pic,
-    };
-    const res = await patchMyProfile(data);
+    const res = await patchMyProfile(pic);
     if (res.status === 200) {
       Cookies.remove('profileIcon');
       Cookies.set('profileIcon', pic);

@@ -26,7 +26,13 @@ import {
 import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
-import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
+import {
+  getGameId,
+  getGameRoomId,
+  getGamerId,
+  getIsReadyList,
+  getCaptainName,
+} from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
 import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
@@ -58,6 +64,9 @@ export default function GamePage() {
   }, [navigate]);
 
   // -------------------------||| GAME DATA |||------------------------------------------------------------------
+  const myEmail = Cookies.get('email');
+  const captainName = useSelector(getCaptainName);
+  const isHost = myEmail === captainName;
 
   // 주식 STATE
   const stockdata = useSelector(stockDataList);
@@ -78,7 +87,9 @@ export default function GamePage() {
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
+      captain: isHost,
     };
+    console.log(datas);
     await axios
       .post('/games/game', datas)
       .then((res) => {
@@ -154,6 +165,10 @@ export default function GamePage() {
   const ACCESS_TOKEN = Cookies.get('access_token');
   const gameRoomId = useSelector(getGameRoomId);
   const isReadyList = useSelector(getIsReadyList);
+  const isReadyListRef = useRef(isReadyList);
+  useEffect(() => {
+    isReadyListRef.current = isReadyList;
+  }, [isReadyList]);
   const subAddress = `/sub/game-room/${gameRoomId}`;
   const sendAddress = '/pub/game-room';
   const header = {
@@ -169,7 +184,7 @@ export default function GamePage() {
       console.log('READY 메세지 도착', newMessage.messageBody);
       const { username } = newMessage.messageBody;
       // ready한 user의 ready 상태 바꾸기
-      const newIsReadyList = isReadyList.map((isReady) => {
+      const newIsReadyList = isReadyListRef.current.map((isReady) => {
         if (isReady.username === username) {
           return { ...isReady, status: true };
         }
@@ -220,10 +235,9 @@ export default function GamePage() {
 
     retryConnect();
 
-    // Clean up when the component unmounts
-    // return () => {
-    //   stompRef.current.disconnect();
-    // };
+    return () => {
+      stompRef.current.disconnect();
+    };
   }, []);
 
   // -------------------------||| CHAT |||------------------------------------------------------------------
