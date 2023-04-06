@@ -1,5 +1,6 @@
 import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
+import Swal from 'sweetalert2';
 import { Input, Button } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import { userLogin } from '../../apis/signApi';
@@ -47,7 +48,12 @@ export default function Login({ changeMode }) {
   // 로그인 요청후 result가 true라면 메인페이지 이동, 실패 시 에러메세지 출력
   const handleLoginRequest = async () => {
     const result = await userLogin(userLoginData);
-    result === true ? navigate('/') : alert(result);
+    result === true
+      ? navigate('/')
+      : Swal.fire({
+          title: `${result}`,
+          icon: 'error',
+        });
   };
   return (
     <Contanier>

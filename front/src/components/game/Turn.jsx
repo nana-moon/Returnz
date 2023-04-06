@@ -10,7 +10,7 @@ import { gameTurn } from '../../store/gamedata/GameData.selector';
 import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
 export default function Turn() {
-  const [time, setTime] = useState(59);
+  const [time, setTime] = useState(120);
   const turn = useSelector(gameTurn);
   console.log('turn---------------------', turn);
   const [animationClass, setAnimationClass] = useState('animate');
@@ -37,7 +37,7 @@ export default function Turn() {
     }, 10);
   }, [turn]);
   useEffect(() => {
-    setTime(60);
+    setTime(120);
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime - 1);
     }, 1000);
@@ -118,7 +118,7 @@ const BarTimer = keyframes`
 `;
 
 const BarSection = styled.div`
-  animation: ${BarTimer} 60s, ${shake} 0.3s 40 48s;
+  animation: ${BarTimer} 120s, ${shake} 0.3s 40 96s;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
   ${tw`w-[100%] bg-primary rounded-full absolute bottom-0 text-center h-2`}
