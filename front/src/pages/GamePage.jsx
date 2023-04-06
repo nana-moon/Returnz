@@ -7,6 +7,7 @@ import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -88,6 +89,11 @@ export default function GamePage() {
   const axiospost = async (currentTurn) => {
     // 결과창 넘어가는 턴 조건
     if (currentTurn.nowTurn + 1 === currentTurn.maxTurn) {
+      Swal.fire({
+        title: `게임이 종료되었습니다.
+        결과를 확인해주세요.`,
+        timer: 2000,
+      });
       navigate('/result', { state: { gameId, gameRoomId } });
     }
     const datas = {
@@ -284,7 +290,9 @@ export default function GamePage() {
 
   useEffect(() => {
     if (turnInfo.nowTurn >= turnInfo.maxTurn) {
-      navigate('/result', { state: { roomNum, gameRoomId } });
+      setTimeout(() => {
+        navigate('/result', { state: { roomNum, gameRoomId } });
+      }, 10);
     }
   }, [turnInfo]);
 
