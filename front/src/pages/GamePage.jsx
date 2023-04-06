@@ -102,10 +102,10 @@ export default function GamePage() {
         console.log('턴넘어감', res.data);
         console.log('turn data, gamepage, 77', res.data.gamer);
         dispatch(setPlayerList(res.data.gamer));
+        dispatch(handleGetTodayDate(res.data.currentDate));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
-        dispatch(handleGetTodayDate(res.data.currentDate));
         dispatch(handleGetchangeInterest(res.data.exchangeInterest));
       })
       .catch((err) => {
