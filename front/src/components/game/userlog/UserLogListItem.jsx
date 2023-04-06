@@ -10,6 +10,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   const myUsername = Cookies.get('email');
   const myaccount = useSelector(gamerDataList);
   const {
+    rank,
     userName,
     nickname,
     userProfileIcon,
@@ -20,10 +21,11 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     totalEvaluationStock,
     totalProfitRate,
   } = player;
-  console.log(player, 'player!@!@------------------');
+  console.log('playerInfo', player, rank, nickname);
   const isMe = myUsername === userName;
 
   // USER LOG
+  const rankIcon = ['🥇', '🥈', '🥉', '💸'];
   const profilePath = `profile_pics/${userProfileIcon}.jpg`;
 
   // ready
@@ -42,9 +44,10 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     <UserLogItemContainer isMe={isMe} isReady={isReady.status}>
       <LeftSection>
         <UserBox>
-          <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{nickname}</div>
+          <p className="text-2xl m-auto">{rankIcon[rank - 1]}</p>
+          <Avatar size="sm" className="border-2 border-black" variant="circular" src={profilePath} />
         </UserBox>
+        <div className="text-xl">{nickname}</div>
         {isMe && (
           <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
             ready
