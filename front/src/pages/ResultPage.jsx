@@ -106,14 +106,21 @@ export default function ResultPage() {
     }
   };
 
+  // -------------------------||| TOGGLE USER LOG |||------------------------------------------------------------------
+  const [selectedIdx, setSelectedIdx] = useState('');
+  const getWho = (idx) => {
+    console.log('idx', idx);
+    setSelectedIdx(idx);
+  };
+
   // -------------------------||| RETURN HTML |||------------------------------------------------------------------
 
   return (
     <ResultContainer>
-      <ResultRank result={result} />
-      <ResultInfo />
+      <ResultRank result={result} getWho={getWho} />
+      <ResultInfo result={result} selectedIdx={selectedIdx} />
       <LeftBottomSection>
-        <UnlockResult />
+        <UnlockResult result={result} />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
       <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
@@ -122,7 +129,7 @@ export default function ResultPage() {
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px]`}
+  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px] font-spoq`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
@@ -131,5 +138,5 @@ const LeftBottomSection = styled.div`
 `;
 
 const Button = styled(Link)`
-  ${tw`border bg-white rounded-xl w-[100%] min-h-[50px] flex justify-center items-center`}
+  ${tw`border bg-gain hover:bg-red-500 focus:border-red-600 text-white rounded-xl w-[100%] min-h-[50px] flex font-bold justify-center items-center`}
 `;

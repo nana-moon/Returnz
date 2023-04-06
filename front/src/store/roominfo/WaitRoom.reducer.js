@@ -40,9 +40,11 @@ export const waitRoom = createSlice({
       });
     },
     setTheme(state, action) {
+      console.log('theme', action.payload);
       state.theme = action.payload;
     },
     setCustom(state, action) {
+      console.log('custom', action.payload);
       state.theme = action.payload;
     },
     resetWaitRoom(state) {
@@ -51,6 +53,14 @@ export const waitRoom = createSlice({
   },
 });
 
-export const { setWaitRoomId, setCaptainName, setMemberCount, setWaiterList, addWaiter, resetWaitRoom } =
-  waitRoom.actions;
+export const {
+  setWaitRoomId,
+  setCaptainName,
+  setMemberCount,
+  setWaiterList,
+  addWaiter,
+  setTheme,
+  setCustom,
+  resetWaitRoom,
+} = waitRoom.actions;
 export default waitRoom;

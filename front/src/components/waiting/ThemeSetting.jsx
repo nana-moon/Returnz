@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Tooltip } from '@material-tailwind/react';
+import { useSelector } from 'react-redux';
+import { getSelectedTheme } from '../../store/roominfo/WaitRoom.selector';
 
 export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   // theme state
   const [activeTheme, setActiveTheme] = useState('');
+  const selectedTheme = useSelector(getSelectedTheme);
+  console.log('selectedTheme', selectedTheme);
 
   const themeList = [
     { value: 'LAST_MONTH', name: '최근 한 달', description: '최신 한 달간의 주식 차트 상황' },
@@ -82,7 +86,12 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
               unmount: { scale: 0, y: 25 },
             }}
           >
-            <ThemeBox key={theme.name} value={theme.value} onClick={handleClick} active={activeTheme === theme.value}>
+            <ThemeBox
+              key={theme.name}
+              value={theme.value}
+              onClick={handleClick}
+              active={activeTheme === theme.value || selectedTheme === theme.value}
+            >
               {theme.name}
             </ThemeBox>
           </Tooltip>

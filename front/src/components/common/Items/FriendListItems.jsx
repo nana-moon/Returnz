@@ -10,7 +10,6 @@ import { deleteFriendApi } from '../../../apis/friendApi';
 
 export default function FriendListItems({ friend, handleInvite }) {
   // 내정보
-  const myToken = Cookies.get('access_token');
   const [currentRoute, setCurrentRoute] = useState('');
   const location = useLocation();
   useEffect(() => {
@@ -53,36 +52,34 @@ export default function FriendListItems({ friend, handleInvite }) {
         username: `${friend.username}`, // 초대 상대
       },
     });
+    Swal.fire({
+      title: `초대 성공`,
+      icon: 'success',
+      timer: 1000,
+      showConfirmButton: false,
+    });
     handleInvite(data);
   };
 
   return (
-    <>
-      <FriendInfoContainer onContextMenu={deleteFriend}>
-        <Avatar
-          variant="circular"
-          src={`profile_pics/${friend.profileIcon}.jpg`}
-          className="border-2 border-negative"
-        />
-        <FriendStateCircle className={friendColor} />
-        <FriendInfoSection>
-          <FriendNameItem>{friend.nickname}</FriendNameItem>
-          <FriendStateItem className={friendStateColor}>{friend.state}</FriendStateItem>
-        </FriendInfoSection>
-      </FriendInfoContainer>
-      {currentRoute === '/waiting' ? (
-        <FriendInviteButton onClick={handleInviteRequest}>게임 초대하기</FriendInviteButton>
-      ) : null}
-    </>
+    <FriendInfoContainer onContextMenu={deleteFriend}>
+      <Avatar variant="circular" src={`profile_pics/${friend.profileIcon}.jpg`} className="border-2 border-negative" />
+      <FriendStateCircle className={friendColor} />
+      <FriendInfoSection>
+        <FriendNameItem>{friend.nickname}</FriendNameItem>
+        <FriendStateItem className={friendStateColor}>{friend.state}</FriendStateItem>
+      </FriendInfoSection>
+      {currentRoute === '/waiting' ? <FriendInviteButton onClick={handleInviteRequest}>초대</FriendInviteButton> : null}
+    </FriendInfoContainer>
   );
 }
 
 const FriendInfoContainer = styled.div`
   position: relative;
-  ${tw`px-2 py-2 flex`}
+  ${tw`pl-2 py-2 flex`}
 `;
 const FriendInfoSection = styled.div`
-  ${tw`ml-3`}
+  ${tw`ml-2`}
 `;
 const FriendNameItem = styled.div`
   ${tw`mt-1`}
@@ -102,5 +99,8 @@ const FriendStateCircle = styled.div`
 `;
 
 const FriendInviteButton = styled.button`
-  ${tw`text-white bg-primary border-4 border-primary hover:bg-dprimary focus:border-dprimary font-bold text-sm rounded-lg px-3 py-1 text-center mx-10`};
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  ${tw`text-white bg-primary border-4 border-primary hover:bg-dprimary focus:border-dprimary font-bold text-sm rounded-lg px-3 py-1 text-center`};
 `;
