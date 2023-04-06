@@ -112,6 +112,7 @@ export default function WaitingPage() {
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
+      setIsLoading(true);
       console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
       const { roomId, gameInit } = newMessage.messageBody;
       console.log('gameInit3 in handle game_info (received)', gameInit);
@@ -122,7 +123,9 @@ export default function WaitingPage() {
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
       // setGameRoomId
-      dispatch(removeWaiter(newMessage.messageBody.username));
+      if (newMessage.messageBody.isCaptain) {
+        removeRoom();
+      } else dispatch(removeWaiter(newMessage.messageBody.username));
     }
   };
   // -------------------------SOCKET CONNECT-----------------------------
@@ -361,17 +364,20 @@ export default function WaitingPage() {
   };
 
   // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
-
+  const removeRoom = () => {
+    dispatch(resetWaitRoom());
+    navigate('/');
+  };
   const handleExit = async () => {
     await exitRoomApi(waitRoomId);
     dispatch(resetWaitRoom());
   };
 
-  useEffect(() => {
-    return () => {
-      handleExit();
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     handleExit();
+  //   };
+  // }, []);
 
   // -------------------------||| RETURN HTML |||------------------------------------------------------------------
   return (
