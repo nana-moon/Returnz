@@ -134,7 +134,7 @@ public class GameService {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
 
-		List<GameGamerDto> gameGamerDtosbyRank = resultService.findAllByGameRoomIdOrderByTotalProfitRate(
+		List<GameGamerDto> gameGamerDtosbyRank = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(
 			gameRoomDto.getId());
 
 		// 2. id로 멤버 불러오기
