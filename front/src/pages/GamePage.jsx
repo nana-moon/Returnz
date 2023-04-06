@@ -281,6 +281,12 @@ export default function GamePage() {
     }
   }, [turnInfo]);
 
+  const handleTimeout = () => {
+    axiospost(turnInfoRef.current);
+  };
+
+  // -------------------------||| Handle Navigate |||------------------------------------------------------------------
+
   // 새로고침, 뒤로가기, 창 닫기 방지
 
   window.onbeforeunload = function () {};
@@ -299,7 +305,7 @@ export default function GamePage() {
           <HoldingList />
         </LeftSection>
         <MiddleSection>
-          <Turn />
+          <Turn getTimeout={handleTimeout} />
           <Graph />
           <StockInfo />
         </MiddleSection>

@@ -389,7 +389,7 @@ export default function WaitingPage() {
             </TickerText>
           </TickerWrapper>
           <BottomSection>
-            {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
+            {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} isHost={isHost} />}
             {isUserSetting && (
               <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
             )}

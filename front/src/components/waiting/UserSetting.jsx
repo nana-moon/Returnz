@@ -31,7 +31,7 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
     const day = selectedDate.getDay();
     if (day === 0 || day === 6) {
       Swal.fire({
-        title: `주말은 선택할 수 없습니다/`,
+        title: '주말은 선택할 수 없습니다',
         icon: 'error',
       });
       e.target.value = '';
