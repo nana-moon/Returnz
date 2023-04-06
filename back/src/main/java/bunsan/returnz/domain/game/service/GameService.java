@@ -795,8 +795,11 @@ public class GameService {
 			log.info("stock close price : " + stockClosePrice);
 			log.info("환율 : " + gameExchangeInterestDto.getExchangeRate());
 			// log.info(gameGamerDto.getDeposit() >= (stockClosePrice * count))
-			throw new BadRequestException("예치금이 충분하지 않습니다. " + "stock close price : "
-					+ stockClosePrice + " count :" + count + " total price : " + (stockClosePrice * count));
+			throw new BadRequestException("예치금이 충분하지 않습니다. "
+					+ "stock close price : " + stockClosePrice
+					+ " count :" + count
+					+ " total price : " + (stockClosePrice * count)
+					+ " date time : " + gameRoomDto.getPreDate());
 		}
 
 	}
