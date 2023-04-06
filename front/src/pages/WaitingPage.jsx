@@ -14,7 +14,7 @@ import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { setWaitRoomId, addWaiter, resetWaitRoom } from '../store/roominfo/WaitRoom.reducer';
+import { setWaitRoomId, addWaiter, resetWaitRoom, setTheme, setCustom } from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
@@ -38,13 +38,14 @@ import {
 import LoadPage from '../components/loading/LoadPage';
 import RequestQueue from '../utils/RequestQueue';
 
+const requestQueue = new RequestQueue();
+
 export default function WaitingPage() {
   // -------------------------||| HOOKS |||------------------------------------------------------------------
 
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const requestQueue = new RequestQueue();
 
   // -------------------------||| WAITROOM STATE |||------------------------------------------------------------------
 
@@ -98,7 +99,9 @@ export default function WaitingPage() {
     // -------------------------handle SETTING-----------------------------
     if (newMessage.type === 'SETTING') {
       console.log('SETTING 메세지 도착', newMessage.messageBody);
-      // const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+      const { roomId, theme, turnPerTime, startTime, totalTurn } = newMessage.messageBody;
+      dispatch(setTheme(theme));
+      dispatch(setCustom({ turnPerTime, startTime, totalTurn }));
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
@@ -232,12 +235,14 @@ export default function WaitingPage() {
   // -------------------------NAVIGATE TO GAMEROOM-----------------------------
 
   const handlePage = () => {
+    setIsLoading(false);
     navigate('/game');
   };
 
   // -------------------------REQUEST FIRST TURN DATA-----------------------------
 
   const handleTurn = async (turnApiReq, id) => {
+    // turn API
     const gameData = await requestQueue.addRequest(() => gameDataApi(turnApiReq));
     console.log('turn data, waitingpage, 249', gameData.gamer);
     dispatch(setPlayerList(gameData.gamer));
@@ -248,7 +253,20 @@ export default function WaitingPage() {
     const keys = Object.keys(gameData.Stocks);
     const Date = gameData.currentDate;
     const gameId = id;
-    console.log(keys, Date, gameId, '가능');
+    // news API
+    const newsCache = new Map();
+
+    const getNewsApiWithCache = async (data) => {
+      const cacheKey = `${data.id}_${data.companyCode}_${data.articleDateTime}`;
+      if (newsCache.has(cacheKey)) {
+        return newsCache.get(cacheKey);
+      }
+
+      const news = await requestQueue.addRequest(() => getNewsApi(data));
+      newsCache.set(cacheKey, news);
+      return news;
+    };
+
     const getNews = [];
 
     for (let i = 0; i < keys.length; i += 1) {
@@ -258,12 +276,11 @@ export default function WaitingPage() {
         articleDateTime: Date,
       };
       // eslint-disable-next-line no-await-in-loop
-      const newsTmp = await requestQueue.addRequest(() => getNewsApi(data));
+      const newsTmp = await getNewsApiWithCache(data);
       getNews.push({ [keys[i]]: newsTmp });
     }
 
     dispatch(handleGetStockNews(getNews));
-
     dispatch(handleGetTodayDate(gameData.currentDate));
     handlePage();
   };
@@ -301,6 +318,7 @@ export default function WaitingPage() {
     const turnApiReq = {
       gamerId: myGameInfo.gamerId,
       roomId: gameInit.roomId,
+      captain: isHost,
     };
     await handleTurn(turnApiReq, gameInit.id);
   };
@@ -331,7 +349,7 @@ export default function WaitingPage() {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
@@ -364,6 +382,12 @@ export default function WaitingPage() {
               return <NullListItem key={i} />;
             })}
           </TopSection>
+          <TickerWrapper>
+            <TickerText>
+              TIP. 우선주는 일반적으로 보통주보다 재산적 내용(이익, 이자배당, 잔여재산 분배 등)에 있어서 우선적 지위가
+              인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
+            </TickerText>
+          </TickerWrapper>
           <BottomSection>
             {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
             {isUserSetting && (
@@ -414,4 +438,22 @@ const StartButton = styled.button`
 `;
 const ExitButton = styled(Link)`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
+`;
+const TickerWrapper = styled.div`
+  position: absolute;
+  left: 0px;
+  overflow: hidden;
+`;
+const TickerText = styled.p`
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 20s linear infinite;
+  @keyframes ticker {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
 `;
