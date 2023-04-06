@@ -241,9 +241,11 @@ export default function WaitingPage() {
 
   // -------------------------NAVIGATE TO GAMEROOM-----------------------------
 
-  const handlePage = () => {
-    setIsLoading(false);
-    navigate('/game');
+  const handlePage = async () => {
+    console.log('beforenavigate', isLoading);
+    await navigate('/game');
+    await setIsLoading(false);
+    console.log('afternavigate', isLoading);
   };
 
   // -------------------------REQUEST FIRST TURN DATA-----------------------------
@@ -353,10 +355,8 @@ export default function WaitingPage() {
       const newSetting = { ...setting, memberIdList };
       setSetting(newSetting);
       await handleGameInfo(newSetting);
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
-      // setIsLoading(false);
     }
   };
 
