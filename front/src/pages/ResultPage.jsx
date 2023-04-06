@@ -16,6 +16,7 @@ export default function ResultPage() {
   // HOOKS
   const location = useLocation();
   const { gameId, gameRoomId } = location.state;
+
   // -------------------------||| RESULT STATE |||------------------------------------------------------------------
   const init = [];
   const [result, setResult] = useState(init);

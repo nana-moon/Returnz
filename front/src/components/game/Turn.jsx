@@ -48,7 +48,7 @@ export default function Turn({ getTimeout }) {
 
   useEffect(() => {
     console.log('time', time);
-    if (time <= 0) {
+    if (time === 0) {
       getTimeout();
     }
   }, [time]);
