@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
@@ -20,8 +22,6 @@ import bunsan.returnz.persist.repository.MemberRepository;
 import bunsan.returnz.persist.repository.PurchaseSaleLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.transaction.Transactional;
 
 @Service
 @Slf4j
@@ -94,11 +94,10 @@ public class ResultService {
 		return gameGamerDtos;
 	}
 
-
 	@Transactional
 	public void updateAvgProfit(Member member, Double totalProfit) {
 		// 유저의 평균 수익률 갱신
-		Long gameReturn = Double.valueOf(totalProfit).longValue();
+		Long gameReturn = totalProfit.longValue();
 		member.addAccReturn(gameReturn);
 		// 유저의 gameCount ++
 		member.addGameCount();
@@ -106,7 +105,6 @@ public class ResultService {
 		member.setAvgProfit();
 		memberRepository.save(member);
 	}
-
 
 	@Transactional
 	public List<String> getNewProfile(Member member, int rank, Double totalProfit, int gameMemberCount) {
@@ -148,7 +146,6 @@ public class ResultService {
 		memberRepository.save(member);
 		return newProfiles;
 	}
-
 
 	@Transactional
 	private void addNewProfile(Member member, String code, List<String> newProfiles) {

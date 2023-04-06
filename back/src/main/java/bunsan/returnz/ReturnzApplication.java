@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @SpringBootApplication
 @EnableScheduling
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 public class ReturnzApplication {
 
 	public static void main(String[] args) {
