@@ -235,6 +235,7 @@ export default function WaitingPage() {
   // -------------------------NAVIGATE TO GAMEROOM-----------------------------
 
   const handlePage = () => {
+    setIsLoading(false);
     navigate('/game');
   };
 
@@ -280,7 +281,6 @@ export default function WaitingPage() {
     }
 
     dispatch(handleGetStockNews(getNews));
-
     dispatch(handleGetTodayDate(gameData.currentDate));
     handlePage();
   };
@@ -349,7 +349,7 @@ export default function WaitingPage() {
       setIsLoading(false);
     } catch (error) {
       console.error(error);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
@@ -382,6 +382,12 @@ export default function WaitingPage() {
               return <NullListItem key={i} />;
             })}
           </TopSection>
+          <TickerWrapper>
+            <TickerText>
+              TIP. 우선주는 일반적으로 보통주보다 재산적 내용(이익, 이자배당, 잔여재산 분배 등)에 있어서 우선적 지위가
+              인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
+            </TickerText>
+          </TickerWrapper>
           <BottomSection>
             {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
             {isUserSetting && (
@@ -432,4 +438,22 @@ const StartButton = styled.button`
 `;
 const ExitButton = styled(Link)`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
+`;
+const TickerWrapper = styled.div`
+  position: absolute;
+  left: 0px;
+  overflow: hidden;
+`;
+const TickerText = styled.p`
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 20s linear infinite;
+  @keyframes ticker {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
 `;
