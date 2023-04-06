@@ -9,5 +9,5 @@ import bunsan.returnz.persist.entity.Gamer;
 public interface GamerRepository extends JpaRepository<Gamer, Long> {
 	List<Gamer> findAllByGameRoomId(Long id);
 
-	List<Gamer> findAllByGameRoomIdOrderByTotalProfitRate(Long id);
+	List<Gamer> findAllByGameRoomIdOrderByTotalProfitRateDesc(Long id);
 }
