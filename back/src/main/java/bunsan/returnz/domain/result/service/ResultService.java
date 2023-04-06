@@ -83,8 +83,8 @@ public class ResultService {
 	 */
 
 	@Transactional
-	public List<GameGamerDto> findAllByGameRoomIdOrderByTotalProfitRate(Long gameRoomId) {
-		List<Gamer> gamers = gamerRepository.findAllByGameRoomIdOrderByTotalProfitRate(gameRoomId);
+	public List<GameGamerDto> findAllByGameRoomIdOrderByTotalProfitRateDesc(Long gameRoomId) {
+		List<Gamer> gamers = gamerRepository.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoomId);
 
 		List<GameGamerDto> gameGamerDtos = new LinkedList<>();
 		for (Gamer gamer : gamers) {
