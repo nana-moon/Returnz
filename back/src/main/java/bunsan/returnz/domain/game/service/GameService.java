@@ -127,6 +127,10 @@ public class GameService {
 			turnInformation.put("companyDetail", getCompanyDetail(gameStockDtoList));
 		}
 
+		// 게이머 정보 업데이트
+		updateGamerInformation(gameGamerStockDtos, roomId,
+				gameRoomDto, gamerId);
+
 		// 4. 다음 턴 정보 업데이트
 		log.info("isCaptin : " + isCaptain);
 		if (isCaptain && !updateTurnInformation(gameGamerStockDtos, roomId,
@@ -386,6 +390,40 @@ public class GameService {
 			gamerService.updateDto(gameGamerDto);
 		}
 
+		return true;
+	}
+
+	/**
+	 * Description : roomId에 해당하는 게임방의 정보를 다음 턴으로 update 한다.
+	 * @param gameGamerStockDtos : 주식 종목 리스트
+	 * @param roomId : 게임방 uuid
+	 * @param gameRoomDto : 게임방, 게임 설정 정보를 담은 DTO
+	 * @return : True / Fase : 정상적으로 코드가 실행되면 True를 반환한다.
+	 */
+	@Transactional
+	public boolean updateGamerInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
+										 GameRoomDto gameRoomDto, Long gamerId) {
+
+		try {
+			GameGamerDto gamer = gamerService.findById(gamerId);
+
+			// 턴 정보 저장하기
+			GamerLogDto gamerLogDto = GamerLogDto.builder()
+					.deposit(gamer.getDeposit())
+					.originDeposit(gamer.getOriginDeposit())
+					.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
+					.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
+					.totalEvaluationStock(gamer.getTotalEvaluationStock())
+					.totalProfitRate(gamer.getTotalProfitRate())
+					.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
+					.member(memberService.findById(gamer.getMemberId()))
+					.curTurn(gameRoomDto.getCurTurn())
+					.build();
+
+			gamerLogService.updateDto(gamerLogDto);
+		} catch (Exception e) {
+			throw new BusinessException("게이머 정보를 업데이트 할 수 없습니다.");
+		}
 		return true;
 	}
 
