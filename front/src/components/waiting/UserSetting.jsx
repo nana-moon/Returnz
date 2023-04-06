@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { Radio } from '@material-tailwind/react';
+import Swal from 'sweetalert2';
 
 export default function UserSetting({ setting, getIsUserSetting, getUserSetting }) {
   // 사용자 설정 데이터
@@ -29,7 +30,10 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
     const selectedDate = new Date(e.target.value);
     const day = selectedDate.getDay();
     if (day === 0 || day === 6) {
-      alert('주말은 선택할 수 없습니다.');
+      Swal.fire({
+        title: `주말은 선택할 수 없습니다/`,
+        icon: 'error',
+      });
       e.target.value = '';
     }
     handleUserSetting(e);
