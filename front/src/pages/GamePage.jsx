@@ -304,10 +304,24 @@ export default function GamePage() {
 
   // 새로고침, 뒤로가기, 창 닫기 방지
 
-  window.onbeforeunload = function () {};
+  useEffect(() => {
+    // 새로고침 방지
+    window.onbeforeunload = function () {
+      return '정말로 페이지를 떠나시겠습니까?';
+    };
 
-  window.addEventListener('popstate', function (event) {});
+    // 뒤로가기 방지
+    window.onpopstate = function (event) {
+      event.preventDefault();
+      navigate('/', { replace: true });
+    };
 
+    return () => {
+      // 컴포넌트가 언마운트될 때 이벤트 핸들러 제거
+      window.onbeforeunload = null;
+      window.onpopstate = null;
+    };
+  }, [navigate]);
   // -------------------------||| HTML |||------------------------------------------------------------------
 
   return (
