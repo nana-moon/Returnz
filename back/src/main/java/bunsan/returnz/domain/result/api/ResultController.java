@@ -57,13 +57,13 @@ public class ResultController {
 
 			List<PurchaseSaleLogResponseDto> purchaseSaleLogResponseDtos
 				= resultService.findAllByGameRoomIdAndMemberIdOrderById(
-				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMermberId()
+				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMemberId()
 			);
 
 			List<GamerLogResponseDto> gamerLogResponseDtos = resultService.findAllByMemberIdAndGameRoomId(
-				gameGamerDtos.get(i).getMermberId(),
+				gameGamerDtos.get(i).getMemberId(),
 				resultRequestBody.getGameRoomId());
-			Member member = memberService.findById(gameGamerDtos.get(i).getMermberId());
+			Member member = memberService.findById(gameGamerDtos.get(i).getMemberId());
 
 			// 유저의 평균 수익률 갱신
 			Double prevAvgProfit = gameGamerDtos.get(i).getTotalProfitRate();
