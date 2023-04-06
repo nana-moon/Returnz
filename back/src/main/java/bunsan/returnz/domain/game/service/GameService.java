@@ -604,7 +604,7 @@ public class GameService {
 
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBetweenWithCode(
-						gameRoomDto.getPreDate(), gameRoomDto.getCurDate(), companyCode);
+						endDate.minusDays(4), endDate, companyCode);
 
 				log.info("result : " + gameHistoricalPriceDayDtos.toString());
 
