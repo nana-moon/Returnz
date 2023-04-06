@@ -49,7 +49,7 @@ public class ResultController {
 		}
 
 		// 모든 게이머 순서대로 찾기
-		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRate(gameRoom.getId());
+		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoom.getId());
 
 		List<HashMap<String, Object>> responseInformation = new LinkedList<>();
 		for (int i = 0; i < gameGamerDtos.size(); ++i) {
