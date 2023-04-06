@@ -384,8 +384,8 @@ export default function WaitingPage() {
           </TopSection>
           <TickerWrapper>
             <TickerText>
-              TIP. 우선주는 일반적으로 보통주보다 재산적 내용(이익, 이자배당, 잔여재산 분배 등)에 있어서 우선적 지위가
-              인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
+              {`TIP. 환율이 상승하면 원화로 환산한 원자재 값이 오르고 또한 소비자들이 사용하는 많은 수입제품의 가격이
+              오르게 되어 국내 물가수준을 상승시킵니다.`}
             </TickerText>
           </TickerWrapper>
           <BottomSection>
@@ -421,7 +421,7 @@ const TopSection = styled.section`
   ${tw`flex gap-5 mt-10 min-h-[200px]`}
 `;
 const BottomSection = styled.section`
-  ${tw`flex gap-5 mt-10 h-[300px]`}
+  ${tw`flex gap-5 mt-4 h-[300px]`}
 `;
 const BottomRightSection = styled.section`
   ${tw`w-[50%] h-auto`}
@@ -440,7 +440,7 @@ const ExitButton = styled(Link)`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
 `;
 const TickerWrapper = styled.div`
-  position: absolute;
+  position: relative;
   left: 0px;
   overflow: hidden;
 `;
@@ -456,4 +456,5 @@ const TickerText = styled.p`
       transform: translateX(-100%);
     }
   }
+  ${tw`mt-6`}
 `;

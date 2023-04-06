@@ -43,7 +43,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
       <LeftSection>
         <UserBox>
           <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{nickname}</div>
+          <MyName>{nickname}</MyName>
         </UserBox>
         {isMe && (
           <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
@@ -140,4 +140,13 @@ const EvaluationAssetBox = styled.div`
   ${(props) => props.isUp === 'gain' && tw`text-gain`}
   ${(props) => props.isUp === 'lose' && tw`text-lose`}
   ${tw``};
+`;
+
+const MyName = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  ${tw`text-sm font-bold`}
 `;

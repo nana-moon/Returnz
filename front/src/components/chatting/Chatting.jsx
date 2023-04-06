@@ -55,6 +55,9 @@ const ChattingContainer = styled.div`
   ${tw`border bg-white rounded-xl w-[100%] h-[100%] p-2`}
 `;
 const ChattingBox = styled.div`
+  &::-webkit-scrollbar {
+    display: none;
+  }
   ${tw`bg-white rounded-xl w-[100%] h-[calc(100%-35px)] flex flex-col-reverse overflow-y-auto`}
 `;
 const ChattingDiv = styled.div`
