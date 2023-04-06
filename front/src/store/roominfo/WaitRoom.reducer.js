@@ -35,7 +35,7 @@ export const waitRoom = createSlice({
       state.waiterList.push(action.payload);
     },
     removeWaiter(state, action) {
-      state.waiterList.fiter((waiter) => {
+      state.waiterList = state.waiterList.filter((waiter) => {
         return waiter.username !== action.payload;
       });
     },
