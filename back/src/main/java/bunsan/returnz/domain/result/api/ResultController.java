@@ -6,7 +6,12 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
 import bunsan.returnz.domain.game.service.GameRoomService;
@@ -22,12 +27,11 @@ import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.transaction.Transactional;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 @RequestMapping("/api/results")
 public class ResultController {
 
@@ -67,7 +71,6 @@ public class ResultController {
 			// 유저의 새로 해금된 프사 리턴
 			Integer gameMemberCount = gameGamerDtos.size();
 			List<String> newProfiles = resultService.getNewProfile(member, i + 1, prevAvgProfit, gameMemberCount);
-
 
 			gamerInformation.put("rank", (i + 1));
 			gamerInformation.put("id", member.getId());
