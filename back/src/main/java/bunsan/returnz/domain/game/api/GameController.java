@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
@@ -31,7 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 @Slf4j
 // TODO: 2023-03-23  추후 시큐리티 설정
 public class GameController {
@@ -92,16 +94,12 @@ public class GameController {
 		}
 
 		GameSettings gameSettings = new GameSettings(requestSettingGame);
-		// log.info("after constructor gameSetting" + gameSettings.getStartTime());
+		log.info("after constructor gameSetting" + gameSettings.getStartTime());
 		Map<String, Object> stringObjectMap = gameStartService.settingGame(gameSettings);
 		stringObjectMap.put("totalTurn", gameSettings.getTotalTurn());
 
 		//신문세팅
-		try {
-			gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
-		} catch (Exception er) {
-			er.printStackTrace();
-		}
+		gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
 
