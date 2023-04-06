@@ -144,3 +144,12 @@ const EvaluationAssetBox = styled.div`
   ${(props) => props.isUp === 'lose' && tw`text-lose`}
   ${tw``};
 `;
+
+const MyName = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  ${tw`text-sm font-bold`}
+`;
