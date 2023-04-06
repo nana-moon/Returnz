@@ -122,7 +122,7 @@ export default function WaitingPage() {
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
       // setGameRoomId
-      // dispatch(removeWaiter());
+      dispatch(removeWaiter(newMessage.messageBody.username));
     }
   };
   // -------------------------SOCKET CONNECT-----------------------------
