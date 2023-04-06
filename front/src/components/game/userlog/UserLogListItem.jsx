@@ -47,7 +47,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
           <p className="text-2xl m-auto">{rankIcon[rank - 1]}</p>
           <Avatar size="sm" className="border-2 border-black" variant="circular" src={profilePath} />
         </UserBox>
-        <div className="text-xl">{nickname}</div>
+        <MyName className="text-xl">{nickname}</MyName>
         {isMe && (
           <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
             ready
