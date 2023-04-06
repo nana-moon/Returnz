@@ -608,14 +608,14 @@ public class GameService {
 		} else { // 첫 번째 턴이 아닌 경우 해당 주 까지 데이터 준다.
 
 			List<WeekRange> weekRanges = CalDateRange.calculateWeekRanges(gameRoomDto.getCurDate(), 1);
-			LocalDateTime endDate = weekRanges.get(0).getWeekLastDay();
+			LocalDateTime endDate = weekRanges.get(0).getWeekLastDay().minusDays(1);
 			for (int i = 0; i < gameStockDtoList.size(); ++i) {
 				String companyCode = gameStockDtoList.get(i).getCompanyCode();
 				log.info("week range");
 				log.info(endDate.minusDays(4) + " " + endDate + " " + companyCode);
 				List<GameHistoricalPriceDayDto> gameHistoricalPriceDayDtos =
 					gameHistoricalPriceDayService.findAllByDateTimeIsBetweenWithCode(
-						endDate.minusDays(4), endDate, companyCode);
+						gameRoomDto.getPreDate(), gameRoomDto.getCurDate(), companyCode);
 
 				log.info("result : " + gameHistoricalPriceDayDtos.toString());
 
