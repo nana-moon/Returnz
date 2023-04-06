@@ -15,7 +15,7 @@ export default function RankListItem({ user, idx, getWho }) {
       <Avatar size="lg" className="border-2 border-negative" variant="circular" src={profilePath} />
       <div className="my-auto ml-2">
         <p className="font-bold">{nickname}</p>
-        <div>수익률: {profits[profits.length - 1].totalProfitRate}%</div>
+        <div>수익률: {profits[user.profits.length - 1]?.totalProfitRate}%</div>
       </div>
     </UserContainer>
   );
