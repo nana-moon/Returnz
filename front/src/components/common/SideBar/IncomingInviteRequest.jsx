@@ -16,6 +16,7 @@ export default function IncomingInviteRequest({ friendInv, handleDelete }) {
     const res = await acceptInviteRequestApi(friendInv.roomId);
     if (res && res.status === 200) {
       console.log('roomInfo in IncomingInv', res);
+      setIsVisible(false);
       dispatch(setWaitRoomId(res.data.roomId));
       dispatch(setCaptainName(res.data.captainName));
       dispatch(setMemberCount(res.data.memberCount));
