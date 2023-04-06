@@ -12,7 +12,7 @@ export default function UserLogList({ getIsReady }) {
   const isReadyList = useSelector(getIsReadyList);
   return (
     <UserLogContainer>
-      <div className="absolute left-4 top-4">
+      <div className="absolute right-4 top-4">
         <Popover
           animate={{
             mount: { scale: 1, y: 0 },
