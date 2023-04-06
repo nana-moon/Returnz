@@ -17,11 +17,14 @@ public interface FinancialNewsRepository extends JpaRepository<FinancialNews, Lo
 	List<LocalDateTime> findDistinctDatesAfter(@Param("startDate") LocalDateTime startDate, Pageable pageable,
 		@Param("companyCodes") List<String> companyCodes);
 
-	@Query(value = "SELECT fn FROM FinancialNews fn "
+	@Query(value = "SELECT "
+		+ "DISTINCT fn.date, fn"
+		+ " FROM FinancialNews fn "
 		+ "WHERE fn.date between :startDate And :endDate "
 		+ "AND fn.code IN :companyCodes"
 		+ " ORDER BY fn.date ASC")
-	List<FinancialNews> findAllByDateAndCompanyCodes(@Param("startDate") LocalDateTime startDate,
+	List<Object[]> findAllByDateAndCompanyCodes(@Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate,
 		@Param("companyCodes") List<String> companyCodes);
+
 }
