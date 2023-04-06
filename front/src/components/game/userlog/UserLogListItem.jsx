@@ -20,7 +20,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     totalEvaluationStock,
     totalProfitRate,
   } = player;
-  console.log(player, 'player!@!@');
+  console.log(player, 'player!@!@------------------');
   const isMe = myUsername === userName;
 
   // USER LOG
