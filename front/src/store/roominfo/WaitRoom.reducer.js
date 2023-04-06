@@ -36,7 +36,7 @@ export const waitRoom = createSlice({
     },
     removeWaiter(state, action) {
       state.waiterList.fiter((waiter) => {
-        // waiter[username] !== action.payload;
+        return waiter.username !== action.payload;
       });
     },
     setTheme(state, action) {
@@ -59,6 +59,7 @@ export const {
   setMemberCount,
   setWaiterList,
   addWaiter,
+  removeWaiter,
   setTheme,
   setCustom,
   resetWaitRoom,

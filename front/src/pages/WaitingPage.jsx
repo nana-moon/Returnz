@@ -8,13 +8,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
-import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
+import { startGameApi, gameDataApi, getNewsApi, exitRoomApi } from '../apis/gameApi';
 import { getCaptainName, getMemberCount, getWaiterList, getWaitRoomId } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { setWaitRoomId, addWaiter, resetWaitRoom, setTheme, setCustom } from '../store/roominfo/WaitRoom.reducer';
+import {
+  setWaitRoomId,
+  addWaiter,
+  resetWaitRoom,
+  setTheme,
+  setCustom,
+  removeWaiter,
+} from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
@@ -115,7 +122,7 @@ export default function WaitingPage() {
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
       // setGameRoomId
-      navigate('/game', { state: newMessage.messageBody });
+      // dispatch(removeWaiter());
     }
   };
   // -------------------------SOCKET CONNECT-----------------------------
@@ -355,7 +362,8 @@ export default function WaitingPage() {
 
   // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
 
-  const handleExit = () => {
+  const handleExit = async () => {
+    await exitRoomApi(waitRoomId);
     dispatch(resetWaitRoom());
   };
 
