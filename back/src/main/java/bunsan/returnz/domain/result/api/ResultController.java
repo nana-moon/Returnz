@@ -6,11 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
 import bunsan.returnz.domain.game.service.GameRoomService;
@@ -26,10 +22,12 @@ import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Transactional;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
 @RequestMapping("/api/results")
 public class ResultController {
 
@@ -55,13 +53,13 @@ public class ResultController {
 
 			List<PurchaseSaleLogResponseDto> purchaseSaleLogResponseDtos
 				= resultService.findAllByGameRoomIdAndMemberIdOrderById(
-				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMermberId()
+				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMemberId()
 			);
 
 			List<GamerLogResponseDto> gamerLogResponseDtos = resultService.findAllByMemberIdAndGameRoomId(
-				gameGamerDtos.get(i).getMermberId(),
+				gameGamerDtos.get(i).getMemberId(),
 				resultRequestBody.getGameRoomId());
-			Member member = memberService.findById(gameGamerDtos.get(i).getMermberId());
+			Member member = memberService.findById(gameGamerDtos.get(i).getMemberId());
 
 			// 유저의 평균 수익률 갱신
 			Double prevAvgProfit = gameGamerDtos.get(i).getTotalProfitRate();

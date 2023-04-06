@@ -33,4 +33,16 @@ const getRecommendedStock = () => {
     });
 };
 
-export { getTodayWord, getTopTenRank, getRecommendedStock };
+const getStockDetail = (payload) => {
+  return axios
+    .get(`/recommend-stock/${payload}`)
+    .then((res) => {
+      console.log(res, '주식디테일 뭐오니');
+      return res.data;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
+
+export { getTodayWord, getTopTenRank, getRecommendedStock, getStockDetail };
