@@ -44,11 +44,10 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     <UserLogItemContainer isMe={isMe} isReady={isReady.status}>
       <LeftSection>
         <UserBox>
-          <p className="text-2xl my-auto mr-2">{rankIcon[rank - 1]}</p>
-
-          <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{nickname}</div>
+          <p className="text-2xl m-auto">{rankIcon[rank - 1]}</p>
+          <Avatar size="sm" className="border-2 border-black" variant="circular" src={profilePath} />
         </UserBox>
+        <div className="text-xl">{nickname}</div>
         {isMe && (
           <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
             ready
