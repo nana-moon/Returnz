@@ -15,6 +15,7 @@ export default function ProfileEditModal() {
   const myNick = Cookies.get('nickname');
   const picPath = `profile_pics/${myPic}.jpg`;
   const [possibleProfiles, setPossibleProfiles] = useState([]);
+  const allProfiles = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
   const handleModal = () => {
     dispatch(handleModalState(false));
   };
@@ -36,10 +37,7 @@ export default function ProfileEditModal() {
     }
   };
   const handleProfileChange = async (pic) => {
-    const data = {
-      newProfile: pic,
-    };
-    const res = await patchMyProfile(data);
+    const res = await patchMyProfile(pic);
     if (res.status === 200) {
       Cookies.remove('profileIcon');
       Cookies.set('profileIcon', pic);
@@ -60,16 +58,23 @@ export default function ProfileEditModal() {
         </UserNameContainer>
         <EncourageMessage>총 12개의 프로필 사진을 해금해보세요</EncourageMessage>
         <PicturesContainer>
-          {possibleProfiles?.map((pic) => {
+          {allProfiles?.map((pic) => {
+            const isMyProfile = possibleProfiles.includes(pic);
             return (
-              <Avatar
-                key={pic}
-                size="xl"
-                variant="circular"
-                className="border-2 border-negative hover:cursor-pointer"
-                src={`profile_pics/${pic}.jpg`}
-                onClick={() => handleProfileChange(pic)}
-              />
+              <div className="relative">
+                <Avatar
+                  key={pic}
+                  size="xl"
+                  variant="circular"
+                  className=" border-2 border-negative"
+                  src={`profile_pics/${pic}.jpg`}
+                />
+                <AbleClick
+                  key={pic}
+                  className={`${isMyProfile ? ' hover:cursor-pointer' : 'bg-black opacity-50'}`}
+                  onClick={() => handleProfileChange(pic)}
+                />
+              </div>
             );
           })}
         </PicturesContainer>
@@ -120,4 +125,18 @@ const BackButton = styled.button`
 `;
 const SendButton = styled.button`
   ${tw`text-primary bg-white border-2 border-primary hover:bg-cyan-100 focus:border-dprimary font-bold font-spoq text-sm rounded-lg px-2 py-1 text-center`}
+`;
+
+const AbleClick = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  left: 1px;
+  height: 72px;
+  width: 72px;
+  ${tw`rounded-full`}
+`;
+
+const ConditionPopover = styled.div`
+  ${tw`rounded-full`}
 `;
