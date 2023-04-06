@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import bunsan.returnz.domain.result.service.ResultService;
 import bunsan.returnz.domain.game.dto.GameBuySellRequestBody;
 import bunsan.returnz.domain.game.dto.GameCompanyDetailDto;
 import bunsan.returnz.domain.game.dto.GameExchangeInterestDto;
@@ -47,6 +48,7 @@ public class GameService {
 	private final GameExchangeInterestService gameExchangeInterestService;
 	private final PurchaseSaleLogService purchaseSaleLogService;
 	private final GamerLogService gamerLogService;
+	private final ResultService resultService;
 
 	/**
 	 * Description : 턴이 시작할 때 필요한 정보를 반환한다.
@@ -115,9 +117,6 @@ public class GameService {
 			log.info(gamerStockDto.toString());
 		}
 
-		// 2. id로 멤버 불러오기
-		turnInformation.put("gamer", getAllGamer(gameRoomDto));
-
 		turnInformation.put("gamerStock", gameGamerStockDtosResponse);
 
 		// 6. 주가 정보
@@ -134,6 +133,25 @@ public class GameService {
 			gameRoomDto, gamerId)) {
 			throw new BusinessException("다음 턴 정보를 얻어올 수 없습니다.");
 		}
+
+		List<GameGamerDto> gameGamerDtosbyRank = resultService.findAllByGameRoomIdOrderByTotalProfitRate(gameRoomDto.getId());
+
+		// 2. id로 멤버 불러오기
+		HashMap<String, GameGamerDto> gameGamerDtos = getAllGamer(gameRoomDto);
+		for (String key : gameGamerDtos.keySet()) {
+
+			GameGamerDto gameGamerDto = gameGamerDtos.get(key);
+			gameGamerDto.setNickname(memberService.findById(gameGamerDto.getMemberId()).getNickname());
+			gameGamerDtos.put(key, gameGamerDto);
+
+			for(int i = 0; i < gameGamerDtosbyRank.size(); ++i) {
+				if(gameGamerDtosbyRank.get(i).getGamerId().equals(gameGamerDto.getGamerId())) {
+					gameGamerDto.setRank(i + 1);
+					break;
+				}
+			}
+		}
+		turnInformation.put("gamer", gameGamerDtos);
 
 		return turnInformation;
 	}
@@ -265,111 +283,117 @@ public class GameService {
 		log.info("curDate : " + curDate + " , preDate :" + preDate);
 
 		// 게이머의 정보를 가져온다.
-		GameGamerDto gameGamerDto = gamerService.findById(gamerId);
-		// 해당 게이머의 최신 주식 정보들을 가져온다.
-		List<GameGamerStockDto> gameGamerStockDtoList = gamerStockService.findAllByGamer_Id(gamerId);
 
-		// 최신 주식 정보들을 다음턴 날짜에 맞게 변경한다.
-		// "gamer_stock" Table의 정보를   변경한다.
-		// totalCount, totalAmount, averagePrice는 바뀌지 않는다. (총 구매 보유 수, 총 구매 가격, 구매 평균 단가)
-		// 평가손익 : 해당 주식 현재 총 가격 - 해당 주식 총 구매 가격
-		// 수익률 : profitRate : (해당 주식 현재 총 가격 - 해당 주식 총 구매 가격) / (해당 주식 총 구매가격) * 100
-		// 수익률 : profitRate : ((int)(Double.parseDouble(stockPriceDataBefoer.getClose())
-		// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice)
-		// 					/ (totalCount * averagePrice) * 100
+		List<GameGamerDto> gameGamerDtos = gamerService.findAllByGameRoomId(gameRoomDto.getId());
 
-		// totalEvaluationStock 총 주식 평가 금액은 해당 턴 정보로 업데이트 되야한다.
-		// totalEvaluationStock += 각 주식 보유 수 * 각 주식의 현재 가격
-		Integer totalEvaluationStock = 0;
-		for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
+		for(GameGamerDto gamerDto : gameGamerDtos) {
 
-			// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
-			GameHistoricalPriceDayDto stockPriceData = null;
-			if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
-				stockPriceData = gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
-					preDate, gameGamerStockDto.getCompanyCode());
-			} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
-				stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-					curDate, gameGamerStockDto.getCompanyCode());
-			}
+			GameGamerDto gameGamerDto = gamerDto;
+			// 해당 게이머의 최신 주식 정보들을 가져온다.
+			List<GameGamerStockDto> gameGamerStockDtoList = gamerStockService.findAllByGamer_Id(gameGamerDto.getGamerId());
 
-			// // 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
-			// // : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
-			// GameHistoricalPriceDayDto stockPriceDataBefore = null;
-			// if (stockPriceData == null) {
-			// 	stockPriceDataBefore
-			// 		= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
-			// 		preDate, gameGamerStockDto.getCompanyCode());
-			// }
+			// 최신 주식 정보들을 다음턴 날짜에 맞게 변경한다.
+			// "gamer_stock" Table의 정보를   변경한다.
+			// totalCount, totalAmount, averagePrice는 바뀌지 않는다. (총 구매 보유 수, 총 구매 가격, 구매 평균 단가)
+			// 평가손익 : 해당 주식 현재 총 가격 - 해당 주식 총 구매 가격
+			// 수익률 : profitRate : (해당 주식 현재 총 가격 - 해당 주식 총 구매 가격) / (해당 주식 총 구매가격) * 100
+			// 수익률 : profitRate : ((int)(Double.parseDouble(stockPriceDataBefoer.getClose())
+			// 					* gameGamerStockDto.getTotalCount())) - (totalCount * averagePrice)
+			// 					/ (totalCount * averagePrice) * 100
 
-			Double stockClosePrice = 0.0;
-			if (stockPriceData != null) {
-				stockClosePrice = Double.parseDouble(
-					String.format("%.2f", Double.parseDouble(stockPriceData.getClose())));
-			}
+			// totalEvaluationStock 총 주식 평가 금액은 해당 턴 정보로 업데이트 되야한다.
+			// totalEvaluationStock += 각 주식 보유 수 * 각 주식의 현재 가격
+			Integer totalEvaluationStock = 0;
+			for (GameGamerStockDto gameGamerStockDto : gameGamerStockDtoList) {
 
-			// 외국 주식인 경우 환율 적용
-			if (stockPriceData != null && stockPriceData.getMarket().equals("nasdaq")) {
-				GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(stockPriceData.getDateTime());
-				stockClosePrice = Double.parseDouble(
-					String.format("%.2f",
-						Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
-			}
-
-			// if (stockPriceDataBefore != null) {
-			// 	stockClosePrice = Double.parseDouble(
-			// 		String.format("%.2f", Double.parseDouble(stockPriceDataBefore.getClose())));
-			// }
-			//
-			// if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
-			// 	GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
-			// 		stockPriceDataBefore.getDateTime());
-			// 	stockClosePrice = Double.parseDouble(
-			// 		String.format("%.2f",
-			// 			Double.parseDouble(stockPriceDataBefore.getClose())
-			// 				* gameExchangeInterestDto.getExchangeRate()));
-			// }
-
-			if (stockClosePrice != 0) {
-				log.info("stockClosePrice != 0 : " + stockClosePrice);
-				double totalPrice = stockClosePrice * gameGamerStockDto.getTotalCount();
-				// 총 주식 평가 자산을 계산한다.
-				totalEvaluationStock += (int)(totalPrice);
-				log.info(String.valueOf(totalEvaluationStock));
-				// 평가 손익 계산
-				Double valuation =
-					totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
-				// 수익률 계산
-				Double profitRate = 0.0;
-				if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
-					&& gameGamerStockDto.getTotalCount() != 0) {
-					profitRate =
-						(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+				// 다음 턴 날짜에 매칭되는 주식 가격 정보를 가져온다.
+				GameHistoricalPriceDayDto stockPriceData = null;
+				if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.DAY)) {
+					stockPriceData = gameHistoricalPriceDayService.findByDateTimeIsAfterWithCodeLimit1(
+							preDate, gameGamerStockDto.getCompanyCode());
+				} else if (gameRoomDto.getTurnPerTime().equals(TurnPerTime.WEEK)) {
+					stockPriceData = gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+							curDate, gameGamerStockDto.getCompanyCode());
 				}
-				// 해당 정보 반영
-				gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
-				gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
+
+				// // 전 날짜에 매칭되는 주식 가격 정보를 가져온다.
+				// // : 다음 턴 날짜에 매칭되는 주식 가격이 없을 경우를 위해서 가져온다.
+				// GameHistoricalPriceDayDto stockPriceDataBefore = null;
+				// if (stockPriceData == null) {
+				// 	stockPriceDataBefore
+				// 		= gameHistoricalPriceDayService.findByDateTimeAndCompanyCode(
+				// 		preDate, gameGamerStockDto.getCompanyCode());
+				// }
+
+				Double stockClosePrice = 0.0;
+				if (stockPriceData != null) {
+					stockClosePrice = Double.parseDouble(
+							String.format("%.2f", Double.parseDouble(stockPriceData.getClose())));
+				}
+
+				// 외국 주식인 경우 환율 적용
+				if (stockPriceData != null && stockPriceData.getMarket().equals("nasdaq")) {
+					GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(stockPriceData.getDateTime());
+					stockClosePrice = Double.parseDouble(
+							String.format("%.2f",
+									Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
+				}
+
+				// if (stockPriceDataBefore != null) {
+				// 	stockClosePrice = Double.parseDouble(
+				// 		String.format("%.2f", Double.parseDouble(stockPriceDataBefore.getClose())));
+				// }
+				//
+				// if (stockPriceDataBefore != null && stockPriceDataBefore.getMarket().equals("nasdaq")) {
+				// 	GameExchangeInterestDto gameExchangeInterestDto = getExchangeInterest(
+				// 		stockPriceDataBefore.getDateTime());
+				// 	stockClosePrice = Double.parseDouble(
+				// 		String.format("%.2f",
+				// 			Double.parseDouble(stockPriceDataBefore.getClose())
+				// 				* gameExchangeInterestDto.getExchangeRate()));
+				// }
+
+				if (stockClosePrice != 0) {
+					log.info("stockClosePrice != 0 : " + stockClosePrice);
+					double totalPrice = stockClosePrice * gameGamerStockDto.getTotalCount();
+					// 총 주식 평가 자산을 계산한다.
+					totalEvaluationStock += (int)(totalPrice);
+					log.info(String.valueOf(totalEvaluationStock));
+					// 평가 손익 계산
+					Double valuation =
+							totalPrice - (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount());
+					// 수익률 계산
+					Double profitRate = 0.0;
+					if (valuation != 0 && gameGamerStockDto.getAveragePrice() != 0
+							&& gameGamerStockDto.getTotalCount() != 0) {
+						profitRate =
+								(valuation) / (gameGamerStockDto.getAveragePrice() * gameGamerStockDto.getTotalCount()) * 100;
+					}
+					// 해당 정보 반영
+					gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
+					gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
+				}
+				// "gamer_stock" Table update
+				log.info("===================== Before gamer_stock update");
+				log.info(gameGamerStockDto.toString());
+				gamerStockService.updateDto(gameGamerStockDto);
 			}
-			// "gamer_stock" Table update
-			log.info("===================== Before gamer_stock update");
-			log.info(gameGamerStockDto.toString());
-			gamerStockService.updateDto(gameGamerStockDto);
+
+			// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
+			// totalEvaluationStock : 총 주식 평가 금액
+			// totalEvaluationAsset : 총 평가 금액 : totalEvaluationStock + deposit
+			// profitRate : 수익률 : ((totalEvaluationAsset - originDeposit) / originDeposit) * 100
+			Integer totalEvaluationAsset = gameGamerDto.getDeposit() + totalEvaluationStock;
+
+			gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
+			gameGamerDto.setTotalEvaluationAsset(totalEvaluationAsset);
+			double profitRate = (((double)(totalEvaluationAsset - gameGamerDto.getOriginDeposit())
+					/ (double)gameGamerDto.getOriginDeposit())) * 100;
+			gameGamerDto.setTotalProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
+			log.info("===================== Before gamer update");
+			log.info(gameGamerDto.toString());
+			gamerService.updateDto(gameGamerDto);
 		}
-
-		// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
-		// totalEvaluationStock : 총 주식 평가 금액
-		// totalEvaluationAsset : 총 평가 금액 : totalEvaluationStock + deposit
-		// profitRate : 수익률 : ((totalEvaluationAsset - originDeposit) / originDeposit) * 100
-		Integer totalEvaluationAsset = gameGamerDto.getDeposit() + totalEvaluationStock;
-
-		gameGamerDto.setTotalEvaluationStock(totalEvaluationStock);
-		gameGamerDto.setTotalEvaluationAsset(totalEvaluationAsset);
-		double profitRate = (((double)(totalEvaluationAsset - gameGamerDto.getOriginDeposit())
-			/ (double)gameGamerDto.getOriginDeposit())) * 100;
-		gameGamerDto.setTotalProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
-		log.info("===================== Before gamer update");
-		log.info(gameGamerDto.toString());
-		gamerService.updateDto(gameGamerDto);
 
 		return true;
 	}
@@ -404,7 +428,7 @@ public class GameService {
 			.totalEvaluationStock(gamer.getTotalEvaluationStock())
 			.totalProfitRate(gamer.getTotalProfitRate())
 			.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-			.member(memberService.findById(gamer.getMermberId()))
+			.member(memberService.findById(gamer.getMemberId()))
 			.curTurn(gameRoomDto.getCurTurn())
 			.build();
 
@@ -446,7 +470,7 @@ public class GameService {
 				// TODO : uerProfilePath 추가하기 (member에서 조회한 후 직접 input)
 				gameGamerDtos.get(i)
 					.setUserProfileIcon(
-						memberService.getMemberbyId(gameGamerDtos.get(i).getMermberId()).getProfileIcon());
+						memberService.getMemberbyId(gameGamerDtos.get(i).getMemberId()).getProfileIcon());
 				mapGameGamerDto.put(gameGamerDtos.get(i).getUserName(), gameGamerDtos.get(i));
 			}
 		}
@@ -759,7 +783,7 @@ public class GameService {
 				.count(count)
 				.price((int)stockClosePrice)
 				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.member(memberService.findById(gameGamerDto.getMemberId()))
 				.build();
 
 			purchaseSaleLogService.updateDto(purcahseSaleLogDto);
@@ -896,7 +920,7 @@ public class GameService {
 				.count(count)
 				.price((int)salesPrice)
 				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-				.member(memberService.findById(gameGamerDto.getMermberId()))
+				.member(memberService.findById(gameGamerDto.getMemberId()))
 				.build();
 
 			purchaseSaleLogService.updateDto(purcahseSaleLogDto);
