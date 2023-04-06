@@ -129,7 +129,7 @@ public class RequestSettingGame {
 
 	public Integer setThemeTotalTurnTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			this.totalTurn = 5;
+			this.totalTurn = 30;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
 			this.totalTurn = 30;
