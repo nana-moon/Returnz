@@ -23,7 +23,7 @@ export default function TradeList({ selectedResult }) {
 }
 
 const TradeListContainer = styled.div`
-  ${tw` bg-white h-[200px] overflow-y-auto `}
+  ${tw` bg-white h-[180px] overflow-y-auto `}
   ::-webkit-scrollbar {
     display: none;
   }
