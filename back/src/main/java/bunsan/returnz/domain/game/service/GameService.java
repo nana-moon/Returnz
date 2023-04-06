@@ -803,7 +803,8 @@ public class GameService {
 					+ "stock close price : " + stockClosePrice
 					+ " count :" + count
 					+ " total price : " + (stockClosePrice * count)
-					+ " date time : " + gameRoomDto.getPreDate());
+					+ " date time : " + gameRoomDto.getPreDate()
+					+ " room cur time : " + gameRoomDto.getCurDate());
 		}
 
 	}
