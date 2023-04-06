@@ -48,7 +48,7 @@ const declineFriendRequestApi = (payload) => {
 
 const acceptInviteRequestApi = (payload) => {
   return authApi
-    .patch(`/wait-room/enter?roomId=${payload}`)
+    .post(`/wait-room/waiter?roomId=${payload}`)
     .then((res) => {
       console.log(res, '자, 대기방 들가자~~~');
       return res;

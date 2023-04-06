@@ -12,6 +12,19 @@ const makeRoomApi = async () => {
     });
 };
 
+const exitRoomApi = async (payload) => {
+  return authApi
+    .delete(`/wait-room/waiter?roomId=${payload}`)
+    .then((res) => {
+      console.log('방 나가기 성공');
+      return res.data;
+    })
+    .catch((err) => {
+      console.log('방 나가기 실패');
+      return err;
+    });
+};
+
 const startGameApi = async (payload) => {
   console.log('startGameApi', payload);
   const res = await authApi.post('/games/init', payload);
@@ -89,4 +102,14 @@ const resultApi = async (payload) => {
     });
 };
 
-export { makeRoomApi, startGameApi, gameDataApi, serverTimeApi, resultApi, buyStockApi, sellStockApi, getNewsApi };
+export {
+  makeRoomApi,
+  exitRoomApi,
+  startGameApi,
+  gameDataApi,
+  serverTimeApi,
+  resultApi,
+  buyStockApi,
+  sellStockApi,
+  getNewsApi,
+};
