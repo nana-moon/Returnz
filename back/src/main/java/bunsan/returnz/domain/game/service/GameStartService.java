@@ -289,21 +289,16 @@ public class GameStartService {
 		if (gameSettings.getTheme().equals(Theme.COVID)) {
 			List<String> companyCode =
 				new ArrayList<>(Arrays.asList(
-					"069960.KS",
-					"023530.KS",
-					"000880.KS",
-					"005380.KS",
-					"078930.KS",
-					"006360.KS",
-					"136490.KS",
-					"003550.KS",
-					"005940.KS",
-					"024110.KS",
-					"051910.KS",
+					"020560.KS",
+					"006400.KS",
+					"032830.KS",
+					"002380.KS",
 					"NFLX",
 					"089590.KS",
-					"POOL",
-					"033780.KS"
+					"000660.KS",
+					"086790.KS",
+					"015760.KS",
+					"090430.KS"
 				));
 			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
 			// log.info("찾아오 기업 리스트 갯수" + content.size());
