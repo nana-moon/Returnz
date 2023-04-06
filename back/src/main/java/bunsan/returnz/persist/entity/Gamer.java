@@ -60,7 +60,7 @@ public class Gamer {
 	public GameGamerDto toDto(Gamer gamer) {
 		return GameGamerDto.builder()
 			.gamerId(gamer.getId())
-			.mermberId(gamer.getMemberId())
+			.memberId(gamer.getMemberId())
 			.userName(gamer.getUsername())
 			.deposit(gamer.getDeposit())
 			.originDeposit(gamer.getOriginDeposit())
