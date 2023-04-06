@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import LoadPage from './components/loading/LoadPage';
 import { store } from './store/Store';
 import PrivateRoute from './utils/PrivateRoute';
+import ErrorBoundary from './pages/ErrorBoundary';
 
 function App() {
   const queryClient = new QueryClient({
