@@ -26,6 +26,8 @@ import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Transactional;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor

@@ -21,6 +21,8 @@ import bunsan.returnz.persist.repository.PurchaseSaleLogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Transactional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +39,8 @@ public class ResultService {
 	 * @param memberId : 해당 방의 게이머의 아이디
 	 * @return : 매수, 매도 로그를 List로 반환한다.
 	 */
+
+	@Transactional
 	public List<PurchaseSaleLogResponseDto> findAllByGameRoomIdAndMemberIdOrderById(Long gameRoomId, Long memberId) {
 
 		List<PurchaseSaleLog> purchaseSaleLogs = purchaseSaleLogRepository.findAllByGameRoomIdAndMemberIdOrderById(
@@ -58,6 +62,8 @@ public class ResultService {
 	 * @param gameRoomId : 게임방 고유 아이디
 	 * @return : 해당 게임방에 참가한 Gamer들의 정보를 List로 반환한다.
 	 */
+
+	@Transactional
 	public List<GamerLogResponseDto> findAllByMemberIdAndGameRoomId(Long memberId, Long gameRoomId) {
 		List<GamerLog> gamerLogs = gamerLogRepository.findAllByMemberIdAndGameRoomId(memberId, gameRoomId);
 		List<GamerLogResponseDto> gamerLogResponseDtos = new LinkedList<>();
@@ -75,6 +81,8 @@ public class ResultService {
 	 * @param gameRoomId : 게임방 고유 아이디
 	 * @return : Gamer를 total profit rate를 기준으로 정렬한다.
 	 */
+
+	@Transactional
 	public List<GameGamerDto> findAllByGameRoomIdOrderByTotalProfitRate(Long gameRoomId) {
 		List<Gamer> gamers = gamerRepository.findAllByGameRoomIdOrderByTotalProfitRate(gameRoomId);
 
@@ -86,6 +94,8 @@ public class ResultService {
 		return gameGamerDtos;
 	}
 
+
+	@Transactional
 	public void updateAvgProfit(Member member, Double totalProfit) {
 		// 유저의 평균 수익률 갱신
 		Long gameReturn = Double.valueOf(totalProfit).longValue();
@@ -97,6 +107,8 @@ public class ResultService {
 		memberRepository.save(member);
 	}
 
+
+	@Transactional
 	public List<String> getNewProfile(Member member, int rank, Double totalProfit, int gameMemberCount) {
 		List<String> newProfiles = new ArrayList<>();
 		// 1등일 때
@@ -137,6 +149,8 @@ public class ResultService {
 		return newProfiles;
 	}
 
+
+	@Transactional
 	private void addNewProfile(Member member, String code, List<String> newProfiles) {
 		if (!member.getPermittedProfiles().contains(code)) {
 			newProfiles.add(member.addProfile(code));
