@@ -303,13 +303,13 @@ public class GameStartService {
 			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
 			// log.info("찾아오 기업 리스트 갯수" + content.size());
 			for (Company company : content) {
-				GameStock companyEntity = GameStock.builder()
+				GameStock companyEntity = new GameStock();
+				companyEntity = GameStock.builder()
 					.companyName(company.getCompanyName())
 					.companyCode(company.getCode())
 					.gameRoom(newGameRoom)
 					.build();
 				gameStockRepository.save(companyEntity);
-				;
 			}
 			return content;
 		} else {
