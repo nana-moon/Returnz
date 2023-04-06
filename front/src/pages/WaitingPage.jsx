@@ -430,7 +430,7 @@ const ChattingBox = styled.section`
   ${tw`w-[100%] h-[80%]`}
 `;
 const ButtonBox = styled.div`
-  ${tw`h-[10%] flex gap-5 mt-2`}
+  ${tw`h-[10%] flex justify-center gap-5 mt-2`}
 `;
 const StartButton = styled.button`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
