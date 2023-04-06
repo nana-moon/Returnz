@@ -43,7 +43,7 @@ public class ResultController {
 	@PostMapping
 	public ResponseEntity<?> getGameResult(@RequestBody ResultRequestBody resultRequestBody) {
 
-
+		GameRoom gameRoom = gameRoomService.findById(resultRequestBody.getGameRoomId());
 		// 모든 게이머 순서대로 찾기
 		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoom.getId());
 
