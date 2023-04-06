@@ -7,7 +7,7 @@ export default class RequestQueue {
     const request = async () => {
       try {
         const result = await requestFn();
-        console.error('API request succeed:', result);
+        // console.error('API request succeed:', result);
         return result; // Added return statement
       } catch (error) {
         console.error('API request failed:', error);
