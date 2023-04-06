@@ -2,7 +2,6 @@ package bunsan.returnz.domain.game.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -283,52 +282,18 @@ public class GameStartService {
 	 * @param newGameRoom
 	 * @return
 	 */
-	@Transactional
-	public List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
+	private List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
 		Pageable pageable = PageRequest.of(0, DEFAULT_COMPANY_COUNT);
-		if (gameSettings.getTheme().equals(Theme.COVID)) {
-			List<String> companyCode =
-				new ArrayList<>(Arrays.asList(
-					"069960.KS",
-					"023530.KS",
-					"000880.KS",
-					"005380.KS",
-					"078930.KS",
-					"006360.KS",
-					"136490.KS",
-					"003550.KS",
-					"005940.KS",
-					"024110.KS",
-					"051910.KS",
-					"NFLX",
-					"089590.KS",
-					"POOL",
-					"033780.KS"
-				));
-			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
-			// log.info("찾아오 기업 리스트 갯수" + content.size());
-			for (Company company : content) {
-				GameStock companyEntity = GameStock.builder()
-					.companyName(company.getCompanyName())
-					.companyCode(company.getCode())
-					.gameRoom(newGameRoom)
-					.build();
-				gameStockRepository.save(companyEntity);
-				;
-			}
-			return content;
-		} else {
-			Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
-			for (Company company : randomCompaniesPage) {
-				GameStock companyEntity = GameStock.builder()
-					.companyName(company.getCompanyName())
-					.companyCode(company.getCode())
-					.gameRoom(newGameRoom)
-					.build();
-				gameStockRepository.save(companyEntity);
-			}
-			return randomCompaniesPage.getContent();
+		Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
+		for (Company company : randomCompaniesPage) {
+			GameStock companyEntity = GameStock.builder()
+				.companyName(company.getCompanyName())
+				.companyCode(company.getCode())
+				.gameRoom(newGameRoom)
+				.build();
+			gameStockRepository.save(companyEntity);
 		}
+		return randomCompaniesPage.getContent();
 	}
 
 	private Page<Company> getRandomCompaniesByTheme(Theme theme, Pageable pageable) {
@@ -373,9 +338,7 @@ public class GameStartService {
 	@Transactional
 	public void setNewsList(GameSettings gameSettings, Long gameRoomId) {
 		// 턴당 시간에 따라 달라진다.
-		// log.info("gameRoomid " + gameRoomId);
 		List<GameStockDto> gameRoomStockList = gameInfoService.getGameRoomStockList(gameRoomId);
-		// log.info("찾아온 개임룸 스톡 디티오 : " + gameRoomStockList.size());
 		List<String> stockIdList = new ArrayList<>();
 		for (GameStockDto gameStockDto : gameRoomStockList) {
 			stockIdList.add(gameStockDto.getCompanyCode());
@@ -405,14 +368,9 @@ public class GameStartService {
 			endDate = weekRanges.get(weekRanges.size() - 1).getWeekLastDay();
 		}
 		// 기간 안에 뉴스 검색
-		List<Object[]> newsResults = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
+		List<FinancialNews> newsList = financialNewsRepository.findAllByDateAndCompanyCodes(startDate, endDate,
 			stockIdList);
-		List<FinancialNews> newsList = new ArrayList<>();
-		for (Object[] result : newsResults) {
-			FinancialNews financialNews = (FinancialNews)result[1];
-			newsList.add(financialNews);
-			// log.info(financialNews.getKoName() + " : " + financialNews.getDate());
-		}
+
 		// 뉴스
 		GameRoom gameRoom = gameRoomRepository.findById(gameRoomId)
 			.orElseThrow(() -> new NullPointerException("뉴스를 할당할 게임방이 없습니다."));
