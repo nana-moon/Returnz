@@ -80,7 +80,8 @@ export const gamedata = createSlice({
     },
     // 두번째 부터
     handleMoreGameData(state, action) {
-      if (action.payload === []) {
+      console.log('여기에로오세요', action.payload);
+      if (action.payload === {}) {
         state.gameTurn.nowTurn += 1;
       } else {
         state.gameTurn.nowTurn += 1;
