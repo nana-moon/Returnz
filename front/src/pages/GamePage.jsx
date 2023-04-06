@@ -77,6 +77,12 @@ export default function GamePage() {
   const gameId = useSelector(getGameId);
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
+  const DateInfoRef = useRef(turnInfo);
+  useEffect(() => {
+    DateInfoRef.current = Date;
+  }, [Date]);
+
+  console.log(Date, '현재날짜');
 
   // 주식 API
   const axiospost = async (currentTurn) => {
@@ -110,10 +116,11 @@ export default function GamePage() {
     const getNews = [];
 
     for (let i = 0; i < keys.length; i += 1) {
+      console.log(DateInfoRef.current, '뉴스 데이터보낼 날짜');
       const data = {
         id: gameId,
         companyCode: keys[i],
-        articleDateTime: Date,
+        articleDateTime: DateInfoRef.current,
       };
       // eslint-disable-next-line no-await-in-loop
       const newsTmp = await getNewsApi(data);
