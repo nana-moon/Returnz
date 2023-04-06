@@ -285,6 +285,7 @@ public class GameStartService {
 	 */
 	@Transactional
 	public List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
+		log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		Pageable pageable = PageRequest.of(0, DEFAULT_COMPANY_COUNT);
 		if (gameSettings.getTheme().equals(Theme.COVID)) {
 			List<String> companyCode =
@@ -303,14 +304,15 @@ public class GameStartService {
 			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
 			// log.info("찾아오 기업 리스트 갯수" + content.size());
 			for (Company company : content) {
-				GameStock companyEntity = GameStock.builder()
+				GameStock companyEntity = new GameStock();
+				companyEntity = GameStock.builder()
 					.companyName(company.getCompanyName())
 					.companyCode(company.getCode())
 					.gameRoom(newGameRoom)
 					.build();
 				gameStockRepository.save(companyEntity);
-				;
 			}
+			log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			return content;
 		} else {
 			Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
