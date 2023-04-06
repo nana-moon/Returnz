@@ -18,16 +18,16 @@ function App() {
   });
 
   return (
-    <React.Suspense fallback={<LoadPage />}>
-      <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <React.Suspense fallback={<LoadPage />}>
           <div className="bg-base min-h-screen">
             <PrivateRoute />
           </div>
           <ReactQueryDevtools initialIsOpen />
-        </QueryClientProvider>
-      </Provider>
-    </React.Suspense>
+        </React.Suspense>
+      </QueryClientProvider>
+    </Provider>
   );
 }
 
