@@ -66,7 +66,7 @@ export default function StockList() {
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
             // eslint-disable-next-line react/no-array-index-key
-            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={i} checkCanSell={checkCanSell} />;
+            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={`name${i}`} checkCanSell={checkCanSell} />;
           })}
         </div>
       </ListContanier>
