@@ -44,10 +44,6 @@ public class ResultController {
 	public ResponseEntity<?> getGameResult(@RequestBody ResultRequestBody resultRequestBody) {
 
 		GameRoom gameRoom = gameRoomService.findById(resultRequestBody.getGameRoomId());
-		if (!gameRoom.getCurTurn().equals(gameRoom.getTotalTurn())) {
-			throw new BadRequestException("게임이 끝나지 않았습니다.");
-		}
-
 		// 모든 게이머 순서대로 찾기
 		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoom.getId());
 
