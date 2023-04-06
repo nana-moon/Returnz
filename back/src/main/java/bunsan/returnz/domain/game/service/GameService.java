@@ -342,7 +342,7 @@ public class GameService {
 							Double.parseDouble(stockPriceData.getClose()) * gameExchangeInterestDto.getExchangeRate()));
 				}
 
-				if (stockClosePrice != 0) {
+				if (stockClosePrice > 0) {
 					log.info("stockClosePrice != 0 : " + stockClosePrice);
 					double totalPrice = stockClosePrice * gameGamerStockDto.getTotalCount();
 					// 총 주식 평가 자산을 계산한다.
@@ -362,11 +362,12 @@ public class GameService {
 					// 해당 정보 반영
 					gameGamerStockDto.setValuation(Double.parseDouble(String.format("%.2f", valuation)));
 					gameGamerStockDto.setProfitRate(Double.parseDouble(String.format("%.2f", profitRate)));
+
+					// "gamer_stock" Table update
+					log.info("===================== Before gamer_stock update");
+					log.info(gameGamerStockDto.toString());
+					gamerStockService.updateDto(gameGamerStockDto);
 				}
-				// "gamer_stock" Table update
-				log.info("===================== Before gamer_stock update");
-				log.info(gameGamerStockDto.toString());
-				gamerStockService.updateDto(gameGamerStockDto);
 			}
 
 			// 해당 데이터를 바탕으로 Gamer를 갱신한다. (update)
