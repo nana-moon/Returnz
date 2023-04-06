@@ -606,6 +606,9 @@ public class GameService {
 					gameHistoricalPriceDayService.findAllByDateTimeIsBetweenWithCode(
 						endDate.minusDays(4), endDate, companyCode);
 
+				log.info("================================ getStockPriceWeek Date");
+				log.info(gameRoomDto.getPreDate() + " " + gameRoomDto.getCurDate());
+
 				log.info("result : " + gameHistoricalPriceDayDtos.toString());
 
 				for (GameHistoricalPriceDayDto gameHistoricalPriceDayDto : gameHistoricalPriceDayDtos) {
