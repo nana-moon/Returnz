@@ -46,7 +46,7 @@ public class GamerService {
 		if (gamerOptional.isPresent()) {
 			Gamer gamer = gamerOptional.get();
 			if (gamer.updateDto(gameGamerDto)) {
-				log.info("in updateDto : " + gameGamerDto.toString());
+				log.info("in updateDto : " + gameGamerDto);
 				gamerRepository.save(gamer);
 				return true;
 			}

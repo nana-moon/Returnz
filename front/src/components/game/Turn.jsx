@@ -9,7 +9,7 @@ import imgpath from './assets/turnHelp.png';
 import { gameTurn } from '../../store/gamedata/GameData.selector';
 import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
-export default function Turn() {
+export default function Turn({ getTimeout }) {
   const [time, setTime] = useState(120);
   const turn = useSelector(gameTurn);
   const [animationClass, setAnimationClass] = useState('animate');
@@ -35,16 +35,23 @@ export default function Turn() {
       });
     }, 10);
   }, [turn]);
+
   useEffect(() => {
     setTime(120);
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime - 1);
     }, 1000);
-
     return () => {
       clearInterval(interval);
     };
   }, [turn]);
+
+  useEffect(() => {
+    console.log('time', time);
+    if (time <= 0) {
+      getTimeout();
+    }
+  }, [time]);
 
   const Icon = [];
 

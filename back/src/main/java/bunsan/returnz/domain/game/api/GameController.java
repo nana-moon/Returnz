@@ -92,12 +92,16 @@ public class GameController {
 		}
 
 		GameSettings gameSettings = new GameSettings(requestSettingGame);
-		log.info("after constructor gameSetting" + gameSettings.getStartTime());
+		// log.info("after constructor gameSetting" + gameSettings.getStartTime());
 		Map<String, Object> stringObjectMap = gameStartService.settingGame(gameSettings);
 		stringObjectMap.put("totalTurn", gameSettings.getTotalTurn());
 
 		//신문세팅
-		gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
+		try {
+			gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
+		} catch (Exception er) {
+			er.printStackTrace();
+		}
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import bunsan.returnz.domain.game.dto.GameGamerDto;
@@ -29,7 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+	RequestMethod.DELETE, RequestMethod.PATCH})
 @RequestMapping("/api/results")
 public class ResultController {
 
@@ -47,7 +49,7 @@ public class ResultController {
 		}
 
 		// 모든 게이머 순서대로 찾기
-		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRate(gameRoom.getId());
+		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoom.getId());
 
 		List<HashMap<String, Object>> responseInformation = new LinkedList<>();
 		for (int i = 0; i < gameGamerDtos.size(); ++i) {
@@ -55,13 +57,13 @@ public class ResultController {
 
 			List<PurchaseSaleLogResponseDto> purchaseSaleLogResponseDtos
 				= resultService.findAllByGameRoomIdAndMemberIdOrderById(
-				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMermberId()
+				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMemberId()
 			);
 
 			List<GamerLogResponseDto> gamerLogResponseDtos = resultService.findAllByMemberIdAndGameRoomId(
-				gameGamerDtos.get(i).getMermberId(),
+				gameGamerDtos.get(i).getMemberId(),
 				resultRequestBody.getGameRoomId());
-			Member member = memberService.findById(gameGamerDtos.get(i).getMermberId());
+			Member member = memberService.findById(gameGamerDtos.get(i).getMemberId());
 
 			// 유저의 평균 수익률 갱신
 			Double prevAvgProfit = gameGamerDtos.get(i).getTotalProfitRate();
@@ -69,7 +71,6 @@ public class ResultController {
 			// 유저의 새로 해금된 프사 리턴
 			Integer gameMemberCount = gameGamerDtos.size();
 			List<String> newProfiles = resultService.getNewProfile(member, i + 1, prevAvgProfit, gameMemberCount);
-
 
 			gamerInformation.put("rank", (i + 1));
 			gamerInformation.put("id", member.getId());

@@ -35,17 +35,17 @@ export const waitRoom = createSlice({
       state.waiterList.push(action.payload);
     },
     removeWaiter(state, action) {
-      state.waiterList.fiter((waiter) => {
-        // waiter[username] !== action.payload;
+      state.waiterList = state.waiterList.filter((waiter) => {
+        return waiter.username !== action.payload;
       });
     },
     setTheme(state, action) {
-      console.log('theme', action.payload);
+      console.log('theme update', action.payload);
       state.theme = action.payload;
     },
     setCustom(state, action) {
-      console.log('custom', action.payload);
-      state.theme = action.payload;
+      console.log('custom update', action.payload);
+      state.custom = action.payload;
     },
     resetWaitRoom(state) {
       Object.assign(state, initialState);
@@ -59,6 +59,7 @@ export const {
   setMemberCount,
   setWaiterList,
   addWaiter,
+  removeWaiter,
   setTheme,
   setCustom,
   resetWaitRoom,
