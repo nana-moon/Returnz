@@ -4,7 +4,7 @@ import { Tooltip } from '@material-tailwind/react';
 import { useSelector } from 'react-redux';
 import { getSelectedTheme } from '../../store/roominfo/WaitRoom.selector';
 
-export default function ThemeSetting({ getIsUserSetting, getTheme }) {
+export default function ThemeSetting({ getIsUserSetting, getTheme, isHost }) {
   // theme state
   const [activeTheme, setActiveTheme] = useState('');
   const selectedTheme = useSelector(getSelectedTheme);
@@ -13,7 +13,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
   const themeList = [
     { value: 'LAST_MONTH', name: '최근 한 달', description: '최신 한 달간의 주식 차트 상황' },
     {
-      value: 'INTEREST_BIG_STEP',
+      value: 'LAST_YEAR',
       name: '美, 금리 빅스텝',
       description:
         '미국 연방준비제도(Fed)가 코로나 이후 급상승한 물가를 잡기 위해 기준금리를 예상보다 급격하게 인상한 상황',
@@ -91,6 +91,7 @@ export default function ThemeSetting({ getIsUserSetting, getTheme }) {
               value={theme.value}
               onClick={handleClick}
               active={activeTheme === theme.value || selectedTheme === theme.value}
+              disabled={!isHost}
             >
               {theme.name}
             </ThemeBox>
