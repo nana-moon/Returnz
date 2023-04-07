@@ -21,7 +21,6 @@ import bunsan.returnz.domain.result.dto.GamerLogResponseDto;
 import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import bunsan.returnz.domain.result.dto.ResultRequestBody;
 import bunsan.returnz.domain.result.service.ResultService;
-import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +45,8 @@ public class ResultController {
 		log.info("============ getGameResult");
 		GameRoom gameRoom = gameRoomService.findById(resultRequestBody.getGameRoomId());
 		// 모든 게이머 순서대로 찾기
-		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(gameRoom.getId());
+		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(
+			gameRoom.getId());
 		log.info(gameGamerDtos.toString());
 
 		List<HashMap<String, Object>> responseInformation = new LinkedList<>();
