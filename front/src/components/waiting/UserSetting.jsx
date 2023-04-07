@@ -31,7 +31,7 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
     const day = selectedDate.getDay();
     if (day === 0 || day === 6) {
       Swal.fire({
-        title: `주말은 선택할 수 없습니다/`,
+        title: '주말은 선택할 수 없습니다',
         icon: 'error',
       });
       e.target.value = '';
@@ -55,8 +55,8 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
           <Radio id="periodChoice2" name="turnPerTime" value="WEEK" />
           <label htmlFor="periodChoice2">1주</label>
 
-          <Radio id="periodChoice3" name="turnPerTime" value="MONTH" />
-          <label htmlFor="periodChoice3">한 달</label>
+          {/* <Radio id="periodChoice3" name="turnPerTime" value="MONTH" />
+          <label htmlFor="periodChoice3">한 달</label> */}
         </TurnPeriodForm>
       </TurnPeriodSection>
       <TurnCountSection>
@@ -65,11 +65,11 @@ export default function UserSetting({ setting, getIsUserSetting, getUserSetting 
           <Radio id="contactChoice1" name="totalTurn" value="10" />
           <label htmlFor="contactChoice1">10턴</label>
 
-          <Radio id="contactChoice2" name="totalTurn" value="30" />
-          <label htmlFor="contactChoice2">30턴</label>
+          <Radio id="contactChoice2" name="totalTurn" value="20" />
+          <label htmlFor="contactChoice2">20턴</label>
 
-          <Radio id="contactChoice3" name="totalTurn" value="50" />
-          <label htmlFor="contactChoice3">50턴</label>
+          {/* <Radio id="contactChoice3" name="totalTurn" value="50" />
+          <label htmlFor="contactChoice3">50턴</label> */}
         </TurnCountForm>
       </TurnCountSection>
     </UserSettingContainer>

@@ -1,6 +1,5 @@
 package bunsan.returnz.infra.websocket;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -28,7 +27,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		// TODO: 2023-03-24  setAllowedOriginPatterns 프론트 주소로 바꾸기
+		// TODO: 2023-04-07 프론트 주소로 바꾸기
 		registry.addEndpoint("/ws").setAllowedOriginPatterns("*")
 			.withSockJS();
 	}

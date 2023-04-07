@@ -8,13 +8,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
-import { startGameApi, gameDataApi, getNewsApi } from '../apis/gameApi';
+import { startGameApi, gameDataApi, getNewsApi, exitRoomApi } from '../apis/gameApi';
 import { getCaptainName, getMemberCount, getWaiterList, getWaitRoomId } from '../store/roominfo/WaitRoom.selector';
 import Chatting from '../components/chatting/Chatting';
 import ThemeSetting from '../components/waiting/ThemeSetting';
 import UserSetting from '../components/waiting/UserSetting';
 import WaitingListItem from '../components/waiting/WaitingListItem';
-import { setWaitRoomId, addWaiter, resetWaitRoom, setTheme, setCustom } from '../store/roominfo/WaitRoom.reducer';
+import {
+  setWaitRoomId,
+  addWaiter,
+  resetWaitRoom,
+  setTheme,
+  setCustom,
+  removeWaiter,
+} from '../store/roominfo/WaitRoom.reducer';
 import NullListItem from '../components/waiting/NullListItem';
 import {
   resetGameRoom,
@@ -105,6 +112,7 @@ export default function WaitingPage() {
     }
     // -------------------------handle GAME_INFO-----------------------------
     if (newMessage.type === 'GAME_INFO') {
+      setIsLoading(true);
       console.log('GAME_INFO 메세지 도착', newMessage.messageBody);
       const { roomId, gameInit } = newMessage.messageBody;
       console.log('gameInit3 in handle game_info (received)', gameInit);
@@ -115,7 +123,9 @@ export default function WaitingPage() {
     if (newMessage.type === 'EXIT') {
       console.log('EXIT 메세지 도착', newMessage.messageBody);
       // setGameRoomId
-      navigate('/game', { state: newMessage.messageBody });
+      if (newMessage.messageBody.isCaptain) {
+        removeRoom();
+      } else dispatch(removeWaiter(newMessage.messageBody.username));
     }
   };
   // -------------------------SOCKET CONNECT-----------------------------
@@ -234,9 +244,12 @@ export default function WaitingPage() {
 
   // -------------------------NAVIGATE TO GAMEROOM-----------------------------
 
-  const handlePage = () => {
-    setIsLoading(false);
-    navigate('/game');
+  const handlePage = async () => {
+    console.log('beforenavigate', isLoading);
+    await navigate('/game');
+    await setIsLoading(false);
+    dispatch(setTheme(''));
+    console.log('afternavigate', isLoading);
   };
 
   // -------------------------REQUEST FIRST TURN DATA-----------------------------
@@ -346,24 +359,26 @@ export default function WaitingPage() {
       const newSetting = { ...setting, memberIdList };
       setSetting(newSetting);
       await handleGameInfo(newSetting);
-      setIsLoading(false);
     } catch (error) {
       console.error(error);
-      // setIsLoading(false);
     }
   };
 
   // -------------------------||| EXIT WAITROOM |||------------------------------------------------------------------
-
-  const handleExit = () => {
+  const removeRoom = () => {
+    dispatch(resetWaitRoom());
+    navigate('/');
+  };
+  const handleExit = async () => {
+    await exitRoomApi(waitRoomId);
     dispatch(resetWaitRoom());
   };
 
-  useEffect(() => {
-    return () => {
-      handleExit();
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     handleExit();
+  //   };
+  // }, []);
 
   // -------------------------||| RETURN HTML |||------------------------------------------------------------------
   return (
@@ -384,12 +399,12 @@ export default function WaitingPage() {
           </TopSection>
           <TickerWrapper>
             <TickerText>
-              TIP. 우선주는 일반적으로 보통주보다 재산적 내용(이익, 이자배당, 잔여재산 분배 등)에 있어서 우선적 지위가
-              인정되는 주식입니다. 그 대가로 우선주 소유자는 주주총회에서의 의결권을 포기해야 합니다.
+              {`TIP. 환율이 상승하면 원화로 환산한 원자재 값이 오르고 또한 소비자들이 사용하는 많은 수입제품의 가격이
+              오르게 되어 국내 물가수준을 상승시킵니다.`}
             </TickerText>
           </TickerWrapper>
           <BottomSection>
-            {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} />}
+            {!isUserSetting && <ThemeSetting getIsUserSetting={getIsUserSetting} getTheme={getTheme} isHost={isHost} />}
             {isUserSetting && (
               <UserSetting setting={setting} getIsUserSetting={getIsUserSetting} getUserSetting={getUserSetting} />
             )}
@@ -421,7 +436,7 @@ const TopSection = styled.section`
   ${tw`flex gap-5 mt-10 min-h-[200px]`}
 `;
 const BottomSection = styled.section`
-  ${tw`flex gap-5 mt-10 h-[300px]`}
+  ${tw`flex gap-5 mt-4 h-[300px]`}
 `;
 const BottomRightSection = styled.section`
   ${tw`w-[50%] h-auto`}
@@ -440,7 +455,7 @@ const ExitButton = styled(Link)`
   ${tw`border rounded-xl w-[50%] min-h-[50px] flex justify-center items-center text-white text-xl font-bold transition-colors`}
 `;
 const TickerWrapper = styled.div`
-  position: absolute;
+  position: relative;
   left: 0px;
   overflow: hidden;
 `;
@@ -456,4 +471,5 @@ const TickerText = styled.p`
       transform: translateX(-100%);
     }
   }
+  ${tw`mt-6`}
 `;
