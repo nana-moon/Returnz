@@ -286,33 +286,33 @@ public class GameStartService {
 	@Transactional
 	public List<Company> buildCompanies(GameRoom newGameRoom, GameSettings gameSettings) {
 		Pageable pageable = PageRequest.of(0, DEFAULT_COMPANY_COUNT);
-		if (gameSettings.getTheme().equals(Theme.COVID)) {
-			List<String> companyCode =
-				new ArrayList<>(Arrays.asList(
-					"020560.KS",
-					"006400.KS",
-					"032830.KS",
-					"002380.KS",
-					"NFLX",
-					"089590.KS",
-					"000660.KS",
-					"086790.KS",
-					"015760.KS",
-					"090430.KS"
-				));
-			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
-			// log.info("찾아오 기업 리스트 갯수" + content.size());
-			for (Company company : content) {
-				GameStock companyEntity = new GameStock();
-				companyEntity = GameStock.builder()
-					.companyName(company.getCompanyName())
-					.companyCode(company.getCode())
-					.gameRoom(newGameRoom)
-					.build();
-				gameStockRepository.save(companyEntity);
-			}
-			return content;
-		} else {
+//		if (gameSettings.getTheme().equals(Theme.COVID)) {
+//			List<String> companyCode =
+//				new ArrayList<>(Arrays.asList(
+//					"020560.KS",
+//					"006400.KS",
+//					"032830.KS",
+//					"002380.KS",
+//					"NFLX",
+//					"089590.KS",
+//					"000660.KS",
+//					"086790.KS",
+//					"015760.KS",
+//					"090430.KS"
+//				));
+//			List<Company> content = companyRepository.goDemon(pageable, companyCode).getContent();
+//			// log.info("찾아오 기업 리스트 갯수" + content.size());
+//			for (Company company : content) {
+//				GameStock companyEntity = new GameStock();
+//				companyEntity = GameStock.builder()
+//					.companyName(company.getCompanyName())
+//					.companyCode(company.getCode())
+//					.gameRoom(newGameRoom)
+//					.build();
+//				gameStockRepository.save(companyEntity);
+//			}
+//			return content;
+//		} else {
 			Page<Company> randomCompaniesPage = getRandomCompaniesByTheme(gameSettings.getTheme(), pageable);
 			for (Company company : randomCompaniesPage) {
 				GameStock companyEntity = GameStock.builder()
@@ -323,7 +323,7 @@ public class GameStartService {
 				gameStockRepository.save(companyEntity);
 			}
 			return randomCompaniesPage.getContent();
-		}
+//		}
 	}
 
 	private Page<Company> getRandomCompaniesByTheme(Theme theme, Pageable pageable) {
