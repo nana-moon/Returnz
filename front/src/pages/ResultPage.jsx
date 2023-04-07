@@ -132,7 +132,7 @@ export default function ResultPage() {
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[90%] font-spoq`}
+  ${tw`gap-[20px] pt-14 w-[75%] grid h-[80%] font-spoq`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
@@ -145,5 +145,5 @@ const Button = styled(Link)`
 `;
 
 const BottomSection = styled.div`
-  ${tw`h-80`}
+  ${tw`h-60`}
 `;

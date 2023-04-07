@@ -353,11 +353,11 @@ export default function GamePage() {
   );
 }
 const GameContainer = styled.div`
-  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq mt-14`}
+  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq pt-14`}
 `;
 const LeftSection = styled.div`
   max-height: 88vh;
-  ${tw`col-span-3 gap-5 h-screen`};
+  ${tw`col-span-3 gap-5`};
 `;
 const MiddleSection = styled.div`
   max-height: 88vh;
@@ -365,5 +365,5 @@ const MiddleSection = styled.div`
 `;
 const RightSection = styled.div`
   max-height: 88vh;
-  ${tw`col-span-3 flex flex-col gap-5 h-screen`}
+  ${tw`col-span-3 flex flex-col gap-5`}
 `;
