@@ -31,7 +31,7 @@ const acceptFriendRequestApi = (payload) => {
     .then((res) => {
       Swal.fire({
         title: '🎉축하합니다🎉',
-        html: `<b>${payload.nickname}</b> + 와 친구가 되었습니다!`,
+        html: `<b>${payload.nickname}</b> 와 친구가 되었습니다!`,
         confirmButtonColor: '#1CD6C9',
       });
       return res;
@@ -58,7 +58,7 @@ const declineFriendRequestApi = (payload) => {
 
 const acceptInviteRequestApi = (payload) => {
   return authApi
-    .patch(`/wait-room/enter?roomId=${payload}`)
+    .post(`/wait-room/waiter?roomId=${payload}`)
     .then((res) => {
       console.log(res, '자, 대기방 들가자~~~');
       return res;

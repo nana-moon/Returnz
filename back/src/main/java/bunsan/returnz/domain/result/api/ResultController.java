@@ -21,7 +21,6 @@ import bunsan.returnz.domain.result.dto.GamerLogResponseDto;
 import bunsan.returnz.domain.result.dto.PurchaseSaleLogResponseDto;
 import bunsan.returnz.domain.result.dto.ResultRequestBody;
 import bunsan.returnz.domain.result.service.ResultService;
-import bunsan.returnz.global.advice.exception.BadRequestException;
 import bunsan.returnz.persist.entity.GameRoom;
 import bunsan.returnz.persist.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -43,13 +42,12 @@ public class ResultController {
 	@PostMapping
 	public ResponseEntity<?> getGameResult(@RequestBody ResultRequestBody resultRequestBody) {
 
+		log.info("============ getGameResult");
 		GameRoom gameRoom = gameRoomService.findById(resultRequestBody.getGameRoomId());
-		if (!gameRoom.getCurTurn().equals(gameRoom.getTotalTurn())) {
-			throw new BadRequestException("게임이 끝나지 않았습니다.");
-		}
-
 		// 모든 게이머 순서대로 찾기
-		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRate(gameRoom.getId());
+		List<GameGamerDto> gameGamerDtos = resultService.findAllByGameRoomIdOrderByTotalProfitRateDesc(
+			gameRoom.getId());
+		log.info(gameGamerDtos.toString());
 
 		List<HashMap<String, Object>> responseInformation = new LinkedList<>();
 		for (int i = 0; i < gameGamerDtos.size(); ++i) {
@@ -60,10 +58,14 @@ public class ResultController {
 				resultRequestBody.getGameRoomId(), gameGamerDtos.get(i).getMemberId()
 			);
 
+			log.info(purchaseSaleLogResponseDtos.toString());
+			log.info(gameGamerDtos.get(i).getMemberId() + " " + resultRequestBody.getGameRoomId());
 			List<GamerLogResponseDto> gamerLogResponseDtos = resultService.findAllByMemberIdAndGameRoomId(
 				gameGamerDtos.get(i).getMemberId(),
 				resultRequestBody.getGameRoomId());
 			Member member = memberService.findById(gameGamerDtos.get(i).getMemberId());
+
+			log.info(gamerLogResponseDtos.toString());
 
 			// 유저의 평균 수익률 갱신
 			Double prevAvgProfit = gameGamerDtos.get(i).getTotalProfitRate();
