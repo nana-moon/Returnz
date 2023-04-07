@@ -10,6 +10,7 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
   const myUsername = Cookies.get('email');
   const myaccount = useSelector(gamerDataList);
   const {
+    rank,
     userName,
     nickname,
     userProfileIcon,
@@ -20,10 +21,11 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     totalEvaluationStock,
     totalProfitRate,
   } = player;
-  console.log(player, 'player!@!@------------------');
+  console.log('playerInfo', player, rank, nickname);
   const isMe = myUsername === userName;
 
   // USER LOG
+  const rankIcon = ['🥇', '🥈', '🥉', '💸'];
   const profilePath = `profile_pics/${userProfileIcon}.jpg`;
 
   // ready
@@ -42,9 +44,10 @@ export default function UserLogListItem({ player, isReady, getIsReady }) {
     <UserLogItemContainer isMe={isMe} isReady={isReady.status}>
       <LeftSection>
         <UserBox>
-          <Avatar className="border-2 border-black" variant="circular" src={profilePath} />
-          <div>{nickname}</div>
+          <p className="text-2xl m-0 p-0">{rankIcon[rank - 1]}</p>
+          <Avatar size="sm" className="border-2 border-black m-0" variant="circular" src={profilePath} />
         </UserBox>
+        <MyName className="text-xl">{nickname}</MyName>
         {isMe && (
           <ReadyBtn type="submit" onClick={handleIsReady} className="w-[100%]" disabled={isReady.status}>
             ready
@@ -102,7 +105,7 @@ const RightSection = styled.div`
 `;
 
 const UserBox = styled.div`
-  ${tw`flex gap-2 items-center`};
+  ${tw`flex gap-2 justify-center`};
 `;
 
 const ReadyBtn = styled.button`
@@ -140,4 +143,13 @@ const EvaluationAssetBox = styled.div`
   ${(props) => props.isUp === 'gain' && tw`text-gain`}
   ${(props) => props.isUp === 'lose' && tw`text-lose`}
   ${tw``};
+`;
+
+const MyName = styled.div`
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  ${tw`text-sm font-bold`}
 `;

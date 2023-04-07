@@ -21,7 +21,9 @@ export default function ResultInfo({ result, selectedIdx }) {
 
   return (
     <InfoContainer>
-      <InfoHeader>{selectedResult?.nickname}님의 게임 로그</InfoHeader>
+      <InfoHeader>
+        {selectedResult?.nickname} {selectedResult ? '님의' : null} 게임 로그
+      </InfoHeader>
       <Tabs id="custom-animation" value="html">
         <TabsHeader>
           {data.map(({ label, value }) => (

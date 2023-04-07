@@ -70,7 +70,7 @@ public class RequestSettingGame {
 
 	public LocalDateTime convertThemeStartDateTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			LocalDateTime startDay = LocalDateTime.of(2020, 1, 2, 0, 0, 0);
+			LocalDateTime startDay = LocalDateTime.of(2020, 3, 9, 0, 0, 0);
 			this.startTime = LocalDate.from(startDay);
 			log.info("check in gameSetting startTime in covid : " + this.startTime);
 			return startDay;
@@ -129,7 +129,7 @@ public class RequestSettingGame {
 
 	public Integer setThemeTotalTurnTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			this.totalTurn = 30;
+			this.totalTurn = 5;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
 			this.totalTurn = 30;
