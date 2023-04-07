@@ -1,6 +1,6 @@
 # 게임형 주식 교육 서비스 “Returnz”
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/eff91579-9cc0-40a7-8576-7b591c335119/Untitled.png)
+![Untitled.png](./Untitled.png)
 
 ## 프로젝트 소개
 
@@ -11,11 +11,8 @@
 ```jsx
 
 ```
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/480e2df0-bcc7-49bc-bda7-860ff7a5ac7e/Untitled.png)
-
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a6cf9e17-68ef-48de-8816-a85a4f72b66c/Untitled.png)
-
+![1.png](./1.png)
+![2.png](./2.png)
 ## 서비스 소개
 
 ### 1. 메인 화면 / 사이드 바
@@ -30,7 +27,7 @@
 - 게임 초대를 수락할 수 있다.
 - 게임방을 개설할 수 있다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4916b011-e52a-46de-ace4-fde6e7fb2796/Untitled.png)
+![3.png](./3.png)
 
 ## 
 
@@ -42,10 +39,9 @@
 - 사용자 설정 테마를 적용할 경우, 시작 날짜와 Turn을 세팅할 수 있다.
 - 각 참가자들은 자신의 평균 수익율를 알 수 있다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/47af2424-1dc0-4ef5-bb06-0d814092130d/Untitled.png)
+![4.png](./4.png)
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1ecd305d-5ff0-4f6f-9d53-fcee8c7e1fa1/Untitled.png)
-
+![5.png](./5.png)
 ### 3. 게임 진행
 
 1. 주가 정보를 캔들형 그래프로 확인할 수  있다.
@@ -60,9 +56,9 @@
 10. 도움말 기능을 제공한다.
 11. 게임방 내 인원들의 순위를 확인할 수 있다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/825d8702-e748-477c-8850-90f4f6cd7524/Untitled.png)
+![6.png](./6.png)
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bbb0008a-8fbf-42b5-acae-a49cde08b37c/Untitled.png)
+![7.png](./7.png)
 
 ### 4. 게임 결과 화면
 
@@ -72,19 +68,19 @@
 4. 다른 사용자의 기록을 볼 수 있다.
 5. 결과 화면에 있는 사용자들끼리 채팅할 수 있다.
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/34e2b410-d557-40da-9964-cdf7f0574a93/Untitled.png)
+![8.png](./8.png)
 
 # 시스템 아키텍처
 
 - CloudCraft
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/82d326f0-bd14-4093-acb9-c7f79fea9eb4/Untitled.png)
+![9.png](./9.png)
 
 - Figma
 
 [https://www.figma.com/file/UD3T6CivI3wO4wQTH2ceRn/%EC%A7%91%EC%A4%91%EB%A0%A5%EB%B6%84%EC%82%B0-FIGMA?node-id=104-3](https://www.figma.com/file/UD3T6CivI3wO4wQTH2ceRn/%EC%A7%91%EC%A4%91%EB%A0%A5%EB%B6%84%EC%82%B0-FIGMA?node-id=104-3)
 
-![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a162270f-5619-4e99-a525-2545c95b015c/Untitled.png)
+![10.png](./10.png)
 
 ## 부하테스트
 
@@ -99,9 +95,9 @@
         
         ### 부하 테스트
         
-        ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d475e204-fc73-4fef-9d02-f2df8055164f/Untitled.png)
+        ![11.png](./11.png)
         
-        ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/05e52889-4e52-4339-a6da-a2f3e66cad1b/Untitled.png)
+        ![12.png](./12.png)
         
         ### 수행 결과
         
@@ -121,7 +117,7 @@
     - 부하테스트 결과
         
         
-        ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d00dbfcd-ebe6-42de-be9c-4cf91f0e0948/Untitled.png)
+        ![13.png](./13.png)
         
         - 게임 진행 시 턴을 넘기지 않도록 설정하고, 부하테스트를 진행했다.
         - 분산 저장을 위해 사용했던 hadoop, spark, zeppeline 등을 stop 시킨 후 진행했다.
