@@ -124,13 +124,15 @@ export default function ResultPage() {
         <UnlockResult result={result} />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
-      <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+      <BottomSection>
+        <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+      </BottomSection>
     </ResultContainer>
   );
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px] font-spoq`}
+  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[90%] font-spoq`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
@@ -140,4 +142,8 @@ const LeftBottomSection = styled.div`
 
 const Button = styled(Link)`
   ${tw`border bg-gain hover:bg-red-500 focus:border-red-600 text-white rounded-xl w-[100%] min-h-[50px] flex font-bold justify-center items-center`}
+`;
+
+const BottomSection = styled.div`
+  ${tw`h-80`}
 `;
