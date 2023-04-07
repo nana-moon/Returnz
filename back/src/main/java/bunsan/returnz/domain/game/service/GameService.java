@@ -129,7 +129,7 @@ public class GameService {
 
 		// 게이머 정보 업데이트
 		updateGamerInformation(gameGamerStockDtos, roomId,
-				gameRoomDto, gamerId);
+			gameRoomDto, gamerId);
 
 		// 4. 다음 턴 정보 업데이트
 		log.info("isCaptin : " + isCaptain);
@@ -402,23 +402,23 @@ public class GameService {
 	 */
 	@Transactional
 	public boolean updateGamerInformation(List<GameGamerStockDto> gameGamerStockDtos, String roomId,
-										 GameRoomDto gameRoomDto, Long gamerId) {
+		GameRoomDto gameRoomDto, Long gamerId) {
 
 		try {
 			GameGamerDto gamer = gamerService.findById(gamerId);
 
 			// 턴 정보 저장하기
 			GamerLogDto gamerLogDto = GamerLogDto.builder()
-					.deposit(gamer.getDeposit())
-					.originDeposit(gamer.getOriginDeposit())
-					.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
-					.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
-					.totalEvaluationStock(gamer.getTotalEvaluationStock())
-					.totalProfitRate(gamer.getTotalProfitRate())
-					.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
-					.member(memberService.findById(gamer.getMemberId()))
-					.curTurn(gameRoomDto.getCurTurn())
-					.build();
+				.deposit(gamer.getDeposit())
+				.originDeposit(gamer.getOriginDeposit())
+				.totalPurchaseAmount(gamer.getTotalPurchaseAmount())
+				.totalEvaluationAsset(gamer.getTotalEvaluationAsset())
+				.totalEvaluationStock(gamer.getTotalEvaluationStock())
+				.totalProfitRate(gamer.getTotalProfitRate())
+				.gameRoom(gameRoomService.findById(gameRoomDto.getId()))
+				.member(memberService.findById(gamer.getMemberId()))
+				.curTurn(gameRoomDto.getCurTurn())
+				.build();
 
 			gamerLogService.updateDto(gamerLogDto);
 		} catch (Exception e) {
@@ -827,14 +827,13 @@ public class GameService {
 			log.info("환율 : " + gameExchangeInterestDto.getExchangeRate());
 			// log.info(gameGamerDto.getDeposit() >= (stockClosePrice * count))
 
-
 			throw new BadRequestException("예치금이 충분하지 않습니다. "
-					+ "stock close price : " + stockClosePrice
-					+ " count :" + count
-					+ " total price : " + (stockClosePrice * count)
-					+ " date time : " + gameRoomDto.getPreDate()
-					+ " room cur time : " + gameRoomDto.getCurDate()
-					+ " historical price dto : " + gameHistoricalPriceDayDto.toString());
+				+ "stock close price : " + stockClosePrice
+				+ " count :" + count
+				+ " total price : " + (stockClosePrice * count)
+				+ " date time : " + gameRoomDto.getPreDate()
+				+ " room cur time : " + gameRoomDto.getCurDate()
+				+ " historical price dto : " + gameHistoricalPriceDayDto);
 		}
 
 	}
