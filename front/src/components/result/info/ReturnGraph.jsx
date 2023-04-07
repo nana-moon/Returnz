@@ -57,18 +57,18 @@ export default function ReturnGraph({ selectedResult }) {
     },
     series: [
       {
-        name: 'return',
+        name: '수익률',
         data: profits,
       },
     ],
   };
   return (
     <ReturnGraphContainer>
-      <Chart options={data.options} series={data.series} type="line" width="500" height="180" />
+      <Chart options={data.options} series={data.series} type="line" width="100%" height="100%" />
     </ReturnGraphContainer>
   );
 }
 
 const ReturnGraphContainer = styled.div`
-  ${tw` flex justify-center items-center h-[180px]`}
+  ${tw` flex justify-center items-center h-[100%] w-full`}
 `;
