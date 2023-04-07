@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React from 'react';
 import './App.css';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -17,6 +18,11 @@ function App() {
     },
   });
 
+  if (process.env.NODE_ENV === 'production') {
+    console.log = function no_console() {};
+    console.warn = function no_console() {};
+    console.error = function () {};
+  }
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
