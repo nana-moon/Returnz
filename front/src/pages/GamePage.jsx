@@ -102,6 +102,10 @@ export default function GamePage() {
       captain: isHost,
     };
     console.log(datas);
+    if (isHost) {
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Add a 3 seconds delay for non-host players
+    }
     await axios
       .post('/games/game', datas)
       .then((res) => {

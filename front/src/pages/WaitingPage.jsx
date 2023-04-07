@@ -248,6 +248,7 @@ export default function WaitingPage() {
     console.log('beforenavigate', isLoading);
     await navigate('/game');
     await setIsLoading(false);
+    dispatch(setTheme(''));
     console.log('afternavigate', isLoading);
   };
 
