@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,16 +50,9 @@ public class SecurityConfig {
 			.antMatchers("/api/members/signup", "/api/members/login").permitAll()
 			.antMatchers("/api/game").authenticated()
 			.antMatchers("/api/news").authenticated()
+			.antMatchers(HttpMethod.GET, "/api/members/nickname").authenticated()
 			// .antMatchers(HttpMethod.PUT,"/boards/gif/{gifId}").authenticated()
-			// .antMatchers(HttpMethod.DELETE,"/boards/gif/{boardId}").authenticated()
-			// .antMatchers(HttpMethod.DELETE,"/boards/{boardId}").authenticated()
-			// .antMatchers(HttpMethod.POST,"/boards/{boardId}").authenticated()
-			// .antMatchers(HttpMethod.PUT,"/boards/{boardId}").authenticated()
-			// .antMatchers(HttpMethod.POST,"/temp").authenticated()
-			// .antMatchers(HttpMethod.GET,"/temp/all").hasAnyAuthority("ROLE_MANAGER")
-			// .antMatchers(HttpMethod.PUT,"/temp/{tempId}").hasAnyAuthority("ROLE_MANAGER")
 			// .antMatchers(HttpMethod.DELETE,"/temp/{tempId}").hasAnyAuthority("ROLE_MANAGER")
-			// .antMatchers(HttpMethod.POST, "/comments/**").authenticated()
 			// .antMatchers(HttpMethod.DELETE,"/comments/**").authenticated()
 			.anyRequest().permitAll()
 			//
