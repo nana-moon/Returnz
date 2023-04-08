@@ -15,33 +15,22 @@ import { resultApi } from '../apis/gameApi';
 export default function ResultPage() {
   // HOOKS
   const location = useLocation();
-  const { roomNum, gameRoomId } = location.state;
-  console.log('gameRoomId, resultpage, 19', gameRoomId);
-  // -------------------------| RESULT STATE |------------------------------------------------------------------
-  const init = [
-    // {
-    //   rank,
-    //   id,
-    //   nickname,
-    //   profile,
-    //   prev_avg_profit: [{ turn, profit }],
-    //   trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
-    //   profits,
-    //   newProfiles: [],
-    // },
-  ];
+  const { gameId, gameRoomId } = location.state;
+
+  // -------------------------||| RESULT STATE |||------------------------------------------------------------------
+  const init = [];
   const [result, setResult] = useState(init);
 
   useEffect(() => {
     async function fetchData() {
-      const resultData = await resultApi({ roomNum });
-      setResult(resultData);
+      const resultData = await resultApi({ gameRoomId: gameId });
       console.log('ResultData, resultpage, 27', resultData);
+      setResult(resultData);
     }
     fetchData();
   }, []);
 
-  // -------------------------| SOCKET |------------------------------------------------------------------
+  // -------------------------||| SOCKET |||------------------------------------------------------------------
 
   // -------------------------SOCKET MANAGER-----------------------------
 
@@ -100,7 +89,7 @@ export default function ResultPage() {
     };
   }, [gameRoomId, ACCESS_TOKEN]);
 
-  // -------------------------| CHAT |------------------------------------------------------------------
+  // -------------------------||| CHAT |||------------------------------------------------------------------
 
   const [receivedMessage, setReceivedMessage] = useState('');
   const getInputMessage = (inputMessage) => {
@@ -118,34 +107,32 @@ export default function ResultPage() {
     }
   };
 
-  // -------------------------| RETURN HTML |------------------------------------------------------------------
-  // const init = [
-  //   {
-  //     rank,
-  //     id,
-  //     nickname,
-  //     profile,
-  //     prev_avg_profit: [{ turn, profit }],
-  //     trade_list: [{ trade_type, corporation, trade_date, unit, count, amount }],
-  //     profits,
-  //     newProfiles: [],
-  //   },
-  // ];
+  // -------------------------||| TOGGLE USER LOG |||------------------------------------------------------------------
+  const [selectedIdx, setSelectedIdx] = useState('');
+  const getWho = (idx) => {
+    console.log('idx', idx);
+    setSelectedIdx(idx);
+  };
+
+  // -------------------------||| RETURN HTML |||------------------------------------------------------------------
+
   return (
     <ResultContainer>
-      <ResultRank init={init} />
-      <ResultInfo />
+      <ResultRank result={result} getWho={getWho} />
+      <ResultInfo result={result} selectedIdx={selectedIdx} />
       <LeftBottomSection>
-        <UnlockResult />
+        <UnlockResult result={result} />
         <Button to="/">나가기</Button>
       </LeftBottomSection>
-      <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+      <BottomSection>
+        <Chatting receivedMessage={receivedMessage} getInputMessage={getInputMessage} />
+      </BottomSection>
     </ResultContainer>
   );
 }
 
 const ResultContainer = styled.div`
-  ${tw`gap-[20px] mt-[40px] w-[75%] grid h-[550px]`}
+  ${tw`gap-[20px] pt-14 w-[75%] grid h-[80%] font-spoq`}
   grid-template: 3fr 2fr / 1fr 2fr;
 `;
 
@@ -154,5 +141,9 @@ const LeftBottomSection = styled.div`
 `;
 
 const Button = styled(Link)`
-  ${tw`border bg-white rounded-xl w-[100%] min-h-[50px] flex justify-center items-center`}
+  ${tw`border bg-gain hover:bg-red-500 focus:border-red-600 text-white rounded-xl w-[100%] min-h-[50px] flex font-bold justify-center items-center`}
+`;
+
+const BottomSection = styled.div`
+  ${tw`h-60`}
 `;

@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   id: null,
   roomId: null,
-  hostNickname: null,
+  captainName: null,
   gamerId: null,
   playerList: [], // deposit, gamerId, memberId, originDeposit, totalEvaluationAsset, totalEvaluationStock, totalProfitRate, totalPurchaseAmount, userName, userProfileIcon
   isReadyList: [], // username
@@ -20,8 +20,8 @@ export const gameRoom = createSlice({
     setGameRoomId(state, action) {
       state.roomId = action.payload;
     },
-    setHostNickname(state, action) {
-      state.hostNickname = action.payload;
+    setCaptainName(state, action) {
+      state.captainName = action.payload;
     },
     setGamerId(state, action) {
       state.gamerId = action.payload;
@@ -53,7 +53,7 @@ export const gameRoom = createSlice({
 export const {
   setGameId,
   setGameRoomId,
-  setHostNickname,
+  setCaptainName,
   setGamerId,
   setPlayerList,
   setInitIsReadyList,

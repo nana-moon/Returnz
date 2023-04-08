@@ -62,7 +62,7 @@ public class GameController {
 		}
 
 		HashMap<String, Object> turnInformation = gameService.getTurnInformation(gameRequestBody.getRoomId(),
-			gameRequestBody.getGamerId());
+			gameRequestBody.getGamerId(), gameRequestBody.isCaptain());
 		if ((boolean)turnInformation.get("turnEnd")) {
 			return new ResponseEntity<>("게임이 종료되었습니다.", HttpStatus.OK);
 		}
@@ -92,12 +92,16 @@ public class GameController {
 		}
 
 		GameSettings gameSettings = new GameSettings(requestSettingGame);
-		log.info("after constructor gameSetting" + gameSettings.getStartTime());
+		// log.info("after constructor gameSetting" + gameSettings.getStartTime());
 		Map<String, Object> stringObjectMap = gameStartService.settingGame(gameSettings);
 		stringObjectMap.put("totalTurn", gameSettings.getTotalTurn());
 
 		//신문세팅
-		gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
+		try {
+			gameStartService.setNewsList(gameSettings, (Long)stringObjectMap.get("id"));
+		} catch (Exception er) {
+			er.printStackTrace();
+		}
 		return ResponseEntity.ok().body(stringObjectMap);
 	}
 

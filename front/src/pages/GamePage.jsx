@@ -7,6 +7,7 @@ import SockJs from 'sockjs-client';
 import Stomp from 'webstomp-client';
 import StompJs from 'stompjs';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import Rate from '../components/game/Rate';
 import Stocks from '../components/game/StockList';
 import HoldingList from '../components/game/HoldingList';
@@ -26,7 +27,13 @@ import {
 import { gamerStockList, todayDate, stockDataList, gameTurn } from '../store/gamedata/GameData.selector';
 import UserLogList from '../components/game/userlog/UserLogList';
 import Chatting from '../components/chatting/Chatting';
-import { getGameId, getGameRoomId, getGamerId, getIsReadyList } from '../store/roominfo/GameRoom.selector';
+import {
+  getGameId,
+  getGameRoomId,
+  getGamerId,
+  getIsReadyList,
+  getCaptainName,
+} from '../store/roominfo/GameRoom.selector';
 import { selectedIdx, sellNeedData } from '../store/buysellmodal/BuySell.selector';
 import { getNewsApi } from '../apis/gameApi';
 import { resetGameRoom, resetIsReadyList, setIsReadyList, setPlayerList } from '../store/roominfo/GameRoom.reducer';
@@ -37,6 +44,10 @@ export default function GamePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const turnInfo = useSelector(gameTurn);
+  const turnInfoRef = useRef(turnInfo);
+  useEffect(() => {
+    turnInfoRef.current = turnInfo;
+  }, [turnInfo]);
 
   // -------------------------||| HANDLE BACK |||------------------------------------------------------------------
 
@@ -54,6 +65,9 @@ export default function GamePage() {
   }, [navigate]);
 
   // -------------------------||| GAME DATA |||------------------------------------------------------------------
+  const myEmail = Cookies.get('email');
+  const captainName = useSelector(getCaptainName);
+  const isHost = myEmail === captainName;
 
   // 주식 STATE
   const stockdata = useSelector(stockDataList);
@@ -64,22 +78,44 @@ export default function GamePage() {
   const gameId = useSelector(getGameId);
   const keys = Object.keys(stockdata);
   const Date = useSelector(todayDate);
+  const DateInfoRef = useRef(turnInfo);
+  useEffect(() => {
+    DateInfoRef.current = Date;
+  }, [Date]);
+
+  console.log(Date, '현재날짜');
 
   // 주식 API
-  const axiospost = async () => {
+  const axiospost = async (currentTurn) => {
+    // 결과창 넘어가는 턴 조건
+    if (currentTurn.nowTurn + 1 === currentTurn.maxTurn) {
+      Swal.fire({
+        title: `게임이 종료되었습니다.
+        결과를 확인해주세요.`,
+        timer: 2000,
+      });
+      navigate('/result', { state: { gameId, gameRoomId } });
+    }
     const datas = {
       roomId: roomNum,
       gamerId: gamerNum,
+      captain: isHost,
     };
+    console.log(datas);
+    if (isHost) {
+      // eslint-disable-next-line no-promise-executor-return
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Add a 3 seconds delay for non-host players
+    }
     await axios
       .post('/games/game', datas)
       .then((res) => {
+        console.log('턴넘어감', res.data);
         console.log('turn data, gamepage, 77', res.data.gamer);
         dispatch(setPlayerList(res.data.gamer));
+        dispatch(handleGetTodayDate(res.data.currentDate));
         dispatch(handleMoreGameData(res.data.Stocks));
         dispatch(handleUpdateHoldingData(res.data.gamerStock));
         dispatch(handleGetStockInformation(res.data.stockInformation));
-        dispatch(handleGetTodayDate(res.data.currentDate));
         dispatch(handleGetchangeInterest(res.data.exchangeInterest));
       })
       .catch((err) => {
@@ -90,10 +126,11 @@ export default function GamePage() {
     const getNews = [];
 
     for (let i = 0; i < keys.length; i += 1) {
+      console.log(DateInfoRef.current, '뉴스 데이터보낼 날짜');
       const data = {
         id: gameId,
         companyCode: keys[i],
-        articleDateTime: Date,
+        articleDateTime: DateInfoRef.current,
       };
       // eslint-disable-next-line no-await-in-loop
       const newsTmp = await getNewsApi(data);
@@ -110,7 +147,7 @@ export default function GamePage() {
       return isReady.status === true;
     });
     if (allReady) {
-      await axiospost();
+      await axiospost(turnInfoRef.current);
     }
   };
 
@@ -145,6 +182,10 @@ export default function GamePage() {
   const ACCESS_TOKEN = Cookies.get('access_token');
   const gameRoomId = useSelector(getGameRoomId);
   const isReadyList = useSelector(getIsReadyList);
+  const isReadyListRef = useRef(isReadyList);
+  useEffect(() => {
+    isReadyListRef.current = isReadyList;
+  }, [isReadyList]);
   const subAddress = `/sub/game-room/${gameRoomId}`;
   const sendAddress = '/pub/game-room';
   const header = {
@@ -160,7 +201,7 @@ export default function GamePage() {
       console.log('READY 메세지 도착', newMessage.messageBody);
       const { username } = newMessage.messageBody;
       // ready한 user의 ready 상태 바꾸기
-      const newIsReadyList = isReadyList.map((isReady) => {
+      const newIsReadyList = isReadyListRef.current.map((isReady) => {
         if (isReady.username === username) {
           return { ...isReady, status: true };
         }
@@ -211,10 +252,9 @@ export default function GamePage() {
 
     retryConnect();
 
-    // Clean up when the component unmounts
-    // return () => {
-    //   stompRef.current.disconnect();
-    // };
+    return () => {
+      stompRef.current.disconnect();
+    };
   }, []);
 
   // -------------------------||| CHAT |||------------------------------------------------------------------
@@ -254,16 +294,38 @@ export default function GamePage() {
 
   useEffect(() => {
     if (turnInfo.nowTurn >= turnInfo.maxTurn) {
-      navigate('/result', { state: { roomNum, gameRoomId } });
+      setTimeout(() => {
+        navigate('/result', { state: { roomNum, gameRoomId } });
+      }, 10);
     }
   }, [turnInfo]);
 
+  const handleTimeout = () => {
+    axiospost(turnInfoRef.current);
+  };
+
+  // -------------------------||| Handle Navigate |||------------------------------------------------------------------
+
   // 새로고침, 뒤로가기, 창 닫기 방지
 
-  window.onbeforeunload = function () {};
+  useEffect(() => {
+    // 새로고침 방지
+    window.onbeforeunload = function () {
+      return '정말로 페이지를 떠나시겠습니까?';
+    };
 
-  window.addEventListener('popstate', function (event) {});
+    // 뒤로가기 방지
+    window.onpopstate = function (event) {
+      event.preventDefault();
+      navigate('/', { replace: true });
+    };
 
+    return () => {
+      // 컴포넌트가 언마운트될 때 이벤트 핸들러 제거
+      window.onbeforeunload = null;
+      window.onpopstate = null;
+    };
+  }, [navigate]);
   // -------------------------||| HTML |||------------------------------------------------------------------
 
   return (
@@ -276,7 +338,7 @@ export default function GamePage() {
           <HoldingList />
         </LeftSection>
         <MiddleSection>
-          <Turn />
+          <Turn getTimeout={handleTimeout} />
           <Graph />
           <StockInfo />
         </MiddleSection>
@@ -291,11 +353,11 @@ export default function GamePage() {
   );
 }
 const GameContainer = styled.div`
-  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq mt-14`}
+  ${tw`grid grid-cols-12 gap-5 w-[100%] p-5 font-spoq pt-14`}
 `;
 const LeftSection = styled.div`
   max-height: 88vh;
-  ${tw`col-span-3 gap-5 h-screen`};
+  ${tw`col-span-3 gap-5`};
 `;
 const MiddleSection = styled.div`
   max-height: 88vh;
@@ -303,5 +365,5 @@ const MiddleSection = styled.div`
 `;
 const RightSection = styled.div`
   max-height: 88vh;
-  ${tw`col-span-3 flex flex-col gap-5 h-screen`}
+  ${tw`col-span-3 flex flex-col gap-5`}
 `;

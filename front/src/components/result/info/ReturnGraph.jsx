@@ -1,31 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import Chart from 'react-apexcharts';
 
-export default function ReturnGraph() {
+export default function ReturnGraph({ selectedResult }) {
+  const [profits, setProfits] = useState([]);
+  const [categories, setCategories] = useState(0);
+
+  useEffect(() => {
+    if (selectedResult) {
+      const newProfits = selectedResult.profits.map((profit) => {
+        return profit.totalProfitRate;
+      });
+      setProfits(newProfits);
+    }
+  }, [selectedResult]);
   const data = {
     options: {
       chart: {
         id: 'basic-bar',
+        animations: {
+          enabled: true,
+        },
+        toolbar: {
+          show: false,
+        },
+        width: 500,
+      },
+      markers: {
+        size: 6,
+        colors: '#fff',
+        strokeColors: ['#00b7ff'],
+        strokeWidth: 2,
+        hover: {
+          size: 7,
+        },
       },
       xaxis: {
-        categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        categories: Array.from({ length: profits.length }, (_, i) => i),
+        labels: {
+          show: false,
+        },
+      },
+      yaxis: {
+        min: Math.round(Math.min(...profits)) - 2,
+        max: Math.round(Math.max(...profits)) + 2,
+        tickAmount: 5,
+        tickInterval: 2,
+        style: {
+          fontWeight: 'bold',
+          width: 80,
+        },
+      },
+      grid: {
+        borderColor: '#f1f1f1',
       },
     },
     series: [
       {
-        name: 'return',
-        data: [30, 40, 45, 50, 49, 60, 70, 91, 45, 67],
+        name: '수익률',
+        data: profits,
       },
     ],
   };
   return (
     <ReturnGraphContainer>
-      <Chart options={data.options} series={data.series} type="line" width="500" height="180" />
+      <Chart options={data.options} series={data.series} type="line" width="100%" height="100%" />
     </ReturnGraphContainer>
   );
 }
 
 const ReturnGraphContainer = styled.div`
-  ${tw` flex justify-center items-center`}
+  ${tw` flex justify-center items-center h-[100%] w-full`}
 `;

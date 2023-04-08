@@ -56,7 +56,7 @@ export default function StockList() {
                 ?
               </Button>
             </PopoverHandler>
-            <PopoverContent className="z-20 border-gray-400 shadow-xl shadow-gray-600">
+            <PopoverContent className="z-40 border-gray-400 shadow-xl shadow-gray-600">
               <img src={imgpath} alt="" />
             </PopoverContent>
           </Popover>
@@ -66,7 +66,7 @@ export default function StockList() {
         <div className="mt-16 mb-4">
           {Object.values(stockDatas).map((Stock, i) => {
             // eslint-disable-next-line react/no-array-index-key
-            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={i} checkCanSell={checkCanSell} />;
+            return <StockListItem Stock={Stock} i={i} Code={stockDatas} key={`name${i}`} checkCanSell={checkCanSell} />;
           })}
         </div>
       </ListContanier>
