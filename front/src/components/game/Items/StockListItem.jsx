@@ -80,7 +80,7 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
     <ItemContainer
       i={i}
       j={isSelect}
-      k={{ isThis }}
+      k={{ state: isThis }}
       onClick={(e) => {
         createRipple(e);
         handleselectIdx(i);
@@ -100,7 +100,7 @@ export default function StockListItem({ Stock, i, Code, checkCanSell }) {
       <span className="ripple" />
       <ItemTitleSection>
         <ItemTitleImgBox>
-          <img src={Stock[Stock.length - 1]?.logo} alt="dd" />
+          <img src={Stock[Stock.length - 1]?.logo} alt="" />
         </ItemTitleImgBox>
         <CompanyName>
           {isThis && <Tooltip content="영업일이 아닙니다">⚠️ </Tooltip>}
@@ -149,7 +149,7 @@ const ItemContainer = styled.button`
       opacity: 0;
     }
   }
-  ${(props) => (props.k.isThis ? tw`bg-negative` : tw`bg-white`)}
+  ${(props) => (props.k.state ? tw`bg-negative` : tw`bg-white`)}
   ${(props) => (props.i === props.j ? tw`ring-2 ring-negative drop-shadow-none` : tw``)}
   ${tw`border w-[95%] ml-2 mt-2 flex relative drop-shadow-lg rounded-xl overflow-hidden`}
 `;

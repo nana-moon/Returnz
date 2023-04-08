@@ -9,8 +9,8 @@ import imgpath from './assets/turnHelp.png';
 import { gameTurn } from '../../store/gamedata/GameData.selector';
 import { setIsReadyList } from '../../store/roominfo/GameRoom.reducer';
 
-export default function Turn() {
-  const [time, setTime] = useState(60);
+export default function Turn({ getTimeout }) {
+  const [time, setTime] = useState(120);
   const turn = useSelector(gameTurn);
   const [animationClass, setAnimationClass] = useState('animate');
   // console.log('현재 턴은:', turn);
@@ -35,16 +35,23 @@ export default function Turn() {
       });
     }, 10);
   }, [turn]);
+
   useEffect(() => {
-    setTime(60);
+    setTime(120);
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime - 1);
     }, 1000);
-
     return () => {
       clearInterval(interval);
     };
   }, [turn]);
+
+  useEffect(() => {
+    console.log('time', time);
+    if (time === 0) {
+      getTimeout();
+    }
+  }, [time]);
 
   const Icon = [];
 
@@ -117,10 +124,10 @@ const BarTimer = keyframes`
 `;
 
 const BarSection = styled.div`
-  animation: ${BarTimer} 60s, ${shake} 0.3s 40 48s;
+  animation: ${BarTimer} 120s, ${shake} 0.3s 80 96s;
   animation-fill-mode: forwards;
   animation-timing-function: linear;
-  ${tw`w-[100%] bg-primary rounded-full absolute bottom-0 text-center h-6`}
+  ${tw`w-[100%] bg-primary rounded-full absolute bottom-0 text-center h-2`}
 `;
 
 const TurnContanier = styled.div`

@@ -1,31 +1,36 @@
 import { Avatar } from '@material-tailwind/react';
-import { React } from 'react';
+import { React, useState } from 'react';
 import tw, { styled } from 'twin.macro';
 import { acceptFriendRequestApi, declineFriendRequestApi } from '../../../apis/friendApi';
 
 export default function IncomingFriendRequests({ friendReq }) {
+  const [isVisible, setIsVisible] = useState(true);
   const acceptRequest = () => {
-    acceptFriendRequestApi(friendReq.requestId);
+    acceptFriendRequestApi(friendReq);
+    setIsVisible(false);
   };
   const declineRequest = () => {
     declineFriendRequestApi(friendReq.requestId);
+    setIsVisible(false);
   };
   return (
-    <RequestContainer>
-      <Avatar
-        size="md"
-        variant="circular"
-        src={`profile_pics/${friendReq.profileIcon}.jpg`}
-        className="my-auto border-2 border-negative "
-      />
-      <RequestBox>
-        <RequestNickname>{friendReq.nickname}</RequestNickname>
-        <ButtonsContainer>
-          <AcceptButton onClick={acceptRequest}>수락</AcceptButton>
-          <DeclineButton onClick={declineRequest}>거절</DeclineButton>
-        </ButtonsContainer>
-      </RequestBox>
-    </RequestContainer>
+    isVisible && (
+      <RequestContainer>
+        <Avatar
+          size="md"
+          variant="circular"
+          src={`profile_pics/${friendReq.profileIcon}.jpg`}
+          className="my-auto border-2 border-negative "
+        />
+        <RequestBox>
+          <RequestNickname>{friendReq.nickname}</RequestNickname>
+          <ButtonsContainer>
+            <AcceptButton onClick={acceptRequest}>수락</AcceptButton>
+            <DeclineButton onClick={declineRequest}>거절</DeclineButton>
+          </ButtonsContainer>
+        </RequestBox>
+      </RequestContainer>
+    )
   );
 }
 
