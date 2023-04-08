@@ -86,12 +86,14 @@ public class RequestSettingGame {
 			return startDay;
 		}
 		if (this.theme.getTheme().equals("LAST_YEAR")) {
-			LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(1);
+			LocalDateTime oneYearAgo = LocalDateTime.of(2023, 2, 22, 0, 0, 0)
+				.minusYears(1);
 			// 주말임을 검사하고 맞으면  건너뛰기 위한 로직
 			return jumpWeek(oneYearAgo);
 		}
 		if (this.theme.getTheme().equals("LAST_MONTH")) {
-			LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+			LocalDateTime oneMonthAgo = LocalDateTime.of(2023, 2, 22, 0, 0, 0)
+				.minusMonths(1);
 			return jumpWeek(oneMonthAgo);
 		}
 		return this.startTime.atStartOfDay();
@@ -129,7 +131,7 @@ public class RequestSettingGame {
 
 	public Integer setThemeTotalTurnTime() {
 		if (this.theme.getTheme().equals("COVID")) {
-			this.totalTurn = 5;
+			this.totalTurn = 15;
 		}
 		if (this.theme.getTheme().equals("DOTCOM")) {
 			this.totalTurn = 30;
