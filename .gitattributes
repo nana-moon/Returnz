@@ -29,4 +29,5 @@ big_data/data/one_minute_price.csv filter=lfs diff=lfs merge=lfs -text
 sql/returnz_2023-04-07.sql filter=lfs diff=lfs merge=lfs -text
 big_data/data/one_day_price.csv filter=lfs diff=lfs merge=lfs -text
 big_data/data/one_hour_price.csv filter=lfs diff=lfs merge=lfs -text
-
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.sql filter=lfs diff=lfs merge=lfs -text
