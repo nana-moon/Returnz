@@ -1,6 +1,6 @@
 # 게임형 주식 교육 서비스 “Returnz”
 
-![Untitled.png](./Untitled.png)
+![Untitled.png](img/Untitled.png)
 
 ## 프로젝트 소개
 
@@ -11,8 +11,8 @@
 ```jsx
 
 ```
-![1.png](./1.png)
-![2.png](./2.png)
+![1.png](img/1.png)
+![2.png](img/2.png)
 ## 서비스 소개
 
 ### 1. 메인 화면 / 사이드 바
@@ -39,9 +39,9 @@
 - 사용자 설정 테마를 적용할 경우, 시작 날짜와 Turn을 세팅할 수 있다.
 - 각 참가자들은 자신의 평균 수익율를 알 수 있다.
 
-![4.png](./4.png)
+![4.png](img/4.png)
 
-![5.png](./5.png)
+![5.png](img/5.png)
 ### 3. 게임 진행
 
 1. 주가 정보를 캔들형 그래프로 확인할 수  있다.
@@ -56,9 +56,9 @@
 10. 도움말 기능을 제공한다.
 11. 게임방 내 인원들의 순위를 확인할 수 있다.
 
-![6.png](./6.png)
+![6.png](img/6.png)
 
-![7.png](./7.png)
+![7.png](img/7.png)
 
 ### 4. 게임 결과 화면
 
@@ -68,19 +68,19 @@
 4. 다른 사용자의 기록을 볼 수 있다.
 5. 결과 화면에 있는 사용자들끼리 채팅할 수 있다.
 
-![8.png](./8.png)
+![8.png](img/8.png)
 
 # 시스템 아키텍처
 
 - CloudCraft
 
-![9.png](./9.png)
+![9.png](img/9.png)
 
 - Figma
 
 [https://www.figma.com/file/UD3T6CivI3wO4wQTH2ceRn/%EC%A7%91%EC%A4%91%EB%A0%A5%EB%B6%84%EC%82%B0-FIGMA?node-id=104-3](https://www.figma.com/file/UD3T6CivI3wO4wQTH2ceRn/%EC%A7%91%EC%A4%91%EB%A0%A5%EB%B6%84%EC%82%B0-FIGMA?node-id=104-3)
 
-![10.png](./10.png)
+![10.png](img/10.png)
 
 ## 부하테스트
 
@@ -95,9 +95,9 @@
         
         ### 부하 테스트
         
-        ![11.png](./11.png)
+        ![11.png](img/11.png)
         
-        ![12.png](./12.png)
+        ![12.png](img/12.png)
         
         ### 수행 결과
         
@@ -117,7 +117,7 @@
     - 부하테스트 결과
         
         
-        ![13.png](./13.png)
+        ![13.png](img/13.png)
         
         - 게임 진행 시 턴을 넘기지 않도록 설정하고, 부하테스트를 진행했다.
         - 분산 저장을 위해 사용했던 hadoop, spark, zeppeline 등을 stop 시킨 후 진행했다.
