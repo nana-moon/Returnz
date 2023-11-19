@@ -79,7 +79,7 @@ public class GameSocketService {
 		cal.setTime(new Date());
 		DateFormat df = new SimpleDateFormat("yyyyMMddhhmmss");
 
-		cal.add(Calendar.MINUTE, 1);
+		cal.add(Calendar.MINUTE, 2);
 
 		RoomMessageDto roomMessageDto = RoomMessageDto.builder()
 			.type(RoomMessageDto.MessageType.TIME)
